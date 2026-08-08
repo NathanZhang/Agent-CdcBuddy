@@ -123,7 +123,16 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       });
     });
 
+    // 监听容器大小变化自动触发 map.resize()
+    const resizeObserver = new ResizeObserver(() => {
+      map.resize();
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     return () => {
+      resizeObserver.disconnect();
       map.remove();
       mapRef.current = null;
     };
@@ -169,7 +178,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[520px] rounded-xl overflow-hidden border border-slate-200 dark:border-sky-500/20 bg-slate-100 dark:bg-slate-950 shadow-sm dark:shadow-2xl flex flex-col transition-colors">
+    <div className="relative w-full h-full min-h-[380px] rounded-xl overflow-hidden border border-slate-200 dark:border-sky-500/20 bg-slate-100 dark:bg-slate-950 shadow-sm dark:shadow-2xl flex flex-col transition-colors">
       {/* 顶部控制栏 */}
       <div className="absolute top-3 left-3 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-200 dark:border-sky-500/30 flex items-center gap-3 text-sm shadow-md">
         <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold">

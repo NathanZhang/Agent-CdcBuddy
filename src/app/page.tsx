@@ -356,7 +356,7 @@ export default function CdcAgentWorkspace() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+    <div className="h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* 顶部导航与态势指示条 */}
       <Navbar
         onOpenSkills={() => setIsSkillsOpen(true)}
@@ -366,7 +366,7 @@ export default function CdcAgentWorkspace() {
       />
 
       {/* 统计指标浮动指示条 */}
-      <div className="bg-slate-100/90 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800/80 px-6 py-2 flex items-center justify-between overflow-x-auto text-xs text-slate-600 dark:text-slate-300 gap-6 transition-colors">
+      <div className="shrink-0 bg-slate-100/90 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800/80 px-6 py-2 flex items-center justify-between overflow-x-auto text-xs text-slate-600 dark:text-slate-300 gap-6 transition-colors">
         <div className="flex items-center gap-6 shrink-0">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -397,16 +397,16 @@ export default function CdcAgentWorkspace() {
         </div>
       </div>
 
-      {/* 核心工作台：双栏生成式工作区 */}
-      <main className="flex-1 px-6 pt-2 pb-6 flex flex-col gap-3 max-w-[1780px] w-full mx-auto">
-        {/* 常用业务研判与推荐对话 Prompt 瀑布流 */}
+      {/* 核心工作台：双栏生成式工作区 (全屏自适应，无整页滚动) */}
+      <main className="flex-1 min-h-0 px-6 pt-2 pb-3 flex flex-col gap-2.5 max-w-[1920px] w-full mx-auto overflow-hidden">
+        {/* 常用业务研判与推荐对话 Prompt (浮动展开覆盖，不挤压工作区高度) */}
         <RecommendationPrompts onSelectPrompt={handleExecutePrompt} />
 
-        {/* 下半部分：左侧 AG-UI 动态生成式工作台 + 右侧 Copilot 智能交互对话中枢 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-          {/* 左侧：AG-UI 生成式界面工作台 (占比 8 列) */}
-          <div className="lg:col-span-8 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+        {/* 智能体交互区域：左侧 AG-UI 动态生成式工作台 + 右侧 Copilot 智能交互对话中枢 */}
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch overflow-hidden">
+          {/* 左侧：AG-UI 生成式界面工作台 (占比 8 列，高度自适应) */}
+          <div className="lg:col-span-8 h-full min-h-0 flex flex-col gap-2 overflow-hidden">
+            <div className="shrink-0 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                 <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
@@ -418,88 +418,90 @@ export default function CdcAgentWorkspace() {
               </span>
             </div>
 
-            {/* 动态渲染对应的生成式 UI 组件 */}
-            {activeGenerativeView?.type === 'SPATIAL_EARLY_WARNING_MAP' && (
-              <VectorMapComponent
-                alerts={activeGenerativeView.alerts}
-                selectedCity={activeGenerativeView.city}
-              />
-            )}
+            {/* 动态渲染对应的生成式 UI 组件容器 */}
+            <div className="flex-1 min-h-0 flex flex-col overflow-y-auto rounded-xl">
+              {activeGenerativeView?.type === 'SPATIAL_EARLY_WARNING_MAP' && (
+                <VectorMapComponent
+                  alerts={activeGenerativeView.alerts}
+                  selectedCity={activeGenerativeView.city}
+                />
+              )}
 
-            {activeGenerativeView?.type === 'POPULATION_DENSITY_TREND' && (
-              <DensityTrendChart data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'POPULATION_DENSITY_TREND' && (
+                <DensityTrendChart data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'SPECIES_COMPOSITION' && (
-              <SpeciesCompositionChart data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'SPECIES_COMPOSITION' && (
+                <SpeciesCompositionChart data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'RESISTANCE_EVALUATION' && (
-              <ResistanceMatrixChart data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'RESISTANCE_EVALUATION' && (
+                <ResistanceMatrixChart data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'PATHOGEN_RISK_ANALYSIS' && (
-              <PathogenRiskCard data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'PATHOGEN_RISK_ANALYSIS' && (
+                <PathogenRiskCard data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'ALERT_PUSH_DISPATCH' && (
-              <EarlyWarningPanel data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'ALERT_PUSH_DISPATCH' && (
+                <EarlyWarningPanel data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'DISPOSAL_WORKFLOW_CARD' && (
-              <DisposalWorkflowCard data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'DISPOSAL_WORKFLOW_CARD' && (
+                <DisposalWorkflowCard data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'DENSITY_GBDT_FORECAST' && (
-              <DensityTrendChart data={activeGenerativeView.trendData} />
-            )}
+              {activeGenerativeView?.type === 'DENSITY_GBDT_FORECAST' && (
+                <DensityTrendChart data={activeGenerativeView.trendData} />
+              )}
 
-            {activeGenerativeView?.type === 'TRANSMISSION_RISK_GAUGE' && (
-              <TransmissionRiskGauge data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'TRANSMISSION_RISK_GAUGE' && (
+                <TransmissionRiskGauge data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'RESISTANCE_EVOLUTION_CHART' && (
-              <ResistanceEvolutionChart data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'RESISTANCE_EVOLUTION_CHART' && (
+                <ResistanceEvolutionChart data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'AUTO_GENERATED_REPORT' && (
-              <AutoReportViewer data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'AUTO_GENERATED_REPORT' && (
+                <AutoReportViewer data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'MOBILE_ASSISTANT_SIMULATOR' && (
-              <MobileSimulationModal />
-            )}
+              {activeGenerativeView?.type === 'MOBILE_ASSISTANT_SIMULATOR' && (
+                <MobileSimulationModal />
+              )}
 
-            {activeGenerativeView?.type === 'CUSTOM_SKILL_CREATED' && (
-              <CustomSkillBuilderModal data={activeGenerativeView} />
-            )}
+              {activeGenerativeView?.type === 'CUSTOM_SKILL_CREATED' && (
+                <CustomSkillBuilderModal data={activeGenerativeView} />
+              )}
 
-            {activeGenerativeView?.type === 'NLQ_KNOWLEDGE_ANSWER' && (
-              <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-6 border border-teal-200 dark:border-teal-500/30 shadow-sm dark:shadow-xl space-y-4 transition-colors">
-                <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-bold text-sm">
-                  <Bot className="w-5 h-5" />
-                  <span>CDC 专家知识库检索结果</span>
-                </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{activeGenerativeView.query}</h3>
-                <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
-                  <MarkdownRenderer content={activeGenerativeView.answer} />
-                </div>
-                {activeGenerativeView.references && (
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">引用标准与指南:</span>
-                    {activeGenerativeView.references.map((ref: string, i: number) => (
-                      <div key={i} className="text-sky-600 dark:text-sky-400">📖 {ref}</div>
-                    ))}
+              {activeGenerativeView?.type === 'NLQ_KNOWLEDGE_ANSWER' && (
+                <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-6 border border-teal-200 dark:border-teal-500/30 shadow-sm dark:shadow-xl space-y-4 transition-colors">
+                  <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-bold text-sm">
+                    <Bot className="w-5 h-5" />
+                    <span>CDC 专家知识库检索结果</span>
                   </div>
-                )}
-              </div>
-            )}
+                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{activeGenerativeView.query}</h3>
+                  <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
+                    <MarkdownRenderer content={activeGenerativeView.answer} />
+                  </div>
+                  {activeGenerativeView.references && (
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">引用标准与指南:</span>
+                      {activeGenerativeView.references.map((ref: string, i: number) => (
+                        <div key={i} className="text-sky-600 dark:text-sky-400">📖 {ref}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* 右侧：Copilot 智能体交互对话区 (占比 4 列) */}
-          <div className="lg:col-span-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-200 dark:border-sky-500/20 shadow-sm dark:shadow-2xl flex flex-col h-[720px] overflow-hidden transition-colors">
+          {/* 右侧：Copilot 智能体交互对话区 (占比 4 列，高度自适应填满) */}
+          <div className="lg:col-span-4 h-full min-h-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-200 dark:border-sky-500/20 shadow-sm dark:shadow-2xl flex flex-col overflow-hidden transition-colors">
             {/* 对话区头部 */}
-            <div className="p-4 bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="shrink-0 p-3.5 bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white text-xs">
                   <Bot className="w-4 h-4" />
@@ -566,7 +568,7 @@ export default function CdcAgentWorkspace() {
             </div>
 
             {/* 底部输入框 */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-950/90 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
+            <div className="shrink-0 p-3 bg-slate-50 dark:bg-slate-950/90 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
