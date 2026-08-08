@@ -505,7 +505,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     const params: any[] = [];
 
     if (filter.city) {
-      whereClauses.append ? null : whereClauses.push('l.city = ?');
+      whereClauses.push('l.city = ?');
       params.push(filter.city);
     }
     if (filter.district) {

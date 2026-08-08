@@ -398,12 +398,12 @@ export default function CdcAgentWorkspace() {
       </div>
 
       {/* 核心工作台：双栏生成式工作区 */}
-      <main className="flex-1 p-6 flex flex-col gap-6 max-w-[1780px] w-full mx-auto">
+      <main className="flex-1 px-6 pt-2 pb-6 flex flex-col gap-3 max-w-[1780px] w-full mx-auto">
         {/* 常用业务研判与推荐对话 Prompt 瀑布流 */}
         <RecommendationPrompts onSelectPrompt={handleExecutePrompt} />
 
         {/* 下半部分：左侧 AG-UI 动态生成式工作台 + 右侧 Copilot 智能交互对话中枢 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           {/* 左侧：AG-UI 生成式界面工作台 (占比 8 列) */}
           <div className="lg:col-span-8 flex flex-col gap-4">
             <div className="flex items-center justify-between">
