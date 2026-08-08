@@ -438,6 +438,7 @@ export default function CdcAgentWorkspace() {
         onClose={() => setIsSkillsOpen(false)}
         customSkills={customSkills}
         onDeleteCustomSkill={handleDeleteCustomSkill}
+        onRefreshCustomSkills={fetchCustomSkills}
         onRunSkill={(skill, prompt) => handleExecutePrompt(prompt || skill.recommendedPrompts[0])}
         onCreateCustomSkill={() => {
           setIsSkillsOpen(false);

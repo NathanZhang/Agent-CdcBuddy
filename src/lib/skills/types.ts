@@ -41,6 +41,7 @@ export interface VectorSkill {
   recommendedPrompts: string[];
   requiredRoles: UserRole[];
   parametersSchema?: SkillParameterSchema;
+  visibility?: 'private' | 'public';
   execute: (args: Record<string, any>, context?: SkillContext) => Promise<any>;
 }
 
@@ -52,6 +53,7 @@ export interface MetaCustomSkillData {
   sqlQuery: string;
   chartType: 'trend' | 'bar' | 'pie' | 'map' | 'table';
   recommendedPrompts: string[];
+  visibility?: 'private' | 'public';
   createdAt: string;
   createdBy: string;
 }

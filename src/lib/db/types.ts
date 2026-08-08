@@ -219,6 +219,7 @@ export interface BizCustomSkill {
   sql_query: string;
   chart_type: string;
   recommended_prompts: string;
+  visibility?: 'private' | 'public';
   created_by: string;
   created_at: string;
 }

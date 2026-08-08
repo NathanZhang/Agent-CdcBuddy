@@ -273,13 +273,28 @@ export class AppBusinessProvider {
   }
 
   // ---------------- 6. 自定义技能元数据 ----------------
-  async saveCustomSkill(skill: BizCustomSkill): Promise<void> {
+  private ensureCustomSkillsTableSchema() {
     const db = this.getDb();
+    try {
+      const columns = db.prepare(`PRAGMA table_info(biz_custom_skills)`).all() as Array<{ name: string }>;
+      const hasVisibility = columns.some(c => c.name === 'visibility');
+      if (!hasVisibility) {
+        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN visibility TEXT DEFAULT 'private'`).run();
+      }
+    } catch (e) {
+      // 忽略检查异常
+    }
+  }
+
+  async saveCustomSkill(skill: BizCustomSkill): Promise<void> {
+    this.ensureCustomSkillsTableSchema();
+    const db = this.getDb();
+    const visibility = skill.visibility || 'private';
     db.prepare(`
       INSERT OR REPLACE INTO biz_custom_skills (
         skill_id, name, description, category, sql_query, chart_type,
-        recommended_prompts, created_by, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        recommended_prompts, visibility, created_by, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       skill.skill_id,
       skill.name,
@@ -288,23 +303,57 @@ export class AppBusinessProvider {
       skill.sql_query,
       skill.chart_type,
       skill.recommended_prompts,
+      visibility,
       skill.created_by,
       skill.created_at
     );
   }
 
+  async updateCustomSkill(skillId: string, updates: Partial<BizCustomSkill>): Promise<boolean> {
+    this.ensureCustomSkillsTableSchema();
+    const db = this.getDb();
+    const existing = await this.getCustomSkillById(skillId);
+    if (!existing) return false;
+
+    const merged: BizCustomSkill = {
+      ...existing,
+      ...updates,
+      skill_id: skillId
+    };
+
+    db.prepare(`
+      UPDATE biz_custom_skills
+      SET name = ?, description = ?, sql_query = ?, chart_type = ?,
+          recommended_prompts = ?, visibility = ?
+      WHERE skill_id = ?
+    `).run(
+      merged.name,
+      merged.description,
+      merged.sql_query,
+      merged.chart_type,
+      merged.recommended_prompts,
+      merged.visibility || 'private',
+      skillId
+    );
+
+    return true;
+  }
+
   async deleteCustomSkill(skillId: string): Promise<boolean> {
+    this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
     const res = db.prepare('DELETE FROM biz_custom_skills WHERE skill_id = ?').run(skillId);
     return res.changes > 0;
   }
 
   async getCustomSkillById(skillId: string): Promise<BizCustomSkill | undefined> {
+    this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
     return db.prepare('SELECT * FROM biz_custom_skills WHERE skill_id = ?').get(skillId) as BizCustomSkill | undefined;
   }
 
   async getAllCustomSkills(): Promise<BizCustomSkill[]> {
+    this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
     return db.prepare('SELECT * FROM biz_custom_skills ORDER BY created_at DESC').all() as BizCustomSkill[];
   }

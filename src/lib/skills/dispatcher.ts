@@ -1,5 +1,5 @@
 import { getSkillById } from '@/lib/skills/registry';
-import { ACTIVE_ALERTS_LIST } from '@/components/ag-ui/ActiveAlertsModal';
+import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 
 export interface DispatchResult {
   success: boolean;

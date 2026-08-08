@@ -463,6 +463,7 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         sqlQuery: targetSql.trim(),
         chartType: args.chartType || 'map',
         recommendedPrompts: [`执行 ${args.skillName || '豫北蜱虫携带恙虫病东方体时空分布分析'}`],
+        visibility: (args.visibility as 'private' | 'public') || 'private',
         createdAt: new Date().toISOString(),
         createdBy: '当前登录用户'
       };
@@ -494,6 +495,7 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         sql_query: newSkill.sqlQuery,
         chart_type: newSkill.chartType,
         recommended_prompts: newSkill.recommendedPrompts.join(';'),
+        visibility: newSkill.visibility || 'private',
         created_by: newSkill.createdBy,
         created_at: newSkill.createdAt
       });

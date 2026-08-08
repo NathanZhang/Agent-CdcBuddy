@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MetaCustomSkillData } from '@/lib/skills/types';
-import { Sparkles, Database } from 'lucide-react';
+import { Sparkles, Database, Lock, Globe } from 'lucide-react';
 
 interface CustomSkillBuilderProps {
   data: {
@@ -12,6 +12,8 @@ interface CustomSkillBuilderProps {
 }
 
 export const CustomSkillBuilderModal: React.FC<CustomSkillBuilderProps> = ({ data }) => {
+  const isPrivate = (data.skill.visibility ?? 'private') === 'private';
+
   return (
     <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-5 border border-slate-200 dark:border-pink-500/30 shadow-sm dark:shadow-2xl flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 transition-colors">
       {/* 头部 */}
@@ -21,10 +23,21 @@ export const CustomSkillBuilderModal: React.FC<CustomSkillBuilderProps> = ({ dat
             <Sparkles className="w-5 h-5 animate-spin" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs px-2 py-0.5 rounded bg-pink-50 text-pink-700 border border-pink-200 dark:bg-pink-500/20 dark:text-pink-300 dark:border-pink-500/40 font-bold">
                 🎉 新技能创建成功并已注册生效
               </span>
+              {isPrivate ? (
+                <span className="text-[11px] px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-800 font-semibold flex items-center gap-1">
+                  <Lock className="w-3 h-3" />
+                  <span>默认私有 (仅自己可见)</span>
+                </span>
+              ) : (
+                <span className="text-[11px] px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-800 font-semibold flex items-center gap-1">
+                  <Globe className="w-3 h-3" />
+                  <span>公开技能 (全员可见)</span>
+                </span>
+              )}
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-1">{data.skill.name}</h3>
           </div>

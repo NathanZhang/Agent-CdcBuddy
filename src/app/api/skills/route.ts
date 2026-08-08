@@ -18,6 +18,7 @@ export async function GET() {
       badgeColor: 'pink',
       recommendedPrompts: cs.recommended_prompts ? cs.recommended_prompts.split(';') : [`执行 ${cs.name}`],
       requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
+      visibility: (cs.visibility as 'private' | 'public') || 'private',
       isCustom: true,
       sqlQuery: cs.sql_query,
       chartType: cs.chart_type,
@@ -36,6 +37,7 @@ export async function GET() {
       badgeColor: s.badgeColor,
       recommendedPrompts: s.recommendedPrompts,
       requiredRoles: s.requiredRoles,
+      visibility: 'public' as const,
       isCustom: false
     }));
 
@@ -79,6 +81,55 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error('[Skills API Error]', err);
+    return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { 
+      skillId, 
+      name, 
+      description, 
+      sqlQuery, 
+      chartType, 
+      visibility = 'private', 
+      recommendedPrompts 
+    } = body;
+
+    if (!skillId) {
+      return NextResponse.json({ code: 400, success: false, message: '缺少 skillId 参数' }, { status: 400 });
+    }
+
+    const bizProvider = getAppBusinessProvider();
+    const promptStr = Array.isArray(recommendedPrompts) 
+      ? recommendedPrompts.join(';') 
+      : (typeof recommendedPrompts === 'string' ? recommendedPrompts : undefined);
+
+    const success = await bizProvider.updateCustomSkill(skillId, {
+      name,
+      description,
+      sql_query: sqlQuery,
+      chart_type: chartType,
+      visibility: visibility === 'public' ? 'public' : 'private',
+      ...(promptStr !== undefined ? { recommended_prompts: promptStr } : {})
+    });
+
+    if (!success) {
+      return NextResponse.json({ code: 404, success: false, message: '未找到指定自定义技能' }, { status: 404 });
+    }
+
+    const updated = await bizProvider.getCustomSkillById(skillId);
+
+    return NextResponse.json({
+      code: 200,
+      success: true,
+      message: '自定义技能更新成功',
+      data: updated
+    });
+  } catch (err: any) {
+    console.error('[Skills API PUT Error]', err);
     return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });
   }
 }
