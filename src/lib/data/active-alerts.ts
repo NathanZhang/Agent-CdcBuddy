@@ -266,5 +266,24 @@ export const ACTIVE_ALERTS_LIST: EarlyWarningAlertItem[] = [
     recommendedAction: '对步道两侧草坪修剪降高，树立蜱虫警示牌，喷洒高效氯氰菊酯。',
     disposalStatus: 'pending',
     triggerTime: '2026-08-08 10:15:00'
+  },
+  {
+    alertId: 'ALERT-202408-115',
+    title: '郑州市管城区 白纹伊蚊高密度红色预警',
+    level: 'red',
+    levelName: '严重预警 (一级)',
+    category: '蚊',
+    city: '郑州市',
+    district: '管城回族区',
+    street: '紫荆山南路街道',
+    latitude: 34.7538,
+    longitude: 113.6788,
+    triggerReason: '单次诱蚊灯捕获量达 82 只/台次（基线 30 只），老旧居民区与绿地积水幼虫孳生率高达 41%。',
+    currentDensity: 82,
+    threshold: 30,
+    affectedPopulationEstimate: 28500,
+    recommendedAction: '开展社区积水倾倒专项行动，对下水道及背街小巷实施灭幼脲投药与超低容量喷雾消杀。',
+    disposalStatus: 'in_progress',
+    triggerTime: '2026-08-08 09:30:00'
   }
 ];

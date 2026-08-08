@@ -2,16 +2,31 @@ import { VectorSkill, MetaCustomSkillData } from './types';
 
 // 统一的客户端 Skill 执行器，调用 Next.js BFF API
 async function executeSkillRemote(skillId: string, args: Record<string, any>) {
-  const res = await fetch('/api/skills', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ skillId, args })
-  });
-  const json = await res.json();
-  if (!json.success) {
-    throw new Error(json.error || json.message || '技能执行失败');
+  try {
+    const url = typeof window !== 'undefined' ? '/api/skills' : 'http://localhost:3000/api/skills';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skillId, args })
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      try {
+        const json = JSON.parse(text);
+        throw new Error(json.error || json.message || `请求失败 (${res.status})`);
+      } catch {
+        throw new Error(`服务响应异常 (${res.status})`);
+      }
+    }
+    const json = await res.json();
+    if (!json.success) {
+      throw new Error(json.error || json.message || '技能执行失败');
+    }
+    return json.data;
+  } catch (err: any) {
+    console.error(`[Skill Execution Error: ${skillId}]`, err);
+    throw err;
   }
-  return json.data;
 }
 
 // 1. 种群动态模型 (No. 23)

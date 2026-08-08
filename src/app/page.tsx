@@ -10,20 +10,9 @@ import { useRbac } from '@/lib/rbac/rbac-context';
 import { VectorSkill } from '@/lib/skills/types';
 import { getSkillById, STANDARD_SKILLS } from '@/lib/skills/registry';
 
-// AG-UI 生成式界面组件库
-import { VectorMapComponent } from '@/components/ag-ui/VectorMapComponent';
-import { DensityTrendChart } from '@/components/ag-ui/DensityTrendChart';
-import { SpeciesCompositionChart } from '@/components/ag-ui/SpeciesCompositionChart';
-import { ResistanceMatrixChart } from '@/components/ag-ui/ResistanceMatrixChart';
-import { PathogenRiskCard } from '@/components/ag-ui/PathogenRiskCard';
-import { EarlyWarningPanel } from '@/components/ag-ui/EarlyWarningPanel';
-import { DisposalWorkflowCard } from '@/components/ag-ui/DisposalWorkflowCard';
-import { TransmissionRiskGauge } from '@/components/ag-ui/TransmissionRiskGauge';
-import { ResistanceEvolutionChart } from '@/components/ag-ui/ResistanceEvolutionChart';
-import { AutoReportViewer } from '@/components/ag-ui/AutoReportViewer';
-import { MobileSimulationModal } from '@/components/ag-ui/MobileSimulationModal';
-import { CustomSkillBuilderModal } from '@/components/ag-ui/CustomSkillBuilderModal';
-import { DataTableComponent } from '@/components/ag-ui/DataTableComponent';
+// AG-UI 生成式界面组件库与调度引擎
+import { GenerativeComponentRenderer } from '@/components/ag-ui/GenerativeComponentRenderer';
+import { dispatchSkillPrompt } from '@/lib/skills/dispatcher';
 import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/ActiveAlertsModal';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 
@@ -187,181 +176,28 @@ export default function CdcAgentWorkspace() {
     setInputPrompt('');
     setIsThinking(true);
 
-    const q = promptText.toLowerCase();
-
     try {
-      let matchedSkillId = 'skill_spatial_early_warning';
-      let skillArgs: any = {};
-
-      // 提取预警编号 (如 ALERT-202408-114)
-      const alertIdMatch = promptText.match(/ALERT-\d+(?:-\d+)?/i);
-      if (alertIdMatch) {
-        skillArgs.alertId = alertIdMatch[0].toUpperCase();
+      const result = await dispatchSkillPrompt(promptText, { 
+        chatHistory: newChat, 
+        currentView: activeGenerativeView 
+      });
+      if (result.generativeView) {
+        setActiveGenerativeView(result.generativeView);
       }
 
-      // 如果有对应的预警编号，精准绑定所属城市、区县、类别与等级
-      const matchedAlertItem = skillArgs.alertId 
-        ? ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === skillArgs.alertId.toUpperCase()) 
-        : null;
-      if (matchedAlertItem) {
-        skillArgs.city = matchedAlertItem.city;
-        skillArgs.district = matchedAlertItem.district;
-        skillArgs.category = matchedAlertItem.category;
-        skillArgs.severity = matchedAlertItem.level;
-        skillArgs.targetAlert = matchedAlertItem;
-      }
-
-      // 动态提取地理范围（河南省 18 地市）
-      if (!skillArgs.city) {
-        const cities = ['郑州市', '洛阳市', '开封市', '南阳市', '安阳市', '信阳市', '新乡市', '商丘市', '许昌市', '焦作市', '平顶山市', '周口市', '驻马店市', '漯河市', '濮阳市', '三门峡市', '鹤壁市', '济源市'];
-        for (const c of cities) {
-          const shortName = c.replace('市', '');
-          if (q.includes(c) || q.includes(shortName)) {
-            skillArgs.city = c;
-            break;
+      setTimeout(() => {
+        setChatHistory(prev => [
+          ...prev,
+          {
+            id: `agent-${Date.now()}`,
+            sender: 'agent',
+            text: result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
+            skillUsed: result.skillName,
+            timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
           }
-        }
-      }
-
-      // 动态提取区县
-      if (!skillArgs.district) {
-        const knownDistricts = [
-          '源汇区', '郾城区', '召陵区', '舞阳县', '临颍县',
-          '金水区', '二七区', '中原区', '管城回族区', '惠济区', '上街区', '巩义市', '荥阳市', '新密市', '新郑市', '登封市', '中牟县',
-          '汤阴县', '文峰区', '北关区', '殷都区', '龙安区', '安阳县', '滑县', '内黄县', '林州市',
-          '浉河区', '平桥区', '罗山县', '光山县', '新县', '商城县', '固始县', '潢川县', '淮滨县', '息县',
-          '涧西区', '西工区', '老城区', '瀍河回族区', '洛龙区', '孟津区', '偃师区', '新安县', '栾川县', '嵩县', '汝阳县', '宜阳县', '洛宁县', '伊川县',
-          '红旗区', '卫滨区', '凤泉区', '牧野区', '卫辉市', '辉县市', '新乡县', '获嘉县', '原阳县', '延津县', '封丘县', '长垣市',
-          '山阳区', '解放区', '中站区', '马村区', '沁阳市', '孟州市', '修武县', '博爱县', '武陟县', '温县',
-          '宛城区', '卧龙区', '邓州市', '南召县', '方城县', '西峡县', '镇平县', '内乡县', '淅川县', '社旗县', '唐河县', '新野县', '桐柏县',
-          '龙亭区', '鼓楼区', '禹王台区', '顺河回族区', '祥符区', '杞县', '通许县', '尉氏县', '兰考县',
-          '驿城区', '西平县', '上蔡县', '平舆县', '正阳县', '确山县', '泌阳县', '汝南县', '遂平县', '新蔡县',
-          '魏都区', '建安区', '禹州市', '长葛市', '鄢陵县', '襄城县',
-          '睢阳区', '梁园区', '永城市', '民权县', '宁陵县', '柘城县', '虞城县', '夏邑县', '睢县',
-          '新华区', '卫东区', '湛河区', '石龙区', '舞钢市', '汝州市', '宝丰县', '叶县', '鲁山县', '郏县',
-          '川汇区', '淮阳区', '项城市', '扶沟县', '西华县', '商水县', '沈丘县', '郸城县', '太康县', '鹿邑县',
-          '华龙区', '清丰县', '南乐县', '范县', '台前县', '濮阳县',
-          '湖滨区', '陕州区', '义马市', '灵宝市', '渑池县', '卢氏县',
-          '淇滨区', '山城区', '鹤山区', '浚县', '淇县',
-          '济源市'
-        ];
-        for (const d of knownDistricts) {
-          if (q.includes(d) || promptText.includes(d)) {
-            skillArgs.district = d;
-            break;
-          }
-        }
-      }
-
-      // 动态提取病媒大类
-      if (!skillArgs.category) {
-        if (q.includes('蝇')) skillArgs.category = '蝇';
-        else if (q.includes('蟑螂') || q.includes('蜚蠊') || q.includes('蟑')) skillArgs.category = '蟑螂';
-        else if (q.includes('鼠')) skillArgs.category = '鼠';
-        else if (q.includes('蜱')) skillArgs.category = '蜱';
-        else if (q.includes('恙螨') || q.includes('螨')) skillArgs.category = '恙螨';
-        else if (q.includes('蚊')) skillArgs.category = '蚊';
-      }
-
-      // 动态提取预警级别
-      if (!skillArgs.severity) {
-        if (q.includes('严重') || q.includes('一级') || q.includes('红警')) skillArgs.severity = 'red';
-        else if (q.includes('较重') || q.includes('二级') || q.includes('橙警')) skillArgs.severity = 'orange';
-        else if (q.includes('一般') || q.includes('三级') || q.includes('黄警')) skillArgs.severity = 'yellow';
-        else skillArgs.severity = 'all';
-      }
-
-      // 动态提取年份 (如 2022年, 2023, 2024 等)
-      const yearMatch = promptText.match(/(20\d{2})/);
-      if (yearMatch) {
-        skillArgs.year = parseInt(yearMatch[1], 10);
-      }
-
-      // 动态提取月份 (如 6月, 06月, 11月 等)
-      const monthMatch = promptText.match(/(\d{1,2})\s*月/);
-      if (monthMatch) {
-        skillArgs.month = parseInt(monthMatch[1], 10);
-      }
-
-      // 动态提取预测时间跨度 (月数)
-      if (q.includes('未来6个月') || q.includes('半年')) skillArgs.forecastMonths = 6;
-      else if (q.includes('未来3个月') || q.includes('一季度') || q.includes('3个月')) skillArgs.forecastMonths = 3;
-      else if (q.includes('未来2个月') || q.includes('2个月') || q.includes('两月')) skillArgs.forecastMonths = 2;
-      else if (q.includes('下月') || q.includes('未来1个月') || q.includes('1个月') || q.includes('下个月')) skillArgs.forecastMonths = 1;
-
-      // 动态提取特定物种
-      if (q.includes('淡色库蚊')) skillArgs.speciesName = '淡色库蚊';
-      else if (q.includes('白纹伊蚊')) skillArgs.speciesName = '白纹伊蚊';
-      else if (q.includes('致倦库蚊')) skillArgs.speciesName = '致倦库蚊';
-      else if (q.includes('中华按蚊')) skillArgs.speciesName = '中华按蚊';
-      else if (q.includes('德国小蠊')) skillArgs.speciesName = '德国小蠊';
-      else if (q.includes('褐家鼠')) skillArgs.speciesName = '褐家鼠';
-      else if (q.includes('长角血蜱')) skillArgs.speciesName = '长角血蜱';
-
-      if (q.includes('数据表') || q.includes('明细表') || q.includes('监测表') || q.includes('原始数据') || q.includes('表格') || q.includes('记录表') || q.includes('查询表') || q.includes('text2sql') || q.includes('sql') || q.includes('全部数据') || (q.includes('数据') && q.includes('表'))) {
-        matchedSkillId = 'skill_monitoring_data_table';
-        skillArgs.query = promptText;
-      } else if (q.includes('调度') || q.includes('派单') || q.includes('推送') || q.includes('清单')) {
-        matchedSkillId = 'skill_alert_push_dispatch';
-      } else if (q.includes('地图') || q.includes('热力') || (q.includes('预警') && !q.includes('模型') && !q.includes('gbdt')) || q.includes('超标') || q.includes('点位')) {
-        matchedSkillId = 'skill_spatial_early_warning';
-        if (q.includes('严重')) skillArgs.severity = 'red';
-      } else if (q.includes('gbdt') || q.includes('气象') || q.includes('暴发') || (q.includes('预测') && (q.includes('下月') || q.includes('峰值')))) {
-        matchedSkillId = 'skill_density_forecast';
-        if (!skillArgs.category) skillArgs.category = '蚊';
-      } else if (q.includes('动态') || q.includes('消长') || q.includes('arima') || q.includes('预测') || q.includes('曲线')) {
-        matchedSkillId = 'skill_population_dynamics';
-        if (!skillArgs.category) skillArgs.category = '蚊';
-      } else if (q.includes('优势种') || q.includes('构成比') || q.includes('聚类') || q.includes('比例')) {
-        matchedSkillId = 'skill_species_composition';
-        if (!skillArgs.category) skillArgs.category = '蚊';
-      } else if (q.includes('抗药性') || q.includes('药剂') || q.includes('菊酯') || q.includes('lc50') || q.includes('轮换')) {
-        matchedSkillId = 'skill_resistance_evaluation';
-        if (q.includes('氯氰菊酯')) skillArgs.pesticideName = '氯氰菊酯';
-      } else if (q.includes('病原') || q.includes('pcr') || q.includes('阳性') || q.includes('登革') || q.includes('乙脑') || q.includes('恙虫病') || q.includes('出血热')) {
-        matchedSkillId = 'skill_pathogen_risk';
-        if (q.includes('登革')) skillArgs.pathogenName = '登革病毒';
-        if (q.includes('乙脑')) skillArgs.pathogenName = '乙型脑炎病毒';
-        if (q.includes('恙虫病')) skillArgs.pathogenName = '恙虫病东方体';
-      } else if (q.includes('工单') || q.includes('处置') || q.includes('消杀') || q.includes('核销') || q.includes('闭环')) {
-        matchedSkillId = 'skill_disposal_workflow';
-      } else if (q.includes('报告') || q.includes('专项') || q.includes('导出') || q.includes('公报')) {
-        matchedSkillId = 'skill_auto_report_gen';
-      } else if (q.includes('传播风险') || q.includes('暴发风险') || q.includes('指数') || q.includes('仪表盘')) {
-        matchedSkillId = 'skill_transmission_risk';
-        if (q.includes('登革热')) skillArgs.diseaseName = '登革热 (Dengue Fever)';
-      } else if (q.includes('演化') || q.includes('基因') || q.includes('kdr') || q.includes('突变')) {
-        matchedSkillId = 'skill_resistance_evolution';
-      } else if (q.includes('移动端') || q.includes('拍照') || q.includes('录入') || q.includes('仿真') || q.includes('质控')) {
-        matchedSkillId = 'skill_mobile_assistant_api';
-      } else if (q.includes('创建新技能') || q.includes('新建技能') || q.includes('自定义技能') || q.includes('定制技能')) {
-        matchedSkillId = 'skill_meta_custom_builder';
-        skillArgs.skillName = '豫北蜱虫携带恙虫病东方体时空分布分析';
-        skillArgs.description = '用户对话动态创建：统计安阳与新乡蜱虫病原携带率及高危村镇热力点';
-      } else {
-        matchedSkillId = 'skill_vector_nlq';
-        skillArgs.query = promptText;
-      }
-
-      const skill = getSkillById(matchedSkillId);
-      if (skill) {
-        const result = await skill.execute(skillArgs);
-        setActiveGenerativeView(result);
-
-        setTimeout(() => {
-          setChatHistory(prev => [
-            ...prev,
-            {
-              id: `agent-${Date.now()}`,
-              sender: 'agent',
-              text: `已根据您的指令调用 **【${skill.name}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
-              skillUsed: skill.name,
-              timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-            }
-          ]);
-          setIsThinking(false);
-        }, 300);
-      }
+        ]);
+        setIsThinking(false);
+      }, 300);
     } catch (e: any) {
       console.error(e);
       setChatHistory(prev => [
@@ -442,92 +278,7 @@ export default function CdcAgentWorkspace() {
 
             {/* 动态渲染对应的生成式 UI 组件容器 */}
             <div className="flex-1 min-h-0 flex flex-col overflow-y-auto rounded-xl">
-              {activeGenerativeView?.type === 'SPATIAL_EARLY_WARNING_MAP' && (
-                <VectorMapComponent
-                  alerts={activeGenerativeView.alerts}
-                  selectedCity={activeGenerativeView.city}
-                />
-              )}
-
-              {activeGenerativeView?.type === 'POPULATION_DENSITY_TREND' && (
-                <DensityTrendChart data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'SPECIES_COMPOSITION' && (
-                <SpeciesCompositionChart data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'RESISTANCE_EVALUATION' && (
-                <ResistanceMatrixChart data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'PATHOGEN_RISK_ANALYSIS' && (
-                <PathogenRiskCard data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'ALERT_PUSH_DISPATCH' && (
-                <EarlyWarningPanel data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'DISPOSAL_WORKFLOW_CARD' && (
-                <DisposalWorkflowCard data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'DENSITY_GBDT_FORECAST' && (
-                <DensityTrendChart data={activeGenerativeView.trendData} />
-              )}
-
-              {activeGenerativeView?.type === 'TRANSMISSION_RISK_GAUGE' && (
-                <TransmissionRiskGauge data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'RESISTANCE_EVOLUTION_CHART' && (
-                <ResistanceEvolutionChart data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'AUTO_GENERATED_REPORT' && (
-                <AutoReportViewer data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'MOBILE_ASSISTANT_SIMULATOR' && (
-                <MobileSimulationModal />
-              )}
-
-              {activeGenerativeView?.type === 'CUSTOM_SKILL_CREATED' && (
-                <CustomSkillBuilderModal data={activeGenerativeView} />
-              )}
-
-              {activeGenerativeView?.type === 'DATA_TABLE_VIEW' && (
-                <DataTableComponent
-                  title={activeGenerativeView.title}
-                  query={activeGenerativeView.query}
-                  sql={activeGenerativeView.sql}
-                  executionTimeMs={activeGenerativeView.executionTimeMs}
-                  explanation={activeGenerativeView.explanation}
-                  data={activeGenerativeView.data}
-                />
-              )}
-
-              {activeGenerativeView?.type === 'NLQ_KNOWLEDGE_ANSWER' && (
-                <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-6 border border-teal-200 dark:border-teal-500/30 shadow-sm dark:shadow-xl space-y-4 transition-colors">
-                  <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-bold text-sm">
-                    <Bot className="w-5 h-5" />
-                    <span>CDC 专家知识库检索结果</span>
-                  </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{activeGenerativeView.query}</h3>
-                  <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
-                    <MarkdownRenderer content={activeGenerativeView.answer} />
-                  </div>
-                  {activeGenerativeView.references && (
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">引用标准与指南:</span>
-                      {activeGenerativeView.references.map((ref: string, i: number) => (
-                        <div key={i} className="text-sky-600 dark:text-sky-400">📖 {ref}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <GenerativeComponentRenderer view={activeGenerativeView} isCompact={false} />
             </div>
           </div>
 
@@ -649,11 +400,11 @@ export default function CdcAgentWorkspace() {
         }}
       />
 
-      {/* 嵌入式浮窗组件 (默认位于左下角，默认隐藏) */}
+      {/* 嵌入式浮窗组件 (默认位于左下角，默认隐藏，独立运行模式) */}
       <EmbeddedWidget 
         isVisible={showFloatingCopilot}
         onClose={() => setShowFloatingCopilot(false)}
-        onSendMessage={handleExecutePrompt} 
+        syncWorkspace={false}
       />
 
       {/* 全省 14 起活跃预警详情浮窗 */}

@@ -78,7 +78,14 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       });
       let alerts = (spatialResult.alerts || []).filter((a: any) => {
         if (args.city && a.city !== args.city) return false;
-        if (args.district && a.district !== args.district) return false;
+        if (args.district) {
+          const targetDistricts = args.district.replace('、', ',').replace('和', ',').split(',');
+          const matches = targetDistricts.some((td: string) => {
+            const cleanTd = td.trim().replace('回族区', '').replace('区', '').replace('县', '').replace('市', '');
+            return a.district.includes(cleanTd) || cleanTd.includes(a.district.replace('区', ''));
+          });
+          if (!matches) return false;
+        }
         return true;
       });
 
@@ -92,10 +99,21 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       if (alerts.length === 0 && (args.city || args.district)) {
         alerts = ACTIVE_ALERTS_LIST.filter(a => {
           if (args.city && a.city !== args.city) return false;
-          if (args.district && a.district !== args.district) return false;
+          if (args.district) {
+            const targetDistricts = args.district.replace('、', ',').replace('和', ',').split(',');
+            const matches = targetDistricts.some((td: string) => {
+              const cleanTd = td.trim().replace('回族区', '').replace('区', '').replace('县', '').replace('市', '');
+              return a.district.includes(cleanTd) || cleanTd.includes(a.district.replace('区', ''));
+            });
+            if (!matches) return false;
+          }
           if (args.category && a.category !== args.category) return false;
           return true;
         });
+      }
+
+      if (alerts.length === 0) {
+        alerts = spatialResult.alerts || [];
       }
 
       const locations = await provider.getLocations(args.city);
@@ -103,9 +121,11 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         type: 'SPATIAL_EARLY_WARNING_MAP',
         city: args.city || '河南省全域',
         district: args.district,
+        category: args.category || '蚊',
         severity: args.severity || 'all',
         alerts: alerts,
         spatialGrid: spatialResult.grid || [],
+        monitoringPoints: spatialResult.monitoringPoints || [],
         locations: locations.slice(0, 150)
       };
     }
