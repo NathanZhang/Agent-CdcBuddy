@@ -24,6 +24,7 @@ import { AutoReportViewer } from '@/components/ag-ui/AutoReportViewer';
 import { MobileSimulationModal } from '@/components/ag-ui/MobileSimulationModal';
 import { CustomSkillBuilderModal } from '@/components/ag-ui/CustomSkillBuilderModal';
 import { DataTableComponent } from '@/components/ag-ui/DataTableComponent';
+import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 
 import { 
   Sparkles, 
@@ -182,25 +183,56 @@ export default function CdcAgentWorkspace() {
       let matchedSkillId = 'skill_spatial_early_warning';
       let skillArgs: any = {};
 
-      if (q.includes('地图') || q.includes('热力') || q.includes('预警') || q.includes('超标') || q.includes('点位')) {
+      // 动态提取地理范围（河南省 18 地市）
+      const cities = ['郑州市', '洛阳市', '开封市', '南阳市', '安阳市', '信阳市', '新乡市', '商丘市', '许昌市', '焦作市', '平顶山市', '周口市', '驻马店市', '漯河市', '濮阳市', '三门峡市', '鹤壁市', '济源市'];
+      for (const c of cities) {
+        const shortName = c.replace('市', '');
+        if (q.includes(c) || q.includes(shortName)) {
+          skillArgs.city = c;
+          break;
+        }
+      }
+
+      // 动态提取病媒大类
+      if (q.includes('蝇')) skillArgs.category = '蝇';
+      else if (q.includes('蟑螂') || q.includes('蜚蠊')) skillArgs.category = '蟑螂';
+      else if (q.includes('鼠')) skillArgs.category = '鼠';
+      else if (q.includes('蜱')) skillArgs.category = '蜱';
+      else if (q.includes('恙螨') || q.includes('螨')) skillArgs.category = '恙螨';
+      else if (q.includes('蚊')) skillArgs.category = '蚊';
+
+      // 动态提取预测时间跨度 (月数)
+      if (q.includes('未来6个月') || q.includes('半年')) skillArgs.forecastMonths = 6;
+      else if (q.includes('未来3个月') || q.includes('一季度') || q.includes('3个月')) skillArgs.forecastMonths = 3;
+      else if (q.includes('未来2个月') || q.includes('2个月') || q.includes('两月')) skillArgs.forecastMonths = 2;
+      else if (q.includes('下月') || q.includes('未来1个月') || q.includes('1个月') || q.includes('下个月')) skillArgs.forecastMonths = 1;
+
+      // 动态提取特定物种
+      if (q.includes('淡色库蚊')) skillArgs.speciesName = '淡色库蚊';
+      else if (q.includes('白纹伊蚊')) skillArgs.speciesName = '白纹伊蚊';
+      else if (q.includes('致倦库蚊')) skillArgs.speciesName = '致倦库蚊';
+      else if (q.includes('中华按蚊')) skillArgs.speciesName = '中华按蚊';
+      else if (q.includes('德国小蠊')) skillArgs.speciesName = '德国小蠊';
+      else if (q.includes('褐家鼠')) skillArgs.speciesName = '褐家鼠';
+      else if (q.includes('长角血蜱')) skillArgs.speciesName = '长角血蜱';
+
+      if (q.includes('调度') || q.includes('派单') || q.includes('推送') || q.includes('清单')) {
+        matchedSkillId = 'skill_alert_push_dispatch';
+        skillArgs.severity = q.includes('严重') ? 'red' : 'all';
+      } else if (q.includes('地图') || q.includes('热力') || (q.includes('预警') && !q.includes('模型') && !q.includes('gbdt')) || q.includes('超标') || q.includes('点位')) {
         matchedSkillId = 'skill_spatial_early_warning';
-        if (q.includes('郑州')) skillArgs.city = '郑州市';
-        if (q.includes('安阳')) skillArgs.city = '安阳市';
-        if (q.includes('信阳')) skillArgs.city = '信阳市';
-      } else if (q.includes('动态') || q.includes('消长') || q.includes('arima') || q.includes('预测未来3个月') || q.includes('曲线')) {
+        if (q.includes('严重')) skillArgs.severity = 'red';
+      } else if (q.includes('gbdt') || q.includes('气象') || q.includes('暴发') || (q.includes('预测') && (q.includes('下月') || q.includes('峰值')))) {
+        matchedSkillId = 'skill_density_forecast';
+        if (!skillArgs.category) skillArgs.category = '蚊';
+      } else if (q.includes('动态') || q.includes('消长') || q.includes('arima') || q.includes('预测') || q.includes('曲线')) {
         matchedSkillId = 'skill_population_dynamics';
-        skillArgs.category = q.includes('蝇') ? '蝇' : (q.includes('蟑螂') ? '蟑螂' : (q.includes('鼠') ? '鼠' : '蚊'));
-        if (q.includes('淡色库蚊')) skillArgs.speciesName = '淡色库蚊';
-        if (q.includes('白纹伊蚊')) skillArgs.speciesName = '白纹伊蚊';
-        if (q.includes('郑州')) skillArgs.city = '郑州市';
+        if (!skillArgs.category) skillArgs.category = '蚊';
       } else if (q.includes('优势种') || q.includes('构成比') || q.includes('聚类') || q.includes('比例')) {
         matchedSkillId = 'skill_species_composition';
-        skillArgs.category = q.includes('鼠') ? '鼠' : (q.includes('蜱') ? '蜱' : '蚊');
-        if (q.includes('郑州')) skillArgs.city = '郑州市';
+        if (!skillArgs.category) skillArgs.category = '蚊';
       } else if (q.includes('抗药性') || q.includes('药剂') || q.includes('菊酯') || q.includes('lc50') || q.includes('轮换')) {
         matchedSkillId = 'skill_resistance_evaluation';
-        if (q.includes('淡色库蚊')) skillArgs.speciesName = '淡色库蚊';
-        if (q.includes('德国小蠊')) skillArgs.speciesName = '德国小蠊';
         if (q.includes('氯氰菊酯')) skillArgs.pesticideName = '氯氰菊酯';
       } else if (q.includes('病原') || q.includes('pcr') || q.includes('阳性') || q.includes('登革') || q.includes('乙脑') || q.includes('恙虫病') || q.includes('出血热')) {
         matchedSkillId = 'skill_pathogen_risk';
@@ -211,8 +243,6 @@ export default function CdcAgentWorkspace() {
         matchedSkillId = 'skill_disposal_workflow';
       } else if (q.includes('报告') || q.includes('专项') || q.includes('导出') || q.includes('公报')) {
         matchedSkillId = 'skill_auto_report_gen';
-        if (q.includes('郑州')) skillArgs.city = '郑州市';
-        if (q.includes('信阳')) skillArgs.city = '信阳市';
       } else if (q.includes('传播风险') || q.includes('暴发风险') || q.includes('指数') || q.includes('仪表盘')) {
         matchedSkillId = 'skill_transmission_risk';
         if (q.includes('登革热')) skillArgs.diseaseName = '登革热 (Dengue Fever)';
@@ -246,10 +276,19 @@ export default function CdcAgentWorkspace() {
             }
           ]);
           setIsThinking(false);
-        }, 500);
+        }, 300);
       }
     } catch (e: any) {
       console.error(e);
+      setChatHistory(prev => [
+        ...prev,
+        {
+          id: `agent-err-${Date.now()}`,
+          sender: 'agent',
+          text: `⚠️ 执行失败：${e.message || '技能执行异常'}，请重试或检查参数。`,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
       setIsThinking(false);
     }
   };
@@ -372,8 +411,8 @@ export default function CdcAgentWorkspace() {
                   <span>CDC 专家知识库检索结果</span>
                 </div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{activeGenerativeView.query}</h3>
-                <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
-                  {activeGenerativeView.answer}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
+                  <MarkdownRenderer content={activeGenerativeView.answer} />
                 </div>
                 {activeGenerativeView.references && (
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
@@ -421,13 +460,13 @@ export default function CdcAgentWorkspace() {
 
                   <div className={`max-w-[85%] space-y-1.5 ${m.sender === 'user' ? 'items-end' : 'items-start'}`}>
                     <div
-                      className={`p-3.5 rounded-xl leading-relaxed whitespace-pre-line ${
+                      className={`p-3.5 rounded-xl leading-relaxed ${
                         m.sender === 'user'
                           ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
                           : 'bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-xs'
                       }`}
                     >
-                      {m.text}
+                      <MarkdownRenderer content={m.text} isUser={m.sender === 'user'} />
                     </div>
 
                     <div className="flex items-center gap-2 text-[10px] text-slate-500 px-1">

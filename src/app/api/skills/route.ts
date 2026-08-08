@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { STANDARD_SKILLS, executeSkillServer } from '@/lib/skills/registry';
-import { getVectorDataProvider } from '@/lib/db/sqlite-provider';
+import { STANDARD_SKILLS } from '@/lib/skills/registry';
+import { executeSkillServer } from '@/lib/skills/server-executor';
 
 export async function GET() {
   return NextResponse.json({
@@ -26,8 +26,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { skillId, args } = body;
 
-    const provider = getVectorDataProvider();
-    const result = await executeSkillServer(skillId, args || {}, provider);
+    const result = await executeSkillServer(skillId, args || {});
 
     return NextResponse.json({
       code: 200,

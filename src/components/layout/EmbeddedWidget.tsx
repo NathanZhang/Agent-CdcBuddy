@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Bot, X, Send, Shield, Maximize2, Minimize2 } from 'lucide-react';
 
+import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
+
 interface EmbeddedWidgetProps {
   initialPrompt?: string;
   onSendMessage?: (msg: string) => void;
@@ -17,7 +19,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([
     {
       role: 'assistant',
-      text: '您好！我是 CdcBuddy 疾控病媒监测智能助手。您可以向我咨询最新的全省病媒密度趋势、抗药性评估、病原阳性率预警或生成专项报告。'
+      text: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。您可以向我咨询最新的全省病媒密度趋势、抗药性评估、病原阳性率预警或生成专项报告。'
     }
   ]);
 
@@ -34,7 +36,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         ...prev,
         {
           role: 'assistant',
-          text: `【CdcBuddy 智能体】已为您检索分析 "${userText}"。主工作区已同步更新对应的 AG-UI 态势地图与专业分析图表。`
+          text: `**【CdcBuddy 智能体】**已为您检索分析 "${userText}"。主工作区已同步更新对应的 AG-UI 态势地图与专业分析图表。`
         }
       ]);
     }, 600);
@@ -96,7 +98,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                       : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
                   }`}
                 >
-                  {m.text}
+                  <MarkdownRenderer content={m.text} isUser={m.role === 'user'} />
                 </div>
               </div>
             ))}

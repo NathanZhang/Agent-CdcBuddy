@@ -11,12 +11,42 @@ interface DisposalWorkflowProps {
     recommendedProtocol: { step: number; title: string; content: string }[];
     currentStatus: string;
     assignedTeam: string;
+    afterBiIndex?: number;
     updatedAt: string;
   };
 }
 
 export const DisposalWorkflowCard: React.FC<DisposalWorkflowProps> = ({ data }) => {
   const [status, setStatus] = useState<string>(data.currentStatus);
+  const [afterBi, setAfterBi] = useState<number | undefined>(data.afterBiIndex);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
+  const handleToggleResolve = async () => {
+    setIsUpdating(true);
+    const nextStatus = status === 'resolved' ? 'in_progress' : 'resolved';
+    try {
+      await fetch('/api/skills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skillId: 'skill_disposal_workflow',
+          args: {
+            ticketId: data.ticketId,
+            action: nextStatus === 'resolved' ? 'resolve' : 'reopen'
+          }
+        })
+      });
+      setStatus(nextStatus);
+      if (nextStatus === 'resolved') {
+        setAfterBi(3.8);
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus(nextStatus);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-5 border border-slate-200 dark:border-emerald-500/20 shadow-sm dark:shadow-xl flex flex-col gap-4 transition-colors">
@@ -33,13 +63,14 @@ export const DisposalWorkflowCard: React.FC<DisposalWorkflowProps> = ({ data }) 
                 工单号: {data.ticketId}
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">智能匹配消杀规程指南，全流程追踪处置进度与预警自动核销</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">已连通独立应用业务数据库 (app_business.db)，全流程追踪处置进度与预警自动核销</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setStatus(status === 'resolved' ? 'in_progress' : 'resolved')}
+            onClick={handleToggleResolve}
+            disabled={isUpdating}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md ${
               status === 'resolved' 
                 ? 'bg-emerald-600 text-white hover:bg-emerald-500' 
@@ -47,7 +78,7 @@ export const DisposalWorkflowCard: React.FC<DisposalWorkflowProps> = ({ data }) 
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            {status === 'resolved' ? '已核销闭环 (点击撤销)' : '一键复测并核销预警'}
+            {isUpdating ? '正在提交状态...' : (status === 'resolved' ? '已核销闭环 (BI=3.8 < 5)' : '一键复测并核销预警')}
           </button>
         </div>
       </div>

@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "./.venv/bin/python tests/automated_test_suite.py"
   },
   "dependencies": {
     "@copilotkit/react-core": "^1.4.0",

@@ -116,3 +116,109 @@ export interface VectorSummaryStats {
   latestMonitoringDate: string;
   topSpecies: { category: string; species_name: string; count: number }[];
 }
+
+// ---------------- 独立业务数据库应用实体类型 ----------------
+export type DisposalStatus = 'PENDING' | 'IN_PROGRESS' | 'EVALUATING' | 'RESOLVED';
+
+export interface BizDisposalTicket {
+  ticket_id: string;
+  alert_id?: string;
+  target_city: string;
+  target_district: string;
+  target_street?: string;
+  vector_category: string;
+  species_name: string;
+  severity_level: 'yellow' | 'orange' | 'red';
+  recommended_protocol: { step: number; title: string; content: string }[];
+  assigned_team: string;
+  contact_phone?: string;
+  disposal_status: DisposalStatus;
+  before_density?: number;
+  after_bi_index?: number;
+  disposal_notes?: string;
+  created_at: string;
+  updated_at: string;
+  resolved_at?: string;
+}
+
+export interface BizEarlyWarningEvent {
+  event_id: string;
+  title: string;
+  level: 'yellow' | 'orange' | 'red';
+  category: string;
+  city: string;
+  district: string;
+  street?: string;
+  latitude: number;
+  longitude: number;
+  trigger_reason: string;
+  current_density: number;
+  threshold: number;
+  affected_population?: number;
+  recommended_action?: string;
+  push_channels?: string;
+  push_status?: string;
+  created_at: string;
+}
+
+export interface BizMobileSubmission {
+  submission_id: string;
+  user_id: string;
+  user_name: string;
+  city: string;
+  district: string;
+  street?: string;
+  latitude?: number;
+  longitude?: number;
+  image_url_base64?: string;
+  recognized_species?: string;
+  ai_confidence?: number;
+  category: string;
+  species_name: string;
+  capture_count: number;
+  weather_temp?: number;
+  weather_humidity?: number;
+  habitat_type?: string;
+  method_name?: string;
+  audit_status: 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  auditor_name?: string;
+  audit_comment?: string;
+  submitted_at: string;
+  audited_at?: string;
+}
+
+export interface BizKbStandard {
+  doc_id: string;
+  standard_no: string;
+  title: string;
+  category: string;
+  chapter: string;
+  content: string;
+  keywords: string;
+  reference_url?: string;
+}
+
+export interface BizGeneratedReport {
+  report_id: string;
+  title: string;
+  author: string;
+  city?: string;
+  district?: string;
+  report_type: string;
+  summary: string;
+  content_markdown: string;
+  metadata_json?: string;
+  created_at: string;
+}
+
+export interface BizCustomSkill {
+  skill_id: string;
+  name: string;
+  description: string;
+  category: string;
+  sql_query: string;
+  chart_type: string;
+  recommended_prompts: string;
+  created_by: string;
+  created_at: string;
+}

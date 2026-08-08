@@ -27,8 +27,16 @@ yarn-error.log*
 .env*.local
 .env
 
-# vercel
-.vercel
+# python virtual env
+.venv/
+__pycache__/
+*.pyc
+
+# databases & logs
+*.db
+*.db-journal
+logs/
+.server.pid
 
 # typescript
 *.tsbuildinfo
