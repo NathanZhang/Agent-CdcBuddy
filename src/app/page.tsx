@@ -105,7 +105,40 @@ export default function CdcAgentWorkspace() {
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [customSkills, setCustomSkills] = useState<any[]>([]);
   const chatMessagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 获取并同步自定义技能列表
+  const fetchCustomSkills = async () => {
+    try {
+      const res = await fetch('/api/skills');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.customSkills && Array.isArray(json.customSkills)) {
+          setCustomSkills(json.customSkills);
+        }
+      }
+    } catch (err) {
+      console.warn('获取自定义技能失败:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomSkills();
+  }, []);
+
+  const handleDeleteCustomSkill = async (skillId: string) => {
+    try {
+      const res = await fetch(`/api/skills?skillId=${encodeURIComponent(skillId)}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        setCustomSkills(prev => prev.filter(s => s.id !== skillId));
+      }
+    } catch (err) {
+      console.error('删除自定义技能失败:', err);
+    }
+  };
 
   const [chatHistory, setChatHistory] = useState<{
     id: string;
@@ -183,6 +216,13 @@ export default function CdcAgentWorkspace() {
       });
       if (result.generativeView) {
         setActiveGenerativeView(result.generativeView);
+        // 若创建了新技能，立即刷新自定义技能列表与技能总数
+        if (
+          result.generativeView.type === 'CUSTOM_SKILL_CREATED' ||
+          result.skillId === 'skill_meta_custom_builder'
+        ) {
+          fetchCustomSkills();
+        }
       }
 
       setTimeout(() => {
@@ -213,10 +253,13 @@ export default function CdcAgentWorkspace() {
     }
   };
 
+  const totalSkillsCount = STANDARD_SKILLS.length + customSkills.length;
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* 顶部导航与态势指示条 */}
       <Navbar
+        skillsCount={totalSkillsCount}
         onOpenSkills={() => setIsSkillsOpen(true)}
         onSelectPrompt={handleExecutePrompt}
         showEmbeddedWidget={showFloatingCopilot}
@@ -393,6 +436,8 @@ export default function CdcAgentWorkspace() {
       <SkillsDrawer
         isOpen={isSkillsOpen}
         onClose={() => setIsSkillsOpen(false)}
+        customSkills={customSkills}
+        onDeleteCustomSkill={handleDeleteCustomSkill}
         onRunSkill={(skill, prompt) => handleExecutePrompt(prompt || skill.recommendedPrompts[0])}
         onCreateCustomSkill={() => {
           setIsSkillsOpen(false);

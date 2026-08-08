@@ -11,13 +11,15 @@ interface NavbarProps {
   onSelectPrompt: (prompt: string) => void;
   showEmbeddedWidget?: boolean;
   onToggleEmbeddedWidget?: () => void;
+  skillsCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ 
   onOpenSkills, 
   onSelectPrompt,
   showEmbeddedWidget = false,
-  onToggleEmbeddedWidget 
+  onToggleEmbeddedWidget,
+  skillsCount
 }) => {
   const { activeRole, switchRole } = useRbac();
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -45,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            河南省疾病预防控制中心 · 消毒与媒介生物控制所 · 智能研判中枢
+            河南省疾病预防控制中心 · 消毒与媒介生物控制所
           </p>
         </div>
       </div>
@@ -80,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           className="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-sky-300 text-xs font-semibold flex items-center gap-1.5 border border-sky-300 dark:border-sky-500/30 shadow-sm transition-all hover:border-sky-400"
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>Skills 技能集市 (14)</span>
+          <span>Skills 技能集市 ({skillsCount ?? 15})</span>
         </button>
 
         {/* 悬浮 Copilot 助手显隐开关 - 仅图标+Hover提示 */}

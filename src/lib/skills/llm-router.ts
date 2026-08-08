@@ -41,7 +41,10 @@ export function getSiliconFlowSkillTools(userRole?: UserRole) {
 const CDC_ROUTER_SYSTEM_PROMPT = `你是由河南省疾病预防控制中心构建的 AI 协同研判中枢意图调度器 (CdcBuddy Router)。
 你的职责是精准理解用户的自然语言需求，结合多轮对话上下文，从提供的工具集 (Tools) 中挑选最契合的病媒生物研判技能并抽取出结构化参数。
 
-### 核心分流准则（非常重要）：
+### 核心分流准则（按优先级从高到低）：
+0. **【顶级优先】创建自定义分析技能 / 对话式新技能构建** -> 必须调用 \`skill_meta_custom_builder\`：
+   - 凡是用户明确提出“创建新技能”、“新建技能”、“定义新技能”、“帮我创建一个新技能”、“添加自定义技能”、“定制技能”等意图，**无论后文描述了什么具体病媒对象（如蜱虫、恙虫病、白纹伊蚊、抗药性等），一律最高优先级调用 \`skill_meta_custom_builder\`**！绝对不能直接调用被提及的业务技能。
+   - 提取参数：\`skillName\` (如"安阳市蜱虫携带恙虫病东方体时空分布分析"), \`description\` (用户指定的具体需求描述), \`chartType\` ("map" | "trend" | "bar" | "table")。
 1. **数据明细与历史台账查询** -> 调用 \`skill_monitoring_data_table\` (Text2SQL)：
    - 凡是用户希望“显示/查看/查询/调出/列出”具体的病媒监测数据、明细记录、原始表格、历史台账、捕获统计（如“显示郑州市2024年8月病媒监测数据”、“查看金水区近两年蚊幼数据”），一律调用此技能。
    - 提取参数如：\`city\` (地级市名称，如"郑州市"), \`district\` (区县名称), \`year\` (数字年份如 2024), \`month\` (数字月份 1-12), \`category\` (病媒种类: "蚊","蝇","蟑螂","鼠","蜱","恙螨"), \`query\` (用户原始查询)。
@@ -58,7 +61,6 @@ const CDC_ROUTER_SYSTEM_PROMPT = `你是由河南省疾病预防控制中心构�
 12. **国家标准、GB/T 规范、操作指南理论问答** -> 调用 \`skill_vector_nlq\`。
 13. **专题报告生成与导出** -> 调用 \`skill_auto_report_gen\`。
 14. **移动端采集仿真与质控** -> 调用 \`skill_mobile_assistant_api\`。
-15. **创建自定义分析技能** -> 调用 \`skill_meta_custom_builder\`。
 
 ### 参数提取规范：
 - 城市地名需规范化为标准地级市名（如输入"郑州"应提取为"郑州市"，"洛阳"应为"洛阳市"）。
@@ -74,6 +76,34 @@ export async function routeSkillWithLLM(
   chatHistory: RouterChatHistoryItem[] = [],
   userRole?: UserRole
 ): Promise<LLMRouteResult> {
+  const trimmed = promptText.trim();
+  const lower = trimmed.toLowerCase();
+
+  // 显式前置意图匹配：创建自定义技能最高优先级拦截
+  if (
+    lower.includes('创建新技能') || lower.includes('新建技能') || 
+    lower.includes('自定义技能') || lower.includes('定制技能') ||
+    lower.includes('帮我创建') || lower.includes('创建技能')
+  ) {
+    const rawDesc = trimmed.replace(/^(帮我)?(创建|新建|定义|定制)(一个)?(新)?技能[:：]?\s*/i, '');
+    const cleanDesc = rawDesc.trim() || trimmed;
+    let skillTitle = '自定义病媒监测分析技能';
+    if (cleanDesc.includes('安阳') && cleanDesc.includes('蜱')) {
+      skillTitle = '豫北蜱虫携带恙虫病东方体时空分布分析';
+    } else if (cleanDesc.length > 0) {
+      skillTitle = cleanDesc.slice(0, 20);
+    }
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_meta_custom_builder',
+      skillName: '对话式元技能动态扩展 (Meta Skill Builder)',
+      args: {
+        skillName: skillTitle,
+        description: cleanDesc,
+        chartType: cleanDesc.includes('地图') || cleanDesc.includes('村镇') ? 'map' : 'bar'
+      }
+    };
+  }
   const apiKey = process.env.SILICONFLOW_API_KEY || 'sk-wortgmadalczipcaypwssmrsxyvwhyidlzeynukcroiywxfe';
   const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
   const modelName = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';

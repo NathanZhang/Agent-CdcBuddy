@@ -40,7 +40,7 @@ export interface VectorSkill {
   badgeColor?: string;
   recommendedPrompts: string[];
   requiredRoles: UserRole[];
-  parametersSchema: SkillParameterSchema;
+  parametersSchema?: SkillParameterSchema;
   execute: (args: Record<string, any>, context?: SkillContext) => Promise<any>;
 }
 

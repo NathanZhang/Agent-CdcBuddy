@@ -173,10 +173,22 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   const isDataQueryVerb = q.includes('显示') || q.includes('查询') || q.includes('查看') || q.includes('调出') || q.includes('列出') || q.includes('统计');
   const isDataNoun = q.includes('数据') || q.includes('记录') || q.includes('台账') || q.includes('监测') || q.includes('明细');
 
-  if (q.includes('创建新技能') || q.includes('新建技能') || q.includes('自定义技能') || q.includes('定制技能')) {
+  if (
+    q.includes('创建新技能') || q.includes('新建技能') || 
+    q.includes('自定义技能') || q.includes('定制技能') ||
+    q.includes('帮我创建') || q.includes('创建技能')
+  ) {
     matchedSkillId = 'skill_meta_custom_builder';
-    skillArgs.skillName = '豫北蜱虫携带恙虫病东方体时空分布分析';
-    skillArgs.description = '用户对话动态创建：统计安阳与新乡蜱虫病原携带率及高危村镇热力点';
+    const rawDesc = promptText.replace(/^(帮我)?(创建|新建|定义|定制)(一个)?(新)?技能[:：]?\s*/i, '').trim();
+    skillArgs.description = rawDesc || '用户对话动态创建的病媒分析技能';
+    if (rawDesc.includes('安阳') && rawDesc.includes('蜱')) {
+      skillArgs.skillName = '豫北蜱虫携带恙虫病东方体时空分布分析';
+    } else if (rawDesc.length > 0) {
+      skillArgs.skillName = rawDesc.slice(0, 20);
+    } else {
+      skillArgs.skillName = '用户定制病媒分析技能';
+    }
+    skillArgs.chartType = rawDesc.includes('地图') || rawDesc.includes('村镇') ? 'map' : 'bar';
   } else if (
     q.includes('工单') || q.includes('处置') || q.includes('消杀') || 
     q.includes('派工') || q.includes('核销') || q.includes('闭环') ||

@@ -293,6 +293,17 @@ export class AppBusinessProvider {
     );
   }
 
+  async deleteCustomSkill(skillId: string): Promise<boolean> {
+    const db = this.getDb();
+    const res = db.prepare('DELETE FROM biz_custom_skills WHERE skill_id = ?').run(skillId);
+    return res.changes > 0;
+  }
+
+  async getCustomSkillById(skillId: string): Promise<BizCustomSkill | undefined> {
+    const db = this.getDb();
+    return db.prepare('SELECT * FROM biz_custom_skills WHERE skill_id = ?').get(skillId) as BizCustomSkill | undefined;
+  }
+
   async getAllCustomSkills(): Promise<BizCustomSkill[]> {
     const db = this.getDb();
     return db.prepare('SELECT * FROM biz_custom_skills ORDER BY created_at DESC').all() as BizCustomSkill[];
