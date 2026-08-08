@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bot, X, Send, Shield, Maximize2, Minimize2 } from 'lucide-react';
 
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
@@ -20,12 +20,21 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputVal, setInputVal] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([
     {
       role: 'assistant',
       text: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。您可以向我咨询最新的全省病媒密度趋势、抗药性评估、病原阳性率预警或生成专项报告。'
     }
   ]);
+
+  // 当有新消息或展开弹窗时，自动平滑滚动到底部
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
 
   // 如果处于隐藏状态，则不渲染在界面上
   if (!isVisible) {
@@ -122,6 +131,8 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                 </div>
               </div>
             ))}
+            {/* 自动滚动锚点 */}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* 底部输入框 */}

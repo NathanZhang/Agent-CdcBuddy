@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCopilotAction, useCopilotReadable } from '@copilotkit/react-core';
 import { Navbar } from '@/components/layout/Navbar';
 import { RecommendationPrompts } from '@/components/layout/RecommendationPrompts';
@@ -116,6 +116,8 @@ export default function CdcAgentWorkspace() {
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const chatMessagesEndRef = useRef<HTMLDivElement>(null);
+
   const [chatHistory, setChatHistory] = useState<{
     id: string;
     sender: 'user' | 'agent';
@@ -130,6 +132,11 @@ export default function CdcAgentWorkspace() {
       timestamp: '11:30'
     }
   ]);
+
+  // 监听新对话消息或智能体思考状态，自动平滑滚动到最新内容
+  useEffect(() => {
+    chatMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory, isThinking]);
 
   // 同步用户上下文状态至 CopilotKit
   useCopilotReadable({
@@ -565,6 +572,9 @@ export default function CdcAgentWorkspace() {
                   <span>CdcBuddy 正在检索时空数据库并计算模型指标...</span>
                 </div>
               )}
+
+              {/* 自动滚动锚点 */}
+              <div ref={chatMessagesEndRef} />
             </div>
 
             {/* 底部输入框 */}
