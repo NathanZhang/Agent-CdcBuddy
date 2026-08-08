@@ -47,7 +47,8 @@ export const PRESET_ROLES: Record<UserRole, UserProfile> = {
       'skill_transmission_risk',
       'skill_vector_nlq',
       'skill_auto_report_gen',
-      'skill_meta_custom_builder'
+      'skill_meta_custom_builder',
+      'skill_monitoring_data_table'
     ]
   },
   DISTRICT_SURVEILLANCE: {
@@ -66,7 +67,8 @@ export const PRESET_ROLES: Record<UserRole, UserProfile> = {
       'skill_alert_push_dispatch',
       'skill_disposal_workflow',
       'skill_mobile_assistant_api',
-      'skill_vector_nlq'
+      'skill_vector_nlq',
+      'skill_monitoring_data_table'
     ]
   },
   PUBLIC_VIEWER: {
@@ -79,7 +81,8 @@ export const PRESET_ROLES: Record<UserRole, UserProfile> = {
     avatar: '👤',
     allowedSkillIds: [
       'skill_spatial_early_warning',
-      'skill_vector_nlq'
+      'skill_vector_nlq',
+      'skill_monitoring_data_table'
     ]
   }
 };

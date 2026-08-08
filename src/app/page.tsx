@@ -271,6 +271,18 @@ export default function CdcAgentWorkspace() {
         else skillArgs.severity = 'all';
       }
 
+      // 动态提取年份 (如 2022年, 2023, 2024 等)
+      const yearMatch = promptText.match(/(20\d{2})/);
+      if (yearMatch) {
+        skillArgs.year = parseInt(yearMatch[1], 10);
+      }
+
+      // 动态提取月份 (如 6月, 06月, 11月 等)
+      const monthMatch = promptText.match(/(\d{1,2})\s*月/);
+      if (monthMatch) {
+        skillArgs.month = parseInt(monthMatch[1], 10);
+      }
+
       // 动态提取预测时间跨度 (月数)
       if (q.includes('未来6个月') || q.includes('半年')) skillArgs.forecastMonths = 6;
       else if (q.includes('未来3个月') || q.includes('一季度') || q.includes('3个月')) skillArgs.forecastMonths = 3;
@@ -286,7 +298,10 @@ export default function CdcAgentWorkspace() {
       else if (q.includes('褐家鼠')) skillArgs.speciesName = '褐家鼠';
       else if (q.includes('长角血蜱')) skillArgs.speciesName = '长角血蜱';
 
-      if (q.includes('调度') || q.includes('派单') || q.includes('推送') || q.includes('清单')) {
+      if (q.includes('数据表') || q.includes('明细表') || q.includes('监测表') || q.includes('原始数据') || q.includes('表格') || q.includes('记录表') || q.includes('查询表') || q.includes('text2sql') || q.includes('sql') || q.includes('全部数据') || (q.includes('数据') && q.includes('表'))) {
+        matchedSkillId = 'skill_monitoring_data_table';
+        skillArgs.query = promptText;
+      } else if (q.includes('调度') || q.includes('派单') || q.includes('推送') || q.includes('清单')) {
         matchedSkillId = 'skill_alert_push_dispatch';
       } else if (q.includes('地图') || q.includes('热力') || (q.includes('预警') && !q.includes('模型') && !q.includes('gbdt')) || q.includes('超标') || q.includes('点位')) {
         matchedSkillId = 'skill_spatial_early_warning';
@@ -480,6 +495,17 @@ export default function CdcAgentWorkspace() {
 
               {activeGenerativeView?.type === 'CUSTOM_SKILL_CREATED' && (
                 <CustomSkillBuilderModal data={activeGenerativeView} />
+              )}
+
+              {activeGenerativeView?.type === 'DATA_TABLE_VIEW' && (
+                <DataTableComponent
+                  title={activeGenerativeView.title}
+                  query={activeGenerativeView.query}
+                  sql={activeGenerativeView.sql}
+                  executionTimeMs={activeGenerativeView.executionTimeMs}
+                  explanation={activeGenerativeView.explanation}
+                  data={activeGenerativeView.data}
+                />
               )}
 
               {activeGenerativeView?.type === 'NLQ_KNOWLEDGE_ANSWER' && (

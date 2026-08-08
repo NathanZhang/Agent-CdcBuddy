@@ -79,8 +79,8 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
       icon: Activity,
       iconColor: 'text-purple-600 dark:text-purple-400',
       prompts: [
+        '显示平顶山2022年6月全部病媒监测数据表',
         '排查全省蚊媒登革病毒与乙脑病毒的 PCR 阳性检出率及高风险区县。',
-        '评估郑州市登革热综合传播风险指数（病媒密度 × 病毒阳性率 × 人口密度）。',
         '生成郑州市2024年夏季蚊媒监测与登革热风险评估专项报告并准备导出。'
       ]
     }

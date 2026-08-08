@@ -4,6 +4,7 @@ import { getAppBusinessProvider } from '../db/app-business-provider';
 import { getVectorDataProvider } from '../db/sqlite-provider';
 import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
 import { EarlyWarningAlertItem } from '../db/data-provider';
+import { executeText2Sql } from './text2sql-engine';
 
 export async function executeSkillServer(skillId: string, args: Record<string, any>) {
   const provider = getVectorDataProvider();
@@ -449,6 +450,25 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         type: 'CUSTOM_SKILL_CREATED',
         skill: newSkill,
         previewData: queryData
+      };
+    }
+
+    // 15. 病媒监测数据表查询 (Text2SQL 与多维检索)
+    case 'skill_monitoring_data_table': {
+      const timeStr = args.year && args.month 
+        ? `${args.year}年${args.month}月` 
+        : (args.year ? `${args.year}年` : (args.month ? `${args.month}月` : ''));
+      const userPrompt = args.query || `${args.city || ''} ${timeStr} ${args.district || ''} ${args.category || ''} 病媒监测数据表`;
+      const result = await executeText2Sql(userPrompt, args);
+      const displayTitle = `${args.city || '河南省'}${timeStr}${args.district || ''}${args.category || '全部'}病媒监测数据表`;
+      return {
+        type: 'DATA_TABLE_VIEW',
+        title: displayTitle,
+        query: userPrompt,
+        sql: result.sql,
+        explanation: result.explanation,
+        executionTimeMs: result.executionTimeMs,
+        data: result.data
       };
     }
     default:

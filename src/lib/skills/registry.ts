@@ -380,6 +380,34 @@ const skillMetaCustomBuilder: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_meta_custom_builder', args)
 };
 
+// 15. 病媒监测明细数据表查询 (Text2SQL)
+const skillMonitoringDataTable: VectorSkill = {
+  id: 'skill_monitoring_data_table',
+  name: '病媒监测明细数据表查询 (Text2SQL)',
+  category: 'nlq',
+  categoryName: '数据表格',
+  description: '支持按地市、区县、年份、病媒大类多维度检索病媒监测原始数据库并基于 Text2SQL 以交互式表格展示。',
+  iconName: 'Table',
+  badgeColor: 'sky',
+  recommendedPrompts: [
+    '显示平顶山2022年全部病媒监测数据表',
+    '查询郑州市金水区近两年的蚊类监测原始数据',
+    '导出洛阳市2023年鼠类监测明细记录'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE', 'PUBLIC_VIEWER'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      city: { type: 'string', description: '地级市名称' },
+      district: { type: 'string', description: '区县名称' },
+      year: { type: 'number', description: '年份 (如 2022, 2023, 2024)' },
+      category: { type: 'string', description: '病媒种类' },
+      query: { type: 'string', description: '自然语言查询语句' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_monitoring_data_table', args)
+};
+
 export const STANDARD_SKILLS: VectorSkill[] = [
   skillPopulationDynamics,
   skillSpeciesComposition,
@@ -394,7 +422,8 @@ export const STANDARD_SKILLS: VectorSkill[] = [
   skillVectorNlq,
   skillAutoReportGen,
   skillMobileAssistantApi,
-  skillMetaCustomBuilder
+  skillMetaCustomBuilder,
+  skillMonitoringDataTable
 ];
 
 export function getSkillById(skillId: string): VectorSkill | undefined {
