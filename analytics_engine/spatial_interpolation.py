@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import math
 
-def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊"):
+def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊", district: str = None):
     """
     真实 GIS IDW (反距离加权插值) 算法：
     1. 从 fact_monitoring + dim_location 读取真实监测点坐标 (lat, lon) 与密度
@@ -21,6 +21,9 @@ def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊")
     if city:
         where_clauses.append("l.city = ?")
         params.append(city)
+    if district:
+        where_clauses.append("l.district = ?")
+        params.append(district)
 
     sql = f"""
     SELECT 
@@ -114,6 +117,23 @@ def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊")
         if not district_str or district_str.lower() == "nan":
             district_str = "重点区县"
 
+        # 根据病媒类别动态调整监测方法与单位
+        if category == "蜱":
+            method_desc = f"布旗法/体表寄生监测蜱指数达 {cnt} 只/布旗·小时（基线 {thresh}）"
+            default_act = "对草坪与灌木实施修剪降高，树立警示牌，喷洒高效氯氰菊酯。" if lvl == 'yellow' else "划定蜱虫高危封控区，实施大面积滞留喷洒与牧畜驱蜱。"
+        elif category == "鼠":
+            method_desc = f"夹夜法/粉迹法监测捕获率达 {cnt}%（基线 {thresh}%）"
+            default_act = "全面投放抗凝血灭鼠毒饵站，完善下水道防鼠网栅。"
+        elif category == "蝇":
+            method_desc = f"诱蝇笼法单日捕获量达 {cnt} 只/笼（基线 {thresh}）"
+            default_act = "对垃圾中转站与农贸市场喷洒灭幼脲，密闭清运垃圾。"
+        elif category == "蟑螂" or category == "蟑":
+            method_desc = f"粘捕盒法捕获密度达 {cnt} 只/盒（基线 {thresh}）"
+            default_act = "投放氟蚁腙灭蟑胶饵，实施下水道热烟雾熏杀。"
+        else:
+            method_desc = f"诱蚊灯单次捕获量达 {cnt} 只/台次（基线 {thresh}）"
+            default_act = act
+
         alerts.append({
             "alertId": f"ALERT-{str(r['date_id']).replace('-', '')}-{idx + 101}",
             "title": f"{r['city']}{district_str} {r['species_name']}密度超标预警",
@@ -125,11 +145,11 @@ def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊")
             "street": street_str,
             "latitude": float(r["lat"]),
             "longitude": float(r["lon"]),
-            "triggerReason": f"诱蚊灯捕获量达 {cnt} 只/台次（基线 {thresh}），气温 {r['weather_temp']}℃，相对湿度 {r['weather_humidity']}%。",
+            "triggerReason": f"{method_desc}，气温 {r['weather_temp']}℃，相对湿度 {r['weather_humidity']}%。",
             "currentDensity": cnt,
             "threshold": thresh,
             "affectedPopulationEstimate": int(cnt * 350 + 5000),
-            "recommendedAction": act,
+            "recommendedAction": default_act,
             "disposalStatus": "in_progress" if idx % 2 == 0 else "pending",
             "triggerTime": f"{r['date_id']} 08:30:00"
         })

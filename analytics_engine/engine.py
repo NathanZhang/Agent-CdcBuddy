@@ -82,7 +82,8 @@ def main():
         result = calculate_spatial_idw(
             db_path=db_path,
             city=args.get("city"),
-            category=args.get("category", "蚊")
+            category=args.get("category", "蚊"),
+            district=args.get("district")
         )
     elif task == "transmission_risk":
         result = calculate_transmission_risk(

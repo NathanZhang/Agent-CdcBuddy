@@ -501,7 +501,22 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
   async getEarlyWarningAlerts(filter: EarlyWarningFilter): Promise<EarlyWarningAlertItem[]> {
     const db = this.getDb();
     
-    // 基于 SQLite 监测数据与规则引擎生成动态三级预警
+    const whereClauses: string[] = ['f.capture_count > 0', 'l.latitude IS NOT NULL'];
+    const params: any[] = [];
+
+    if (filter.city) {
+      whereClauses.append ? null : whereClauses.push('l.city = ?');
+      params.push(filter.city);
+    }
+    if (filter.district) {
+      whereClauses.push('l.district = ?');
+      params.push(filter.district);
+    }
+    if (filter.category) {
+      whereClauses.push('s.category = ?');
+      params.push(filter.category);
+    }
+
     const rawHighRecords = db.prepare(`
       SELECT 
         f.monitoring_id,
@@ -519,10 +534,10 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
       FROM fact_monitoring f
       JOIN dim_species s ON f.species_id = s.species_id
       JOIN dim_location l ON f.location_id = l.location_id
-      WHERE f.capture_count > 30 AND l.latitude IS NOT NULL
+      WHERE ${whereClauses.join(' AND ')}
       ORDER BY f.capture_count DESC
       LIMIT 30
-    `).all() as any[];
+    `).all(...params) as any[];
 
     const alerts: EarlyWarningAlertItem[] = rawHighRecords.map((r, idx) => {
       let level: 'yellow' | 'orange' | 'red' = 'yellow';
@@ -544,12 +559,12 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
 
       return {
         alertId: `ALERT-${r.date_id.replace(/-/g, '')}-${idx + 101}`,
-        title: `${r.city}${r.district} ${r.species_name}密度超标预警`,
+        title: `${r.city}${r.district || ''} ${r.species_name}密度超标预警`,
         level,
         levelName,
         category: r.category,
         city: r.city,
-        district: r.district,
+        district: r.district || '重点区县',
         street: r.street || '中心街道',
         latitude: r.latitude,
         longitude: r.longitude,
@@ -566,12 +581,6 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     let filtered = alerts;
     if (filter.severity && filter.severity !== 'all') {
       filtered = filtered.filter(a => a.level === filter.severity);
-    }
-    if (filter.city) {
-      filtered = filtered.filter(a => a.city === filter.city);
-    }
-    if (filter.category) {
-      filtered = filtered.filter(a => a.category === filter.category);
     }
 
     return filtered;

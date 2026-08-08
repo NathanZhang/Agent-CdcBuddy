@@ -179,13 +179,6 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
         <span className="text-slate-400 dark:text-slate-500">|</span>
         <span className="text-xs text-slate-600 dark:text-slate-300">当前视角: <span className="text-sky-600 dark:text-sky-300 font-mono font-medium">{currentViewCity}</span></span>
         
-        {/* 正射视角与底图标示 */}
-        <span className="text-slate-400 dark:text-slate-500">|</span>
-        <div className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 font-medium">
-          <Compass className="w-3 h-3" />
-          <span>正射视角 (2D 垂直俯视)</span>
-        </div>
-
         {/* 底图切换器: 天地图矢量 vs 天地图影像 */}
         <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded p-0.5 border border-slate-300 dark:border-slate-700 text-xs">
           <button

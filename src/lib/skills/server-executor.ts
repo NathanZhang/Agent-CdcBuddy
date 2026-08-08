@@ -2,6 +2,8 @@ import { MetaCustomSkillData } from './types';
 import { runAnalyticsEngine } from '../analytics/engine-bridge';
 import { getAppBusinessProvider } from '../db/app-business-provider';
 import { getVectorDataProvider } from '../db/sqlite-provider';
+import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
+import { EarlyWarningAlertItem } from '../db/data-provider';
 
 export async function executeSkillServer(skillId: string, args: Record<string, any>) {
   const provider = getVectorDataProvider();
@@ -70,14 +72,38 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     case 'skill_spatial_early_warning': {
       const spatialResult = await runAnalyticsEngine('spatial_idw', {
         city: args.city,
+        district: args.district,
         category: args.category || '蚊'
       });
+      let alerts = (spatialResult.alerts || []).filter((a: any) => {
+        if (args.city && a.city !== args.city) return false;
+        if (args.district && a.district !== args.district) return false;
+        return true;
+      });
+
+      if (args.alertId) {
+        const exactAlert = ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === args.alertId.toUpperCase());
+        if (exactAlert && !alerts.some((a: any) => a.alertId === exactAlert.alertId)) {
+          alerts = [exactAlert, ...alerts];
+        }
+      }
+
+      if (alerts.length === 0 && (args.city || args.district)) {
+        alerts = ACTIVE_ALERTS_LIST.filter(a => {
+          if (args.city && a.city !== args.city) return false;
+          if (args.district && a.district !== args.district) return false;
+          if (args.category && a.category !== args.category) return false;
+          return true;
+        });
+      }
+
       const locations = await provider.getLocations(args.city);
       return {
         type: 'SPATIAL_EARLY_WARNING_MAP',
         city: args.city || '河南省全域',
+        district: args.district,
         severity: args.severity || 'all',
-        alerts: spatialResult.alerts || [],
+        alerts: alerts,
         spatialGrid: spatialResult.grid || [],
         locations: locations.slice(0, 150)
       };
@@ -85,10 +111,55 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
 
     // 6. 预警推送信息 (No. 28) - 真实写入独立业务库推送事件
     case 'skill_alert_push_dispatch': {
-      const spatialResult = await runAnalyticsEngine('spatial_idw', { category: args.category || '蚊' });
-      const alerts = spatialResult.alerts || [];
+      let filteredAlerts: EarlyWarningAlertItem[] = [];
+
+      // 1. 如果传入指定 alertId，优先查找该预警
+      if (args.alertId) {
+        const exactAlert = ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === args.alertId.toUpperCase());
+        if (exactAlert) {
+          filteredAlerts.push(exactAlert);
+        }
+      }
+
+      // 2. 从 ACTIVE_ALERTS_LIST 匹配符合条件的地区与类型预警
+      const matchedFromList = ACTIVE_ALERTS_LIST.filter(a => {
+        if (args.alertId && a.alertId.toUpperCase() === args.alertId.toUpperCase()) return false;
+        if (args.city && a.city !== args.city) return false;
+        if (args.district && a.district !== args.district) return false;
+        if (args.category && a.category !== args.category) return false;
+        if (args.severity && args.severity !== 'all' && a.level !== args.severity) return false;
+        return true;
+      });
+      filteredAlerts.push(...matchedFromList);
+
+      // 3. 从空间分析算法或数据库获取符合该地区 (city, district) 的预警
+      if (filteredAlerts.length === 0 || (args.city && !args.district)) {
+        const spatialResult = await runAnalyticsEngine('spatial_idw', {
+          city: args.city,
+          district: args.district,
+          category: args.category || '蚊'
+        });
+        const spatialAlerts = (spatialResult.alerts || []).filter((a: any) => {
+          if (args.city && a.city !== args.city) return false;
+          if (args.district && a.district !== args.district) return false;
+          if (args.category && a.category !== args.category) return false;
+          if (args.severity && args.severity !== 'all' && a.level !== args.severity) return false;
+          return true;
+        });
+        for (const sa of spatialAlerts) {
+          if (!filteredAlerts.some(fa => fa.alertId === sa.alertId)) {
+            filteredAlerts.push(sa);
+          }
+        }
+      }
+
+      // 4. 若全省无任何筛选且列表为空，兜底全量 ACTIVE_ALERTS_LIST
+      if (!args.city && !args.district && !args.alertId && filteredAlerts.length === 0) {
+        filteredAlerts = [...ACTIVE_ALERTS_LIST];
+      }
+
       // 记录到业务数据库
-      for (const a of alerts.slice(0, 5)) {
+      for (const a of filteredAlerts.slice(0, 5)) {
         await bizProvider.saveEarlyWarningEvent({
           event_id: a.alertId,
           title: a.title,
@@ -109,42 +180,58 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
           created_at: a.triggerTime
         });
       }
+
       return {
         type: 'ALERT_PUSH_DISPATCH',
-        totalCount: alerts.length,
-        alerts: alerts.slice(0, 10)
+        totalCount: filteredAlerts.length,
+        alerts: filteredAlerts.slice(0, 10),
+        city: args.city,
+        district: args.district
       };
     }
 
     // 7. 处置闭环信息 (No. 29) - 真实流转独立业务库 biz_disposal_tickets
     case 'skill_disposal_workflow': {
-      const ticketId = args.ticketId || args.alertId || 'DISPATCH-20260808-01';
+      const ticketId = args.ticketId || (args.alertId ? `DISPATCH-${args.alertId.replace('ALERT-', '')}` : 'DISPATCH-20260808-01');
       let ticket = await bizProvider.getDisposalTicketById(ticketId);
       if (!ticket) {
+        let matchedAlert = args.alertId ? ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === args.alertId.toUpperCase()) : null;
+        if (!matchedAlert && args.city) {
+          matchedAlert = ACTIVE_ALERTS_LIST.find(a => a.city === args.city && (!args.district || a.district === args.district));
+        }
+
+        const targetCity = args.city || matchedAlert?.city || '郑州市';
+        const targetDistrict = args.district || matchedAlert?.district || '金水区';
+        const targetStreet = args.street || matchedAlert?.street || '核心监测街道';
+        const vectorCategory = args.category || matchedAlert?.category || '蚊';
+        const speciesName = args.speciesName || matchedAlert?.title.split(' ')[1] || '优势物种';
+        const severityLevel = (args.severity as any) || matchedAlert?.level || 'yellow';
+        const actionDesc = matchedAlert?.recommendedAction || '立即启动突发虫媒应急消杀，实施空间超低容量喷雾与积水清除。';
+
         // 创建新工单
         ticket = await bizProvider.createDisposalTicket({
           ticket_id: ticketId,
-          alert_id: args.alertId || 'ALERT-202608-101',
-          target_city: args.city || '郑州市',
-          target_district: args.district || '金水区',
-          target_street: args.street || '未来路街道办事处',
-          vector_category: args.category || '蚊',
-          species_name: args.speciesName || '白纹伊蚊',
-          severity_level: (args.severity as any) || 'red',
+          alert_id: args.alertId || matchedAlert?.alertId || 'ALERT-202608-101',
+          target_city: targetCity,
+          target_district: targetDistrict,
+          target_street: targetStreet,
+          vector_category: vectorCategory,
+          species_name: speciesName,
+          severity_level: severityLevel,
           recommended_protocol: [
-            { step: 1, title: '物理环境治理', content: '翻盆倒罐清除绿化带与散在积水容器，投放Bti灭幼粒剂。' },
-            { step: 2, title: '化学速杀喷雾', content: '使用 2.5% 高效氯氟氰菊酯超低容量空间喷雾 (ULV)，清晨 06:00-08:00 作业。' },
-            { step: 3, title: '效果后评估', content: '施药后 48 小时复测布雷图指数 (BI)，若 BI < 5 即自动核销闭环。' }
+            { step: 1, title: '物理环境治理与生境修剪', content: '清理死角杂草与积水容器，降低媒介宿主栖息密度。' },
+            { step: 2, title: '靶向化学药剂应急消杀', content: actionDesc },
+            { step: 3, title: '效果复测与核销闭环', content: '施药后 48 小时复测病媒密度指数，达标后自动核销归档。' }
           ],
-          assigned_team: '金水区疾病预防控制中心第一消杀突击队',
+          assigned_team: `${targetDistrict}疾病预防控制中心消杀机动中队`,
           contact_phone: '0371-68991234',
           disposal_status: (args.action === 'resolve' ? 'RESOLVED' : 'IN_PROGRESS') as any,
-          before_density: 86.0,
+          before_density: matchedAlert?.currentDensity || 86.0,
           after_bi_index: args.action === 'resolve' ? 3.8 : 4.5,
           disposal_notes: '已由消杀队伍完成核心区作业与效果复测。'
         });
       } else if (args.action === 'resolve') {
-        await bizProvider.updateTicketStatus(ticketId, 'RESOLVED', '复测 BI 指数达标 (BI=3.8 < 5)，预警自动核销闭环。', 3.8);
+        await bizProvider.updateTicketStatus(ticketId, 'RESOLVED', '复测指标达标，预警自动核销闭环。', 3.8);
         ticket = (await bizProvider.getDisposalTicketById(ticketId))!;
       }
 

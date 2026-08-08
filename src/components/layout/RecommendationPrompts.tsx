@@ -1,19 +1,28 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   TrendingUp, 
   ShieldAlert, 
   Activity, 
   MapPin, 
   Sparkles, 
+  ChevronDown,
+  ChevronUp,
+  MessageSquareQuote
 } from 'lucide-react';
 
 interface RecommendationPromptsProps {
   onSelectPrompt: (prompt: string) => void;
+  defaultExpanded?: boolean;
 }
 
-export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({ onSelectPrompt }) => {
+export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({ 
+  onSelectPrompt,
+  defaultExpanded = true 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
   const categories = [
     {
       title: '时空态势与预警排查',
@@ -61,45 +70,88 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({ on
     }
   ];
 
+  const totalPromptsCount = categories.reduce((sum, c) => sum + c.prompts.length, 0);
+
   return (
-    <div className="w-full flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full bg-white/70 dark:bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-3.5 shadow-xs transition-all duration-300">
+      {/* 折叠/展开头部操作条 */}
+      <div 
+        className="flex items-center justify-between cursor-pointer select-none"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
-          <Sparkles className="w-4 h-4 text-sky-600 dark:text-cyan-400" />
-          <h2 className="text-sm font-bold">常用业务研判与推荐对话 Prompt</h2>
+          <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-cyan-400 border border-sky-200/60 dark:border-sky-500/20">
+            <Sparkles className="w-4 h-4 animate-pulse" />
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
+              常用业务研判与推荐对话 Prompt
+            </h2>
+            <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+              4 大类 · 共 {totalPromptsCount} 条指令
+            </span>
+          </div>
         </div>
-        <span className="text-xs text-slate-500 dark:text-slate-400">点击任意卡片即可直接向智能体提问</span>
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className="hidden sm:inline text-slate-400 dark:text-slate-500 text-[11px]">
+            {isExpanded ? '点击任意卡片即可直接向智能体下发指令' : '已折叠推荐面板以增加工作区空间'}
+          </span>
+          <button
+            type="button"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors shadow-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+          >
+            {isExpanded ? (
+              <>
+                <span>折叠面板</span>
+                <ChevronUp className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+              </>
+            ) : (
+              <>
+                <span>展开推荐</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {categories.map((cat, idx) => {
-          const IconComp = cat.icon;
-          return (
-            <div
-              key={idx}
-              className={`p-4 rounded-xl ${cat.color} border backdrop-blur-sm flex flex-col justify-between gap-3 shadow-sm dark:shadow-lg hover:border-sky-400/50 transition-all`}
-            >
-              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-2">
-                <IconComp className={`w-4 h-4 ${cat.iconColor}`} />
-                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{cat.title}</h3>
-              </div>
+      {/* 可折叠内容区 */}
+      {isExpanded && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-3.5 pt-3 border-t border-slate-200/70 dark:border-slate-800/70 animate-in fade-in slide-in-from-top-2 duration-200">
+          {categories.map((cat, idx) => {
+            const IconComp = cat.icon;
+            return (
+              <div
+                key={idx}
+                className={`p-3.5 rounded-xl ${cat.color} border backdrop-blur-sm flex flex-col justify-between gap-2.5 shadow-sm dark:shadow-md hover:border-sky-400/50 transition-all`}
+              >
+                <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800/80 pb-2">
+                  <IconComp className={`w-4 h-4 ${cat.iconColor}`} />
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{cat.title}</h3>
+                </div>
 
-              <div className="flex flex-col gap-2">
-                {cat.prompts.map((p, pIdx) => (
-                  <button
-                    key={pIdx}
-                    onClick={() => onSelectPrompt(p)}
-                    className="text-left text-xs text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-white bg-white/80 dark:bg-slate-950/60 hover:bg-sky-50 dark:hover:bg-sky-950/60 p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-500/40 transition-all leading-snug group flex items-start gap-1.5 shadow-xs"
-                  >
-                    <span className="text-sky-600 dark:text-sky-400 text-[10px] mt-0.5 group-hover:translate-x-0.5 transition-transform">▸</span>
-                    <span>{p}</span>
-                  </button>
-                ))}
+                <div className="flex flex-col gap-1.5">
+                  {cat.prompts.map((p, pIdx) => (
+                    <button
+                      key={pIdx}
+                      onClick={() => onSelectPrompt(p)}
+                      className="text-left text-xs text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-white bg-white/85 dark:bg-slate-950/60 hover:bg-sky-50 dark:hover:bg-sky-950/60 p-2 rounded-lg border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-500/40 transition-all leading-snug group flex items-start gap-1.5 shadow-2xs"
+                    >
+                      <span className="text-sky-600 dark:text-sky-400 text-[10px] mt-0.5 group-hover:translate-x-0.5 transition-transform">▸</span>
+                      <span>{p}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

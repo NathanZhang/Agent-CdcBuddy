@@ -4,14 +4,21 @@ import React from 'react';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { useTheme, ThemeMode } from '@/lib/theme/theme-context';
 import { UserRole } from '@/lib/rbac/types';
-import { Shield, UserCheck, Layers, Sun, Moon, Laptop } from 'lucide-react';
+import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot } from 'lucide-react';
 
 interface NavbarProps {
   onOpenSkills: () => void;
   onSelectPrompt: (prompt: string) => void;
+  showEmbeddedWidget?: boolean;
+  onToggleEmbeddedWidget?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenSkills, onSelectPrompt }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onOpenSkills, 
+  onSelectPrompt,
+  showEmbeddedWidget = false,
+  onToggleEmbeddedWidget 
+}) => {
   const { activeRole, switchRole } = useRbac();
   const { theme, setTheme, resolvedTheme } = useTheme();
 
@@ -75,6 +82,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSkills, onSelectPrompt }) 
           <Layers className="w-3.5 h-3.5" />
           <span>Skills 技能集市 (14)</span>
         </button>
+
+        {/* 悬浮 Copilot 助手显隐开关 */}
+        {onToggleEmbeddedWidget && (
+          <button
+            onClick={onToggleEmbeddedWidget}
+            title={showEmbeddedWidget ? '隐藏左下角 Copilot 悬浮助手' : '显示左下角 Copilot 悬浮助手'}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-all ${
+              showEmbeddedWidget
+                ? 'bg-sky-600 text-white border-sky-600 shadow-sm shadow-sky-600/30'
+                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px]">{showEmbeddedWidget ? '悬浮助手(开)' : '悬浮助手'}</span>
+          </button>
+        )}
 
         {/* RBAC 角色切换 */}
         <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">

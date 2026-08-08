@@ -110,3 +110,15 @@ body {
 .warning-yellow-glow {
   box-shadow: 0 0 20px -5px rgba(234, 179, 8, 0.3);
 }
+
+/* CopilotKit Web Inspector / Dev Console 默认定位左下角与默认隐藏规则 */
+cpk-web-inspector,
+cpk-thread-inspector,
+[data-copilotkit-dev-console] {
+  display: none !important;
+  left: 24px !important;
+  bottom: 24px !important;
+  right: auto !important;
+  top: auto !important;
+}
+

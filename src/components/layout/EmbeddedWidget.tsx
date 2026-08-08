@@ -8,10 +8,14 @@ import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 interface EmbeddedWidgetProps {
   initialPrompt?: string;
   onSendMessage?: (msg: string) => void;
+  isVisible?: boolean;
+  onClose?: () => void;
 }
 
 export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
-  onSendMessage
+  onSendMessage,
+  isVisible = false,
+  onClose
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,6 +26,11 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       text: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。您可以向我咨询最新的全省病媒密度趋势、抗药性评估、病原阳性率预警或生成专项报告。'
     }
   ]);
+
+  // 如果处于隐藏状态，则不渲染在界面上
+  if (!isVisible) {
+    return null;
+  }
 
   const handleSend = () => {
     if (!inputVal.trim()) return;
@@ -43,7 +52,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start">
       {/* 悬浮对话窗口 */}
       {isOpen && (
         <div
@@ -67,15 +76,26 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="p-1 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-slate-800"
+                title={isExpanded ? '还原大小' : '窗口最大化'}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-slate-800"
+                title="关闭对话"
               >
                 <X className="w-4 h-4" />
               </button>
+              {onClose && (
+                <button
+                  onClick={onClose}
+                  className="p-1 hover:text-rose-500 rounded hover:bg-slate-200 dark:hover:bg-slate-800 ml-1 text-xs"
+                  title="隐藏悬浮助手"
+                >
+                  隐藏
+                </button>
+              )}
             </div>
           </div>
 
@@ -124,13 +144,15 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         </div>
       )}
 
-      {/* 悬浮圆形启动按钮 */}
+      {/* 悬浮圆形启动按钮 (位于屏幕左下角) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-500 text-white flex items-center justify-center shadow-xl shadow-sky-500/30 hover:scale-110 active:scale-95 transition-all border-2 border-white dark:border-sky-400 group"
+        title={isOpen ? '收起浮窗助手' : '展开 Copilot 悬浮助手'}
       >
         {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6 group-hover:animate-bounce" />}
       </button>
     </div>
   );
 };
+

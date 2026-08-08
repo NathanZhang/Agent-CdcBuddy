@@ -24,6 +24,7 @@ import { AutoReportViewer } from '@/components/ag-ui/AutoReportViewer';
 import { MobileSimulationModal } from '@/components/ag-ui/MobileSimulationModal';
 import { CustomSkillBuilderModal } from '@/components/ag-ui/CustomSkillBuilderModal';
 import { DataTableComponent } from '@/components/ag-ui/DataTableComponent';
+import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/ActiveAlertsModal';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 
 import { 
@@ -46,6 +47,8 @@ import {
 export default function CdcAgentWorkspace() {
   const { currentUser, activeRole } = useRbac();
   const [isSkillsOpen, setIsSkillsOpen] = useState(false);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false); // 活跃预警详情弹窗
+  const [showFloatingCopilot, setShowFloatingCopilot] = useState(false); // 默认隐藏浮动 Copilot 图标
   const [activeGenerativeView, setActiveGenerativeView] = useState<any>({
     type: 'SPATIAL_EARLY_WARNING_MAP',
     city: '河南省全域',
@@ -183,23 +186,83 @@ export default function CdcAgentWorkspace() {
       let matchedSkillId = 'skill_spatial_early_warning';
       let skillArgs: any = {};
 
+      // 提取预警编号 (如 ALERT-202408-114)
+      const alertIdMatch = promptText.match(/ALERT-\d+(?:-\d+)?/i);
+      if (alertIdMatch) {
+        skillArgs.alertId = alertIdMatch[0].toUpperCase();
+      }
+
+      // 如果有对应的预警编号，精准绑定所属城市、区县、类别与等级
+      const matchedAlertItem = skillArgs.alertId 
+        ? ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === skillArgs.alertId.toUpperCase()) 
+        : null;
+      if (matchedAlertItem) {
+        skillArgs.city = matchedAlertItem.city;
+        skillArgs.district = matchedAlertItem.district;
+        skillArgs.category = matchedAlertItem.category;
+        skillArgs.severity = matchedAlertItem.level;
+        skillArgs.targetAlert = matchedAlertItem;
+      }
+
       // 动态提取地理范围（河南省 18 地市）
-      const cities = ['郑州市', '洛阳市', '开封市', '南阳市', '安阳市', '信阳市', '新乡市', '商丘市', '许昌市', '焦作市', '平顶山市', '周口市', '驻马店市', '漯河市', '濮阳市', '三门峡市', '鹤壁市', '济源市'];
-      for (const c of cities) {
-        const shortName = c.replace('市', '');
-        if (q.includes(c) || q.includes(shortName)) {
-          skillArgs.city = c;
-          break;
+      if (!skillArgs.city) {
+        const cities = ['郑州市', '洛阳市', '开封市', '南阳市', '安阳市', '信阳市', '新乡市', '商丘市', '许昌市', '焦作市', '平顶山市', '周口市', '驻马店市', '漯河市', '濮阳市', '三门峡市', '鹤壁市', '济源市'];
+        for (const c of cities) {
+          const shortName = c.replace('市', '');
+          if (q.includes(c) || q.includes(shortName)) {
+            skillArgs.city = c;
+            break;
+          }
+        }
+      }
+
+      // 动态提取区县
+      if (!skillArgs.district) {
+        const knownDistricts = [
+          '源汇区', '郾城区', '召陵区', '舞阳县', '临颍县',
+          '金水区', '二七区', '中原区', '管城回族区', '惠济区', '上街区', '巩义市', '荥阳市', '新密市', '新郑市', '登封市', '中牟县',
+          '汤阴县', '文峰区', '北关区', '殷都区', '龙安区', '安阳县', '滑县', '内黄县', '林州市',
+          '浉河区', '平桥区', '罗山县', '光山县', '新县', '商城县', '固始县', '潢川县', '淮滨县', '息县',
+          '涧西区', '西工区', '老城区', '瀍河回族区', '洛龙区', '孟津区', '偃师区', '新安县', '栾川县', '嵩县', '汝阳县', '宜阳县', '洛宁县', '伊川县',
+          '红旗区', '卫滨区', '凤泉区', '牧野区', '卫辉市', '辉县市', '新乡县', '获嘉县', '原阳县', '延津县', '封丘县', '长垣市',
+          '山阳区', '解放区', '中站区', '马村区', '沁阳市', '孟州市', '修武县', '博爱县', '武陟县', '温县',
+          '宛城区', '卧龙区', '邓州市', '南召县', '方城县', '西峡县', '镇平县', '内乡县', '淅川县', '社旗县', '唐河县', '新野县', '桐柏县',
+          '龙亭区', '鼓楼区', '禹王台区', '顺河回族区', '祥符区', '杞县', '通许县', '尉氏县', '兰考县',
+          '驿城区', '西平县', '上蔡县', '平舆县', '正阳县', '确山县', '泌阳县', '汝南县', '遂平县', '新蔡县',
+          '魏都区', '建安区', '禹州市', '长葛市', '鄢陵县', '襄城县',
+          '睢阳区', '梁园区', '永城市', '民权县', '宁陵县', '柘城县', '虞城县', '夏邑县', '睢县',
+          '新华区', '卫东区', '湛河区', '石龙区', '舞钢市', '汝州市', '宝丰县', '叶县', '鲁山县', '郏县',
+          '川汇区', '淮阳区', '项城市', '扶沟县', '西华县', '商水县', '沈丘县', '郸城县', '太康县', '鹿邑县',
+          '华龙区', '清丰县', '南乐县', '范县', '台前县', '濮阳县',
+          '湖滨区', '陕州区', '义马市', '灵宝市', '渑池县', '卢氏县',
+          '淇滨区', '山城区', '鹤山区', '浚县', '淇县',
+          '济源市'
+        ];
+        for (const d of knownDistricts) {
+          if (q.includes(d) || promptText.includes(d)) {
+            skillArgs.district = d;
+            break;
+          }
         }
       }
 
       // 动态提取病媒大类
-      if (q.includes('蝇')) skillArgs.category = '蝇';
-      else if (q.includes('蟑螂') || q.includes('蜚蠊')) skillArgs.category = '蟑螂';
-      else if (q.includes('鼠')) skillArgs.category = '鼠';
-      else if (q.includes('蜱')) skillArgs.category = '蜱';
-      else if (q.includes('恙螨') || q.includes('螨')) skillArgs.category = '恙螨';
-      else if (q.includes('蚊')) skillArgs.category = '蚊';
+      if (!skillArgs.category) {
+        if (q.includes('蝇')) skillArgs.category = '蝇';
+        else if (q.includes('蟑螂') || q.includes('蜚蠊') || q.includes('蟑')) skillArgs.category = '蟑螂';
+        else if (q.includes('鼠')) skillArgs.category = '鼠';
+        else if (q.includes('蜱')) skillArgs.category = '蜱';
+        else if (q.includes('恙螨') || q.includes('螨')) skillArgs.category = '恙螨';
+        else if (q.includes('蚊')) skillArgs.category = '蚊';
+      }
+
+      // 动态提取预警级别
+      if (!skillArgs.severity) {
+        if (q.includes('严重') || q.includes('一级') || q.includes('红警')) skillArgs.severity = 'red';
+        else if (q.includes('较重') || q.includes('二级') || q.includes('橙警')) skillArgs.severity = 'orange';
+        else if (q.includes('一般') || q.includes('三级') || q.includes('黄警')) skillArgs.severity = 'yellow';
+        else skillArgs.severity = 'all';
+      }
 
       // 动态提取预测时间跨度 (月数)
       if (q.includes('未来6个月') || q.includes('半年')) skillArgs.forecastMonths = 6;
@@ -218,7 +281,6 @@ export default function CdcAgentWorkspace() {
 
       if (q.includes('调度') || q.includes('派单') || q.includes('推送') || q.includes('清单')) {
         matchedSkillId = 'skill_alert_push_dispatch';
-        skillArgs.severity = q.includes('严重') ? 'red' : 'all';
       } else if (q.includes('地图') || q.includes('热力') || (q.includes('预警') && !q.includes('模型') && !q.includes('gbdt')) || q.includes('超标') || q.includes('点位')) {
         matchedSkillId = 'skill_spatial_early_warning';
         if (q.includes('严重')) skillArgs.severity = 'red';
@@ -299,6 +361,8 @@ export default function CdcAgentWorkspace() {
       <Navbar
         onOpenSkills={() => setIsSkillsOpen(true)}
         onSelectPrompt={handleExecutePrompt}
+        showEmbeddedWidget={showFloatingCopilot}
+        onToggleEmbeddedWidget={() => setShowFloatingCopilot(prev => !prev)}
       />
 
       {/* 统计指标浮动指示条 */}
@@ -320,9 +384,15 @@ export default function CdcAgentWorkspace() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] px-2 py-0.5 rounded bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/40 font-semibold animate-pulse">
-            🚨 活跃预警: 14 起
-          </span>
+          <button
+            onClick={() => setIsAlertsModalOpen(true)}
+            title="点击查看全省 14 起活跃预警实时清单与处置态势"
+            className="text-[11px] px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/20 dark:hover:bg-red-500/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40 font-bold flex items-center gap-1.5 shadow-xs transition-all hover:scale-105 active:scale-95 group cursor-pointer"
+          >
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            <span>🚨 活跃预警: 14 起</span>
+            <span className="text-[10px] underline text-red-600 dark:text-red-400 group-hover:text-red-800 dark:group-hover:text-white">查看详情 »</span>
+          </button>
           <span className="text-slate-500 text-[11px]">最新数据期: 2025-11-11</span>
         </div>
       </div>
@@ -541,8 +611,29 @@ export default function CdcAgentWorkspace() {
         }}
       />
 
-      {/* 嵌入式浮窗组件 */}
-      <EmbeddedWidget onSendMessage={handleExecutePrompt} />
+      {/* 嵌入式浮窗组件 (默认位于左下角，默认隐藏) */}
+      <EmbeddedWidget 
+        isVisible={showFloatingCopilot}
+        onClose={() => setShowFloatingCopilot(false)}
+        onSendMessage={handleExecutePrompt} 
+      />
+
+      {/* 全省 14 起活跃预警详情浮窗 */}
+      <ActiveAlertsModal
+        isOpen={isAlertsModalOpen}
+        onClose={() => setIsAlertsModalOpen(false)}
+        onLocateOnMap={(city, alert) => {
+          setActiveGenerativeView({
+            type: 'SPATIAL_EARLY_WARNING_MAP',
+            city: city,
+            severity: alert.level,
+            alerts: [alert]
+          });
+        }}
+        onSelectAlertForAnalysis={(alert) => {
+          handleExecutePrompt(`请对 ${alert.city}${alert.district} 的预警 "${alert.title}" (编号: ${alert.alertId}) 进行专项病媒风险深度研判，分析周边种群抗药性并给出详细的应急消杀调度方案。`);
+        }}
+      />
     </div>
   );
 }
