@@ -122,3 +122,9 @@ cpk-thread-inspector,
   top: auto !important;
 }
 
+/* Next.js 开发调试图标默认隐藏（有错误异常时 Next.js 错误遮罩弹窗不受影响） */
+[data-nextjs-dev-tools-button],
+nextjs-portal [data-nextjs-dev-tools-button] {
+  display: none !important;
+}
+

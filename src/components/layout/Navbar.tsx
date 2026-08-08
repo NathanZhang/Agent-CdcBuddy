@@ -40,8 +40,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <h1 className="text-base font-extrabold bg-gradient-to-r from-sky-600 via-cyan-600 to-slate-900 dark:from-sky-400 dark:via-cyan-200 dark:to-white bg-clip-text text-transparent">
               CdcBuddy · 疾控病媒生物监测预警智能体
             </h1>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold uppercase">
-              v1.1 星型治理版
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold">
+              (v1.1)
             </span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -52,8 +52,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* 快捷功能、主题切换与 RBAC 角色切换器 */}
       <div className="flex items-center gap-3">
-        {/* 亮暗模式切换器 (自动跟随系统 / 浅色 / 深色) */}
-        <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
+        {/* 亮暗模式切换器 (自动跟随系统 / 浅色 / 深色) - 仅图标+Hover提示 */}
+        <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 text-xs gap-0.5">
           {themeOptions.map((opt) => {
             const isActive = theme === opt.mode;
             return (
@@ -61,14 +61,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 key={opt.mode}
                 onClick={() => setTheme(opt.mode)}
                 title={opt.label}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                aria-label={opt.label}
+                className={`flex items-center justify-center p-1.5 rounded-md text-xs transition-all ${
                   isActive
                     ? 'bg-white dark:bg-sky-600 text-sky-600 dark:text-white shadow-sm font-semibold'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {opt.icon}
-                <span className="hidden md:inline text-[11px]">{opt.label}</span>
               </button>
             );
           })}
@@ -83,19 +83,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span>Skills 技能集市 (14)</span>
         </button>
 
-        {/* 悬浮 Copilot 助手显隐开关 */}
+        {/* 悬浮 Copilot 助手显隐开关 - 仅图标+Hover提示 */}
         {onToggleEmbeddedWidget && (
           <button
             onClick={onToggleEmbeddedWidget}
-            title={showEmbeddedWidget ? '隐藏左下角 Copilot 悬浮助手' : '显示左下角 Copilot 悬浮助手'}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-all ${
+            title={showEmbeddedWidget ? '收起浮窗助手' : '展开浮窗助手'}
+            aria-label={showEmbeddedWidget ? '收起浮窗助手' : '展开浮窗助手'}
+            className={`p-1.5 rounded-lg text-xs font-medium flex items-center justify-center border transition-all ${
               showEmbeddedWidget
                 ? 'bg-sky-600 text-white border-sky-600 shadow-sm shadow-sky-600/30'
                 : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
             }`}
           >
-            <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">{showEmbeddedWidget ? '悬浮助手(开)' : '悬浮助手'}</span>
+            <Bot className="w-4 h-4" />
           </button>
         )}
 

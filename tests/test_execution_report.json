@@ -1,9 +1,9 @@
 {
   "summary": {
     "suiteName": "疾控病媒生物监测预警智能体 (Agent-CdcBuddy) 功能测试套件",
-    "startTime": "2026-08-08 21:42:38",
-    "endTime": "2026-08-08 21:42:39",
-    "totalDurationSeconds": 0.8,
+    "startTime": "2026-08-08 21:48:42",
+    "endTime": "2026-08-08 21:48:42",
+    "totalDurationSeconds": 0.81,
     "totalTests": 14,
     "passed": 14,
     "failed": 0,
@@ -18,7 +18,7 @@
       "category": "种群动态分析",
       "scenario": "全省蚊媒密度随气温变化的季节消长规律及未来3个月ARIMA时序预测",
       "status": "PASSED",
-      "elapsed_ms": 88.54,
+      "elapsed_ms": 89.65,
       "assertions": "13/13",
       "metrics": {
         "r2Score": 0.65,
@@ -50,7 +50,7 @@
       "category": "种群动态分析",
       "scenario": "郑州市蚊类优势种群构成比（白纹伊蚊 vs 淡色库蚊）识别与 K-Means 聚类",
       "status": "PASSED",
-      "elapsed_ms": 389.09,
+      "elapsed_ms": 397.81,
       "assertions": "10/10",
       "metrics": {
         "dominantSpecies": "淡色(致倦)库蚊",
@@ -115,7 +115,7 @@
       "category": "病原携带风险",
       "scenario": "整合病媒 PCR 检测结果与宿主分布，通过 Apriori 关联规则挖掘高风险病原组合",
       "status": "PASSED",
-      "elapsed_ms": 190.32,
+      "elapsed_ms": 188.01,
       "assertions": "41/41",
       "metrics": {
         "highRiskItemsCount": 34,
@@ -175,7 +175,7 @@
       "category": "动态预警响应",
       "scenario": "多维度预警触发与 IDW 空间插值连续热力图生成，支持地市与区县下钻",
       "status": "PASSED",
-      "elapsed_ms": 27.02,
+      "elapsed_ms": 26.24,
       "assertions": "142/142",
       "metrics": {
         "totalAlerts": 30,
@@ -336,10 +336,10 @@
       "category": "动态预警响应",
       "scenario": "按风险等级自动分类预警，生成通知推送卡片与依据，并持久化写入业务库",
       "status": "PASSED",
-      "elapsed_ms": 24.8,
+      "elapsed_ms": 25.05,
       "assertions": "5/5",
       "metrics": {
-        "persistedEventId": "TEST-ALERT-1786196558",
+        "persistedEventId": "TEST-ALERT-1786196922",
         "pushStatus": "SENT",
         "channels": "系统通知,短信网关,移动端APP推送"
       },
@@ -358,10 +358,10 @@
       "category": "动态预警响应",
       "scenario": "智能生成消杀处置工单、关联三步消杀规程、流转跟踪并通过 BI 复测闭环核销",
       "status": "PASSED",
-      "elapsed_ms": 1.17,
+      "elapsed_ms": 1.64,
       "assertions": "5/5",
       "metrics": {
-        "ticketId": "TICKET-TEST-1786196558",
+        "ticketId": "TICKET-TEST-1786196922",
         "statusTransition": "IN_PROGRESS -> RESOLVED",
         "beforeDensity": 86.0,
         "afterBiIndex": 3.8,
@@ -382,7 +382,7 @@
       "category": "风险预测评估",
       "scenario": "融合气象数据与地理生境，通过 GBDT 梯度提升回归模型预测未来 1-2 个月密度及因子权重",
       "status": "PASSED",
-      "elapsed_ms": 40.35,
+      "elapsed_ms": 39.85,
       "assertions": "7/7",
       "metrics": {
         "city": "郑州市",
@@ -407,7 +407,7 @@
       "category": "风险预测评估",
       "scenario": "构建'病媒密度 × 病原携带率 × 人群暴露指数'关联数学模型，量化传染病传播风险 (0-100)",
       "status": "PASSED",
-      "elapsed_ms": 6.39,
+      "elapsed_ms": 6.26,
       "assertions": "12/12",
       "metrics": {
         "riskScore": 44.2,
@@ -439,7 +439,7 @@
       "category": "风险预测评估",
       "scenario": "基于历史数据与用药频率，贝叶斯/马尔可夫网络预测 1 年内耐药基因频率演化与突变暴发预警",
       "status": "PASSED",
-      "elapsed_ms": 0.86,
+      "elapsed_ms": 1.03,
       "assertions": "20/20",
       "metrics": {
         "evolutionYears": [
@@ -505,7 +505,7 @@
       "category": "智能问答",
       "scenario": "CDC 知识库全文检索与标准条文精准匹配（GB/T 标准、物种鉴别、应急消杀阈值）",
       "status": "PASSED",
-      "elapsed_ms": 0.3,
+      "elapsed_ms": 0.28,
       "assertions": "5/5",
       "metrics": {
         "queriesTested": 4,
@@ -530,7 +530,7 @@
       "elapsed_ms": 2.28,
       "assertions": "3/3",
       "metrics": {
-        "reportId": "REP-TEST-1786196559",
+        "reportId": "REP-TEST-1786196922",
         "title": "郑州市 2024年病媒生物监测与风险预警专项报告 (测试版)",
         "totalMonitoringRecordsIntegrated": 48530,
         "totalPathogenTestsIntegrated": 7336,
@@ -549,10 +549,10 @@
       "category": "移动端接口",
       "scenario": "移动端 API 仿真：拍照物种 AI 识别、现场记录提交与气象生境数据逻辑质控规则校验",
       "status": "PASSED",
-      "elapsed_ms": 0.5,
+      "elapsed_ms": 0.62,
       "assertions": "6/6",
       "metrics": {
-        "submissionId": "MOB-SUB-1786196559",
+        "submissionId": "MOB-SUB-1786196922",
         "aiRecognizedSpecies": "白纹伊蚊",
         "aiConfidence": "98.4%",
         "qcRulesPassed": true,
@@ -574,10 +574,10 @@
       "category": "自定义技能",
       "scenario": "对话式动态编译 SQL 聚合逻辑、生成专属图表卡片并持久化注册新技能",
       "status": "PASSED",
-      "elapsed_ms": 25.67,
+      "elapsed_ms": 25.8,
       "assertions": "4/4",
       "metrics": {
-        "customSkillId": "skill_custom_1786196559",
+        "customSkillId": "skill_custom_1786196922",
         "skillName": "郑州市主要病媒物种捕获TOP5分析",
         "chartType": "bar",
         "previewTopSpecies": "淡色(致倦)库蚊 (5587 只)"
