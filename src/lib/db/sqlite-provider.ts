@@ -20,6 +20,7 @@ import {
   DimPesticide,
   VectorSummaryStats
 } from './types';
+import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
 
 export class SQLiteVectorDataProvider implements IVectorDataProvider {
   private db: Database.Database | null = null;
@@ -61,8 +62,8 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     const countMonitoring = db.prepare('SELECT count(*) as cnt FROM fact_monitoring').get() as { cnt: number };
     const countPathogen = db.prepare('SELECT count(*) as cnt FROM fact_pathogen_detection').get() as { cnt: number };
     const countResistance = db.prepare('SELECT count(*) as cnt FROM fact_insecticide_resistance').get() as { cnt: number };
-    const countCities = db.prepare('SELECT count(distinct city) as cnt FROM dim_location WHERE city IS NOT NULL AND city != ""').get() as { cnt: number };
-    const countDistricts = db.prepare('SELECT count(distinct district) as cnt FROM dim_location WHERE district IS NOT NULL AND district != ""').get() as { cnt: number };
+    const countCities = db.prepare("SELECT count(distinct city) as cnt FROM dim_location WHERE city IS NOT NULL AND city != ''").get() as { cnt: number };
+    const countDistricts = db.prepare("SELECT count(distinct district) as cnt FROM dim_location WHERE district IS NOT NULL AND district != ''").get() as { cnt: number };
     const latestDate = db.prepare('SELECT max(date_id) as d FROM fact_monitoring').get() as { d: string };
 
     const topSpecies = db.prepare(`
@@ -80,7 +81,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
       totalResistanceTests: countResistance?.cnt || 365,
       coveredCities: countCities?.cnt || 18,
       coveredDistricts: countDistricts?.cnt || 126,
-      activeAlertsCount: 14,
+      activeAlertsCount: ACTIVE_ALERTS_LIST.length,
       latestMonitoringDate: latestDate?.d || '2025-11-11',
       topSpecies: topSpecies.length > 0 ? topSpecies : [
         { category: '蚊', species_name: '淡色库蚊', count: 18450 },
@@ -302,7 +303,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
         FROM fact_monitoring f
         JOIN dim_species s ON f.species_id = s.species_id
         JOIN dim_location l ON f.location_id = l.location_id
-        WHERE s.species_name = ? AND l.city IS NOT NULL AND l.city != ""
+        WHERE s.species_name = ? AND l.city IS NOT NULL AND l.city != ''
         GROUP BY l.city
         ORDER BY cnt DESC
         LIMIT 5

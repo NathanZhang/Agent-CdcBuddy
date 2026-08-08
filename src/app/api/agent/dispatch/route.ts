@@ -37,10 +37,12 @@ export async function POST(req: NextRequest) {
 
     // 2. 执行目标技能
     let generativeViewData: any = null;
+    let isExecSuccess = true;
     try {
       generativeViewData = await executeSkillServer(routeResult.skillId, routeResult.args || {});
     } catch (execErr: any) {
       console.error(`[Dispatch API] 执行技能 ${routeResult.skillId} 出错:`, execErr);
+      isExecSuccess = false;
       generativeViewData = {
         error: execErr.message || '技能执行异常',
         query: promptText
@@ -48,13 +50,15 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. 构造回复话术
-    let replyText = `已根据您的指令调用 **【${skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`;
+    let replyText = isExecSuccess
+      ? `已根据您的指令调用 **【${skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`
+      : `⚠️ 调用技能 **【${skillName}】** 执行异常: ${generativeViewData.error}`;
     if (routeResult.directAnswer && routeResult.skillId === 'skill_vector_nlq') {
       replyText = routeResult.directAnswer;
     }
 
     return NextResponse.json({
-      success: true,
+      success: isExecSuccess,
       skillId: routeResult.skillId,
       skillName: skillName,
       source: routeResult.source || 'llm_tool_calling',

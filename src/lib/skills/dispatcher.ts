@@ -200,6 +200,15 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('公报') || q.includes('简报') || q.includes('周报') || q.includes('月报')
   ) {
     matchedSkillId = 'skill_auto_report_gen';
+    const cleanTitle = promptText
+      .replace(/^(请)?(帮我)?(生成|导出|输出|一键生成|一键汇总)/i, '')
+      .replace(/(并准备导出|并导出|且准备导出|。|！)+$/g, '')
+      .trim();
+    if (cleanTitle) {
+      skillArgs.reportTitle = cleanTitle.includes('报告') || cleanTitle.includes('简报') || cleanTitle.includes('公报')
+        ? cleanTitle
+        : `${cleanTitle}专项报告`;
+    }
   } else if (
     q.includes('移动端') || q.includes('拍照') || q.includes('录入') || 
     q.includes('仿真') || q.includes('质控') || q.includes('现场采集')

@@ -287,11 +287,11 @@ export default function CdcAgentWorkspace() {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setIsAlertsModalOpen(true)}
-            title="点击查看全省 14 起活跃预警实时清单与处置态势"
+            title={`点击查看全省 ${ACTIVE_ALERTS_LIST.length} 起活跃预警实时清单与处置态势`}
             className="text-[11px] px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/20 dark:hover:bg-red-500/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40 font-bold flex items-center gap-1.5 shadow-xs transition-all hover:scale-105 active:scale-95 group cursor-pointer"
           >
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-            <span>🚨 活跃预警: 14 起</span>
+            <span>🚨 活跃预警: {ACTIVE_ALERTS_LIST.length} 起</span>
             <span className="text-[10px] underline text-red-600 dark:text-red-400 group-hover:text-red-800 dark:group-hover:text-white">查看详情 »</span>
           </button>
           <span className="text-slate-500 text-[11px]">最新数据期: 2025-11-11</span>
@@ -453,7 +453,7 @@ export default function CdcAgentWorkspace() {
         syncWorkspace={false}
       />
 
-      {/* 全省 14 起活跃预警详情浮窗 */}
+      {/* 全省活跃预警详情浮窗 */}
       <ActiveAlertsModal
         isOpen={isAlertsModalOpen}
         onClose={() => setIsAlertsModalOpen(false)}
