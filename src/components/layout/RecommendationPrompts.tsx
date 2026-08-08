@@ -108,7 +108,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">
-              常用业务研判与推荐对话 Prompt
+              常用业务场景和推荐功能对话提示词
             </h2>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               4 大类 · 共 {totalPromptsCount} 条
