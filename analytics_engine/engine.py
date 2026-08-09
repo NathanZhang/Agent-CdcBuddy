@@ -156,7 +156,9 @@ def main():
             initial_context=args.get("initialContext", {})
         )
     elif task in ["daemon_surveillance", "daemon_surveillance_cycle"]:
-        biz_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../app_business.db"))
+        biz_db = os.environ.get("APP_BUSINESS_DB_PATH") or os.path.abspath(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "../app_business.db")
+        )
         result = run_daemon_surveillance_cycle(
             monitoring_db_path=db_path,
             business_db_path=args.get("businessDbPath", biz_db),

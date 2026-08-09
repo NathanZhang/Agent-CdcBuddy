@@ -1,0 +1,9 @@
+@{
+    RemoteHost = 'root@39.106.143.253'
+    RemotePath = '/data/Agent-CdcBuddy'
+    ImageName = 'agent-cdcbuddy:1.0.0'
+    ContainerName = 'agent-cdcbuddy'
+    PortStart = 32100
+    PortEnd = 32199
+    TarPath = '.deploy-artifacts/agent-cdcbuddy-1.0.0-linux-amd64.tar'
+}

@@ -6,7 +6,7 @@ import { BuiltInAgent } from '@copilotkit/runtime/v2';
 import { createOpenAI } from '@ai-sdk/openai';
 import { NextRequest } from 'next/server';
 
-const apiKey = process.env.SILICONFLOW_API_KEY || 'sk-wortgmadalczipcaypwssmrsxyvwhyidlzeynukcroiywxfe';
+const apiKey = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
 const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
 const modelName = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';
 
