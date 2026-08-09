@@ -290,13 +290,18 @@ export class AppBusinessProvider {
     this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
     const visibility = skill.visibility || 'private';
+
+    // 检查是否已存在同名自定义技能，若存在则更新已有记录，避免同名生成多条重复记录
+    const existingByName = db.prepare('SELECT skill_id FROM biz_custom_skills WHERE name = ?').get(skill.name) as { skill_id: string } | undefined;
+    const finalSkillId = existingByName ? existingByName.skill_id : skill.skill_id;
+
     db.prepare(`
       INSERT OR REPLACE INTO biz_custom_skills (
         skill_id, name, description, category, sql_query, chart_type,
         recommended_prompts, visibility, created_by, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      skill.skill_id,
+      finalSkillId,
       skill.name,
       skill.description,
       skill.category,

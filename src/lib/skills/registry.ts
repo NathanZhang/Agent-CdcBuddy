@@ -423,7 +423,63 @@ const skillMonitoringDataTable: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_monitoring_data_table', args)
 };
 
-// 16. SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线 (LangGraph Workflow)
+// 16. SaTScan 空间泊松时空扫描模型 (独立原子技能)
+const skillSatScanSpatial: VectorSkill = {
+  id: 'skill_satscan_spatial',
+  name: 'SaTScan 空间泊松时空扫描模型',
+  category: 'warning',
+  categoryName: '空间聚集扫描',
+  description: '采用 Kulldorff 空间泊松扫描统计量对全省县区病媒监测数据进行动态扫描，计算对数似然比 LLR、相对危险度 RR 与 Monte Carlo 显著性检验 (p<0.05)，并在 GIS 地图上可视化扫描半径与高危聚集簇。',
+  iconName: 'MapPin',
+  badgeColor: 'rose',
+  recommendedPrompts: [
+    '使用 SaTScan 分析2022年6月全省的蚊媒密度分布并显示在地图上。',
+    '运行 SaTScan 空间泊松扫描检测全省蚊类高危聚集热点与扫描半径。',
+    '分析2023年全省鼠类空间聚集簇及相对危险度 RR。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      year: { type: 'number', description: '分析目标年份 (如 2022, 2023)', default: 2022 },
+      month: { type: 'number', description: '分析目标月份 (1~12)', default: 6 },
+      category: { type: 'string', description: '病媒种类 (蚊, 蝇, 蟑螂, 鼠)', default: '蚊' },
+      maxRadiusKm: { type: 'number', description: '最大扫描半径 (km)', default: 120.0 },
+      pThreshold: { type: 'number', description: '显著性检验阈值', default: 0.05 }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_satscan_spatial', args)
+};
+
+// 17. LSTM 深度时序预测模型 (独立原子技能)
+const skillLSTMPredictor: VectorSkill = {
+  id: 'skill_lstm_predictor',
+  name: 'LSTM 深度时序外推预测模型',
+  category: 'forecast',
+  categoryName: '深度时序预测',
+  description: '采用 4 门控递归神经网络 (LSTM) 结合历史监测序列与温湿度特征，滚动预测重点地市未来 7~14 天日级密度走势与 95% 带状置信区间扩散范围，自动识别暴发峰值并提示红线预警。',
+  iconName: 'TrendingUp',
+  badgeColor: 'indigo',
+  recommendedPrompts: [
+    '使用 LSTM 预测信阳市和郑州市未来一周的蚊类密度趋势与置信区间。',
+    '运行 LSTM 递归神经网络外推南阳市未来14天日级密度曲线。',
+    '分析全省高危城市 LSTM 下一周密度峰值预测。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      city: { type: 'string', description: '目标地市名称 (如 郑州市, 信阳市)' },
+      targetCities: { type: 'array', description: '多地市列表' },
+      category: { type: 'string', description: '病媒种类 (蚊, 蝇, 蟑螂, 鼠)', default: '蚊' },
+      forecastDays: { type: 'number', description: '预测天数 (7~14 天)', default: 7 },
+      startDateStr: { type: 'string', description: '预测起始日期 (YYYY-MM-DD)' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_lstm_predictor', args)
+};
+
+// 18. SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线 (LangGraph Workflow)
 const skillSatScanKMeansLSTM: VectorSkill = {
   id: 'skill_satscan_kmeans_lstm',
   name: 'SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线',
@@ -451,7 +507,33 @@ const skillSatScanKMeansLSTM: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_satscan_kmeans_lstm', args)
 };
 
-// 17. 后台常驻数据分析智能体管理与即时巡检 (Surveillance Daemon Agent)
+// 19. 通用多技能可编排工作流 (LangGraph Composable Workflow)
+const skillComposableWorkflow: VectorSkill = {
+  id: 'skill_composable_workflow',
+  name: '通用多技能动态协同工作流 (LangGraph Composable)',
+  category: 'forecast',
+  categoryName: '通用工作流',
+  description: '支持将系统内任意多项 Skill（如 SaTScan 扫描、病原 PCR 关联、抗药性演化、消杀派单、专题公报）通过 LangGraph 动态编排为链式协同流水线，实现上下文无缝传递与联合研判。',
+  iconName: 'Layers',
+  badgeColor: 'amber',
+  recommendedPrompts: [
+    '先调用 SaTScan 扫描高危聚集区，再结合病原 PCR 检测评估传播风险，最后生成消杀处置工单。',
+    '分析蚊类种群消长，并结合抗药性演化评估综合传播风险。',
+    '执行 SaTScan 扫描并自动生成全省监测专题报告。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      workflowName: { type: 'string', description: '工作流名称' },
+      steps: { type: 'array', description: '步骤定义列表' },
+      initialContext: { type: 'object', description: '初始上下文参数' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_composable_workflow', args)
+};
+
+// 20. 后台常驻数据分析智能体管理与即时巡检 (Surveillance Daemon Agent)
 const skillDaemonSurveillance: VectorSkill = {
   id: 'skill_daemon_surveillance',
   name: '后台常驻数据分析智能体 (Daemon Agent)',
@@ -492,11 +574,15 @@ export const STANDARD_SKILLS: VectorSkill[] = [
   skillMobileAssistantApi,
   skillMetaCustomBuilder,
   skillMonitoringDataTable,
+  skillSatScanSpatial,
+  skillLSTMPredictor,
   skillSatScanKMeansLSTM,
+  skillComposableWorkflow,
   skillDaemonSurveillance
 ];
 
 export function getSkillById(skillId: string): VectorSkill | undefined {
   return STANDARD_SKILLS.find(s => s.id === skillId);
 }
+
 

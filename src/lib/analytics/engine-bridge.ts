@@ -13,8 +13,10 @@ export interface AnalyticsEngineTask {
     | 'transmission_risk'
     | 'resistance_evolution'
     | 'satscan_cluster'
+    | 'satscan_spatial'
     | 'lstm_predictor'
     | 'satscan_kmeans_lstm_pipeline'
+    | 'composable_workflow'
     | 'daemon_surveillance_cycle';
   args?: Record<string, any>;
 }

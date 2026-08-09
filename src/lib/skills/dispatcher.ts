@@ -190,14 +190,31 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     }
     skillArgs.chartType = rawDesc.includes('地图') || rawDesc.includes('村镇') ? 'map' : 'bar';
   } else if (
-    q.includes('satscan') || 
-    (q.includes('lstm') && (q.includes('高风险') || q.includes('扫描') || q.includes('2022') || q.includes('全省'))) ||
-    q.includes('多步操作') || 
-    q.includes('多步科学计算')
+    (q.includes('satscan') && (q.includes('lstm') || q.includes('导入') || q.includes('预测下一周') || q.includes('多步'))) ||
+    q.includes('satscan → k-means → lstm') ||
+    q.includes('satscan ➔ kmeans ➔ lstm')
   ) {
     matchedSkillId = 'skill_satscan_kmeans_lstm';
     if (!skillArgs.year) skillArgs.year = 2022;
     if (!skillArgs.month) skillArgs.month = 3;
+    if (!skillArgs.category) skillArgs.category = '蚊';
+    skillArgs.forecastDays = 7;
+  } else if (
+    q.includes('satscan') || 
+    q.includes('泊松扫描') || 
+    q.includes('空间聚集扫描')
+  ) {
+    matchedSkillId = 'skill_satscan_spatial';
+    if (!skillArgs.year) skillArgs.year = 2022;
+    if (!skillArgs.month) skillArgs.month = 6;
+    if (!skillArgs.category) skillArgs.category = '蚊';
+    skillArgs.maxRadiusKm = 120.0;
+  } else if (
+    q.includes('lstm') || 
+    q.includes('长短期记忆')
+  ) {
+    matchedSkillId = 'skill_lstm_predictor';
+    if (!skillArgs.city) skillArgs.city = '郑州市';
     if (!skillArgs.category) skillArgs.category = '蚊';
     skillArgs.forecastDays = 7;
   } else if (

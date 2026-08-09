@@ -15,6 +15,9 @@ import { MobileSimulationModal } from './MobileSimulationModal';
 import { CustomSkillBuilderModal } from './CustomSkillBuilderModal';
 import { DataTableComponent } from './DataTableComponent';
 import { SatScanLSTMPipelineCard } from './SatScanLSTMPipelineCard';
+import { SatScanSpatialCard } from './SatScanSpatialCard';
+import { LSTMPredictorCard } from './LSTMPredictorCard';
+import { ComposableWorkflowCard } from './ComposableWorkflowCard';
 import { DaemonSurveillanceCard } from './DaemonSurveillanceCard';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { Bot } from 'lucide-react';
@@ -116,6 +119,18 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
 
       {view.type === 'SATSCAN_KMEANS_LSTM_PIPELINE' && (
         <SatScanLSTMPipelineCard data={view} />
+      )}
+
+      {view.type === 'SATSCAN_SPATIAL_VIEW' && (
+        <SatScanSpatialCard data={view} />
+      )}
+
+      {view.type === 'LSTM_PREDICTOR_VIEW' && (
+        <LSTMPredictorCard data={view} />
+      )}
+
+      {view.type === 'COMPOSABLE_WORKFLOW_VIEW' && (
+        <ComposableWorkflowCard data={view} />
       )}
 
       {view.type === 'DAEMON_SURVEILLANCE_VIEW' && (

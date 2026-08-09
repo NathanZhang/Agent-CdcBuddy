@@ -118,6 +118,26 @@ def main():
             forecast_days=int(args.get("forecastDays", 7)),
             start_date_str=args.get("startDateStr", "2022-04-01")
         )
+    elif task in ["satscan_cluster", "satscan_spatial", "satscan_spatial_standalone"]:
+        from satscan_cluster import run_satscan_spatial_standalone
+        result = run_satscan_spatial_standalone(
+            db_path=db_path,
+            year=int(args.get("year", 2022)),
+            month=int(args.get("month", 6)),
+            category=args.get("category", "蚊"),
+            max_cluster_radius_km=float(args.get("maxRadiusKm", 120.0)),
+            p_threshold=float(args.get("pThreshold", 0.05))
+        )
+    elif task in ["lstm_predictor", "lstm_forecast", "lstm_predictor_standalone"]:
+        from lstm_predictor import run_lstm_predictor_standalone
+        result = run_lstm_predictor_standalone(
+            db_path=db_path,
+            target_cities=args.get("targetCities"),
+            city=args.get("city"),
+            category=args.get("category", "蚊"),
+            forecast_days=int(args.get("forecastDays", 7)),
+            start_date_str=args.get("startDateStr", "2022-06-01")
+        )
     elif task == "satscan_kmeans_lstm_pipeline":
         result = run_satscan_kmeans_lstm_pipeline(
             db_path=db_path,
@@ -126,6 +146,14 @@ def main():
             category=args.get("category", "蚊"),
             forecast_days=int(args.get("forecastDays", 7)),
             p_threshold=float(args.get("pThreshold", 0.05))
+        )
+    elif task in ["composable_workflow", "dynamic_workflow"]:
+        from composable_workflow import run_dynamic_composable_workflow
+        result = run_dynamic_composable_workflow(
+            db_path=db_path,
+            workflow_name=args.get("workflowName", "多技能动态协同工作流"),
+            steps=args.get("steps", []),
+            initial_context=args.get("initialContext", {})
         )
     elif task in ["daemon_surveillance", "daemon_surveillance_cycle"]:
         biz_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../app_business.db"))

@@ -33,9 +33,10 @@ from density_gbdt import calculate_gbdt_density_forecast
 from spatial_interpolation import calculate_spatial_idw
 from transmission_risk import calculate_transmission_risk
 from resistance_evolution import calculate_resistance_evolution
-from satscan_cluster import calculate_satscan_spatial_clusters
-from lstm_predictor import calculate_lstm_short_term_forecast
+from satscan_cluster import calculate_satscan_spatial_clusters, run_satscan_spatial_standalone
+from lstm_predictor import calculate_lstm_short_term_forecast, run_lstm_predictor_standalone
 from satscan_lstm_pipeline import run_satscan_kmeans_lstm_pipeline
+from composable_workflow import run_dynamic_composable_workflow
 from daemon_surveillance import run_daemon_surveillance_cycle
 
 VECTOR_DB_PATH = os.path.join(BASE_DIR, "vector_monitoring.db")
@@ -325,6 +326,8 @@ class VectorSurveillanceTestSuite:
         
         # 查询验证
         row = cur.execute("SELECT event_id, level, push_status, push_channels FROM biz_early_warning_events WHERE event_id = ?", (test_event_id,)).fetchone()
+        cur.execute("DELETE FROM biz_early_warning_events WHERE event_id = ? OR event_id LIKE 'TEST-ALERT-%'", (test_event_id,))
+        conn.commit()
         conn.close()
         
         r.assert_true(row is not None, "预警事件成功持久化到业务数据库")
@@ -394,6 +397,8 @@ class VectorSurveillanceTestSuite:
         
         # 4. 验证核销状态
         ticket_after = cur.execute("SELECT disposal_status, after_bi_index, resolved_at FROM biz_disposal_tickets WHERE ticket_id = ?", (test_ticket_id,)).fetchone()
+        cur.execute("DELETE FROM biz_disposal_tickets WHERE ticket_id = ? OR ticket_id LIKE 'TICKET-TEST-%'", (test_ticket_id,))
+        conn.commit()
         conn.close()
         
         r.assert_true(ticket_after[0] == "RESOLVED", "工单已成功核销闭环 (RESOLVED)")
@@ -583,6 +588,8 @@ class VectorSurveillanceTestSuite:
         
         # 查询验证
         rep_row = cur_b.execute("SELECT title, author, length(content_markdown) FROM biz_generated_reports WHERE report_id = ?", (test_rep_id,)).fetchone()
+        cur_b.execute("DELETE FROM biz_generated_reports WHERE report_id = ? OR report_id LIKE 'REP-TEST-%'", (test_rep_id,))
+        conn_b.commit()
         conn_b.close()
         
         r.assert_true(rep_row is not None, "专项报告成功生成并归档写入数据库")
@@ -634,6 +641,8 @@ class VectorSurveillanceTestSuite:
         conn.commit()
         
         sub_row = cur.execute("SELECT submission_id, recognized_species, ai_confidence, audit_status FROM biz_mobile_submissions WHERE submission_id = ?", (test_sub_id,)).fetchone()
+        cur.execute("DELETE FROM biz_mobile_submissions WHERE submission_id = ? OR submission_id LIKE 'MOB-SUB-%'", (test_sub_id,))
+        conn.commit()
         conn.close()
         
         r.assert_true(sub_row is not None, "移动端采集记录成功提交入库")
@@ -671,12 +680,12 @@ class VectorSurveillanceTestSuite:
         r.assert_true(len(rows) > 0, "自定义动态 SQL 语句在底层大盘库编译执行成功")
         r.assert_true(rows[0][2] > 0, "计算出有效物种聚合捕获总量")
         
-        # 注册至业务库
+        # 注册至业务库 (使用专用测试 ID，并在断言后执行清理)
         conn_b = sqlite3.connect(APP_BUSINESS_DB_PATH)
         cur_b = conn_b.cursor()
-        test_skill_id = f"skill_custom_{int(time.time())}"
+        test_skill_id = "test_custom_skill_top5_analysis"
         cur_b.execute("""
-            INSERT INTO biz_custom_skills (
+            INSERT OR REPLACE INTO biz_custom_skills (
                 skill_id, name, description, category, sql_query, chart_type,
                 recommended_prompts, created_by, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -689,6 +698,10 @@ class VectorSurveillanceTestSuite:
         conn_b.commit()
         
         skill_row = cur_b.execute("SELECT name, chart_type, created_by FROM biz_custom_skills WHERE skill_id = ?", (test_skill_id,)).fetchone()
+        
+        # 清理测试产生的临时数据，避免污染持久业务数据库与造成技能列表重复累积
+        cur_b.execute("DELETE FROM biz_custom_skills WHERE skill_id = ? OR skill_id LIKE 'skill_custom_%'", (test_skill_id,))
+        conn_b.commit()
         conn_b.close()
         
         r.assert_true(skill_row is not None, "动态自定义新技能成功注册入库")
@@ -785,6 +798,111 @@ class VectorSurveillanceTestSuite:
         }
 
     # --------------------------------------------------------------------------
+    # EXT-04: 独立原子技能 · SaTScan 空间泊松扫描 (独立使用场景)
+    # --------------------------------------------------------------------------
+    def test_ext_satscan_spatial_standalone(self, r: TestResult):
+        r.scenario = "单独调用 SaTScan 空间泊松时空扫描，输出纯 GIS 扫描图层、显著聚集簇与 LLR/RR 统计量"
+        res = run_satscan_spatial_standalone(
+            db_path=VECTOR_DB_PATH,
+            year=2022,
+            month=6,
+            category="蚊",
+            max_cluster_radius_km=120.0,
+            p_threshold=0.05
+        )
+
+        r.assert_true(res.get("success") is True, "独立 SaTScan 空间扫描执行成功")
+        r.assert_true(res.get("mode") == "standalone_satscan", "确认处于 standalone_satscan 独立研判模式")
+        r.assert_true(res.get("generative_ui", {}).get("component") == "SatScanSpatialCard", "绑定独立生成式组件 SatScanSpatialCard")
+        
+        clusters = res.get("clusters", [])
+        r.assert_true(len(clusters) > 0, f"成功扫描识别 {len(clusters)} 个空间聚集簇")
+        
+        primary = clusters[0]
+        r.assert_true(primary.get("log_likelihood_ratio", 0) > 0, f"一类核心聚集区 LLR={primary.get('log_likelihood_ratio')} > 0")
+        r.assert_true(primary.get("relative_risk", 0) >= 1.0, f"相对危险度 RR={primary.get('relative_risk')} >= 1.0")
+
+        r.metrics = {
+            "title": res.get("title"),
+            "clustersCount": len(clusters),
+            "primaryCity": primary.get("center_city"),
+            "primaryDistrict": primary.get("center_district"),
+            "primaryRR": primary.get("relative_risk"),
+            "component": res.get("generative_ui", {}).get("component")
+        }
+
+    # --------------------------------------------------------------------------
+    # EXT-05: 独立原子技能 · LSTM 深度时序预测 (独立使用场景)
+    # --------------------------------------------------------------------------
+    def test_ext_lstm_predictor_standalone(self, r: TestResult):
+        r.scenario = "单独运行 LSTM 递归神经网络，滚动预测指定地市未来 7 天日级密度走势与 95% 置信带"
+        res = run_lstm_predictor_standalone(
+            db_path=VECTOR_DB_PATH,
+            city="信阳市",
+            category="蚊",
+            forecast_days=7,
+            start_date_str="2022-06-01"
+        )
+
+        r.assert_true(res.get("success") is True, "独立 LSTM 深度时序预测执行成功")
+        r.assert_true(res.get("mode") == "standalone_lstm", "确认处于 standalone_lstm 独立时序外推模式")
+        r.assert_true(res.get("generative_ui", {}).get("component") == "LSTMPredictorCard", "绑定独立生成式组件 LSTMPredictorCard")
+        
+        preds = res.get("predictions", {})
+        r.assert_true("信阳市" in preds, "包含信阳市日级预测序列")
+        
+        xy_series = preds["信阳市"]["forecast_series"]
+        r.assert_true(len(xy_series) == 7, f"完整输出 7 天滚动日级序列 (实际 {len(xy_series)} 天)")
+        r.assert_true(xy_series[-1]["ci_upper"] >= xy_series[-1]["predicted_density"], "置信区间上界 ci_upper >= 点估计密度")
+        r.assert_true(xy_series[-1]["ci_lower"] <= xy_series[-1]["predicted_density"], "置信区间下界 ci_lower <= 点估计密度")
+
+        r.metrics = {
+            "targetCity": "信阳市",
+            "forecastHorizon": f"{res.get('forecast_days')} 天",
+            "peakDensity": preds["信阳市"]["peak_density"],
+            "peakDate": preds["信阳市"]["peak_date"],
+            "component": res.get("generative_ui", {}).get("component")
+        }
+
+    # --------------------------------------------------------------------------
+    # EXT-06: 通用可编排 LangGraph 多技能动态协同工作流 (跨技能自由组合)
+    # --------------------------------------------------------------------------
+    def test_ext_composable_workflow(self, r: TestResult):
+        r.scenario = "动态编排 3 项跨领域技能 (SaTScan 空间扫描 ➔ 病原 PCR 关联 ➔ 自动消杀派单)，共享上下文自动传递"
+        steps = [
+            {"stepId": 1, "skillId": "skill_satscan_spatial", "title": "SaTScan 空间泊松扫描", "args": {"year": 2022, "month": 6, "category": "蚊"}},
+            {"stepId": 2, "skillId": "skill_pathogen_risk", "title": "病原 PCR 携带关联挖掘", "args": {}},
+            {"stepId": 3, "skillId": "skill_disposal_workflow", "title": "全自动消杀处置派单", "args": {}}
+        ]
+
+        res = run_dynamic_composable_workflow(
+            db_path=VECTOR_DB_PATH,
+            workflow_name="SaTScan空间扫描 ➔ 病原关联挖掘 ➔ 自动消杀派单 协同流",
+            steps=steps,
+            initial_context={"year": 2022, "month": 6, "category": "蚊"}
+        )
+
+        r.assert_true(res.get("success") is True, "动态组合 LangGraph 工作流执行成功")
+        r.assert_true(res.get("total_steps") == 3, "成功流转全部 3 个动态编排节点")
+        r.assert_true(res.get("generative_ui", {}).get("component") == "ComposableWorkflowCard", "绑定通用多步骤工作流看板 ComposableWorkflowCard")
+        
+        step_res = res.get("step_results", {})
+        r.assert_true("step_1" in step_res and "step_2" in step_res and "step_3" in step_res, "三步产物全部在 step_results 中完整沉淀")
+        
+        shared_ctx = res.get("shared_context", {})
+        r.assert_true(len(shared_ctx.get("high_risk_cities", [])) > 0, "Step 1 识别的高危城市成功传递到 shared_context 供 Step 2/3 消费")
+
+        logs = res.get("execution_logs", [])
+        r.assert_true(len(logs) >= 4, f"完整记录动态 DAG 执行流审计日志 ({len(logs)} 条)")
+
+        r.metrics = {
+            "workflowName": res.get("workflow_name"),
+            "totalSteps": res.get("total_steps"),
+            "sharedContextKeys": list(shared_ctx.keys()),
+            "component": res.get("generative_ui", {}).get("component")
+        }
+
+    # --------------------------------------------------------------------------
     # 执行全套测试并生成报告
     # --------------------------------------------------------------------------
     def run_all(self):
@@ -813,6 +931,9 @@ class VectorSurveillanceTestSuite:
         self.run_test("EXT-01", "对话式自定义创建技能", "自定义技能", "Meta-Skill SQL 编译与注册", self.test_ext_meta_custom_builder)
         self.run_test("EXT-02", "SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线", "复杂计算编排", "泊松时空扫描+亚群画像+LSTM带状外推", self.test_ext_satscan_kmeans_lstm_pipeline)
         self.run_test("EXT-03", "后台常驻数据分析智能体", "智能体守护", "提示词策略注入+自发预警+队列推送", self.test_ext_daemon_surveillance)
+        self.run_test("EXT-04", "独立原子技能 · SaTScan 空间泊松扫描", "空间聚集扫描", "独立空间扫描+GIS热点圆环展示", self.test_ext_satscan_spatial_standalone)
+        self.run_test("EXT-05", "独立原子技能 · LSTM 深度时序预测", "深度时序预测", "独立LSTM时序外推+95%带状置信区间", self.test_ext_lstm_predictor_standalone)
+        self.run_test("EXT-06", "通用可编排 LangGraph 多技能动态工作流", "通用工作流", "跨领域多技能自由编排+上下文管道流转", self.test_ext_composable_workflow)
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()

@@ -85,14 +85,15 @@ export async function routeSkillWithLLM(
   const trimmed = promptText.trim();
   const lower = trimmed.toLowerCase();
 
-  // 显式前置意图匹配 1：SaTScan ➔ K-Means ➔ LSTM 多步计算流水线
-  if (
-    lower.includes('satscan') || 
-    (lower.includes('lstm') && (lower.includes('高风险') || lower.includes('扫描') || lower.includes('全省'))) ||
+  // 显式前置意图匹配 1-A：多步复合流水线 (SaTScan ➔ K-Means ➔ LSTM)
+  const isMultiStepChain = 
+    (lower.includes('satscan') && (lower.includes('lstm') || lower.includes('导入') || lower.includes('预测下一周') || lower.includes('预测未来'))) ||
     lower.includes('多步操作') || 
     lower.includes('satscan → k-means → lstm') ||
-    lower.includes('satscan ➔ kmeans ➔ lstm')
-  ) {
+    lower.includes('satscan ➔ kmeans ➔ lstm') ||
+    lower.includes('satscan ➔ k-means ➔ lstm');
+
+  if (isMultiStepChain) {
     let year = 2022;
     let month = 3;
     const yearMatch = trimmed.match(/(20\d{2})年?/);
@@ -111,6 +112,100 @@ export async function routeSkillWithLLM(
       skillName: 'SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线',
       args: { year, month, category, forecastDays: 7, pThreshold: 0.05 },
       reasoning: '检测到用户需要执行 SaTScan 泊松时空扫描并级联 LSTM 时序外推预测的多步复杂科学计算任务。'
+    };
+  }
+
+  // 显式前置意图匹配 1-B：通用跨技能可编排工作流 (如: SaTScan ➔ 病原 ➔ 派单 / 种群消长 ➔ 抗药性 ➔ 公报)
+  if (
+    (lower.includes('先') && lower.includes('再') && (lower.includes('最后') || lower.includes('然后'))) ||
+    (lower.includes('结合') && lower.includes('并生成') && lower.includes('工单')) ||
+    lower.includes('动态工作流') ||
+    lower.includes('可编排工作流')
+  ) {
+    let year = 2022;
+    let month = 6;
+    const yearMatch = trimmed.match(/(20\d{2})年?/);
+    if (yearMatch) year = parseInt(yearMatch[1], 10);
+    const monthMatch = trimmed.match(/(\d{1,2})月/);
+    if (monthMatch) month = parseInt(monthMatch[1], 10);
+
+    const steps = [
+      { stepId: 1, skillId: 'skill_satscan_spatial', title: 'SaTScan 空间泊松扫描', args: { year, month, category: '蚊' } },
+      { stepId: 2, skillId: 'skill_pathogen_risk', title: '病原 PCR 携带关联挖掘', args: {} },
+      { stepId: 3, skillId: 'skill_disposal_workflow', title: '全自动消杀处置派单', args: {} }
+    ];
+
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_composable_workflow',
+      skillName: '通用多技能动态协同工作流 (LangGraph Composable)',
+      args: {
+        workflowName: 'SaTScan空间扫描 ➔ 病原关联挖掘 ➔ 自动消杀派单 协同流',
+        steps,
+        initialContext: { year, month, category: '蚊' }
+      },
+      reasoning: '检测到用户触发跨技能通用 LangGraph 动态协同工作流。'
+    };
+  }
+
+  // 显式前置意图匹配 1-C：独立原子技能 · SaTScan 空间泊松时空扫描 (单独使用，无 LSTM/流水线)
+  if (
+    lower.includes('satscan') || 
+    lower.includes('泊松扫描') || 
+    lower.includes('空间聚集扫描') ||
+    (lower.includes('时空扫描') && !lower.includes('lstm'))
+  ) {
+    let year = 2022;
+    let month = 6;
+    const yearMatch = trimmed.match(/(20\d{2})年?/);
+    if (yearMatch) year = parseInt(yearMatch[1], 10);
+    const monthMatch = trimmed.match(/(\d{1,2})月/);
+    if (monthMatch) month = parseInt(monthMatch[1], 10);
+    
+    let category = '蚊';
+    if (trimmed.includes('蝇')) category = '蝇';
+    else if (trimmed.includes('鼠')) category = '鼠';
+    else if (trimmed.includes('蟑螂')) category = '蟑螂';
+
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_satscan_spatial',
+      skillName: 'SaTScan 空间泊松时空扫描模型',
+      args: { year, month, category, maxRadiusKm: 120.0, pThreshold: 0.05 },
+      reasoning: '检测到用户需要单独调用 SaTScan 进行全省病媒空间泊松扫描与 GIS 地图聚集热点可视化。'
+    };
+  }
+
+  // 显式前置意图匹配 1-D：独立原子技能 · LSTM 深度时序预测 (单独使用，无 SaTScan 扫描)
+  if (
+    lower.includes('lstm') || 
+    lower.includes('长短期记忆') || 
+    (lower.includes('深度时序') && lower.includes('预测'))
+  ) {
+    let city = '郑州市';
+    if (trimmed.includes('信阳')) city = '信阳市';
+    else if (trimmed.includes('南阳')) city = '南阳市';
+    else if (trimmed.includes('洛阳')) city = '洛阳市';
+    else if (trimmed.includes('周口')) city = '周口市';
+    else if (trimmed.includes('漯河')) city = '漯河市';
+    else if (trimmed.includes('开封')) city = '开封市';
+
+    let category = '蚊';
+    if (trimmed.includes('蝇')) category = '蝇';
+    else if (trimmed.includes('鼠')) category = '鼠';
+    else if (trimmed.includes('蟑螂')) category = '蟑螂';
+
+    let days = 7;
+    const daysMatch = trimmed.match(/(\d{1,2})天/);
+    if (daysMatch) days = parseInt(daysMatch[1], 10);
+    else if (trimmed.includes('两周') || trimmed.includes('14天')) days = 14;
+
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_lstm_predictor',
+      skillName: 'LSTM 深度时序外推预测模型',
+      args: { city, category, forecastDays: days, targetCities: [city, '信阳市', '南阳市', '郑州市'] },
+      reasoning: '检测到用户需要单独运行 LSTM 递归神经网络进行日级时序密度外推与 95% 置信区间预测。'
     };
   }
 

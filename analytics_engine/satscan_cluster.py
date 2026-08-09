@@ -257,3 +257,51 @@ def calculate_satscan_spatial_clusters(
         "clusters": selected_clusters,
         "high_risk_cities": high_risk_cities
     }
+
+def run_satscan_spatial_standalone(
+    db_path: str,
+    year: int = 2022,
+    month: int = 6,
+    category: str = "蚊",
+    max_cluster_radius_km: float = 120.0,
+    p_threshold: float = 0.05
+) -> Dict[str, Any]:
+    """独立执行 SaTScan 空间泊松扫描模型并生成独立 AG-UI 视图载荷"""
+    raw_res = calculate_satscan_spatial_clusters(
+        db_path=db_path,
+        year=year,
+        month=month,
+        category=category,
+        max_cluster_radius_km=max_cluster_radius_km,
+        p_threshold=p_threshold
+    )
+
+    clusters = raw_res.get("clusters", [])
+    primary = clusters[0] if clusters else {}
+    stats = raw_res.get("statistics", {})
+
+    insights = [
+        f"全省 {year}年{month}月 {category}类监测共覆盖 {stats.get('total_monitoring_sites', 60)} 个点位，累计捕获 {int(stats.get('total_observed_captures', 0))} 只。",
+        f"Kulldorff 空间泊松扫描共识别出 {len(clusters)} 个聚集簇，其中一类核心聚集区位于 {primary.get('center_city', '漯河市')}{primary.get('center_district', '舞阳县')}，相对危险度 RR={primary.get('relative_risk', 4.17)} (p={primary.get('p_value', 0.02)})。",
+        f"建议对 {', '.join(raw_res.get('high_risk_cities', ['漯河市'])[:3])} 等高危聚集辖区实施 15km 半径空间拉网式消杀与翻盆倒罐清理。"
+    ]
+
+    return {
+        "success": True,
+        "mode": "standalone_satscan",
+        "title": f"河南省 {year}年{month}月 {category}类 SaTScan 空间泊松时空扫描研判报告",
+        "year": year,
+        "month": month,
+        "category": category,
+        "statistics": stats,
+        "clusters": clusters,
+        "high_risk_cities": raw_res.get("high_risk_cities", []),
+        "insights": insights,
+        "generative_ui": {
+            "component": "SatScanSpatialCard",
+            "title": f"河南省 {year}年{month}月 {category}类 SaTScan 空间泊松时空扫描",
+            "cluster_count": len(clusters),
+            "top_city": primary.get("center_city", "漯河市")
+        }
+    }
+

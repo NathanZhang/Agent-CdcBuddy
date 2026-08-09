@@ -556,7 +556,69 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       };
     }
 
-    // 17. 后台常驻数据分析智能体管理与即时巡检
+    // 16. SaTScan 空间泊松时空扫描模型 (独立原子技能)
+    case 'skill_satscan_spatial': {
+      const year = Number(args.year) || 2022;
+      const month = Number(args.month) || 6;
+      const category = args.category || '蚊';
+      const maxRadiusKm = Number(args.maxRadiusKm) || 120.0;
+      const pThreshold = Number(args.pThreshold) || 0.05;
+
+      const result = await runAnalyticsEngine('satscan_spatial', {
+        year,
+        month,
+        category,
+        maxRadiusKm,
+        pThreshold
+      });
+
+      return {
+        type: 'SATSCAN_SPATIAL_VIEW',
+        ...result
+      };
+    }
+
+    // 17. LSTM 深度时序外推预测模型 (独立原子技能)
+    case 'skill_lstm_predictor': {
+      const city = args.city || '郑州市';
+      const category = args.category || '蚊';
+      const forecastDays = Number(args.forecastDays) || 7;
+      const targetCities = args.targetCities || [city, '信阳市', '南阳市', '洛阳市'];
+      const startDateStr = args.startDateStr || '2022-06-01';
+
+      const result = await runAnalyticsEngine('lstm_predictor', {
+        city,
+        targetCities,
+        category,
+        forecastDays,
+        startDateStr
+      });
+
+      return {
+        type: 'LSTM_PREDICTOR_VIEW',
+        ...result
+      };
+    }
+
+    // 19. 通用多技能可编排工作流 (LangGraph Composable Workflow)
+    case 'skill_composable_workflow': {
+      const workflowName = args.workflowName || '多技能动态协同工作流';
+      const steps = args.steps || [];
+      const initialContext = args.initialContext || {};
+
+      const result = await runAnalyticsEngine('composable_workflow', {
+        workflowName,
+        steps,
+        initialContext
+      });
+
+      return {
+        type: 'COMPOSABLE_WORKFLOW_VIEW',
+        ...result
+      };
+    }
+
+    // 20. 后台常驻数据分析智能体管理与即时巡检
     case 'skill_daemon_surveillance': {
       const result = await runAnalyticsEngine('daemon_surveillance_cycle', {
         promptPolicy: args.promptPolicy,

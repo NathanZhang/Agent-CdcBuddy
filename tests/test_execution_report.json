@@ -1,15 +1,15 @@
 {
   "summary": {
     "suiteName": "疾控病媒生物监测预警智能体 (Agent-CdcBuddy) 功能测试套件",
-    "startTime": "2026-08-09 11:13:32",
-    "endTime": "2026-08-09 11:13:33",
-    "totalDurationSeconds": 0.89,
-    "totalTests": 16,
-    "passed": 16,
+    "startTime": "2026-08-09 11:31:57",
+    "endTime": "2026-08-09 11:31:59",
+    "totalDurationSeconds": 1.62,
+    "totalTests": 19,
+    "passed": 19,
     "failed": 0,
     "passRate": "100.0%",
-    "totalAssertions": 305,
-    "passedAssertions": 305
+    "totalAssertions": 324,
+    "passedAssertions": 324
   },
   "testCases": [
     {
@@ -18,7 +18,7 @@
       "category": "种群动态分析",
       "scenario": "全省蚊媒密度随气温变化的季节消长规律及未来3个月ARIMA时序预测",
       "status": "PASSED",
-      "elapsed_ms": 66.43,
+      "elapsed_ms": 88.0,
       "assertions": "13/13",
       "metrics": {
         "r2Score": 0.65,
@@ -50,7 +50,7 @@
       "category": "种群动态分析",
       "scenario": "郑州市蚊类优势种群构成比（白纹伊蚊 vs 淡色库蚊）识别与 K-Means 聚类",
       "status": "PASSED",
-      "elapsed_ms": 391.5,
+      "elapsed_ms": 488.66,
       "assertions": "10/10",
       "metrics": {
         "dominantSpecies": "淡色(致倦)库蚊",
@@ -78,7 +78,7 @@
       "category": "抗药性评估",
       "scenario": "输入杀虫剂类型与监测点数据，预测病媒生物耐药等级（敏感/中抗/高抗）并推荐消杀用药处方",
       "status": "PASSED",
-      "elapsed_ms": 1.81,
+      "elapsed_ms": 2.72,
       "assertions": "17/17",
       "metrics": {
         "evaluatedRecords": 15,
@@ -115,7 +115,7 @@
       "category": "病原携带风险",
       "scenario": "整合病媒 PCR 检测结果与宿主分布，通过 Apriori 关联规则挖掘高风险病原组合",
       "status": "PASSED",
-      "elapsed_ms": 184.31,
+      "elapsed_ms": 201.08,
       "assertions": "41/41",
       "metrics": {
         "highRiskItemsCount": 34,
@@ -175,7 +175,7 @@
       "category": "动态预警响应",
       "scenario": "多维度预警触发与 IDW 空间插值连续热力图生成，支持地市与区县下钻",
       "status": "PASSED",
-      "elapsed_ms": 25.68,
+      "elapsed_ms": 32.14,
       "assertions": "142/142",
       "metrics": {
         "totalAlerts": 30,
@@ -336,10 +336,10 @@
       "category": "动态预警响应",
       "scenario": "按风险等级自动分类预警，生成通知推送卡片与依据，并持久化写入业务库",
       "status": "PASSED",
-      "elapsed_ms": 25.09,
+      "elapsed_ms": 28.01,
       "assertions": "5/5",
       "metrics": {
-        "persistedEventId": "TEST-ALERT-1786245213",
+        "persistedEventId": "TEST-ALERT-1786246318",
         "pushStatus": "SENT",
         "channels": "系统通知,短信网关,移动端APP推送"
       },
@@ -358,10 +358,10 @@
       "category": "动态预警响应",
       "scenario": "智能生成消杀处置工单、关联三步消杀规程、流转跟踪并通过 BI 复测闭环核销",
       "status": "PASSED",
-      "elapsed_ms": 1.43,
+      "elapsed_ms": 2.74,
       "assertions": "5/5",
       "metrics": {
-        "ticketId": "TICKET-TEST-1786245213",
+        "ticketId": "TICKET-TEST-1786246318",
         "statusTransition": "IN_PROGRESS -> RESOLVED",
         "beforeDensity": 86.0,
         "afterBiIndex": 3.8,
@@ -382,7 +382,7 @@
       "category": "风险预测评估",
       "scenario": "融合气象数据与地理生境，通过 GBDT 梯度提升回归模型预测未来 1-2 个月密度及因子权重",
       "status": "PASSED",
-      "elapsed_ms": 40.85,
+      "elapsed_ms": 51.8,
       "assertions": "7/7",
       "metrics": {
         "city": "郑州市",
@@ -407,7 +407,7 @@
       "category": "风险预测评估",
       "scenario": "构建'病媒密度 × 病原携带率 × 人群暴露指数'关联数学模型，量化传染病传播风险 (0-100)",
       "status": "PASSED",
-      "elapsed_ms": 6.42,
+      "elapsed_ms": 6.72,
       "assertions": "12/12",
       "metrics": {
         "riskScore": 44.2,
@@ -439,7 +439,7 @@
       "category": "风险预测评估",
       "scenario": "基于历史数据与用药频率，贝叶斯/马尔可夫网络预测 1 年内耐药基因频率演化与突变暴发预警",
       "status": "PASSED",
-      "elapsed_ms": 1.17,
+      "elapsed_ms": 1.04,
       "assertions": "20/20",
       "metrics": {
         "evolutionYears": [
@@ -505,7 +505,7 @@
       "category": "智能问答",
       "scenario": "CDC 知识库全文检索与标准条文精准匹配（GB/T 标准、物种鉴别、应急消杀阈值）",
       "status": "PASSED",
-      "elapsed_ms": 0.4,
+      "elapsed_ms": 0.28,
       "assertions": "5/5",
       "metrics": {
         "queriesTested": 4,
@@ -527,10 +527,10 @@
       "category": "专题报告",
       "scenario": "自动提取多维时空数据、生成图表文字综述（四段式报告）并持久化归档至业务库",
       "status": "PASSED",
-      "elapsed_ms": 2.24,
+      "elapsed_ms": 3.33,
       "assertions": "3/3",
       "metrics": {
-        "reportId": "REP-TEST-1786245213",
+        "reportId": "REP-TEST-1786246318",
         "title": "郑州市 2024年病媒生物监测与风险预警专项报告 (测试版)",
         "totalMonitoringRecordsIntegrated": 48530,
         "totalPathogenTestsIntegrated": 7336,
@@ -549,10 +549,10 @@
       "category": "移动端接口",
       "scenario": "移动端 API 仿真：拍照物种 AI 识别、现场记录提交与气象生境数据逻辑质控规则校验",
       "status": "PASSED",
-      "elapsed_ms": 0.89,
+      "elapsed_ms": 1.43,
       "assertions": "6/6",
       "metrics": {
-        "submissionId": "MOB-SUB-1786245213",
+        "submissionId": "MOB-SUB-1786246318",
         "aiRecognizedSpecies": "白纹伊蚊",
         "aiConfidence": "98.4%",
         "qcRulesPassed": true,
@@ -574,10 +574,10 @@
       "category": "自定义技能",
       "scenario": "对话式动态编译 SQL 聚合逻辑、生成专属图表卡片并持久化注册新技能",
       "status": "PASSED",
-      "elapsed_ms": 32.45,
+      "elapsed_ms": 43.59,
       "assertions": "4/4",
       "metrics": {
-        "customSkillId": "skill_custom_1786245213",
+        "customSkillId": "test_custom_skill_top5_analysis",
         "skillName": "郑州市主要病媒物种捕获TOP5分析",
         "chartType": "bar",
         "previewTopSpecies": "淡色(致倦)库蚊 (5587 只)"
@@ -596,7 +596,7 @@
       "category": "复杂计算编排",
       "scenario": "泊松时空扫描+亚群画像+LSTM带状外推",
       "status": "PASSED",
-      "elapsed_ms": 86.8,
+      "elapsed_ms": 178.3,
       "assertions": "8/8",
       "metrics": {
         "targetTime": "2022年3月",
@@ -624,23 +624,108 @@
       "category": "智能体守护",
       "scenario": "提示词策略注入+自发预警+队列推送",
       "status": "PASSED",
-      "elapsed_ms": 23.77,
+      "elapsed_ms": 26.14,
       "assertions": "7/7",
       "metrics": {
-        "cycleTime": "2026-08-09 11:13:33",
+        "cycleTime": "2026-08-09 11:31:58",
         "detectedAnomalies": 10,
         "generatedAlerts": 3,
-        "sampleAlertId": "ALERT-202608-917",
+        "sampleAlertId": "ALERT-202608-905",
         "pushedChannel": "cdc_alert_stream"
       },
       "details": [
         "  [PASS] 后台常驻智能体巡检周期成功执行",
         "  [PASS] 成功检测到 10 处异常密度突增点",
         "  [PASS] 自发研判生成并持久化 3 起分级预警事件",
-        "  [PASS] 自动生成合规预警编码: ALERT-202608-917",
+        "  [PASS] 自动生成合规预警编码: ALERT-202608-905",
         "  [PASS] 正确量化预警等级: red",
         "  [PASS] 预警事件已真实写入业务持久化数据库 biz_early_warning_events",
         "  [PASS] 成功将预警事件推送到 cdc_alert_stream 异步消息通道"
+      ],
+      "error": null
+    },
+    {
+      "req_id": "EXT-04",
+      "title": "独立原子技能 · SaTScan 空间泊松扫描",
+      "category": "空间聚集扫描",
+      "scenario": "单独调用 SaTScan 空间泊松时空扫描，输出纯 GIS 扫描图层、显著聚集簇与 LLR/RR 统计量",
+      "status": "PASSED",
+      "elapsed_ms": 38.15,
+      "assertions": "6/6",
+      "metrics": {
+        "title": "河南省 2022年6月 蚊类 SaTScan 空间泊松时空扫描研判报告",
+        "clustersCount": 3,
+        "primaryCity": "漯河市",
+        "primaryDistrict": "源汇区",
+        "primaryRR": 4.95,
+        "component": "SatScanSpatialCard"
+      },
+      "details": [
+        "  [PASS] 独立 SaTScan 空间扫描执行成功",
+        "  [PASS] 确认处于 standalone_satscan 独立研判模式",
+        "  [PASS] 绑定独立生成式组件 SatScanSpatialCard",
+        "  [PASS] 成功扫描识别 3 个空间聚集簇",
+        "  [PASS] 一类核心聚集区 LLR=1335.077 > 0",
+        "  [PASS] 相对危险度 RR=4.95 >= 1.0"
+      ],
+      "error": null
+    },
+    {
+      "req_id": "EXT-05",
+      "title": "独立原子技能 · LSTM 深度时序预测",
+      "category": "深度时序预测",
+      "scenario": "单独运行 LSTM 递归神经网络，滚动预测指定地市未来 7 天日级密度走势与 95% 置信带",
+      "status": "PASSED",
+      "elapsed_ms": 41.04,
+      "assertions": "7/7",
+      "metrics": {
+        "targetCity": "信阳市",
+        "forecastHorizon": "7 天",
+        "peakDensity": 1.36,
+        "peakDate": "2022-06-08",
+        "component": "LSTMPredictorCard"
+      },
+      "details": [
+        "  [PASS] 独立 LSTM 深度时序预测执行成功",
+        "  [PASS] 确认处于 standalone_lstm 独立时序外推模式",
+        "  [PASS] 绑定独立生成式组件 LSTMPredictorCard",
+        "  [PASS] 包含信阳市日级预测序列",
+        "  [PASS] 完整输出 7 天滚动日级序列 (实际 7 天)",
+        "  [PASS] 置信区间上界 ci_upper >= 点估计密度",
+        "  [PASS] 置信区间下界 ci_lower <= 点估计密度"
+      ],
+      "error": null
+    },
+    {
+      "req_id": "EXT-06",
+      "title": "通用可编排 LangGraph 多技能动态工作流",
+      "category": "通用工作流",
+      "scenario": "动态编排 3 项跨领域技能 (SaTScan 空间扫描 ➔ 病原 PCR 关联 ➔ 自动消杀派单)，共享上下文自动传递",
+      "status": "PASSED",
+      "elapsed_ms": 379.9,
+      "assertions": "6/6",
+      "metrics": {
+        "workflowName": "SaTScan空间扫描 ➔ 病原关联挖掘 ➔ 自动消杀派单 协同流",
+        "totalSteps": 3,
+        "sharedContextKeys": [
+          "year",
+          "month",
+          "category",
+          "high_risk_cities",
+          "primary_cluster",
+          "high_risk_pathogens",
+          "dominant_species",
+          "dispatch_status"
+        ],
+        "component": "ComposableWorkflowCard"
+      },
+      "details": [
+        "  [PASS] 动态组合 LangGraph 工作流执行成功",
+        "  [PASS] 成功流转全部 3 个动态编排节点",
+        "  [PASS] 绑定通用多步骤工作流看板 ComposableWorkflowCard",
+        "  [PASS] 三步产物全部在 step_results 中完整沉淀",
+        "  [PASS] Step 1 识别的高危城市成功传递到 shared_context 供 Step 2/3 消费",
+        "  [PASS] 完整记录动态 DAG 执行流审计日志 (4 条)"
       ],
       "error": null
     }

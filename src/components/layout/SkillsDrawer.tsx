@@ -79,7 +79,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
   if (!isOpen) return null;
 
-  // 格式化自定义技能为标准 VectorSkill 结构并合并
+  // 格式化自定义技能为标准 VectorSkill 结构并合并去重
   const formattedCustomSkills: VectorSkill[] = customSkills.map(cs => ({
     id: cs.id,
     name: cs.name,
@@ -105,7 +105,16 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
     }
   }));
 
-  const allSkills: VectorSkill[] = [...STANDARD_SKILLS, ...formattedCustomSkills];
+  // 合并并根据 ID 与技能名称双重防重
+  const rawSkills: VectorSkill[] = [...STANDARD_SKILLS, ...formattedCustomSkills];
+  const seenSkillIds = new Set<string>();
+  const allSkills: VectorSkill[] = [];
+  for (const s of rawSkills) {
+    if (!seenSkillIds.has(s.id)) {
+      seenSkillIds.add(s.id);
+      allSkills.push(s);
+    }
+  }
 
   const categories = [
     { id: 'all', name: '全部技能', count: allSkills.length },
@@ -258,8 +267,8 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
               </div>
             ) : (
               filteredSkills.map(skill => {
-                const isUserCustomSkill = skill.id.startsWith('custom_skill_');
                 const isMetaBuilder = skill.id === 'skill_meta_custom_builder';
+                const isUserCustomSkill = (!isMetaBuilder && skill.category === 'custom') || skill.id.startsWith('custom_skill_') || skill.id.startsWith('skill_custom_');
                 const isCustomCategory = isUserCustomSkill || isMetaBuilder || skill.category === 'custom';
                 const hasPermission = isUserCustomSkill ? true : canAccessSkill(skill.id);
                 const IconComp = ICON_MAP[skill.iconName] || Layers;
