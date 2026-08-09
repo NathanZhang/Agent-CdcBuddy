@@ -423,6 +423,59 @@ const skillMonitoringDataTable: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_monitoring_data_table', args)
 };
 
+// 16. SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线 (LangGraph Workflow)
+const skillSatScanKMeansLSTM: VectorSkill = {
+  id: 'skill_satscan_kmeans_lstm',
+  name: 'SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线',
+  category: 'forecast',
+  categoryName: '多步科学计算',
+  description: '采用 LangGraph 状态图执行级联计算：调用 SaTScan 泊松时空扫描识别聚集簇，经 K-Means 生态特征亚群画像后，将高危区域导入 LSTM 进行未来 7 天时序趋势与置信区间外推预测。',
+  iconName: 'Workflow',
+  badgeColor: 'purple',
+  recommendedPrompts: [
+    '调用 SaTScan 分析2022年3月全省的蚊媒密度分布，并将高风险区域的数据导入 LSTM 进行下一周的趋势预测。',
+    '执行 SaTScan 空间聚集性扫描并级联 LSTM 预测郑州与信阳未来一周蚊类密度。',
+    '运行 SaTScan ➔ K-Means ➔ LSTM 多步分析流水线。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      year: { type: 'number', description: '分析目标年份 (默认 2022)', default: 2022 },
+      month: { type: 'number', description: '分析目标月份 (1~12，默认 3)', default: 3 },
+      category: { type: 'string', description: '病媒种类 (蚊, 蝇, 蟑螂, 鼠)', default: '蚊' },
+      forecastDays: { type: 'number', description: 'LSTM 预测天数 (默认 7 天)', default: 7 },
+      pThreshold: { type: 'number', description: 'SaTScan 显著性 p 阈值 (默认 0.05)', default: 0.05 }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_satscan_kmeans_lstm', args)
+};
+
+// 17. 后台常驻数据分析智能体管理与即时巡检 (Surveillance Daemon Agent)
+const skillDaemonSurveillance: VectorSkill = {
+  id: 'skill_daemon_surveillance',
+  name: '后台常驻数据分析智能体 (Daemon Agent)',
+  category: 'warning',
+  categoryName: '智能体守护',
+  description: '管理与触发后台常驻巡检智能体，支持专家提示词策略注入，自动扫描多维时空异常、生成分级预警并推送到消息队列。',
+  iconName: 'ShieldAlert',
+  badgeColor: 'rose',
+  recommendedPrompts: [
+    '启动后台数据分析智能体进行全省蚊媒巡检并自动推送预警。',
+    '配置后台智能体提示词策略：重点关注豫南信阳与南阳登革热高危区。',
+    '查看后台常驻智能体最新巡检状态与消息队列推送记录。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      promptPolicy: { type: 'string', description: '专家自然语言巡检策略或提示词' },
+      triggerSource: { type: 'string', description: '触发源 (timer_scheduled | event_driven | manual_invoke)', default: 'manual_invoke' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_daemon_surveillance', args)
+};
+
 export const STANDARD_SKILLS: VectorSkill[] = [
   skillPopulationDynamics,
   skillSpeciesComposition,
@@ -438,9 +491,12 @@ export const STANDARD_SKILLS: VectorSkill[] = [
   skillAutoReportGen,
   skillMobileAssistantApi,
   skillMetaCustomBuilder,
-  skillMonitoringDataTable
+  skillMonitoringDataTable,
+  skillSatScanKMeansLSTM,
+  skillDaemonSurveillance
 ];
 
 export function getSkillById(skillId: string): VectorSkill | undefined {
   return STANDARD_SKILLS.find(s => s.id === skillId);
 }
+

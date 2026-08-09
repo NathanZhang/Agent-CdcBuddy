@@ -33,6 +33,10 @@ from density_gbdt import calculate_gbdt_density_forecast
 from spatial_interpolation import calculate_spatial_idw
 from transmission_risk import calculate_transmission_risk
 from resistance_evolution import calculate_resistance_evolution
+from satscan_cluster import calculate_satscan_spatial_clusters
+from lstm_predictor import calculate_lstm_short_term_forecast
+from satscan_lstm_pipeline import run_satscan_kmeans_lstm_pipeline
+from daemon_surveillance import run_daemon_surveillance_cycle
 
 VECTOR_DB_PATH = os.path.join(BASE_DIR, "vector_monitoring.db")
 APP_BUSINESS_DB_PATH = os.path.join(BASE_DIR, "app_business.db")
@@ -698,6 +702,89 @@ class VectorSurveillanceTestSuite:
         }
 
     # --------------------------------------------------------------------------
+    # EXT-02: SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线 (LangGraph Pipeline)
+    # --------------------------------------------------------------------------
+    def test_ext_satscan_kmeans_lstm_pipeline(self, r: TestResult):
+        res = run_satscan_kmeans_lstm_pipeline(
+            db_path=VECTOR_DB_PATH,
+            year=2022,
+            month=3,
+            category="蚊",
+            forecast_days=7,
+            p_threshold=0.05
+        )
+
+        r.assert_true(res.get("success") is True, "SaTScan ➔ K-Means ➔ LSTM 多步流水线成功执行")
+        
+        satscan_clusters = res.get("satscan_data", {}).get("clusters", [])
+        r.assert_true(len(satscan_clusters) > 0, f"SaTScan 成功扫描出 {len(satscan_clusters)} 个空间聚集区")
+        
+        primary_c = satscan_clusters[0] if satscan_clusters else {}
+        r.assert_true(primary_c.get("log_likelihood_ratio", 0) > 0, f"一级聚集区 LLR={primary_c.get('log_likelihood_ratio')} > 0")
+        r.assert_true(primary_c.get("relative_risk", 0) >= 1.0, f"一级聚集区相对危险度 RR={primary_c.get('relative_risk')} >= 1.0")
+
+        kmeans_groups = res.get("kmeans_subgroups", [])
+        r.assert_true(len(kmeans_groups) == 3, "K-Means 成功完成 3 类生态亚群画像与消杀配方赋能")
+
+        lstm_pred = res.get("lstm_forecast", {})
+        r.assert_true(lstm_pred.get("success") is True, "LSTM 递归神经网络成功完成未来 7 天密度外推")
+        r.assert_true(len(lstm_pred.get("predictions", {})) > 0, "成功为所有高危热点城市生成带状 95% 置信区间预测曲线")
+
+        logs = res.get("execution_logs", [])
+        r.assert_true(len(logs) >= 5, "完整记录 LangGraph 状态图 5 个节点的审计日志")
+
+        r.metrics = {
+            "targetTime": res.get("target_time"),
+            "clustersCount": len(satscan_clusters),
+            "primaryCity": primary_c.get("center_city"),
+            "primaryLLR": primary_c.get("log_likelihood_ratio"),
+            "kmeansSubgroups": len(kmeans_groups),
+            "requiresHilReview": res.get("summary", {}).get("requires_hil_review")
+        }
+
+    # --------------------------------------------------------------------------
+    # EXT-03: 后台常驻数据分析智能体 (Surveillance Daemon Agent)
+    # --------------------------------------------------------------------------
+    def test_ext_daemon_surveillance(self, r: TestResult):
+        test_policy = "专家提示词策略：重点巡检信阳与南阳登革热高危区，自发生成预警并推送到队列"
+        res = run_daemon_surveillance_cycle(
+            monitoring_db_path=VECTOR_DB_PATH,
+            business_db_path=APP_BUSINESS_DB_PATH,
+            prompt_policy=test_policy,
+            trigger_source="timer_scheduled"
+        )
+
+        r.assert_true(res.get("success") is True, "后台常驻智能体巡检周期成功执行")
+        
+        anom_count = res.get("detected_anomalies_count", 0)
+        r.assert_true(anom_count > 0, f"成功检测到 {anom_count} 处异常密度突增点")
+
+        alerts = res.get("generated_alerts", [])
+        r.assert_true(len(alerts) > 0, f"自发研判生成并持久化 {len(alerts)} 起分级预警事件")
+        
+        sample_alert = alerts[0]
+        r.assert_true(sample_alert.get("alert_id", "").startswith("ALERT-"), f"自动生成合规预警编码: {sample_alert.get('alert_id')}")
+        r.assert_true(sample_alert.get("level") in ["red", "orange", "yellow"], f"正确量化预警等级: {sample_alert.get('level')}")
+
+        conn_b = sqlite3.connect(APP_BUSINESS_DB_PATH)
+        cur_b = conn_b.cursor()
+        saved_row = cur_b.execute("SELECT event_id, title, level, city FROM biz_early_warning_events WHERE event_id = ?", (sample_alert["event_id"],)).fetchone()
+        conn_b.close()
+        
+        r.assert_true(saved_row is not None, "预警事件已真实写入业务持久化数据库 biz_early_warning_events")
+
+        q_status = res.get("queue_push_status", {})
+        r.assert_true(q_status.get("channel") == "cdc_alert_stream", "成功将预警事件推送到 cdc_alert_stream 异步消息通道")
+
+        r.metrics = {
+            "cycleTime": res.get("cycle_timestamp"),
+            "detectedAnomalies": anom_count,
+            "generatedAlerts": len(alerts),
+            "sampleAlertId": sample_alert.get("alert_id"),
+            "pushedChannel": q_status.get("channel")
+        }
+
+    # --------------------------------------------------------------------------
     # 执行全套测试并生成报告
     # --------------------------------------------------------------------------
     def run_all(self):
@@ -724,6 +811,8 @@ class VectorSurveillanceTestSuite:
         self.run_test("REQ-34", "自动生成专题报告", "专题报告", "四段式公报生成与归档导出", self.test_req_34_auto_report_gen)
         self.run_test("REQ-35", "移动端智能辅助(API)", "移动端接口", "AI拍照识别/自动填单/质控校验", self.test_req_35_mobile_assistant_api)
         self.run_test("EXT-01", "对话式自定义创建技能", "自定义技能", "Meta-Skill SQL 编译与注册", self.test_ext_meta_custom_builder)
+        self.run_test("EXT-02", "SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线", "复杂计算编排", "泊松时空扫描+亚群画像+LSTM带状外推", self.test_ext_satscan_kmeans_lstm_pipeline)
+        self.run_test("EXT-03", "后台常驻数据分析智能体", "智能体守护", "提示词策略注入+自发预警+队列推送", self.test_ext_daemon_surveillance)
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()

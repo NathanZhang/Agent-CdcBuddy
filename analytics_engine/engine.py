@@ -14,6 +14,10 @@ from density_gbdt import calculate_gbdt_density_forecast
 from spatial_interpolation import calculate_spatial_idw
 from transmission_risk import calculate_transmission_risk
 from resistance_evolution import calculate_resistance_evolution
+from satscan_cluster import calculate_satscan_spatial_clusters
+from lstm_predictor import calculate_lstm_short_term_forecast
+from satscan_lstm_pipeline import run_satscan_kmeans_lstm_pipeline
+from daemon_surveillance import run_daemon_surveillance_cycle
 
 candidate_paths = [
     os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../vector_monitoring.db")),
@@ -96,6 +100,40 @@ def main():
             db_path=db_path,
             species_name=args.get("speciesName", "淡色库蚊"),
             pesticide_name=args.get("pesticideName", "氯氰菊酯")
+        )
+    elif task == "satscan_cluster":
+        result = calculate_satscan_spatial_clusters(
+            db_path=db_path,
+            year=int(args.get("year", 2022)),
+            month=int(args.get("month", 3)),
+            category=args.get("category", "蚊"),
+            max_cluster_radius_km=float(args.get("maxClusterRadiusKm", 120.0)),
+            p_threshold=float(args.get("pThreshold", 0.05))
+        )
+    elif task == "lstm_predictor":
+        result = calculate_lstm_short_term_forecast(
+            db_path=db_path,
+            target_cities=args.get("targetCities"),
+            category=args.get("category", "蚊"),
+            forecast_days=int(args.get("forecastDays", 7)),
+            start_date_str=args.get("startDateStr", "2022-04-01")
+        )
+    elif task == "satscan_kmeans_lstm_pipeline":
+        result = run_satscan_kmeans_lstm_pipeline(
+            db_path=db_path,
+            year=int(args.get("year", 2022)),
+            month=int(args.get("month", 3)),
+            category=args.get("category", "蚊"),
+            forecast_days=int(args.get("forecastDays", 7)),
+            p_threshold=float(args.get("pThreshold", 0.05))
+        )
+    elif task in ["daemon_surveillance", "daemon_surveillance_cycle"]:
+        biz_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../app_business.db"))
+        result = run_daemon_surveillance_cycle(
+            monitoring_db_path=db_path,
+            business_db_path=args.get("businessDbPath", biz_db),
+            prompt_policy=args.get("promptPolicy") or args.get("prompt_policy"),
+            trigger_source=args.get("triggerSource") or args.get("trigger_source", "timer_scheduled")
         )
     else:
         result = {"error": f"Unknown task: {task}"}

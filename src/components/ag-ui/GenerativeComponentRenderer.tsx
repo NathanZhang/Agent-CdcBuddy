@@ -14,6 +14,8 @@ import { AutoReportViewer } from './AutoReportViewer';
 import { MobileSimulationModal } from './MobileSimulationModal';
 import { CustomSkillBuilderModal } from './CustomSkillBuilderModal';
 import { DataTableComponent } from './DataTableComponent';
+import { SatScanLSTMPipelineCard } from './SatScanLSTMPipelineCard';
+import { DaemonSurveillanceCard } from './DaemonSurveillanceCard';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { Bot } from 'lucide-react';
 
@@ -110,6 +112,14 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
           explanation={view.explanation}
           data={view.data}
         />
+      )}
+
+      {view.type === 'SATSCAN_KMEANS_LSTM_PIPELINE' && (
+        <SatScanLSTMPipelineCard data={view} />
+      )}
+
+      {view.type === 'DAEMON_SURVEILLANCE_VIEW' && (
+        <DaemonSurveillanceCard data={view} />
       )}
 
       {view.type === 'NLQ_KNOWLEDGE_ANSWER' && (

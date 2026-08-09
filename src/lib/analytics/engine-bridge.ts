@@ -11,7 +11,11 @@ export interface AnalyticsEngineTask {
     | 'density_gbdt'
     | 'spatial_idw'
     | 'transmission_risk'
-    | 'resistance_evolution';
+    | 'resistance_evolution'
+    | 'satscan_cluster'
+    | 'lstm_predictor'
+    | 'satscan_kmeans_lstm_pipeline'
+    | 'daemon_surveillance_cycle';
   args?: Record<string, any>;
 }
 

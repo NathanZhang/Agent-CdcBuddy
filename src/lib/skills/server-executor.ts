@@ -533,6 +533,41 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         data: result.data
       };
     }
+
+    // 16. SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线
+    case 'skill_satscan_kmeans_lstm': {
+      const year = Number(args.year) || 2022;
+      const month = Number(args.month) || 3;
+      const category = args.category || '蚊';
+      const forecastDays = Number(args.forecastDays) || 7;
+      const pThreshold = Number(args.pThreshold) || 0.05;
+
+      const result = await runAnalyticsEngine('satscan_kmeans_lstm_pipeline', {
+        year,
+        month,
+        category,
+        forecastDays,
+        pThreshold
+      });
+
+      return {
+        type: 'SATSCAN_KMEANS_LSTM_PIPELINE',
+        ...result
+      };
+    }
+
+    // 17. 后台常驻数据分析智能体管理与即时巡检
+    case 'skill_daemon_surveillance': {
+      const result = await runAnalyticsEngine('daemon_surveillance_cycle', {
+        promptPolicy: args.promptPolicy,
+        triggerSource: args.triggerSource || 'manual_invoke'
+      });
+
+      return {
+        type: 'DAEMON_SURVEILLANCE_VIEW',
+        ...result
+      };
+    }
     default: {
       // 支持自定义技能 (custom_skill_*) 的直接调度执行
       if (skillId.startsWith('custom_skill_')) {

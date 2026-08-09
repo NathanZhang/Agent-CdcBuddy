@@ -61,6 +61,12 @@ const CDC_ROUTER_SYSTEM_PROMPT = `你是由河南省疾病预防控制中心构�
 12. **国家标准、GB/T 规范、操作指南理论问答** -> 调用 \`skill_vector_nlq\`。
 13. **专题报告生成与导出** -> 调用 \`skill_auto_report_gen\`。
 14. **移动端采集仿真与质控** -> 调用 \`skill_mobile_assistant_api\`。
+15. **SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线** -> 必须调用 \`skill_satscan_kmeans_lstm\`：
+   - 凡是用户提到“SaTScan”、“空间扫描”、“时空扫描”、“SatScan 分析”、“并将高风险区域导入 LSTM”、“SaTScan ➔ K-Means ➔ LSTM”、“多步操作/分析流水线”等意图，必须调用 \`skill_satscan_kmeans_lstm\`。
+   - 提取参数如：\`year\` (数字年份如 2022), \`month\` (数字月份 1-12 如 3), \`category\` ("蚊" | "蝇" | "蟑螂" | "鼠"), \`forecastDays\` (预测天数默认 7)。
+16. **后台常驻数据分析智能体与预警推送** -> 必须调用 \`skill_daemon_surveillance\`：
+   - 凡是提到“后台智能体”、“系统启动后后台运行”、“持续更新并分析数据”、“自动生成预警信息并推送到队列”、“后台数据分析智能体”、“巡检策略”等意图，必须调用 \`skill_daemon_surveillance\`。
+   - 提取参数如：\`promptPolicy\` (专家配置的巡检提示词或策略需求), \`triggerSource\` ("timer_scheduled" | "manual_invoke")。
 
 ### 参数提取规范：
 - 城市地名需规范化为标准地级市名（如输入"郑州"应提取为"郑州市"，"洛阳"应为"洛阳市"）。
@@ -79,7 +85,57 @@ export async function routeSkillWithLLM(
   const trimmed = promptText.trim();
   const lower = trimmed.toLowerCase();
 
-  // 显式前置意图匹配：创建自定义技能最高优先级拦截
+  // 显式前置意图匹配 1：SaTScan ➔ K-Means ➔ LSTM 多步计算流水线
+  if (
+    lower.includes('satscan') || 
+    (lower.includes('lstm') && (lower.includes('高风险') || lower.includes('扫描') || lower.includes('全省'))) ||
+    lower.includes('多步操作') || 
+    lower.includes('satscan → k-means → lstm') ||
+    lower.includes('satscan ➔ kmeans ➔ lstm')
+  ) {
+    let year = 2022;
+    let month = 3;
+    const yearMatch = trimmed.match(/(20\d{2})年?/);
+    if (yearMatch) year = parseInt(yearMatch[1], 10);
+    const monthMatch = trimmed.match(/(\d{1,2})月/);
+    if (monthMatch) month = parseInt(monthMatch[1], 10);
+    
+    let category = '蚊';
+    if (trimmed.includes('蝇')) category = '蝇';
+    else if (trimmed.includes('鼠')) category = '鼠';
+    else if (trimmed.includes('蟑螂')) category = '蟑螂';
+
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_satscan_kmeans_lstm',
+      skillName: 'SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线',
+      args: { year, month, category, forecastDays: 7, pThreshold: 0.05 },
+      reasoning: '检测到用户需要执行 SaTScan 泊松时空扫描并级联 LSTM 时序外推预测的多步复杂科学计算任务。'
+    };
+  }
+
+  // 显式前置意图匹配 2：后台常驻数据分析智能体与预警推送
+  if (
+    lower.includes('后台智能体') || 
+    lower.includes('后台运行') || 
+    lower.includes('多智能体场景') || 
+    lower.includes('持续更新并分析数据') || 
+    lower.includes('推送到队列') || 
+    lower.includes('巡检策略')
+  ) {
+    return {
+      source: 'llm_tool_calling',
+      skillId: 'skill_daemon_surveillance',
+      skillName: '后台常驻数据分析智能体 (Daemon Agent)',
+      args: {
+        promptPolicy: trimmed,
+        triggerSource: 'manual_invoke'
+      },
+      reasoning: '检测到用户触发后台常驻数据分析智能体与自动预警队列推送管理。'
+    };
+  }
+
+  // 显式前置意图匹配 3：创建自定义技能最高优先级拦截
   if (
     lower.includes('创建新技能') || lower.includes('新建技能') || 
     lower.includes('自定义技能') || lower.includes('定制技能') ||

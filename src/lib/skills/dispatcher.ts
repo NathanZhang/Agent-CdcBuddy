@@ -190,6 +190,28 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     }
     skillArgs.chartType = rawDesc.includes('地图') || rawDesc.includes('村镇') ? 'map' : 'bar';
   } else if (
+    q.includes('satscan') || 
+    (q.includes('lstm') && (q.includes('高风险') || q.includes('扫描') || q.includes('2022') || q.includes('全省'))) ||
+    q.includes('多步操作') || 
+    q.includes('多步科学计算')
+  ) {
+    matchedSkillId = 'skill_satscan_kmeans_lstm';
+    if (!skillArgs.year) skillArgs.year = 2022;
+    if (!skillArgs.month) skillArgs.month = 3;
+    if (!skillArgs.category) skillArgs.category = '蚊';
+    skillArgs.forecastDays = 7;
+  } else if (
+    q.includes('后台智能体') || 
+    q.includes('后台运行') || 
+    q.includes('多智能体场景') || 
+    q.includes('持续更新并分析数据') || 
+    q.includes('推送到队列') || 
+    q.includes('巡检策略')
+  ) {
+    matchedSkillId = 'skill_daemon_surveillance';
+    skillArgs.promptPolicy = promptText;
+    skillArgs.triggerSource = 'manual_invoke';
+  } else if (
     q.includes('工单') || q.includes('处置') || q.includes('消杀') || 
     q.includes('派工') || q.includes('核销') || q.includes('闭环') ||
     q.includes('施药') || q.includes('超低容量') || q.includes('喷洒')

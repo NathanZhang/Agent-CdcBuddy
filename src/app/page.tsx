@@ -150,7 +150,7 @@ export default function CdcAgentWorkspace() {
     {
       id: 'init-1',
       sender: 'agent',
-      text: `您好，**${currentUser.name}**！我是您的 **CdcBuddy 疾控病媒生物监测预警智能体**。\n\n系统已连通河南省 **5.6万+ 条病媒生态、病原PCR检测与抗药性真实监测数据**。您可以点击上方推荐卡片，或直接向我下发分析指令。`,
+      text: `您好！我是您的 **CdcBuddy 疾控病媒生物监测预警智能体**。\n\n系统已连通河南省 **5.6万+ 条病媒生态、病原PCR检测与抗药性真实监测数据**。您可以点击上方推荐卡片，或直接向我下发分析指令。`,
       timestamp: '11:30'
     }
   ]);
