@@ -168,12 +168,18 @@ def main():
 
     def sanitize_for_json(obj):
         import math
+        try:
+            import pandas as pd
+            if pd.isna(obj):
+                return None
+        except Exception:
+            pass
         if isinstance(obj, dict):
             return {str(k): sanitize_for_json(v) for k, v in obj.items()}
         elif isinstance(obj, (list, tuple)):
             return [sanitize_for_json(v) for v in obj]
-        elif isinstance(obj, float):
-            if math.isnan(obj) or math.isinf(obj):
+        elif isinstance(obj, (float, int)):
+            if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
                 return None
             return obj
         elif hasattr(obj, "item"): # numpy types
@@ -182,13 +188,12 @@ def main():
         return obj
 
     clean_result = sanitize_for_json(result)
-    try:
-        print(json.dumps(clean_result, ensure_ascii=False, allow_nan=False))
-    except Exception:
-        # fallback with string replacement
-        s = json.dumps(clean_result, ensure_ascii=False, default=str)
-        s = s.replace(": NaN", ": null").replace(": Infinity", ": null").replace(": -Infinity", ": null")
-        print(s)
+    import re
+    s = json.dumps(clean_result, ensure_ascii=False, default=str)
+    s = re.sub(r':\s*NaN\b', ': null', s)
+    s = re.sub(r':\s*Infinity\b', ': null', s)
+    s = re.sub(r':\s*-Infinity\b', ': null', s)
+    print(s)
 
 if __name__ == "__main__":
     main()

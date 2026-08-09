@@ -8,6 +8,9 @@ import {
   BizKbStandard,
   BizGeneratedReport,
   BizCustomSkill,
+  BizChatSession,
+  BizChatMessage,
+  ChatSessionFilter,
   DisposalStatus
 } from './types';
 
@@ -362,6 +365,385 @@ export class AppBusinessProvider {
     const db = this.getDb();
     return db.prepare('SELECT * FROM biz_custom_skills ORDER BY created_at DESC').all() as BizCustomSkill[];
   }
+
+  // ---------------- 7. 历史会话与消息真实持久化管理 ----------------
+  private ensureChatSessionTables(): void {
+    const db = this.getDb();
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS biz_chat_sessions (
+        session_id VARCHAR(64) PRIMARY KEY,
+        user_id VARCHAR(64) NOT NULL,
+        user_name VARCHAR(64) NOT NULL,
+        user_role VARCHAR(64) NOT NULL,
+        title VARCHAR(256) NOT NULL,
+        last_generative_view TEXT,
+        message_count INTEGER DEFAULT 0,
+        is_pinned INTEGER DEFAULT 0,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_updated
+      ON biz_chat_sessions(user_id, is_pinned DESC, updated_at DESC);
+
+      CREATE TABLE IF NOT EXISTS biz_chat_messages (
+        message_id VARCHAR(64) PRIMARY KEY,
+        session_id VARCHAR(64) NOT NULL,
+        sender VARCHAR(16) NOT NULL,
+        text TEXT NOT NULL,
+        skill_used VARCHAR(64),
+        generative_view_snapshot TEXT,
+        timestamp VARCHAR(32) NOT NULL,
+        created_at DATETIME NOT NULL,
+        FOREIGN KEY (session_id) REFERENCES biz_chat_sessions(session_id) ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_session_time
+      ON biz_chat_messages(session_id, created_at ASC);
+    `);
+  }
+
+  /**
+   * 分页与关键词检索历史会话列表
+   */
+  async getChatSessions(filter?: ChatSessionFilter): Promise<BizChatSession[]> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+
+    let sql = 'SELECT * FROM biz_chat_sessions WHERE 1=1';
+    const params: any[] = [];
+
+    if (filter?.userId) {
+      sql += ' AND user_id = ?';
+      params.push(filter.userId);
+    }
+
+    if (filter?.keyword && filter.keyword.trim()) {
+      sql += ' AND (title LIKE ? OR session_id IN (SELECT session_id FROM biz_chat_messages WHERE text LIKE ?))';
+      const kw = `%${filter.keyword.trim()}%`;
+      params.push(kw, kw);
+    }
+
+    sql += ' ORDER BY is_pinned DESC, updated_at DESC';
+
+    if (filter?.limit) {
+      sql += ' LIMIT ?';
+      params.push(filter.limit);
+      if (filter?.offset) {
+        sql += ' OFFSET ?';
+        params.push(filter.offset);
+      }
+    }
+
+    const rows = db.prepare(sql).all(...params) as any[];
+    return rows.map(r => {
+      let parsedView = null;
+      if (r.last_generative_view) {
+        if (typeof r.last_generative_view === 'object') {
+          parsedView = r.last_generative_view;
+        } else {
+          try {
+            parsedView = JSON.parse(r.last_generative_view);
+          } catch {
+            parsedView = null;
+          }
+        }
+      }
+      return {
+        ...r,
+        last_generative_view: parsedView
+      };
+    });
+  }
+
+  /**
+   * 获取匹配条件的会话总数
+   */
+  async getChatSessionCount(filter?: ChatSessionFilter): Promise<number> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+
+    let sql = 'SELECT COUNT(*) as cnt FROM biz_chat_sessions WHERE 1=1';
+    const params: any[] = [];
+
+    if (filter?.userId) {
+      sql += ' AND user_id = ?';
+      params.push(filter.userId);
+    }
+
+    if (filter?.keyword && filter.keyword.trim()) {
+      sql += ' AND (title LIKE ? OR session_id IN (SELECT session_id FROM biz_chat_messages WHERE text LIKE ?))';
+      const kw = `%${filter.keyword.trim()}%`;
+      params.push(kw, kw);
+    }
+
+    const row = db.prepare(sql).get(...params) as any;
+    return row?.cnt || 0;
+  }
+
+  /**
+   * 获取单条会话元数据
+   */
+  async getChatSessionById(sessionId: string): Promise<BizChatSession | null> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const row = db.prepare('SELECT * FROM biz_chat_sessions WHERE session_id = ?').get(sessionId) as any;
+    if (!row) return null;
+
+    let parsedView = null;
+    if (row.last_generative_view) {
+      if (typeof row.last_generative_view === 'object') {
+        parsedView = row.last_generative_view;
+      } else {
+        try {
+          parsedView = JSON.parse(row.last_generative_view);
+        } catch {
+          parsedView = null;
+        }
+      }
+    }
+
+    return {
+      ...row,
+      last_generative_view: parsedView
+    };
+  }
+
+  /**
+   * 获取某会话下的全部历史消息流（按时间升序）
+   */
+  async getChatMessages(sessionId: string): Promise<BizChatMessage[]> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const rows = db.prepare('SELECT * FROM biz_chat_messages WHERE session_id = ? ORDER BY created_at ASC').all(sessionId) as any[];
+    return rows.map(r => {
+      let parsedSnapshot = null;
+      if (r.generative_view_snapshot) {
+        if (typeof r.generative_view_snapshot === 'object') {
+          parsedSnapshot = r.generative_view_snapshot;
+        } else {
+          try {
+            parsedSnapshot = JSON.parse(r.generative_view_snapshot);
+          } catch {
+            parsedSnapshot = null;
+          }
+        }
+      }
+      return {
+        ...r,
+        generative_view_snapshot: parsedSnapshot
+      };
+    });
+  }
+
+  /**
+   * 创建新会话
+   */
+  async createChatSession(
+    session: Omit<BizChatSession, 'created_at' | 'updated_at' | 'message_count'> & {
+      initialMessages?: Omit<BizChatMessage, 'created_at'>[];
+    }
+  ): Promise<BizChatSession> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const newRecord: BizChatSession = {
+      session_id: session.session_id,
+      user_id: session.user_id,
+      user_name: session.user_name,
+      user_role: session.user_role,
+      title: session.title,
+      last_generative_view: session.last_generative_view || null,
+      message_count: session.initialMessages ? session.initialMessages.length : 0,
+      is_pinned: session.is_pinned ?? 0,
+      created_at: now,
+      updated_at: now
+    };
+
+    const insertTx = db.transaction(() => {
+      db.prepare(`
+        INSERT INTO biz_chat_sessions (
+          session_id, user_id, user_name, user_role, title,
+          last_generative_view, message_count, is_pinned, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        newRecord.session_id,
+        newRecord.user_id,
+        newRecord.user_name,
+        newRecord.user_role,
+        newRecord.title,
+        newRecord.last_generative_view ? JSON.stringify(newRecord.last_generative_view) : null,
+        newRecord.message_count,
+        newRecord.is_pinned,
+        newRecord.created_at,
+        newRecord.updated_at
+      );
+
+      if (session.initialMessages && session.initialMessages.length > 0) {
+        const stmt = db.prepare(`
+          INSERT INTO biz_chat_messages (
+            message_id, session_id, sender, text, skill_used,
+            generative_view_snapshot, timestamp, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+        for (const msg of session.initialMessages) {
+          stmt.run(
+            msg.message_id,
+            newRecord.session_id,
+            msg.sender,
+            msg.text,
+            msg.skill_used || null,
+            msg.generative_view_snapshot ? JSON.stringify(msg.generative_view_snapshot) : null,
+            msg.timestamp,
+            now
+          );
+        }
+      }
+    });
+
+    insertTx();
+    return newRecord;
+  }
+
+  /**
+   * 向会话中追加多条消息并更新会话快照与时间
+   */
+  async batchAppendChatMessages(
+    sessionId: string,
+    messages: Omit<BizChatMessage, 'created_at'>[],
+    lastGenerativeView?: any,
+    suggestedTitle?: string
+  ): Promise<boolean> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const updateTx = db.transaction(() => {
+      const msgStmt = db.prepare(`
+        INSERT INTO biz_chat_messages (
+          message_id, session_id, sender, text, skill_used,
+          generative_view_snapshot, timestamp, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      for (const msg of messages) {
+        msgStmt.run(
+          msg.message_id,
+          sessionId,
+          msg.sender,
+          msg.text,
+          msg.skill_used || null,
+          msg.generative_view_snapshot ? JSON.stringify(msg.generative_view_snapshot) : null,
+          msg.timestamp,
+          now
+        );
+      }
+
+      // 获取当前会话并更新
+      const current = db.prepare('SELECT message_count, title FROM biz_chat_sessions WHERE session_id = ?').get(sessionId) as any;
+      if (current) {
+        const newCount = (current.message_count || 0) + messages.length;
+        let finalTitle = current.title;
+        // 如果原标题为默认占位且有推荐标题，则更新
+        if (suggestedTitle && (current.title === '新研判会话' || current.title.startsWith('新建会话'))) {
+          finalTitle = suggestedTitle;
+        }
+
+        if (lastGenerativeView !== undefined) {
+          db.prepare(`
+            UPDATE biz_chat_sessions
+            SET message_count = ?, updated_at = ?, last_generative_view = ?, title = ?
+            WHERE session_id = ?
+          `).run(
+            newCount,
+            now,
+            lastGenerativeView ? JSON.stringify(lastGenerativeView) : null,
+            finalTitle,
+            sessionId
+          );
+        } else {
+          db.prepare(`
+            UPDATE biz_chat_sessions
+            SET message_count = ?, updated_at = ?, title = ?
+            WHERE session_id = ?
+          `).run(
+            newCount,
+            now,
+            finalTitle,
+            sessionId
+          );
+        }
+      }
+    });
+
+    updateTx();
+    return true;
+  }
+
+  /**
+   * 更新会话信息 (标题, 置顶状态, 工作台视图快照)
+   */
+  async updateChatSession(
+    sessionId: string,
+    updates: {
+      title?: string;
+      is_pinned?: number;
+      last_generative_view?: any;
+    }
+  ): Promise<boolean> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const existing = db.prepare('SELECT * FROM biz_chat_sessions WHERE session_id = ?').get(sessionId) as any;
+    if (!existing) return false;
+
+    const newTitle = updates.title !== undefined ? updates.title : existing.title;
+    const newPinned = updates.is_pinned !== undefined ? updates.is_pinned : existing.is_pinned;
+    const newView = updates.last_generative_view !== undefined
+      ? (updates.last_generative_view ? JSON.stringify(updates.last_generative_view) : null)
+      : existing.last_generative_view;
+
+    const res = db.prepare(`
+      UPDATE biz_chat_sessions
+      SET title = ?, is_pinned = ?, last_generative_view = ?, updated_at = ?
+      WHERE session_id = ?
+    `).run(newTitle, newPinned, newView, now, sessionId);
+
+    return res.changes > 0;
+  }
+
+  /**
+   * 删除指定会话（级联删除消息）
+   */
+  async deleteChatSession(sessionId: string): Promise<boolean> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const deleteTx = db.transaction(() => {
+      db.prepare('DELETE FROM biz_chat_messages WHERE session_id = ?').run(sessionId);
+      db.prepare('DELETE FROM biz_chat_sessions WHERE session_id = ?').run(sessionId);
+    });
+    deleteTx();
+    return true;
+  }
+
+  /**
+   * 清空指定用户的所有会话
+   */
+  async clearUserChatSessions(userId: string): Promise<boolean> {
+    this.ensureChatSessionTables();
+    const db = this.getDb();
+    const clearTx = db.transaction(() => {
+      db.prepare(`
+        DELETE FROM biz_chat_messages
+        WHERE session_id IN (SELECT session_id FROM biz_chat_sessions WHERE user_id = ?)
+      `).run(userId);
+      db.prepare('DELETE FROM biz_chat_sessions WHERE user_id = ?').run(userId);
+    });
+    clearTx();
+    return true;
+  }
 }
 
 // 单例导出
@@ -372,3 +754,4 @@ export function getAppBusinessProvider(): AppBusinessProvider {
   }
   return globalBizProvider;
 }
+

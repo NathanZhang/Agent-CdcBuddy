@@ -57,7 +57,9 @@ export async function runAnalyticsEngine<T = any>(
     path.resolve(process.cwd(), '.venv/bin/python3'),
     path.resolve(process.cwd(), '.venv/bin/python'),
     path.resolve(process.cwd(), '../Agent-CdcBuddy/.venv/bin/python3'),
+    path.resolve(process.cwd(), '../Agent-CdcBuddy/.venv/bin/python'),
     '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.venv/bin/python3',
+    '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.venv/bin/python',
     'python3',
     'python'
   ];
@@ -72,13 +74,24 @@ export async function runAnalyticsEngine<T = any>(
     }
   }
 
+  const resolvedPyBin = path.resolve(pythonBin);
+  const venvBinDir = path.dirname(resolvedPyBin);
+  const venvRoot = path.dirname(venvBinDir);
+  const projectRoot = path.resolve(process.cwd());
+
   return new Promise((resolve, reject) => {
     const jsonArgs = JSON.stringify(args);
     const cmdArgs = [scriptPath, '--task', task, '--args', jsonArgs, '--db', dbPath];
 
     const child = spawn(pythonBin, cmdArgs, {
       cwd: path.dirname(scriptPath),
-      env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+      env: {
+        ...process.env,
+        VIRTUAL_ENV: venvRoot,
+        PATH: `${venvBinDir}:${process.env.PATH || ''}`,
+        PYTHONPATH: `${projectRoot}:${path.dirname(scriptPath)}:${process.env.PYTHONPATH || ''}`,
+        PYTHONIOENCODING: 'utf-8'
+      }
     });
 
     let stdout = '';
@@ -99,12 +112,20 @@ export async function runAnalyticsEngine<T = any>(
       }
 
       try {
-        const rawOutput = stdout.trim();
-        // 容错清洗 NaN / Infinity 等非标 JSON 符号
+        let rawOutput = stdout.trim();
+        const firstBrace = rawOutput.indexOf('{');
+        const lastBrace = rawOutput.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+          rawOutput = rawOutput.substring(firstBrace, lastBrace + 1);
+        }
+        // 彻底清洗 NaN / Infinity / None 等非标 JSON 符号
         const sanitized = rawOutput
           .replace(/:\s*NaN\b/g, ': null')
           .replace(/:\s*Infinity\b/g, ': null')
-          .replace(/:\s*-Infinity\b/g, ': null');
+          .replace(/:\s*-Infinity\b/g, ': null')
+          .replace(/,\s*NaN\b/g, ', null')
+          .replace(/\[\s*NaN\b/g, '[ null')
+          .replace(/:\s*None\b/g, ': null');
         const parsed = JSON.parse(sanitized);
         resolve(parsed as T);
       } catch (err: any) {

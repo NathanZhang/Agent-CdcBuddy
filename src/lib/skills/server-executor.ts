@@ -12,7 +12,8 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
 
   switch (skillId) {
     // 1. 种群动态模型 (No. 23) - 真实 ARIMA/自回归时序预测
-    case 'skill_population_dynamics': {
+    case 'skill_population_dynamics':
+    case 'population_dynamics': {
       const result = await runAnalyticsEngine('population_dynamics', {
         category: args.category || '蚊',
         speciesName: args.speciesName,
@@ -29,7 +30,9 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     }
 
     // 2. 种群识别模型 (No. 24) - 真实 K-Means 优势种群聚类
-    case 'skill_species_composition': {
+    case 'skill_species_composition':
+    case 'species_clustering':
+    case 'species_composition': {
       const result = await runAnalyticsEngine('species_clustering', {
         category: args.category || '蚊',
         city: args.city,
@@ -44,7 +47,9 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     }
 
     // 3. 抗药性预测模型 (No. 25) - 真实随机分类器抗药性预测
-    case 'skill_resistance_evaluation': {
+    case 'skill_resistance_evaluation':
+    case 'resistance_prediction':
+    case 'resistance_evaluation': {
       const result = await runAnalyticsEngine('resistance_prediction', {
         speciesName: args.speciesName,
         pesticideName: args.pesticideName,
@@ -57,7 +62,9 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     }
 
     // 4. 病原携带风险分析 (No. 26) - 真实 Apriori 频繁项集关联挖掘
-    case 'skill_pathogen_risk': {
+    case 'skill_pathogen_risk':
+    case 'pathogen_apriori':
+    case 'pathogen_risk': {
       const result = await runAnalyticsEngine('pathogen_apriori', {
         pathogenName: args.pathogenName,
         speciesName: args.speciesName,
@@ -70,7 +77,10 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     }
 
     // 5. 动态预警分析 (No. 27) - 真实 IDW GIS 空间连续插值
-    case 'skill_spatial_early_warning': {
+    case 'skill_spatial_early_warning':
+    case 'skill_early_warning':
+    case 'spatial_early_warning':
+    case 'spatial_idw': {
       const spatialResult = await runAnalyticsEngine('spatial_idw', {
         city: args.city,
         district: args.district,

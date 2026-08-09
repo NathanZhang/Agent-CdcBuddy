@@ -128,3 +128,10 @@ nextjs-portal [data-nextjs-dev-tools-button] {
   display: none !important;
 }
 
+/* 隐藏地图组件右下角 MapLibre 外部字样及链接 (保留折叠按钮 .maplibregl-ctrl-attrib-button) */
+.maplibregl-ctrl-attrib-inner a[href*="maplibre.org"],
+.maplibregl-ctrl-attrib-inner a[href*="maplibre"],
+.maplibregl-ctrl-attrib-inner a[aria-label*="MapLibre"] {
+  display: none !important;
+}
+

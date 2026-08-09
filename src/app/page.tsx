@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useCopilotAction, useCopilotReadable } from '@copilotkit/react-core';
 import { Navbar } from '@/components/layout/Navbar';
 import { RecommendationPrompts } from '@/components/layout/RecommendationPrompts';
 import { SkillsDrawer } from '@/components/layout/SkillsDrawer';
+import { SessionHistoryDrawer } from '@/components/layout/SessionHistoryDrawer';
 import { EmbeddedWidget } from '@/components/layout/EmbeddedWidget';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { VectorSkill } from '@/lib/skills/types';
@@ -32,7 +33,10 @@ import {
   Database,
   RefreshCw,
   Trash2,
-  Square
+  Square,
+  History,
+  Plus,
+  RotateCcw
 } from 'lucide-react';
 
 const INITIAL_GENERATIVE_VIEW = {
@@ -118,9 +122,15 @@ const INITIAL_CHAT_HISTORY: {
 export default function CdcAgentWorkspace() {
   const { currentUser, activeRole } = useRbac();
   const [isSkillsOpen, setIsSkillsOpen] = useState(false);
-  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false); // 活跃预警详情弹窗
-  const [showFloatingCopilot, setShowFloatingCopilot] = useState(false); // 默认隐藏浮动 Copilot 图标
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
+  const [showFloatingCopilot, setShowFloatingCopilot] = useState(false);
   const [activeGenerativeView, setActiveGenerativeView] = useState<any>(INITIAL_GENERATIVE_VIEW);
+
+  // 当前会话状态
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [currentSessionTitle, setCurrentSessionTitle] = useState<string>('新研判会话');
+  const [isSessionLoading, setIsSessionLoading] = useState(false);
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isThinking, setIsThinking] = useState(false);
@@ -170,8 +180,51 @@ export default function CdcAgentWorkspace() {
   const abortControllerRef = useRef<AbortController | null>(null);
   const isCancelledRef = useRef<boolean>(false);
 
-  // 清空对话并恢复工作台初始内容
-  const handleClearChat = () => {
+  /**
+   * 真实重新加载指定的历史会话
+   */
+  const handleLoadSession = useCallback(async (sessionId: string) => {
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsThinking(false);
+    setIsSessionLoading(true);
+
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}`);
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.data;
+        if (data) {
+          setCurrentSessionId(data.sessionId);
+          setCurrentSessionTitle(data.title || '历史研判会话');
+          if (Array.isArray(data.messages) && data.messages.length > 0) {
+            setChatHistory(data.messages);
+          } else {
+            setChatHistory(INITIAL_CHAT_HISTORY);
+          }
+
+          // 重新加载并还原当时工作台的 AG-UI 生成式视图快照
+          if (data.lastGenerativeView) {
+            setActiveGenerativeView(data.lastGenerativeView);
+          } else {
+            setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('加载历史会话失败:', err);
+    } finally {
+      setIsSessionLoading(false);
+    }
+  }, []);
+
+  /**
+   * 开启新会话
+   */
+  const handleNewSession = useCallback(() => {
     if (abortControllerRef.current) {
       isCancelledRef.current = true;
       abortControllerRef.current.abort();
@@ -179,8 +232,46 @@ export default function CdcAgentWorkspace() {
     }
     setIsThinking(false);
     setInputPrompt('');
+    setCurrentSessionId(null);
+    setCurrentSessionTitle('新研判会话');
     setChatHistory(INITIAL_CHAT_HISTORY);
     setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
+  }, []);
+
+  /**
+   * 当切换 RBAC 用户身份时，自动拉取并加载该用户的最近历史会话
+   */
+  useEffect(() => {
+    let isMounted = true;
+    const initUserSession = async () => {
+      if (!currentUser.id) return;
+      try {
+        const res = await fetch(`/api/sessions?userId=${encodeURIComponent(currentUser.id)}&limit=1`);
+        if (res.ok) {
+          const json = await res.json();
+          const list = json.data?.sessions;
+          if (isMounted) {
+            if (list && list.length > 0) {
+              handleLoadSession(list[0].sessionId);
+            } else {
+              handleNewSession();
+            }
+          }
+        }
+      } catch (e) {
+        if (isMounted) handleNewSession();
+      }
+    };
+
+    initUserSession();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser.id, handleLoadSession, handleNewSession]);
+
+  // 清空对话并恢复工作台初始内容（并在新会话模式）
+  const handleClearChat = () => {
+    handleNewSession();
   };
 
   // 打断/停止当前研判分析
@@ -241,7 +332,7 @@ export default function CdcAgentWorkspace() {
     }
   });
 
-  // 智能体意图识别与 Skill 分发调度中枢
+  // 智能体意图识别与 Skill 分发调度中枢 (执行并持久化到真实会话数据库)
   const handleExecutePrompt = async (promptText: string) => {
     if (!promptText.trim() || isThinking) return;
 
@@ -255,12 +346,15 @@ export default function CdcAgentWorkspace() {
     isCancelledRef.current = false;
 
     const userMsgId = `msg-${Date.now()}`;
-    const newChat = [...chatHistory, {
+    const userTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    const userMsg = {
       id: userMsgId,
       sender: 'user' as const,
       text: promptText,
-      timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-    }];
+      timestamp: userTimestamp
+    };
+
+    const newChat = [...chatHistory, userMsg];
     setChatHistory(newChat);
     setInputPrompt('');
     setIsThinking(true);
@@ -276,9 +370,22 @@ export default function CdcAgentWorkspace() {
         return;
       }
 
+      const agentTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      const agentMsgId = `agent-${Date.now()}`;
+      const agentReplyText = result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`;
+      
+      const agentMsg = {
+        id: agentMsgId,
+        sender: 'agent' as const,
+        text: agentReplyText,
+        skillUsed: result.skillName,
+        timestamp: agentTimestamp
+      };
+
+      const finalGenerativeView = result.generativeView || activeGenerativeView;
+
       if (result.generativeView) {
         setActiveGenerativeView(result.generativeView);
-        // 若创建了新技能，立即刷新自定义技能列表与技能总数
         if (
           result.generativeView.type === 'CUSTOM_SKILL_CREATED' ||
           result.skillId === 'skill_meta_custom_builder'
@@ -287,16 +394,53 @@ export default function CdcAgentWorkspace() {
         }
       }
 
-      setChatHistory(prev => [
-        ...prev,
-        {
-          id: `agent-${Date.now()}`,
-          sender: 'agent',
-          text: result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
-          skillUsed: result.skillName,
-          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      setChatHistory(prev => [...prev, agentMsg]);
+
+      // ---------------- 真实落库持久化：创建会话或追加消息 ----------------
+      try {
+        let activeId = currentSessionId;
+        const suggestedTitle = promptText.length > 25 ? `${promptText.substring(0, 24)}...` : promptText;
+
+        if (!activeId) {
+          // 当前尚未创建会话，执行 POST /api/sessions
+          const createRes = await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: currentUser.id,
+              userName: currentUser.name,
+              userRole: currentUser.role,
+              title: suggestedTitle,
+              lastGenerativeView: finalGenerativeView,
+              initialMessages: [userMsg, agentMsg]
+            })
+          });
+          if (createRes.ok) {
+            const json = await createRes.json();
+            if (json.data?.sessionId) {
+              setCurrentSessionId(json.data.sessionId);
+              setCurrentSessionTitle(json.data.title || suggestedTitle);
+            }
+          }
+        } else {
+          // 当前已有会话，执行 POST /api/sessions/[id]
+          await fetch(`/api/sessions/${activeId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: [userMsg, agentMsg],
+              lastGenerativeView: finalGenerativeView,
+              suggestedTitle: currentSessionTitle === '新研判会话' ? suggestedTitle : undefined
+            })
+          });
+          if (currentSessionTitle === '新研判会话') {
+            setCurrentSessionTitle(suggestedTitle);
+          }
         }
-      ]);
+      } catch (persistErr) {
+        console.error('会话持久化落库异常:', persistErr);
+      }
+
     } catch (e: any) {
       if (isCancelledRef.current || controller.signal.aborted || e.name === 'AbortError') {
         console.log('任务已打断取消');
@@ -328,6 +472,7 @@ export default function CdcAgentWorkspace() {
       <Navbar
         skillsCount={totalSkillsCount}
         onOpenSkills={() => setIsSkillsOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
         onSelectPrompt={handleExecutePrompt}
         showEmbeddedWidget={showFloatingCopilot}
         onToggleEmbeddedWidget={() => setShowFloatingCopilot(prev => !prev)}
@@ -380,6 +525,12 @@ export default function CdcAgentWorkspace() {
                 <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
                   AG-UI 动态生成式分析工作台
                 </h2>
+                {isSessionLoading && (
+                  <span className="text-xs text-sky-600 dark:text-sky-400 flex items-center gap-1 animate-pulse">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>恢复会话视图中...</span>
+                  </span>
+                )}
               </div>
               <span className="text-xs text-slate-500 font-mono">
                 Component: {activeGenerativeView?.type || 'READY'}
@@ -394,21 +545,46 @@ export default function CdcAgentWorkspace() {
 
           {/* 右侧：Copilot 智能体交互对话区 (占比 4 列，高度自适应填满) */}
           <div className="lg:col-span-4 h-full min-h-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-200 dark:border-sky-500/20 shadow-sm dark:shadow-2xl flex flex-col overflow-hidden transition-colors">
-            {/* 对话区头部 */}
-            <div className="shrink-0 p-3.5 bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white text-xs">
+            {/* 对话区头部：会话标题、新建会话与历史记录快捷入口 */}
+            <div className="shrink-0 p-3 bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white text-xs shrink-0">
                   <Bot className="w-4 h-4" />
                 </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">CdcBuddy 协同研判对话</h3>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">● Copilot Runtime 连接就绪</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate" title={currentSessionTitle}>
+                      {currentSessionTitle}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-mono">● {currentUser.name.split(' ')[0]}</span>
+                    <span>·</span>
+                    <span>{activeRole}</span>
+                  </div>
                 </div>
               </div>
 
-              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 font-medium">
-                {activeRole}
-              </span>
+              {/* 快捷操作组：历史会话抽屉 + 新建会话 */}
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => setIsHistoryOpen(true)}
+                  title="查看与切换历史研判会话"
+                  className="p-1.5 rounded-lg text-slate-600 hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center gap-1 text-xs cursor-pointer"
+                >
+                  <History className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                  <span className="text-[11px] font-medium hidden sm:inline">历史</span>
+                </button>
+
+                <button
+                  onClick={handleNewSession}
+                  title="开启新研判会话"
+                  className="p-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors flex items-center gap-1 text-xs shadow-xs active:scale-95 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="text-[11px] font-medium hidden sm:inline">新建</span>
+                </button>
+              </div>
             </div>
 
             {/* 消息滚动区 */}
@@ -500,14 +676,17 @@ export default function CdcAgentWorkspace() {
                 )}
               </div>
 
-              <div className="flex items-center justify-end text-[11px] text-slate-500 px-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+                <span className="text-[10px] text-slate-400">
+                  {currentSessionId ? `会话ID: ${currentSessionId.substring(0, 14)}...` : '未入库新会话'}
+                </span>
                 <button
                   onClick={handleClearChat}
-                  title="清空对话历史并恢复工作台初始内容"
+                  title="清空并开启新研判会话"
                   className="text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 px-2 py-0.5 rounded-md flex items-center gap-1 font-medium transition-all cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>清空对话</span>
+                  <span>清空重置</span>
                 </button>
               </div>
             </div>
@@ -527,6 +706,17 @@ export default function CdcAgentWorkspace() {
           setIsSkillsOpen(false);
           handleExecutePrompt('帮我创建一个新技能：专门统计近三年安阳市蜱虫携带恙虫病东方体的月度分布并在地图上标出高危村镇。');
         }}
+      />
+
+      {/* 历史会话抽屉 */}
+      <SessionHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        userId={currentUser.id}
+        userName={currentUser.name}
+        currentSessionId={currentSessionId}
+        onSelectSession={handleLoadSession}
+        onNewSession={handleNewSession}
       />
 
       {/* 嵌入式浮窗组件 (默认位于左下角，默认隐藏，独立运行模式) */}

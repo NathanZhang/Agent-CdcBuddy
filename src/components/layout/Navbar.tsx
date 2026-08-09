@@ -4,10 +4,11 @@ import React from 'react';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { useTheme, ThemeMode } from '@/lib/theme/theme-context';
 import { UserRole } from '@/lib/rbac/types';
-import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot } from 'lucide-react';
+import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot, History } from 'lucide-react';
 
 interface NavbarProps {
   onOpenSkills: () => void;
+  onOpenHistory?: () => void;
   onSelectPrompt: (prompt: string) => void;
   showEmbeddedWidget?: boolean;
   onToggleEmbeddedWidget?: () => void;
@@ -16,6 +17,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ 
   onOpenSkills, 
+  onOpenHistory,
   onSelectPrompt,
   showEmbeddedWidget = false,
   onToggleEmbeddedWidget,
@@ -75,6 +77,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             );
           })}
         </div>
+
+        {/* 历史研判会话按钮 */}
+        {onOpenHistory && (
+          <button
+            onClick={onOpenHistory}
+            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 border border-slate-300 dark:border-slate-800 shadow-xs transition-all cursor-pointer"
+            title="查看当前用户的历史研判会话与重新加载"
+          >
+            <History className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+            <span>历史会话</span>
+          </button>
+        )}
 
         {/* Skills 技能库触发按钮 */}
         <button

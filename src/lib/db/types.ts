@@ -223,3 +223,35 @@ export interface BizCustomSkill {
   created_by: string;
   created_at: string;
 }
+
+// ---------------- 历史会话与消息持久化实体类型 ----------------
+export interface BizChatSession {
+  session_id: string;
+  user_id: string;
+  user_name: string;
+  user_role: string;
+  title: string;
+  last_generative_view?: string | any;
+  message_count: number;
+  is_pinned: number; // 0 或 1
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BizChatMessage {
+  message_id: string;
+  session_id: string;
+  sender: 'user' | 'agent' | 'system';
+  text: string;
+  skill_used?: string;
+  generative_view_snapshot?: string | any;
+  timestamp: string;
+  created_at: string;
+}
+
+export interface ChatSessionFilter {
+  userId?: string;
+  keyword?: string;
+  limit?: number;
+  offset?: number;
+}

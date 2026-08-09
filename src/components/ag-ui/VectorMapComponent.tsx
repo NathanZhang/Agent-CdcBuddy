@@ -234,6 +234,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
+      attributionControl: false,
       style: {
         version: 8,
         sources: {
@@ -371,9 +372,23 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     });
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: true }), 'bottom-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     mapRef.current = map;
 
+    // 清洗 AttributionControl 内部 MapLibre 字样，保留合规审图号与原生折叠按钮 (i)
+    const cleanMapLibreAttribution = () => {
+      if (!mapContainerRef.current) return;
+      const inner = mapContainerRef.current.querySelector('.maplibregl-ctrl-attrib-inner');
+      if (inner && inner.innerHTML.includes('MapLibre')) {
+        inner.innerHTML = inner.innerHTML
+          .replace(/\s*\|\s*<a[^>]*maplibre[^>]*>.*?<\/a>/gi, '')
+          .replace(/<a[^>]*maplibre[^>]*>.*?<\/a>/gi, '');
+      }
+    };
+
+    map.on('render', cleanMapLibreAttribution);
     map.on('load', () => {
+      cleanMapLibreAttribution();
       // 渲染地级市行政标记点
       cityMarkersRef.current.forEach(m => m.remove());
       cityMarkersRef.current = [];
