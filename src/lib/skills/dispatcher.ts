@@ -16,6 +16,7 @@ export interface DispatchContext {
   chatHistory?: Array<{ sender: string; text: string; skillUsed?: string }>;
   currentView?: any;
   userRole?: string;
+  signal?: AbortSignal;
 }
 
 export interface RuleMatchResult {
@@ -354,6 +355,7 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: context?.signal,
       body: JSON.stringify({
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
@@ -378,8 +380,15 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
         };
       }
     }
-  } catch (netErr) {
+  } catch (netErr: any) {
+    if (netErr.name === 'AbortError' || context?.signal?.aborted) {
+      throw netErr;
+    }
     console.warn('[Dispatcher] 服务端 Agent API 请求失败，启用本地规则引擎降级:', netErr);
+  }
+
+  if (context?.signal?.aborted) {
+    throw new DOMException('Aborted', 'AbortError');
   }
 
   // 2. 本地平滑降级执行

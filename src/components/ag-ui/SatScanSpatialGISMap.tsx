@@ -111,7 +111,7 @@ export const SatScanSpatialGISMap: React.FC<SatScanSpatialGISMapProps> = ({
     });
 
     return {
-      type: 'FeatureCollection',
+      type: 'FeatureCollection' as const,
       features
     };
   }, [clusters]);

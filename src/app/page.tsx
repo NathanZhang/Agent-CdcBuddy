@@ -30,78 +30,97 @@ import {
   Smartphone,
   PlusCircle,
   Database,
-  RefreshCw
+  RefreshCw,
+  Trash2,
+  Square
 } from 'lucide-react';
+
+const INITIAL_GENERATIVE_VIEW = {
+  type: 'SPATIAL_EARLY_WARNING_MAP',
+  city: '河南省全域',
+  severity: 'all',
+  alerts: [
+    {
+      alertId: 'ALERT-202408-101',
+      title: '郑州市金水区 白纹伊蚊密度超标预警',
+      level: 'red',
+      levelName: '严重预警 (一级)',
+      category: '蚊',
+      city: '郑州市',
+      district: '金水区',
+      street: '未来路街道办事处',
+      latitude: 34.8003,
+      longitude: 113.6627,
+      triggerReason: '单次诱蚊灯捕获量达 86 只/台次（基线 30 只），气温 31.5℃，相对湿度 78%，具备暴发滋生条件。',
+      currentDensity: 86,
+      threshold: 30,
+      affectedPopulationEstimate: 32000,
+      recommendedAction: '立即启动突发虫媒应急消杀，实施 2.5% 高效氯氟氰菊酯空间超低容量喷雾与积水清除。',
+      disposalStatus: 'in_progress',
+      triggerTime: '2026-08-08 08:30:00'
+    },
+    {
+      alertId: 'ALERT-202408-102',
+      title: '安阳市汤阴县 长角血蜱携病风险预警',
+      level: 'orange',
+      levelName: '较重预警 (二级)',
+      category: '蜱',
+      city: '安阳市',
+      district: '汤阴县',
+      street: '韩庄镇',
+      latitude: 35.922,
+      longitude: 114.358,
+      triggerReason: '羊体寄生蜱指数达 12.4 只/羊，PCR 检测出发热伴血小板减少综合征病毒核酸阳性。',
+      currentDensity: 52,
+      threshold: 50,
+      affectedPopulationEstimate: 14500,
+      recommendedAction: '对羊舍与周边灌木实施敌百虫滞留喷洒，下发牧民个人防护指南。',
+      disposalStatus: 'pending',
+      triggerTime: '2026-08-08 09:15:00'
+    },
+    {
+      alertId: 'ALERT-202408-103',
+      title: '信阳市浉河区 恙螨幼虫密度黄警',
+      level: 'yellow',
+      levelName: '一般预警 (三级)',
+      category: '恙螨',
+      city: '信阳市',
+      district: '浉河区',
+      street: '东双河镇',
+      latitude: 32.116,
+      longitude: 114.065,
+      triggerReason: '鼠体恙螨感染率达 28.5%，进入夏秋季流行活跃期。',
+      currentDensity: 38,
+      threshold: 30,
+      affectedPopulationEstimate: 8200,
+      recommendedAction: '开展灭鼠防螨综合治理，清理杂草。',
+      disposalStatus: 'resolved',
+      triggerTime: '2026-08-08 07:45:00'
+    }
+  ]
+};
+
+const INITIAL_CHAT_HISTORY: {
+  id: string;
+  sender: 'user' | 'agent';
+  text: string;
+  skillUsed?: string;
+  timestamp: string;
+}[] = [
+  {
+    id: 'init-1',
+    sender: 'agent',
+    text: `您好！我是您的 **CdcBuddy 疾控病媒生物监测预警智能体**。\n\n系统已连通河南省 **5.6万+ 条病媒生态、病原PCR检测与抗药性真实监测数据**。您可以点击上方推荐卡片，或直接向我下发分析指令。`,
+    timestamp: '11:30'
+  }
+];
 
 export default function CdcAgentWorkspace() {
   const { currentUser, activeRole } = useRbac();
   const [isSkillsOpen, setIsSkillsOpen] = useState(false);
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false); // 活跃预警详情弹窗
   const [showFloatingCopilot, setShowFloatingCopilot] = useState(false); // 默认隐藏浮动 Copilot 图标
-  const [activeGenerativeView, setActiveGenerativeView] = useState<any>({
-    type: 'SPATIAL_EARLY_WARNING_MAP',
-    city: '河南省全域',
-    severity: 'all',
-    alerts: [
-      {
-        alertId: 'ALERT-202408-101',
-        title: '郑州市金水区 白纹伊蚊密度超标预警',
-        level: 'red',
-        levelName: '严重预警 (一级)',
-        category: '蚊',
-        city: '郑州市',
-        district: '金水区',
-        street: '未来路街道办事处',
-        latitude: 34.8003,
-        longitude: 113.6627,
-        triggerReason: '单次诱蚊灯捕获量达 86 只/台次（基线 30 只），气温 31.5℃，相对湿度 78%，具备暴发滋生条件。',
-        currentDensity: 86,
-        threshold: 30,
-        affectedPopulationEstimate: 32000,
-        recommendedAction: '立即启动突发虫媒应急消杀，实施 2.5% 高效氯氟氰菊酯空间超低容量喷雾与积水清除。',
-        disposalStatus: 'in_progress',
-        triggerTime: '2026-08-08 08:30:00'
-      },
-      {
-        alertId: 'ALERT-202408-102',
-        title: '安阳市汤阴县 长角血蜱携病风险预警',
-        level: 'orange',
-        levelName: '较重预警 (二级)',
-        category: '蜱',
-        city: '安阳市',
-        district: '汤阴县',
-        street: '韩庄镇',
-        latitude: 35.922,
-        longitude: 114.358,
-        triggerReason: '羊体寄生蜱指数达 12.4 只/羊，PCR 检测出发热伴血小板减少综合征病毒核酸阳性。',
-        currentDensity: 52,
-        threshold: 50,
-        affectedPopulationEstimate: 14500,
-        recommendedAction: '对羊舍与周边灌木实施敌百虫滞留喷洒，下发牧民个人防护指南。',
-        disposalStatus: 'pending',
-        triggerTime: '2026-08-08 09:15:00'
-      },
-      {
-        alertId: 'ALERT-202408-103',
-        title: '信阳市浉河区 恙螨幼虫密度黄警',
-        level: 'yellow',
-        levelName: '一般预警 (三级)',
-        category: '恙螨',
-        city: '信阳市',
-        district: '浉河区',
-        street: '东双河镇',
-        latitude: 32.116,
-        longitude: 114.065,
-        triggerReason: '鼠体恙螨感染率达 28.5%，进入夏秋季流行活跃期。',
-        currentDensity: 38,
-        threshold: 30,
-        affectedPopulationEstimate: 8200,
-        recommendedAction: '开展灭鼠防螨综合治理，清理杂草。',
-        disposalStatus: 'resolved',
-        triggerTime: '2026-08-08 07:45:00'
-      }
-    ]
-  });
+  const [activeGenerativeView, setActiveGenerativeView] = useState<any>(INITIAL_GENERATIVE_VIEW);
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isThinking, setIsThinking] = useState(false);
@@ -146,14 +165,42 @@ export default function CdcAgentWorkspace() {
     text: string;
     skillUsed?: string;
     timestamp: string;
-  }[]>([
-    {
-      id: 'init-1',
-      sender: 'agent',
-      text: `您好！我是您的 **CdcBuddy 疾控病媒生物监测预警智能体**。\n\n系统已连通河南省 **5.6万+ 条病媒生态、病原PCR检测与抗药性真实监测数据**。您可以点击上方推荐卡片，或直接向我下发分析指令。`,
-      timestamp: '11:30'
+  }[]>(INITIAL_CHAT_HISTORY);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isCancelledRef = useRef<boolean>(false);
+
+  // 清空对话并恢复工作台初始内容
+  const handleClearChat = () => {
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
-  ]);
+    setIsThinking(false);
+    setInputPrompt('');
+    setChatHistory(INITIAL_CHAT_HISTORY);
+    setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
+  };
+
+  // 打断/停止当前研判分析
+  const handleStopExecution = () => {
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsThinking(false);
+    setChatHistory(prev => [
+      ...prev,
+      {
+        id: `agent-stop-${Date.now()}`,
+        sender: 'agent',
+        text: '⏹️ 已打断并停止当前研判分析任务。',
+        timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+  };
 
   // 监听新对话消息或智能体思考状态，自动平滑滚动到最新内容
   useEffect(() => {
@@ -196,7 +243,16 @@ export default function CdcAgentWorkspace() {
 
   // 智能体意图识别与 Skill 分发调度中枢
   const handleExecutePrompt = async (promptText: string) => {
-    if (!promptText.trim()) return;
+    if (!promptText.trim() || isThinking) return;
+
+    // 若有前序未完成任务，先中断
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    isCancelledRef.current = false;
 
     const userMsgId = `msg-${Date.now()}`;
     const newChat = [...chatHistory, {
@@ -212,8 +268,14 @@ export default function CdcAgentWorkspace() {
     try {
       const result = await dispatchSkillPrompt(promptText, { 
         chatHistory: newChat, 
-        currentView: activeGenerativeView 
+        currentView: activeGenerativeView,
+        signal: controller.signal
       });
+
+      if (isCancelledRef.current || controller.signal.aborted) {
+        return;
+      }
+
       if (result.generativeView) {
         setActiveGenerativeView(result.generativeView);
         // 若创建了新技能，立即刷新自定义技能列表与技能总数
@@ -225,20 +287,21 @@ export default function CdcAgentWorkspace() {
         }
       }
 
-      setTimeout(() => {
-        setChatHistory(prev => [
-          ...prev,
-          {
-            id: `agent-${Date.now()}`,
-            sender: 'agent',
-            text: result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
-            skillUsed: result.skillName,
-            timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setIsThinking(false);
-      }, 300);
+      setChatHistory(prev => [
+        ...prev,
+        {
+          id: `agent-${Date.now()}`,
+          sender: 'agent',
+          text: result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
+          skillUsed: result.skillName,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
     } catch (e: any) {
+      if (isCancelledRef.current || controller.signal.aborted || e.name === 'AbortError') {
+        console.log('任务已打断取消');
+        return;
+      }
       console.error(e);
       setChatHistory(prev => [
         ...prev,
@@ -249,7 +312,11 @@ export default function CdcAgentWorkspace() {
           timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
         }
       ]);
-      setIsThinking(false);
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setIsThinking(false);
+      }
     }
   };
 
@@ -405,26 +472,42 @@ export default function CdcAgentWorkspace() {
                   placeholder="向智能体提问或下发研判指令..."
                   value={inputPrompt}
                   onChange={(e) => setInputPrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleExecutePrompt(inputPrompt)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isThinking) {
+                      handleExecutePrompt(inputPrompt);
+                    }
+                  }}
                   className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
                 />
-                <button
-                  onClick={() => handleExecutePrompt(inputPrompt)}
-                  disabled={!inputPrompt.trim() || isThinking}
-                  className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-semibold shadow-md shadow-sky-600/30 transition-all"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                {isThinking ? (
+                  <button
+                    onClick={handleStopExecution}
+                    title="打断/停止当前研判分析"
+                    className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-semibold text-xs shadow-md shadow-rose-600/30 transition-all cursor-pointer animate-pulse"
+                  >
+                    <Square className="w-3.5 h-3.5 fill-current" />
+                    <span>停止</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleExecutePrompt(inputPrompt)}
+                    disabled={!inputPrompt.trim()}
+                    title="发送指令"
+                    className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold shadow-md shadow-sky-600/30 transition-all cursor-pointer"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-                <span>支持自然语言 Text2SQL 与多模态生成式卡片交互</span>
+              <div className="flex items-center justify-end text-[11px] text-slate-500 px-1">
                 <button
-                  onClick={() => setIsSkillsOpen(true)}
-                  className="text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 font-medium"
+                  onClick={handleClearChat}
+                  title="清空对话历史并恢复工作台初始内容"
+                  className="text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 px-2 py-0.5 rounded-md flex items-center gap-1 font-medium transition-all cursor-pointer"
                 >
-                  <Layers className="w-3 h-3" />
-                  <span>查看全部技能</span>
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>清空对话</span>
                 </button>
               </div>
             </div>
