@@ -104,13 +104,13 @@ const INITIAL_GENERATIVE_VIEW = {
   ]
 };
 
-const INITIAL_CHAT_HISTORY: {
+const getInitialChatHistory = (): {
   id: string;
   sender: 'user' | 'agent';
   text: string;
   skillUsed?: string;
   timestamp: string;
-}[] = [
+}[] => [
   {
     id: 'init-1',
     sender: 'agent',
@@ -175,7 +175,7 @@ export default function CdcAgentWorkspace() {
     text: string;
     skillUsed?: string;
     timestamp: string;
-  }[]>(INITIAL_CHAT_HISTORY);
+  }[]>(getInitialChatHistory());
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const isCancelledRef = useRef<boolean>(false);
@@ -203,7 +203,7 @@ export default function CdcAgentWorkspace() {
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             setChatHistory(data.messages);
           } else {
-            setChatHistory(INITIAL_CHAT_HISTORY);
+            setChatHistory(getInitialChatHistory());
           }
 
           // 重新加载并还原当时工作台的 AG-UI 生成式视图快照
@@ -234,7 +234,7 @@ export default function CdcAgentWorkspace() {
     setInputPrompt('');
     setCurrentSessionId(null);
     setCurrentSessionTitle('新研判会话');
-    setChatHistory(INITIAL_CHAT_HISTORY);
+    setChatHistory(getInitialChatHistory());
     setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
   }, []);
 
@@ -589,9 +589,9 @@ export default function CdcAgentWorkspace() {
 
             {/* 消息滚动区 */}
             <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
-              {chatHistory.map(m => (
+              {chatHistory.map((m, idx) => (
                 <div
-                  key={m.id}
+                  key={m.id || `msg-${idx}-${m.timestamp || ''}`}
                   className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {m.sender === 'agent' && (

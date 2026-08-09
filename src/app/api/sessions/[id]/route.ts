@@ -22,8 +22,8 @@ export async function GET(
     }
 
     const rawMessages = await provider.getChatMessages(sessionId);
-    const messages = rawMessages.map(m => ({
-      id: m.message_id,
+    const messages = rawMessages.map((m, idx) => ({
+      id: m.message_id || `msg_${sessionId}_${idx}`,
       sender: m.sender,
       text: m.text,
       skillUsed: m.skill_used || undefined,

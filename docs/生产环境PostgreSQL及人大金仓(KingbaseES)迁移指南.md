@@ -25,7 +25,17 @@ CdcBuddy 采用**数据库抽象层 (DAL / Repository Pattern)** 架构设计，
 
 ---
 
-## 二、 生产数据库 DDL 建表脚本 (人大金仓 / PostgreSQL 通用)
+## 二、 初始部署数据库准备与初始化速查
+
+| 部署模式 | 数据库组件 | 是否需要手动拷贝 DB 文件？ | 是否需要运行初始化脚本？ | 详细说明 |
+| :--- | :--- | :---: | :---: | :--- |
+| **模式 A：<br>SQLite 双库模式**<br>(开发/演示/轻量级单机) | **`app_business.db`**<br>(业务持久化库) | **否** | **使用 `server.sh` 自动执行**<br>(或手动执行 `python3 scripts/init_business_db.py`) | 系统启动脚本 `./server.sh start` 会自动检测，若不存在则自动调用脚本完成建表与国标数据初始化。 |
+|  | **`vector_monitoring.db`**<br>(时空监测事实库) | **是 (独立部署时)**<br>**否 (同级目录有 DataMock 时)** | **否** | 1. 若工程与 `Agent-CdcBuddy-DataMock` 同级部署，`./server.sh` 自动复制；<br>2. 若全新独立服务器，需将 ~28MB 的 `vector_monitoring.db` 拷贝至项目根目录。 |
+| **模式 B：<br>企业级 / 信创生产模式**<br>(PostgreSQL / 人大金仓 KingbaseES) | **双库合并或独立 Schema** | **否** | **是** | 1. 执行本文档第二节 DDL 脚本建表；<br>2. 运行第三节迁移脚本 `migrate_database()` 一键将全量历史监测与业务数据同步入库。 |
+
+---
+
+## 三、 生产数据库 DDL 建表脚本 (人大金仓 / PostgreSQL 通用)
 
 ### 1. 时空监测事实库 DDL (Schema: `vector_monitoring`)
 
@@ -269,7 +279,7 @@ CREATE TABLE IF NOT EXISTS biz_custom_skills (
 
 ---
 
-## 三、 数据一键导入与迁移脚本 (SQLite -> KingbaseES / PostgreSQL)
+## 四、 数据一键导入与迁移脚本 (SQLite -> KingbaseES / PostgreSQL)
 
 在项目中使用 Python 脚本完成双库的一键全量数据迁移：
 
@@ -347,7 +357,7 @@ if __name__ == "__main__":
 
 ---
 
-## 四、 生产环境配置与信创认证说明
+## 五、 生产环境配置与信创认证说明
 
 1. **环境配置 (`.env.production`)**：
    ```env

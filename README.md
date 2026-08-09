@@ -113,7 +113,16 @@ npm install
 pip install -r requirements.txt
 ```
 
-### 3. 配置环境变量
+### 3. 初始部署数据库准备说明 (重要)
+
+系统运行依赖**双数据库架构**（时空监测事实底座库 + 业务持久化闭环库）：
+
+| 数据库文件 | 作用与定位 | 初始部署是否需要拷贝 / 运行初始化脚本？ |
+| :--- | :--- | :--- |
+| **`app_business.db`**<br>(业务持久化库) | 存储消杀处置工单、分级预警事件、移动端审核流、国家标准知识库 (GB/T 23797等)、自定义技能等 | **无需手动拷贝**。执行 `./server.sh start` 会**自动检测并执行** `python3 scripts/init_business_db.py` 完成建表与种子数据入库。若手动使用 `npm run dev` 启动，只需预先执行一次 `python3 scripts/init_business_db.py` 即可。 |
+| **`vector_monitoring.db`**<br>(时空监测事实库) | 包含河南省 18 地市 126 区县 5.6万+ 条多维病媒生态监测、病原 PCR 筛查与抗药性生物测定事实表 (~28MB) | 1. **本地开发/同级目录部署**：若工程与 `Agent-CdcBuddy-DataMock` 同级存放，`./server.sh` 会**自动识别并复制**；<br>2. **全新独立服务器 / 云端独立部署**：因 `.gitignore` 排除大体积 `.db` 文件，需将 `vector_monitoring.db` **手动拷贝至工程根目录**；<br>3. **生产数据库部署**：按文档指引导入至 PostgreSQL / 人大金仓 KingbaseES。 |
+
+### 4. 配置环境变量
 复制环境变量模版并填入对应配置：
 ```bash
 cp .env.example .env.local
@@ -129,9 +138,9 @@ SILICONFLOW_MODEL=Qwen/Qwen3.6-27B
 NEXT_PUBLIC_TIANDITU_KEY=your_tianditu_browser_key
 ```
 
-### 4. 统一运维启动服务
+### 5. 统一运维启动服务
 
-系统提供标准化运维脚本 `server.sh`，可一键完成环境检测、Python 虚拟环境配置、数据库初始核验与服务启动：
+系统提供标准化运维脚本 `server.sh`，可一键完成环境检测、Python 虚拟环境配置、数据库自动校验初始化与服务启动：
 
 ```bash
 # 启动开发服务器 (默认端口 3000)

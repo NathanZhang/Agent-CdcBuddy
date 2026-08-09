@@ -588,14 +588,15 @@ export class AppBusinessProvider {
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `);
         for (const msg of session.initialMessages) {
+          const msgId = msg.message_id || (msg as any).id || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
           stmt.run(
-            msg.message_id,
+            msgId,
             newRecord.session_id,
             msg.sender,
             msg.text,
-            msg.skill_used || null,
-            msg.generative_view_snapshot ? JSON.stringify(msg.generative_view_snapshot) : null,
-            msg.timestamp,
+            msg.skill_used || (msg as any).skillUsed || null,
+            msg.generative_view_snapshot || (msg as any).generativeViewSnapshot ? JSON.stringify(msg.generative_view_snapshot || (msg as any).generativeViewSnapshot) : null,
+            msg.timestamp || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
             now
           );
         }
@@ -628,14 +629,15 @@ export class AppBusinessProvider {
       `);
 
       for (const msg of messages) {
+        const msgId = msg.message_id || (msg as any).id || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
         msgStmt.run(
-          msg.message_id,
+          msgId,
           sessionId,
           msg.sender,
           msg.text,
-          msg.skill_used || null,
-          msg.generative_view_snapshot ? JSON.stringify(msg.generative_view_snapshot) : null,
-          msg.timestamp,
+          msg.skill_used || (msg as any).skillUsed || null,
+          msg.generative_view_snapshot || (msg as any).generativeViewSnapshot ? JSON.stringify(msg.generative_view_snapshot || (msg as any).generativeViewSnapshot) : null,
+          msg.timestamp || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
           now
         );
       }
