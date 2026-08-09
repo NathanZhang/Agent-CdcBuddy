@@ -1,4 +1,5 @@
 import { getVectorDataProvider } from '../db/sqlite-provider';
+import { getText2SqlTimeoutMs } from '../config/llm-timeout';
 
 // 疾控多维时空数据库真实 Schema 定义 (注入给 LLM)
 const CDC_DB_SCHEMA = `
@@ -151,7 +152,7 @@ ${CDC_DB_SCHEMA}
 `;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5秒快速响应保护
+    const timeoutId = setTimeout(() => controller.abort(), getText2SqlTimeoutMs());
 
     const response = await fetch(`${baseURL}/chat/completions`, {
       method: 'POST',

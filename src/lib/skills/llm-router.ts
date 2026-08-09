@@ -1,5 +1,6 @@
 import { STANDARD_SKILLS, getSkillById } from './registry';
 import { UserRole } from '../rbac/types';
+import { getRouterTimeoutMs } from '../config/llm-timeout';
 
 export interface LLMRouteResult {
   source: 'llm_tool_calling' | 'llm_direct_answer' | 'rule_fallback';
@@ -281,7 +282,7 @@ export async function routeSkillWithLLM(
   messages.push({ role: 'user', content: promptText });
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 4000); // 4秒超时控制
+  const timeoutId = setTimeout(() => controller.abort(), getRouterTimeoutMs());
 
   try {
     const res = await fetch(`${baseURL}/chat/completions`, {
