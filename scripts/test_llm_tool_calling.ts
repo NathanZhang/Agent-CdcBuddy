@@ -1,7 +1,7 @@
 import { routeSkillWithLLM } from '../src/lib/skills/llm-router';
 
 // 加载环境变量
-process.env.SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY || 'sk-wortgmadalczipcaypwssmrsxyvwhyidlzeynukcroiywxfe';
+process.env.SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
 process.env.SILICONFLOW_BASE_URL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
 process.env.SILICONFLOW_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';
 

@@ -19,11 +19,13 @@ export class AppBusinessProvider {
   private dbPath: string;
 
   constructor() {
+    const configuredPath = process.env.APP_BUSINESS_DB_PATH;
     const possiblePaths = [
+      configuredPath ? path.resolve(configuredPath) : null,
       path.resolve(process.cwd(), './app_business.db'),
       path.resolve(process.cwd(), '../Agent-CdcBuddy/app_business.db'),
       '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/app_business.db'
-    ];
+    ].filter((candidate): candidate is string => Boolean(candidate));
 
     let resolvedPath = possiblePaths[0];
     for (const p of possiblePaths) {

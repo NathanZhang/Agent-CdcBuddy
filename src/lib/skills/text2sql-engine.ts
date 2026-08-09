@@ -134,7 +134,7 @@ LIMIT 200;
 
   // 3. 尝试通过 SiliconFlow / LLM 生成高质量 SQL
   try {
-    const apiKey = process.env.SILICONFLOW_API_KEY || 'sk-wortgmadalczipcaypwssmrsxyvwhyidlzeynukcroiywxfe';
+    const apiKey = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
     const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
     const modelName = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';
 

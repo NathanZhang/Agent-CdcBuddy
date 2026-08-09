@@ -1,4 +1,4 @@
-const apiKey = process.env.SILICONFLOW_API_KEY || 'sk-wortgmadalczipcaypwssmrsxyvwhyidlzeynukcroiywxfe';
+const apiKey = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
 const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
 
 async function checkModels() {

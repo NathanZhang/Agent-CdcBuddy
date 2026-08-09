@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import math
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-np.clip(x, -15, 15)))

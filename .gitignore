@@ -37,6 +37,8 @@ __pycache__/
 *.db-journal
 logs/
 .server.pid
+/scripts/deploy/deploy.config.ps1
+.deploy-artifacts/
 
 # typescript
 *.tsbuildinfo

@@ -3,7 +3,10 @@ import sqlite3
 import datetime
 import json
 
-db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "app_business.db")
+db_path = os.environ.get("APP_BUSINESS_DB_PATH") or os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "app_business.db",
+)
 
 def init_db():
     print(f"Initializing Application Business Database at: {db_path}")

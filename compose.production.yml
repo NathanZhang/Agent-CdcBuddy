@@ -1,0 +1,37 @@
+services:
+  app:
+    image: ${APP_IMAGE:-agent-cdcbuddy:1.0.0}
+    container_name: agent-cdcbuddy
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - ${DEPLOY_DIR}/.env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      APP_BUSINESS_DB_PATH: /app/data/app_business.db
+    ports:
+      - "${APP_PORT:-32100}:3000"
+    volumes:
+      - type: bind
+        source: ${DEPLOY_DIR}/vector_monitoring.db
+        target: /app/vector_monitoring.db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEPLOY_DIR}/data
+        target: /app/data
+        bind:
+          create_host_path: false
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
