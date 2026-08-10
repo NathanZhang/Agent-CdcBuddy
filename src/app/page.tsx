@@ -372,7 +372,7 @@ export default function CdcAgentWorkspace() {
 
       const agentTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
       const agentMsgId = `agent-${Date.now()}`;
-      const agentReplyText = result.replyText || `已根据您的指令调用 **【${result.skillName}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`;
+      const agentReplyText = result.replyText || "处理请求成功。相关分析图表与态势数据已加载完毕。";
       
       const agentMsg = {
         id: agentMsgId,

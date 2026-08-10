@@ -1,4 +1,4 @@
-export const DEFAULT_LLM_TIMEOUT_MS = 30_000;
+export const DEFAULT_LLM_TIMEOUT_MS = 60_000;
 
 type TimeoutEnvironment = Record<string, string | undefined>;
 

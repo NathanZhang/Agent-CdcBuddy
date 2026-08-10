@@ -349,7 +349,7 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
     };
   }
 
-  // 1. 优先调用服务端的 Qwen3.6-27B Tool Calling 调度 API
+  // 调用服务端的 Qwen3.6-27B Tool Calling 调度 API
   try {
     const url = typeof window !== 'undefined' ? '/api/agent/dispatch' : 'http://localhost:3000/api/agent/dispatch';
     const res = await fetch(url, {
@@ -368,60 +368,34 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
 
     if (res.ok) {
       const data = await res.json();
-      if (data.success) {
-        return {
-          success: true,
-          skillId: data.skillId,
-          skillName: data.skillName,
-          replyText: data.replyText,
-          generativeView: data.generativeView,
-          source: data.source,
-          args: data.args
-        };
-      }
+      return {
+        success: data.success,
+        skillId: data.skillId || '',
+        skillName: data.skillName || '',
+        replyText: data.replyText,
+        generativeView: data.generativeView,
+        source: data.source,
+        args: data.args
+      };
+    } else {
+      const errText = await res.text();
+      return {
+        success: false,
+        skillId: 'skill_vector_nlq',
+        skillName: '服务连接异常',
+        replyText: `⚠️ 智能体调度接口异常 (HTTP ${res.status}): ${errText || '未知错误'}`
+      };
     }
   } catch (netErr: any) {
     if (netErr.name === 'AbortError' || context?.signal?.aborted) {
       throw netErr;
     }
-    console.warn('[Dispatcher] 服务端 Agent API 请求失败，启用本地规则引擎降级:', netErr);
-  }
-
-  if (context?.signal?.aborted) {
-    throw new DOMException('Aborted', 'AbortError');
-  }
-
-  // 2. 本地平滑降级执行
-  const fallback = fallbackRuleMatch(trimmed, context);
-  const skill = getSkillById(fallback.skillId);
-  if (!skill) {
+    console.error('[Dispatcher] 服务端 Agent API 请求异常:', netErr);
     return {
       success: false,
-      skillId: fallback.skillId,
-      skillName: fallback.skillName,
-      replyText: `未找到技能定义 [${fallback.skillId}]。`
-    };
-  }
-
-  try {
-    const result = await skill.execute(fallback.args);
-    return {
-      success: true,
-      skillId: skill.id,
-      skillName: skill.name,
-      replyText: `已根据您的指令调用 **【${skill.name}】** 技能。相关分析图表与态势数据已在主工作区生成式渲染完成。`,
-      generativeView: result,
-      source: 'rule_fallback',
-      args: fallback.args
-    };
-  } catch (err: any) {
-    console.error('Skill execution failed:', err);
-    return {
-      success: false,
-      skillId: skill.id,
-      skillName: skill.name,
-      replyText: `⚠️ 执行技能【${skill.name}】时出现异常: ${err.message || '系统错误'}`,
-      error: err.message
+      skillId: 'skill_vector_nlq',
+      skillName: '服务连接异常',
+      replyText: `⚠️ 无法连接到智能体服务，网络或服务响应异常: ${netErr.message || '连接失败'}`
     };
   }
 }
