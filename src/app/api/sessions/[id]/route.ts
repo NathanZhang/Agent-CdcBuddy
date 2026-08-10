@@ -26,6 +26,8 @@ export async function GET(
       id: m.message_id || `msg_${sessionId}_${idx}`,
       sender: m.sender,
       text: m.text,
+      reasoningText: m.reasoning_text || undefined,
+      reasoningDuration: m.reasoning_duration !== null && m.reasoning_duration !== undefined ? m.reasoning_duration : undefined,
       skillUsed: m.skill_used || undefined,
       generativeViewSnapshot: m.generative_view_snapshot || undefined,
       timestamp: m.timestamp,

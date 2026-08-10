@@ -13,9 +13,10 @@ import { getSkillById, STANDARD_SKILLS } from '@/lib/skills/registry';
 
 // AG-UI 生成式界面组件库与调度引擎
 import { GenerativeComponentRenderer } from '@/components/ag-ui/GenerativeComponentRenderer';
-import { dispatchSkillPrompt } from '@/lib/skills/dispatcher';
+import { dispatchSkillPrompt, dispatchSkillPromptStream } from '@/lib/skills/dispatcher';
 import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/ActiveAlertsModal';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
+import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 
 import { 
   Sparkles, 
@@ -104,13 +105,19 @@ const INITIAL_GENERATIVE_VIEW = {
   ]
 };
 
-const getInitialChatHistory = (): {
+export interface ChatMessageItem {
   id: string;
-  sender: 'user' | 'agent';
+  sender: 'user' | 'agent' | 'system';
   text: string;
+  reasoningText?: string;
+  reasoningDuration?: number;
+  isReasoningStreaming?: boolean;
+  isContentStreaming?: boolean;
   skillUsed?: string;
   timestamp: string;
-}[] => [
+}
+
+const getInitialChatHistory = (): ChatMessageItem[] => [
   {
     id: 'init-1',
     sender: 'agent',
@@ -169,13 +176,7 @@ export default function CdcAgentWorkspace() {
     }
   };
 
-  const [chatHistory, setChatHistory] = useState<{
-    id: string;
-    sender: 'user' | 'agent';
-    text: string;
-    skillUsed?: string;
-    timestamp: string;
-  }[]>(getInitialChatHistory());
+  const [chatHistory, setChatHistory] = useState<ChatMessageItem[]>(getInitialChatHistory());
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const isCancelledRef = useRef<boolean>(false);
@@ -282,15 +283,22 @@ export default function CdcAgentWorkspace() {
       abortControllerRef.current = null;
     }
     setIsThinking(false);
-    setChatHistory(prev => [
-      ...prev,
-      {
-        id: `agent-stop-${Date.now()}`,
-        sender: 'agent',
-        text: '⏹️ 已打断并停止当前研判分析任务。',
-        timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-      }
-    ]);
+    setChatHistory(prev => {
+      const updated = prev.map(m => ({
+        ...m,
+        isReasoningStreaming: false,
+        isContentStreaming: false
+      }));
+      return [
+        ...updated,
+        {
+          id: `agent-stop-${Date.now()}`,
+          sender: 'agent' as const,
+          text: '⏹️ 已打断并停止当前研判分析任务。',
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ];
+    });
   };
 
   // 监听新对话消息或智能体思考状态，自动平滑滚动到最新内容
@@ -332,7 +340,7 @@ export default function CdcAgentWorkspace() {
     }
   });
 
-  // 智能体意图识别与 Skill 分发调度中枢 (执行并持久化到真实会话数据库)
+  // 智能体意图识别与 Skill 分发调度中枢 (流式执行并持久化到真实会话数据库)
   const handleExecutePrompt = async (promptText: string) => {
     if (!promptText.trim() || isThinking) return;
 
@@ -347,42 +355,101 @@ export default function CdcAgentWorkspace() {
 
     const userMsgId = `msg-${Date.now()}`;
     const userTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-    const userMsg = {
+    const userMsg: ChatMessageItem = {
       id: userMsgId,
-      sender: 'user' as const,
+      sender: 'user',
       text: promptText,
       timestamp: userTimestamp
     };
 
-    const newChat = [...chatHistory, userMsg];
+    const agentMsgId = `agent-${Date.now()}`;
+    const agentTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    const placeholderAgentMsg: ChatMessageItem = {
+      id: agentMsgId,
+      sender: 'agent',
+      text: '',
+      reasoningText: '',
+      isReasoningStreaming: true,
+      isContentStreaming: false,
+      timestamp: agentTimestamp
+    };
+
+    const newChat = [...chatHistory, userMsg, placeholderAgentMsg];
     setChatHistory(newChat);
     setInputPrompt('');
     setIsThinking(true);
 
+    let latestReasoning = '';
+    let latestContent = '';
+    let latestSkillName = '';
+    let latestView = activeGenerativeView;
+    let reasoningDurationMs = 0;
+
     try {
-      const result = await dispatchSkillPrompt(promptText, { 
-        chatHistory: newChat, 
+      const result = await dispatchSkillPromptStream(promptText, { 
+        chatHistory: newChat.slice(0, -1), 
         currentView: activeGenerativeView,
-        signal: controller.signal
+        signal: controller.signal,
+        onReasoningStart: () => {
+          setChatHistory(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            isReasoningStreaming: true
+          } : m));
+        },
+        onReasoningChunk: (_chunk, fullReasoning) => {
+          latestReasoning = fullReasoning;
+          setChatHistory(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            reasoningText: fullReasoning,
+            isReasoningStreaming: true
+          } : m));
+        },
+        onReasoningEnd: (durMs) => {
+          reasoningDurationMs = durMs;
+          setChatHistory(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            reasoningDuration: durMs,
+            isReasoningStreaming: false,
+            isContentStreaming: true
+          } : m));
+        },
+        onContentChunk: (_chunk, fullContent) => {
+          latestContent = fullContent;
+          setChatHistory(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            text: fullContent,
+            isReasoningStreaming: false,
+            isContentStreaming: true
+          } : m));
+        },
+        onToolCallStart: (info) => {
+          latestSkillName = info.toolName;
+          setChatHistory(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            skillUsed: info.toolName
+          } : m));
+        },
+        onGenerativeView: (view) => {
+          latestView = view;
+          setActiveGenerativeView(view);
+          if (
+            view.type === 'CUSTOM_SKILL_CREATED' ||
+            view.skillId === 'skill_meta_custom_builder'
+          ) {
+            fetchCustomSkills();
+          }
+        }
       });
 
       if (isCancelledRef.current || controller.signal.aborted) {
         return;
       }
 
-      const agentTimestamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-      const agentMsgId = `agent-${Date.now()}`;
-      const agentReplyText = result.replyText || "处理请求成功。相关分析图表与态势数据已加载完毕。";
-      
-      const agentMsg = {
-        id: agentMsgId,
-        sender: 'agent' as const,
-        text: agentReplyText,
-        skillUsed: result.skillName,
-        timestamp: agentTimestamp
-      };
-
-      const finalGenerativeView = result.generativeView || activeGenerativeView;
+      const finalReplyText = result.replyText || latestContent || "处理请求成功。相关分析图表与态势数据已加载完毕。";
+      const finalSkillName = result.skillName || latestSkillName;
+      const finalReasoning = result.reasoningText || latestReasoning;
+      const finalDuration = result.reasoningDuration || reasoningDurationMs;
+      const finalGenerativeView = result.generativeView || latestView || activeGenerativeView;
 
       if (result.generativeView) {
         setActiveGenerativeView(result.generativeView);
@@ -394,7 +461,19 @@ export default function CdcAgentWorkspace() {
         }
       }
 
-      setChatHistory(prev => [...prev, agentMsg]);
+      const finalAgentMsg: ChatMessageItem = {
+        id: agentMsgId,
+        sender: 'agent',
+        text: finalReplyText,
+        reasoningText: finalReasoning || undefined,
+        reasoningDuration: finalDuration > 0 ? finalDuration : undefined,
+        isReasoningStreaming: false,
+        isContentStreaming: false,
+        skillUsed: finalSkillName || undefined,
+        timestamp: agentTimestamp
+      };
+
+      setChatHistory(prev => prev.map(m => m.id === agentMsgId ? finalAgentMsg : m));
 
       // ---------------- 真实落库持久化：创建会话或追加消息 ----------------
       try {
@@ -412,7 +491,7 @@ export default function CdcAgentWorkspace() {
               userRole: currentUser.role,
               title: suggestedTitle,
               lastGenerativeView: finalGenerativeView,
-              initialMessages: [userMsg, agentMsg]
+              initialMessages: [userMsg, finalAgentMsg]
             })
           });
           if (createRes.ok) {
@@ -428,7 +507,7 @@ export default function CdcAgentWorkspace() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              messages: [userMsg, agentMsg],
+              messages: [userMsg, finalAgentMsg],
               lastGenerativeView: finalGenerativeView,
               suggestedTitle: currentSessionTitle === '新研判会话' ? suggestedTitle : undefined
             })
@@ -447,15 +526,18 @@ export default function CdcAgentWorkspace() {
         return;
       }
       console.error(e);
-      setChatHistory(prev => [
-        ...prev,
-        {
-          id: `agent-err-${Date.now()}`,
-          sender: 'agent',
-          text: `⚠️ 执行失败：${e.message || '技能执行异常'}，请重试或检查参数。`,
-          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
+      setChatHistory(prev => {
+        const withoutPlaceholder = prev.filter(m => m.id !== agentMsgId);
+        return [
+          ...withoutPlaceholder,
+          {
+            id: `agent-err-${Date.now()}`,
+            sender: 'agent',
+            text: `⚠️ 执行失败：${e.message || '技能执行异常'}，请重试或检查参数。`,
+            timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+          }
+        ];
+      });
     } finally {
       if (abortControllerRef.current === controller) {
         abortControllerRef.current = null;
@@ -595,21 +677,45 @@ export default function CdcAgentWorkspace() {
                   className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {m.sender === 'agent' && (
-                    <div className="w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5 shadow-xs">
                       🤖
                     </div>
                   )}
 
                   <div className={`max-w-[85%] space-y-1.5 ${m.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div
-                      className={`p-3.5 rounded-xl leading-relaxed ${
-                        m.sender === 'user'
-                          ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
-                          : 'bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-xs'
-                      }`}
-                    >
-                      <MarkdownRenderer content={m.text} isUser={m.sender === 'user'} />
-                    </div>
+                    {/* 若智能体具有深度推理 (Thinking) 过程或正在推演中，优先渲染 Thinking 卡片 */}
+                    {m.sender === 'agent' && (m.reasoningText || m.isReasoningStreaming) && (
+                      <ThinkingProcessCard
+                        reasoningText={m.reasoningText || ''}
+                        isStreaming={Boolean(m.isReasoningStreaming)}
+                        durationMs={m.reasoningDuration}
+                      />
+                    )}
+
+                    {/* 正式回复内容 (当存在文本或者不在纯思考占位中时渲染) */}
+                    {(m.text || (!m.isReasoningStreaming && m.sender === 'agent')) && (
+                      <div
+                        className={`p-3.5 rounded-xl leading-relaxed ${
+                          m.sender === 'user'
+                            ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
+                            : 'bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-xs'
+                        }`}
+                      >
+                        {m.text ? (
+                          <>
+                            <MarkdownRenderer content={m.text} isUser={m.sender === 'user'} />
+                            {m.isContentStreaming && (
+                              <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                            <span>正在生成研判结论...</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex items-center gap-2 text-[10px] text-slate-500 px-1">
                       {m.skillUsed && (
@@ -628,13 +734,6 @@ export default function CdcAgentWorkspace() {
                   )}
                 </div>
               ))}
-
-              {isThinking && (
-                <div className="flex gap-2.5 items-center text-xs text-sky-600 dark:text-sky-400 p-2 rounded-lg bg-sky-50 dark:bg-slate-950/60 border border-sky-200 dark:border-slate-800 animate-pulse">
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>CdcBuddy 正在检索时空数据库并计算模型指标...</span>
-                </div>
-              )}
 
               {/* 自动滚动锚点 */}
               <div ref={chatMessagesEndRef} />

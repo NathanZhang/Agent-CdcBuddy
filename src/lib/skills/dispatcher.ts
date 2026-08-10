@@ -6,6 +6,8 @@ export interface DispatchResult {
   skillId: string;
   skillName: string;
   replyText: string;
+  reasoningText?: string;
+  reasoningDuration?: number;
   generativeView?: any;
   error?: string;
   source?: 'llm_tool_calling' | 'llm_direct_answer' | 'rule_fallback';
@@ -17,6 +19,13 @@ export interface DispatchContext {
   currentView?: any;
   userRole?: string;
   signal?: AbortSignal;
+  onReasoningStart?: () => void;
+  onReasoningChunk?: (chunk: string, fullReasoning: string) => void;
+  onReasoningEnd?: (durationMs: number) => void;
+  onContentChunk?: (chunk: string, fullContent: string) => void;
+  onToolCallStart?: (info: { toolId: string; toolName: string; args: any }) => void;
+  onToolCallResult?: (info: { toolId: string; success: boolean; summary: string }) => void;
+  onGenerativeView?: (view: any) => void;
 }
 
 export interface RuleMatchResult {
@@ -335,8 +344,167 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
 }
 
 /**
- * 统一病媒生物意图识别与技能执行调度引擎
- * 优先调用服务端 SiliconFlow Qwen3.6-27B Tool Calling，异常时无缝降级走规则引擎
+ * 统一病媒生物意图识别与技能执行调度引擎 (流式版 SSE)
+ * 优先连接 /api/agent/stream-dispatch 实时接收思维链与正文，网络异常时降级至非流式或规则匹配
+ */
+export async function dispatchSkillPromptStream(
+  promptText: string,
+  context?: DispatchContext
+): Promise<DispatchResult> {
+  const trimmed = promptText.trim();
+  if (!trimmed) {
+    return {
+      success: false,
+      skillId: '',
+      skillName: '',
+      replyText: '请输入有效的病媒生物监测指令或问题。'
+    };
+  }
+
+  try {
+    const url = typeof window !== 'undefined' ? '/api/agent/stream-dispatch' : 'http://localhost:3000/api/agent/stream-dispatch';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream'
+      },
+      signal: context?.signal,
+      body: JSON.stringify({
+        promptText: trimmed,
+        chatHistory: context?.chatHistory || [],
+        userRole: context?.userRole,
+        context: {
+          currentView: context?.currentView
+        }
+      })
+    });
+
+    if (!res.ok || !res.body) {
+      console.warn(`[Stream Dispatcher] 流式接口响应状态异常 (HTTP ${res.status})，降级为常规接口`);
+      return await dispatchSkillPrompt(promptText, context);
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let lineBuffer = '';
+
+    let accumulatedReasoning = '';
+    let accumulatedContent = '';
+    let chosenSkillId = '';
+    let chosenSkillName = '';
+    let finalGenerativeView: any = context?.currentView || null;
+    let reasoningDuration = 0;
+    let isSuccess = true;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      lineBuffer += decoder.decode(value, { stream: true });
+      const lines = lineBuffer.split('\n');
+      lineBuffer = lines.pop() || '';
+
+      let currentEvent = 'message';
+
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue;
+
+        if (trimmedLine.startsWith('event: ')) {
+          currentEvent = trimmedLine.substring(7).trim();
+          continue;
+        }
+
+        if (trimmedLine.startsWith('data: ')) {
+          const rawData = trimmedLine.substring(6).trim();
+          if (rawData === '[DONE]') continue;
+
+          try {
+            const data = JSON.parse(rawData);
+
+            switch (currentEvent) {
+              case 'reasoning_start':
+                context?.onReasoningStart?.();
+                break;
+
+              case 'reasoning_chunk':
+                if (data.text) {
+                  accumulatedReasoning += data.text;
+                  context?.onReasoningChunk?.(data.text, accumulatedReasoning);
+                }
+                break;
+
+              case 'reasoning_end':
+                reasoningDuration = data.durationMs || 0;
+                context?.onReasoningEnd?.(reasoningDuration);
+                break;
+
+              case 'tool_call_start':
+                chosenSkillId = data.toolId || chosenSkillId;
+                chosenSkillName = data.toolName || chosenSkillName;
+                context?.onToolCallStart?.(data);
+                break;
+
+              case 'tool_call_result':
+                context?.onToolCallResult?.(data);
+                break;
+
+              case 'generative_view':
+                if (data.view) {
+                  finalGenerativeView = data.view;
+                  context?.onGenerativeView?.(data.view);
+                }
+                break;
+
+              case 'content_chunk':
+                if (data.text) {
+                  accumulatedContent += data.text;
+                  context?.onContentChunk?.(data.text, accumulatedContent);
+                }
+                break;
+
+              case 'finish':
+                isSuccess = data.success !== false;
+                if (data.skillId) chosenSkillId = data.skillId;
+                if (data.skillName) chosenSkillName = data.skillName;
+                if (data.reasoningDurationMs) reasoningDuration = data.reasoningDurationMs;
+                break;
+
+              case 'error':
+                isSuccess = false;
+                console.error('[Stream Dispatcher Event Error]', data.message);
+                break;
+            }
+          } catch (jsonErr) {
+            // 忽略非 JSON 数据行
+          }
+        }
+      }
+    }
+
+    return {
+      success: isSuccess,
+      skillId: chosenSkillId || 'skill_vector_nlq',
+      skillName: chosenSkillName || '病媒生物协同研判',
+      replyText: accumulatedContent || '研判任务已完成。',
+      reasoningText: accumulatedReasoning || undefined,
+      reasoningDuration: reasoningDuration > 0 ? reasoningDuration : undefined,
+      generativeView: finalGenerativeView,
+      source: 'llm_tool_calling'
+    };
+
+  } catch (err: any) {
+    if (err.name === 'AbortError' || context?.signal?.aborted) {
+      throw err;
+    }
+    console.warn('[Stream Dispatcher Error] 流式请求异常，尝试降级:', err);
+    return await dispatchSkillPrompt(promptText, context);
+  }
+}
+
+/**
+ * 统一病媒生物意图识别与技能执行调度引擎 (常规非流式兜底)
  */
 export async function dispatchSkillPrompt(promptText: string, context?: DispatchContext): Promise<DispatchResult> {
   const trimmed = promptText.trim();
@@ -349,7 +517,6 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
     };
   }
 
-  // 调用服务端的 Qwen3.6-27B Tool Calling 调度 API
   try {
     const url = typeof window !== 'undefined' ? '/api/agent/dispatch' : 'http://localhost:3000/api/agent/dispatch';
     const res = await fetch(url, {
@@ -399,3 +566,4 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
     };
   }
 }
+

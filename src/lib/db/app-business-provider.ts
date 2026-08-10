@@ -393,6 +393,8 @@ export class AppBusinessProvider {
         session_id VARCHAR(64) NOT NULL,
         sender VARCHAR(16) NOT NULL,
         text TEXT NOT NULL,
+        reasoning_text TEXT,
+        reasoning_duration INTEGER,
         skill_used VARCHAR(64),
         generative_view_snapshot TEXT,
         timestamp VARCHAR(32) NOT NULL,
@@ -403,6 +405,21 @@ export class AppBusinessProvider {
       CREATE INDEX IF NOT EXISTS idx_chat_messages_session_time
       ON biz_chat_messages(session_id, created_at ASC);
     `);
+
+    // 动态平滑迁移：若老表缺少 reasoning 列则自动增加
+    try {
+      const db = this.getDb();
+      const cols = db.prepare(`PRAGMA table_info(biz_chat_messages)`).all() as Array<{ name: string }>;
+      const colNames = new Set(cols.map(c => c.name));
+      if (!colNames.has('reasoning_text')) {
+        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_text TEXT`).run();
+      }
+      if (!colNames.has('reasoning_duration')) {
+        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_duration INTEGER`).run();
+      }
+    } catch (e) {
+      // 忽略迁移尝试异常
+    }
   }
 
   /**
@@ -585,9 +602,9 @@ export class AppBusinessProvider {
       if (session.initialMessages && session.initialMessages.length > 0) {
         const stmt = db.prepare(`
           INSERT INTO biz_chat_messages (
-            message_id, session_id, sender, text, skill_used,
+            message_id, session_id, sender, text, reasoning_text, reasoning_duration, skill_used,
             generative_view_snapshot, timestamp, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         for (const msg of session.initialMessages) {
           const msgId = msg.message_id || (msg as any).id || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -596,6 +613,8 @@ export class AppBusinessProvider {
             newRecord.session_id,
             msg.sender,
             msg.text,
+            msg.reasoning_text || (msg as any).reasoningText || null,
+            msg.reasoning_duration !== undefined ? msg.reasoning_duration : ((msg as any).reasoningDuration ?? null),
             msg.skill_used || (msg as any).skillUsed || null,
             msg.generative_view_snapshot || (msg as any).generativeViewSnapshot ? JSON.stringify(msg.generative_view_snapshot || (msg as any).generativeViewSnapshot) : null,
             msg.timestamp || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
@@ -625,9 +644,9 @@ export class AppBusinessProvider {
     const updateTx = db.transaction(() => {
       const msgStmt = db.prepare(`
         INSERT INTO biz_chat_messages (
-          message_id, session_id, sender, text, skill_used,
+          message_id, session_id, sender, text, reasoning_text, reasoning_duration, skill_used,
           generative_view_snapshot, timestamp, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       for (const msg of messages) {
@@ -637,6 +656,8 @@ export class AppBusinessProvider {
           sessionId,
           msg.sender,
           msg.text,
+          msg.reasoning_text || (msg as any).reasoningText || null,
+          msg.reasoning_duration !== undefined ? msg.reasoning_duration : ((msg as any).reasoningDuration ?? null),
           msg.skill_used || (msg as any).skillUsed || null,
           msg.generative_view_snapshot || (msg as any).generativeViewSnapshot ? JSON.stringify(msg.generative_view_snapshot || (msg as any).generativeViewSnapshot) : null,
           msg.timestamp || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),

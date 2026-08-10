@@ -243,6 +243,8 @@ export interface BizChatMessage {
   session_id: string;
   sender: 'user' | 'agent' | 'system';
   text: string;
+  reasoning_text?: string;
+  reasoning_duration?: number;
   skill_used?: string;
   generative_view_snapshot?: string | any;
   timestamp: string;
