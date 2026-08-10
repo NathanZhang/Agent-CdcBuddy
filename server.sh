@@ -30,20 +30,24 @@ NC="\033[0m" # No Color
 
 mkdir -p "${LOG_DIR}"
 
+get_timestamp() {
+    date "+%Y-%m-%d %H:%M:%S"
+}
+
 log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+    echo -e "${GREEN}[$(get_timestamp)] [INFO]${NC} $1"
 }
 
 log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+    echo -e "${YELLOW}[$(get_timestamp)] [WARN]${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[$(get_timestamp)] [ERROR]${NC} $1"
 }
 
 log_step() {
-    echo -e "${CYAN}==>${NC} $1"
+    echo -e "${CYAN}[$(get_timestamp)] ==>${NC} $1"
 }
 
 # 检查环境与数据库依赖
@@ -135,23 +139,39 @@ start_server() {
 
     NEXT_CLI="${PROJECT_ROOT}/node_modules/next/dist/bin/next"
 
+    local CMD=""
     if [ "${mode}" = "prod" ]; then
         log_step "执行生产环境打包编译..."
         if [ -f "${NEXT_CLI}" ]; then
-            node "${NEXT_CLI}" build >> "${LOG_FILE}" 2>&1
+            node "${NEXT_CLI}" build 2>&1 | "${PY_BIN}" -u -c '
+import sys, datetime
+for line in sys.stdin:
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sys.stdout.write(f"[{now}] {line}")
+    sys.stdout.flush()
+' >> "${LOG_FILE}"
             log_step "启动生产服务 (next start)..."
-            nohup node "${NEXT_CLI}" start -p "${PORT}" >> "${LOG_FILE}" 2>&1 &
+            CMD="node '${NEXT_CLI}' start -p '${PORT}'"
         else
-            nohup npm run start -- -p "${PORT}" >> "${LOG_FILE}" 2>&1 &
+            CMD="npm run start -- -p '${PORT}'"
         fi
     else
         log_step "启动开发模式服务 (next dev)..."
         if [ -f "${NEXT_CLI}" ]; then
-            nohup node "${NEXT_CLI}" dev -p "${PORT}" >> "${LOG_FILE}" 2>&1 &
+            CMD="node '${NEXT_CLI}' dev -p '${PORT}'"
         else
-            nohup npm run dev >> "${LOG_FILE}" 2>&1 &
+            CMD="npm run dev"
         fi
     fi
+
+    # 💡 使用 Python 为 server.log 每一行追加精确时间戳 [YYYY-MM-DD HH:MM:SS]
+    nohup /bin/bash -c "${CMD} 2>&1 | '${PY_BIN}' -u -c '
+import sys, datetime
+for line in sys.stdin:
+    now = datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")
+    sys.stdout.write(f\"[{now}] {line}\")
+    sys.stdout.flush()
+' >> '${LOG_FILE}'" > /dev/null 2>&1 &
 
     local server_pid=$!
     echo "${server_pid}" > "${PID_FILE}"
