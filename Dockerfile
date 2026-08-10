@@ -39,6 +39,7 @@ COPY --chown=node:node docker/entrypoint.sh ./docker/entrypoint.sh
 
 RUN mkdir -p /app/data \
     && chown node:node /app/data \
+    && sed -i 's/\r$//' ./docker/entrypoint.sh \
     && chmod 0755 ./docker/entrypoint.sh
 
 USER node

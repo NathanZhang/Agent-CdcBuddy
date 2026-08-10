@@ -25,6 +25,8 @@ try {
         throw "Unexpected image platform: $platform"
     }
 
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-entrypoint.ps1') -ImageName $ImageName
+
     $absoluteOutput = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputPath))
     $artifactRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.deploy-artifacts'))
     if (-not $absoluteOutput.StartsWith($artifactRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)) {
