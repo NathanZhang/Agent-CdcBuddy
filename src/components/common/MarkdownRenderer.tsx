@@ -6,11 +6,20 @@ export interface MarkdownRendererProps {
   isUser?: boolean;
 }
 
+type TableAlign = 'left' | 'center' | 'right';
+
 type Section =
   | { type: 'code'; content: string; lang?: string }
   | { type: 'heading'; level: number; content: string }
   | { type: 'quote'; content: string }
+  | { type: 'hr' }
   | { type: 'list'; ordered: boolean; content: string; items: string[] }
+  | {
+      type: 'table';
+      headers: string[];
+      aligns: TableAlign[];
+      rows: string[][];
+    }
   | { type: 'paragraph'; content: string };
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -20,7 +29,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
   if (!content) return null;
 
-  // Split content into blocks by code fences or multiple newlines
+  // Split content into blocks by code fences, tables, headings, lists, or multiple newlines
   const sections = splitContentIntoSections(content);
 
   return (
@@ -69,6 +78,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           );
         }
 
+        if (sec.type === 'hr') {
+          return <hr key={idx} className="my-2.5 border-slate-200 dark:border-slate-800" />;
+        }
+
         if (sec.type === 'list') {
           if (sec.ordered) {
             return (
@@ -92,6 +105,77 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           );
         }
 
+        if (sec.type === 'table') {
+          const getAlignClass = (align: TableAlign) => {
+            if (align === 'center') return 'text-center';
+            if (align === 'right') return 'text-right';
+            return 'text-left';
+          };
+
+          return (
+            <div
+              key={idx}
+              className={`my-2.5 overflow-x-auto rounded-lg border ${
+                isUser
+                  ? 'border-white/20 bg-white/10'
+                  : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 shadow-xs'
+              }`}
+            >
+              <table className="w-full text-xs border-collapse">
+                <thead
+                  className={`${
+                    isUser
+                      ? 'bg-white/15 text-white border-b border-white/20'
+                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800'
+                  } font-semibold`}
+                >
+                  <tr>
+                    {sec.headers.map((header, hIdx) => (
+                      <th
+                        key={hIdx}
+                        className={`px-3 py-2 whitespace-nowrap ${getAlignClass(
+                          sec.aligns[hIdx] || 'left'
+                        )}`}
+                      >
+                        {renderInline(header, isUser)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody
+                  className={`divide-y ${
+                    isUser
+                      ? 'divide-white/10 text-white'
+                      : 'divide-slate-200/80 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {sec.rows.map((row, rIdx) => (
+                    <tr
+                      key={rIdx}
+                      className={
+                        isUser
+                          ? 'hover:bg-white/10 transition-colors'
+                          : 'hover:bg-sky-50/50 dark:hover:bg-slate-800/50 transition-colors'
+                      }
+                    >
+                      {sec.headers.map((_, cIdx) => (
+                        <td
+                          key={cIdx}
+                          className={`px-3 py-2 whitespace-nowrap ${getAlignClass(
+                            sec.aligns[cIdx] || 'left'
+                          )}`}
+                        >
+                          {renderInline(row[cIdx] ?? '', isUser)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+
         // Standard Paragraph
         const lines = sec.content.split('\n');
         return (
@@ -108,6 +192,55 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     </div>
   );
 };
+
+function splitRowCells(line: string): string[] {
+  let trimmed = line.trim();
+  if (trimmed.startsWith('|')) {
+    trimmed = trimmed.slice(1);
+  }
+  if (trimmed.endsWith('|') && !trimmed.endsWith('\\|')) {
+    trimmed = trimmed.slice(0, -1);
+  }
+  const cells: string[] = [];
+  let current = '';
+  let escaped = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const char = trimmed[i];
+    if (char === '\\' && !escaped) {
+      escaped = true;
+      current += char;
+    } else if (char === '|' && !escaped) {
+      cells.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+      escaped = false;
+    }
+  }
+  cells.push(current.trim());
+  return cells;
+}
+
+function isTableSeparator(line: string): boolean {
+  const trimmed = line.trim();
+  if (!trimmed || !trimmed.includes('-') || !trimmed.includes('|')) return false;
+  const content = trimmed.replace(/^\|/, '').replace(/\|$/, '');
+  const cells = content.split('|');
+  if (cells.length === 0) return false;
+  return cells.every((c) => /^\s*:?-{1,}:?\s*$/.test(c));
+}
+
+function parseAlignments(separatorLine: string): TableAlign[] {
+  const cells = splitRowCells(separatorLine);
+  return cells.map((cell) => {
+    const trimmed = cell.trim();
+    const startColon = trimmed.startsWith(':');
+    const endColon = trimmed.endsWith(':');
+    if (startColon && endColon) return 'center';
+    if (endColon) return 'right';
+    return 'left';
+  });
+}
 
 function splitContentIntoSections(raw: string): Section[] {
   const sections: Section[] = [];
@@ -178,6 +311,13 @@ function splitContentIntoSections(raw: string): Section[] {
       continue;
     }
 
+    // Horizontal Rule
+    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+      flushParagraph();
+      sections.push({ type: 'hr' });
+      continue;
+    }
+
     // Heading
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
@@ -196,6 +336,45 @@ function splitContentIntoSections(raw: string): Section[] {
       sections.push({
         type: 'quote',
         content: line.replace(/^>\s*/, ''),
+      });
+      continue;
+    }
+
+    // Table detection: line has '|' and next line is a table separator
+    if (i + 1 < lines.length && line.includes('|') && isTableSeparator(lines[i + 1])) {
+      flushParagraph();
+      const headerLine = line;
+      const separatorLine = lines[i + 1];
+      const headers = splitRowCells(headerLine);
+      const aligns = parseAlignments(separatorLine);
+      const rows: string[][] = [];
+
+      i += 2;
+      while (i < lines.length) {
+        const currentLine = lines[i];
+        if (
+          currentLine.trim() === '' ||
+          currentLine.trim().startsWith('```') ||
+          currentLine.match(/^(#{1,6})\s+/) ||
+          currentLine.startsWith('>') ||
+          /^(?:-{3,}|\*{3,}|_{3,})$/.test(currentLine.trim())
+        ) {
+          i--; // Reprocess this line in outer loop
+          break;
+        }
+        if (!currentLine.includes('|')) {
+          i--;
+          break;
+        }
+        rows.push(splitRowCells(currentLine));
+        i++;
+      }
+
+      sections.push({
+        type: 'table',
+        headers,
+        aligns,
+        rows,
       });
       continue;
     }
