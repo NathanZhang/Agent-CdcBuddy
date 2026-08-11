@@ -562,20 +562,57 @@ export default function CdcAgentWorkspace() {
 
       {/* 统计指标浮动指示条 */}
       <div className="shrink-0 bg-slate-100/90 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800/80 px-6 py-2 flex items-center justify-between overflow-x-auto text-xs text-slate-600 dark:text-slate-300 gap-6 transition-colors">
-        <div className="flex items-center gap-6 shrink-0">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => handleExecutePrompt('请汇总展示病媒生物治理监测记录（48,530条）的详细概览，按蚊、蝇、鼠、蟑、蜱、螨六大类群统计监测样本量与捕获总量，并结合气象温湿度补全情况进行多维分析。')}
+            title="点击通过 AI 交互查询 48,530 条病媒治理监测记录详情"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+          >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>治理监测记录: <strong className="text-sky-600 dark:text-sky-400 font-mono">48,530</strong> 条 (100%温湿度补全)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>PCR 病原检测: <strong className="text-rose-600 dark:text-rose-400 font-mono">7,336</strong> 组批</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>抗药性毒力测定: <strong className="text-amber-600 dark:text-amber-400 font-mono">365</strong> 组</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>覆盖全省行政区: <strong className="text-slate-900 dark:text-slate-100 font-mono">18 地市 / 126 区县</strong> (2,037 点位)</span>
-          </div>
+            <span>治理监测记录:</span>
+            <strong className="text-sky-600 dark:text-sky-400 font-mono group-hover:underline underline-offset-2">48,530</strong>
+            <span className="text-slate-500 dark:text-slate-400 text-[11px]">条</span>
+            <span className="text-[10px] text-sky-500 dark:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
+          </button>
+
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+
+          <button
+            onClick={() => handleExecutePrompt('请检索并分析全省 7,336 组批 PCR 病原检测数据详情，列出登革病毒、乙脑病毒、布尼亚病毒、立克次体等主要检出靶标分布及阳性率态势。')}
+            title="点击通过 AI 交互查询 7,336 组批 PCR 病原检测数据详情"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+          >
+            <span>PCR 病原检测:</span>
+            <strong className="text-rose-600 dark:text-rose-400 font-mono group-hover:underline underline-offset-2">7,336</strong>
+            <span className="text-slate-500 dark:text-slate-400 text-[11px]">组批</span>
+            <span className="text-[10px] text-rose-500 dark:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
+          </button>
+
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+
+          <button
+            onClick={() => handleExecutePrompt('请调取 365 组杀虫剂抗药性毒力测定实验数据，分析拟除虫菊酯、有机磷等主要药剂在各地市优势蚊蝇种群中的抗性倍数及抗性等级分布。')}
+            title="点击通过 AI 交互查询 365 组抗药性毒力测定数据详情"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+          >
+            <span>抗药性毒力测定:</span>
+            <strong className="text-amber-600 dark:text-amber-400 font-mono group-hover:underline underline-offset-2">365</strong>
+            <span className="text-slate-500 dark:text-slate-400 text-[11px]">组</span>
+            <span className="text-[10px] text-amber-500 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
+          </button>
+
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+
+          <button
+            onClick={() => handleExecutePrompt('请展示全省 18 地市 126 区县共 2,037 个监测点位的地理空间覆盖分布与点位明细，按地市统计点位密度和重点监测生境。')}
+            title="点击通过 AI 交互查询全省 18 地市 / 126 区县 (2,037 点位) 空间覆盖详情"
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+          >
+            <span>覆盖全省行政区:</span>
+            <strong className="text-slate-900 dark:text-slate-100 font-mono group-hover:underline underline-offset-2">18 地市 / 126 区县</strong>
+            <span className="text-slate-500 dark:text-slate-400 text-[11px]">(2,037 点位)</span>
+            <span className="text-[10px] text-indigo-500 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🗺️ 详情</span>
+          </button>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
