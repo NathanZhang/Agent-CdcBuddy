@@ -572,7 +572,6 @@ export default function CdcAgentWorkspace() {
             <span>治理监测记录:</span>
             <strong className="text-sky-600 dark:text-sky-400 font-mono group-hover:underline underline-offset-2">48,530</strong>
             <span className="text-slate-500 dark:text-slate-400 text-[11px]">条</span>
-            <span className="text-[10px] text-sky-500 dark:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
           </button>
 
           <span className="text-slate-300 dark:text-slate-700">|</span>
@@ -585,7 +584,6 @@ export default function CdcAgentWorkspace() {
             <span>PCR 病原检测:</span>
             <strong className="text-rose-600 dark:text-rose-400 font-mono group-hover:underline underline-offset-2">7,336</strong>
             <span className="text-slate-500 dark:text-slate-400 text-[11px]">组批</span>
-            <span className="text-[10px] text-rose-500 dark:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
           </button>
 
           <span className="text-slate-300 dark:text-slate-700">|</span>
@@ -598,7 +596,6 @@ export default function CdcAgentWorkspace() {
             <span>抗药性毒力测定:</span>
             <strong className="text-amber-600 dark:text-amber-400 font-mono group-hover:underline underline-offset-2">365</strong>
             <span className="text-slate-500 dark:text-slate-400 text-[11px]">组</span>
-            <span className="text-[10px] text-amber-500 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🔍 研判</span>
           </button>
 
           <span className="text-slate-300 dark:text-slate-700">|</span>
@@ -611,7 +608,6 @@ export default function CdcAgentWorkspace() {
             <span>覆盖全省行政区:</span>
             <strong className="text-slate-900 dark:text-slate-100 font-mono group-hover:underline underline-offset-2">18 地市 / 126 区县</strong>
             <span className="text-slate-500 dark:text-slate-400 text-[11px]">(2,037 点位)</span>
-            <span className="text-[10px] text-indigo-500 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">🗺️ 详情</span>
           </button>
         </div>
 
