@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Shield, Maximize2, Minimize2, RefreshCw, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Bot, X, Send, Shield, Maximize2, Minimize2, RefreshCw, Sparkles, Square } from 'lucide-react';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { GenerativeComponentRenderer } from '@/components/ag-ui/GenerativeComponentRenderer';
-import { dispatchSkillPrompt } from '@/lib/skills/dispatcher';
+import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
+import { dispatchSkillPromptStream } from '@/lib/skills/dispatcher';
 
 interface EmbeddedWidgetProps {
   initialPrompt?: string;
@@ -18,6 +19,10 @@ interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  reasoningText?: string;
+  reasoningDuration?: number;
+  isReasoningStreaming?: boolean;
+  isContentStreaming?: boolean;
   skillUsed?: string;
   generativeView?: any;
   timestamp: string;
@@ -34,6 +39,10 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   const [inputVal, setInputVal] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 打断控制器
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isCancelledRef = useRef<boolean>(false);
 
   // 浮窗动态尺寸控制（支持鼠标拖动 resize 缩放）
   const [size, setSize] = useState<{ width: number; height: number }>({ width: 520, height: 620 });
@@ -61,6 +70,15 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen, isThinking]);
+
+  // 组件卸载时清理未完成的流式请求
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   // 鼠标拖动改变浮窗大小 (Resize 核心逻辑)
   const handleResizeMouseDown = (direction: 'top' | 'right' | 'top-right', e: React.MouseEvent) => {
@@ -100,24 +118,70 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
+  /**
+   * 中途停止/打断流式研判
+   */
+  const handleStopExecution = useCallback(() => {
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsThinking(false);
+    setMessages(prev => prev.map(m => {
+      if (m.isReasoningStreaming || m.isContentStreaming) {
+        return {
+          ...m,
+          isReasoningStreaming: false,
+          isContentStreaming: false,
+          text: m.text ? `${m.text}\n\n*(已由用户手动停止研判)*` : '*(已由用户手动停止研判)*'
+        };
+      }
+      return m;
+    }));
+  }, []);
+
   // 如果处于隐藏状态，则不渲染在界面上
   if (!isVisible) {
     return null;
   }
 
+  /**
+   * SSE 流式发送与交互处理
+   */
   const handleSendPrompt = async (promptText: string) => {
     if (!promptText.trim() || isThinking) return;
     const userText = promptText.trim();
     const nowTime = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
-    // 1. 本地对话流先插入用户消息
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    isCancelledRef.current = false;
+
+    // 1. 本地对话流插入用户消息与占位 Assistant 消息
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
       text: userText,
       timestamp: nowTime
     };
-    setMessages(prev => [...prev, userMsg]);
+
+    const agentMsgId = `agent-${Date.now()}`;
+    const placeholderAgentMsg: ChatMessage = {
+      id: agentMsgId,
+      role: 'assistant',
+      text: '',
+      reasoningText: '',
+      isReasoningStreaming: true,
+      isContentStreaming: false,
+      timestamp: nowTime
+    };
+
+    setMessages(prev => [...prev, userMsg, placeholderAgentMsg]);
     setInputVal('');
     setIsThinking(true);
 
@@ -126,39 +190,106 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       onSendMessage(userText);
     }
 
-    // 3. 独立执行技能调度引擎（支持作为独立 API 嵌入第三方系统运行）
+    // 3. 构建历史消息上下文
+    const chatHistory = messages.map(m => ({
+      sender: (m.role === 'user' ? 'user' : 'agent') as 'user' | 'agent',
+      text: m.text,
+      skillUsed: m.skillUsed
+    }));
+    chatHistory.push({ sender: 'user', text: userText, skillUsed: undefined });
+
+    let latestReasoning = '';
+    let latestContent = '';
+    let latestSkillName = '';
+    let latestView: any = null;
+    let reasoningDurationMs = 0;
+
     try {
-      const chatHistory = messages.map(m => ({
-        sender: m.role === 'user' ? 'user' : 'agent',
-        text: m.text,
-        skillUsed: m.skillUsed
-      }));
-      chatHistory.push({ sender: 'user', text: userText, skillUsed: undefined });
-
-      const result = await dispatchSkillPrompt(userText, { chatHistory });
-      
-      const assistantMsg: ChatMessage = {
-        id: `agent-${Date.now()}`,
-        role: 'assistant',
-        text: result.replyText,
-        skillUsed: result.skillName,
-        generativeView: result.generativeView,
-        timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-      };
-
-      setMessages(prev => [...prev, assistantMsg]);
-    } catch (err: any) {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: `agent-err-${Date.now()}`,
-          role: 'assistant',
-          text: `⚠️ 执行出现异常：${err.message || '系统错误，请重试'}`,
-          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      const result = await dispatchSkillPromptStream(userText, {
+        chatHistory,
+        signal: controller.signal,
+        onReasoningStart: () => {
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            isReasoningStreaming: true
+          } : m));
+        },
+        onReasoningChunk: (_chunk, fullReasoning) => {
+          latestReasoning = fullReasoning;
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            reasoningText: fullReasoning,
+            isReasoningStreaming: true
+          } : m));
+        },
+        onReasoningEnd: (durMs) => {
+          reasoningDurationMs = durMs;
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            reasoningDuration: durMs,
+            isReasoningStreaming: false,
+            isContentStreaming: true
+          } : m));
+        },
+        onContentChunk: (_chunk, fullContent) => {
+          latestContent = fullContent;
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            text: fullContent,
+            isReasoningStreaming: false,
+            isContentStreaming: true
+          } : m));
+        },
+        onToolCallStart: (info) => {
+          latestSkillName = info.toolName;
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            skillUsed: info.toolName
+          } : m));
+        },
+        onGenerativeView: (view) => {
+          latestView = view;
+          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+            ...m,
+            generativeView: view
+          } : m));
         }
-      ]);
+      });
+
+      if (isCancelledRef.current || controller.signal.aborted) {
+        return;
+      }
+
+      const finalReplyText = result.replyText || latestContent || "处理请求成功。相关分析图表与态势数据已加载完毕。";
+      const finalSkillName = result.skillName || latestSkillName;
+      const finalReasoning = result.reasoningText || latestReasoning;
+      const finalDuration = result.reasoningDuration || reasoningDurationMs;
+      const finalGenerativeView = result.generativeView || latestView;
+
+      setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+        ...m,
+        text: finalReplyText,
+        skillUsed: finalSkillName,
+        reasoningText: finalReasoning || undefined,
+        reasoningDuration: finalDuration > 0 ? finalDuration : undefined,
+        isReasoningStreaming: false,
+        isContentStreaming: false,
+        generativeView: finalGenerativeView
+      } : m));
+    } catch (err: any) {
+      if (err.name === 'AbortError' || controller.signal.aborted || isCancelledRef.current) {
+        return;
+      }
+      setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+        ...m,
+        text: `⚠️ 执行出现异常：${err.message || '系统错误，请重试'}`,
+        isReasoningStreaming: false,
+        isContentStreaming: false
+      } : m));
     } finally {
-      setIsThinking(false);
+      if (!controller.signal.aborted && !isCancelledRef.current) {
+        setIsThinking(false);
+      }
     }
   };
 
@@ -215,10 +346,10 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">CdcBuddy 疾控病媒 AI 助手</h4>
                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 font-mono">
-                    API Embedded
+                    SSE Stream
                   </span>
                 </div>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">● 支持拖动边框自由缩放尺寸</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">● 实时推演与流式交互</span>
               </div>
             </div>
 
@@ -281,16 +412,39 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                 )}
 
                 <div className={`max-w-[92%] space-y-2 ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  {/* 思维链过程卡片 (流式推演或已完成推演) */}
+                  {m.role === 'assistant' && (m.reasoningText || m.isReasoningStreaming) && (
+                    <ThinkingProcessCard
+                      reasoningText={m.reasoningText || ''}
+                      isStreaming={Boolean(m.isReasoningStreaming)}
+                      durationMs={m.reasoningDuration}
+                    />
+                  )}
+
                   {/* 文字消息气泡 */}
-                  <div
-                    className={`p-3 rounded-xl leading-relaxed ${
-                      m.role === 'user'
-                        ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
-                        : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
-                    }`}
-                  >
-                    <MarkdownRenderer content={m.text} isUser={m.role === 'user'} />
-                  </div>
+                  {(m.text || (!m.isReasoningStreaming && m.role === 'assistant')) && (
+                    <div
+                      className={`p-3 rounded-xl leading-relaxed ${
+                        m.role === 'user'
+                          ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
+                          : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
+                      }`}
+                    >
+                      {m.text ? (
+                        <>
+                          <MarkdownRenderer content={m.text} isUser={m.role === 'user'} />
+                          {m.isContentStreaming && (
+                            <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                          <span>正在生成研判结论...</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* 对话内嵌生成式组件渲染（地图、表格、图表、工单卡片） */}
                   {m.generativeView && (
@@ -312,13 +466,6 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
               </div>
             ))}
 
-            {isThinking && (
-              <div className="flex gap-2 items-center text-xs text-sky-600 dark:text-sky-400 p-2.5 rounded-xl bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-800 animate-pulse">
-                <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
-                <span>CdcBuddy 正在检索时空数据库并生成图表组件...</span>
-              </div>
-            )}
-
             {/* 自动滚动锚点 */}
             <div ref={messagesEndRef} />
           </div>
@@ -330,17 +477,32 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
               placeholder="输入病媒监测问题或指令 (如：显示郑州监测表)..."
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSendPrompt(inputVal)}
-              disabled={isThinking}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isThinking) {
+                  handleSendPrompt(inputVal);
+                }
+              }}
               className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
             />
-            <button
-              onClick={() => handleSendPrompt(inputVal)}
-              disabled={!inputVal.trim() || isThinking}
-              className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+            {isThinking ? (
+              <button
+                onClick={handleStopExecution}
+                title="打断/停止当前研判分析"
+                className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-semibold text-xs shadow-md shadow-rose-600/30 transition-all cursor-pointer animate-pulse shrink-0"
+              >
+                <Square className="w-3.5 h-3.5 fill-current" />
+                <span>停止</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => handleSendPrompt(inputVal)}
+                disabled={!inputVal.trim()}
+                title="发送指令"
+                className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer shrink-0"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       )}
