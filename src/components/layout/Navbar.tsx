@@ -44,8 +44,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <h1 className="text-base font-extrabold bg-gradient-to-r from-sky-600 via-cyan-600 to-slate-900 dark:from-sky-400 dark:via-cyan-200 dark:to-white bg-clip-text text-transparent">
               CdcBuddy · 疾控病媒生物监测预警智能体
             </h1>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold">
-              (v1.1)
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold font-mono">
+              (v1.8-{process.env.NEXT_PUBLIC_GIT_HASH || 'b3518e6'})
             </span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
