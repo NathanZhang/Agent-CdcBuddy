@@ -4,11 +4,10 @@ import React from 'react';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { useTheme, ThemeMode } from '@/lib/theme/theme-context';
 import { UserRole } from '@/lib/rbac/types';
-import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot, History } from 'lucide-react';
+import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot } from 'lucide-react';
 
 interface NavbarProps {
   onOpenSkills: () => void;
-  onOpenHistory?: () => void;
   onSelectPrompt: (prompt: string) => void;
   showEmbeddedWidget?: boolean;
   onToggleEmbeddedWidget?: () => void;
@@ -17,13 +16,12 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ 
   onOpenSkills, 
-  onOpenHistory,
   onSelectPrompt,
   showEmbeddedWidget = false,
   onToggleEmbeddedWidget,
   skillsCount
 }) => {
-  const { activeRole, switchRole } = useRbac();
+  const { currentUser, activeRole, switchRole } = useRbac();
   const { theme, setTheme, resolvedTheme } = useTheme();
 
   const themeOptions: { mode: ThemeMode; label: string; icon: React.ReactNode }[] = [
@@ -78,18 +76,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </div>
 
-        {/* 历史研判会话按钮 */}
-        {onOpenHistory && (
-          <button
-            onClick={onOpenHistory}
-            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 border border-slate-300 dark:border-slate-800 shadow-xs transition-all cursor-pointer"
-            title="查看当前用户的历史研判会话与重新加载"
-          >
-            <History className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-            <span>历史会话</span>
-          </button>
-        )}
-
         {/* Skills 技能库触发按钮 */}
         <button
           onClick={onOpenSkills}
@@ -115,14 +101,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         )}
 
-        {/* RBAC 角色切换 */}
+        {/* RBAC 角色切换与当前登录用户 */}
         <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
           <UserCheck className="w-3.5 h-3.5 text-sky-600 dark:text-cyan-400" />
-          <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">当前身份:</span>
+          <span className="text-slate-700 dark:text-slate-200 font-semibold hidden sm:inline" title={currentUser.name}>
+            {currentUser.name.split(' ')[0]}
+          </span>
           <select
             value={activeRole}
             onChange={(e) => switchRole(e.target.value as UserRole)}
-            className="bg-white dark:bg-slate-950 text-slate-800 dark:text-sky-300 font-semibold rounded px-2 py-0.5 border border-slate-300 dark:border-slate-700 text-xs focus:outline-none focus:border-sky-500"
+            className="bg-white dark:bg-slate-950 text-slate-800 dark:text-sky-300 font-semibold rounded px-2 py-0.5 border border-slate-300 dark:border-slate-700 text-xs focus:outline-none focus:border-sky-500 cursor-pointer"
           >
             <option value="PROVINCIAL_ADMIN">省级管理员 (全权限)</option>
             <option value="CITY_EXPERT">市级专家 (郑州市)</option>

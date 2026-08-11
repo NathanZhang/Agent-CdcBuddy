@@ -554,7 +554,6 @@ export default function CdcAgentWorkspace() {
       <Navbar
         skillsCount={totalSkillsCount}
         onOpenSkills={() => setIsSkillsOpen(true)}
-        onOpenHistory={() => setIsHistoryOpen(true)}
         onSelectPrompt={handleExecutePrompt}
         showEmbeddedWidget={showFloatingCopilot}
         onToggleEmbeddedWidget={() => setShowFloatingCopilot(prev => !prev)}
@@ -667,16 +666,9 @@ export default function CdcAgentWorkspace() {
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate" title={currentSessionTitle}>
-                      {currentSessionTitle}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-mono">● {currentUser.name.split(' ')[0]}</span>
-                    <span>·</span>
-                    <span>{activeRole}</span>
-                  </div>
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate" title={currentSessionTitle}>
+                    {currentSessionTitle}
+                  </h3>
                 </div>
               </div>
 
