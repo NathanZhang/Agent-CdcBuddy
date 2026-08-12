@@ -128,23 +128,29 @@ def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊",
         min_lon -= 0.03
         max_lon += 0.03
 
-    # 构造 18x18 高精度 IDW 空间插值网格
+    # 构造 18x18 高精度 IDW 空间插值网格（增加有效影响距离截断，超出有效半径的远端区域归零）
     grid_size = 18
     lat_grid = np.linspace(min_lat, max_lat, grid_size)
     lon_grid = np.linspace(min_lon, max_lon, grid_size)
 
     grid_points = []
     power = 2.0  # 反距离平方幂
+    max_influence_dist = 0.40  # 约 40 公里最大空间有效扩散半径
 
     for lat_g in lat_grid:
         for lon_g in lon_grid:
             dists = np.sqrt((pts_lat - lat_g)**2 + (pts_lon - lon_g)**2)
-            zero_mask = dists < 1e-5
-            if np.any(zero_mask):
-                interpolated_val = float(pts_val[zero_mask][0])
+            min_dist = float(np.min(dists)) if len(dists) > 0 else 999.0
+
+            if min_dist > max_influence_dist:
+                interpolated_val = 0.0
             else:
-                weights = 1.0 / (dists ** power)
-                interpolated_val = float(np.sum(weights * pts_val) / np.sum(weights))
+                zero_mask = dists < 1e-5
+                if np.any(zero_mask):
+                    interpolated_val = float(pts_val[zero_mask][0])
+                else:
+                    weights = 1.0 / (dists ** power)
+                    interpolated_val = float(np.sum(weights * pts_val) / np.sum(weights))
             
             grid_points.append({
                 "lat": round(float(lat_g), 5),

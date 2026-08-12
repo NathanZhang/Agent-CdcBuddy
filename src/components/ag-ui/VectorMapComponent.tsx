@@ -70,43 +70,30 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
 
   const tiandituKey = process.env.NEXT_PUBLIC_TIANDITU_KEY || '45052613ad935c678a6a702faf0511b1';
 
-  // 构造热力图 GeoJSON FeatureCollection
+  // 构造热力图 GeoJSON FeatureCollection（直接使用真实监测站点与预警点位，避免规则网格矩阵造成矩形色块）
   const heatmapGeoJSON = useMemo(() => {
     const features: any[] = [];
 
-    // 1. 如果有传入的插值空间网格数据
-    if (spatialGrid && spatialGrid.length > 0) {
-      spatialGrid.forEach(pt => {
-        features.push({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [pt.lon, pt.lat]
-          },
-          properties: {
-            density: Number(pt.density) || 0
-          }
-        });
-      });
-    }
-
-    // 2. 如果有具体监测点位
+    // 1. 优先使用具体实测监测点位
     if (monitoringPoints && monitoringPoints.length > 0) {
       monitoringPoints.forEach(pt => {
-        features.push({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [pt.lon, pt.lat]
-          },
-          properties: {
-            density: Number(pt.density) || 0
-          }
-        });
+        const d = Number(pt.density) || 0;
+        if (d > 0) {
+          features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [pt.lon, pt.lat]
+            },
+            properties: {
+              density: d
+            }
+          });
+        }
       });
     }
 
-    // 3. 预警点位作为高权重点
+    // 2. 预警点位作为高权重点
     if (alerts && alerts.length > 0) {
       alerts.forEach(a => {
         features.push({
@@ -122,7 +109,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       });
     }
 
-    // 4. 兜底平滑网格（若为空时自动基于河南省核心监测带生成）
+    // 3. 兜底平滑代表点（仅在完全无监测点与预警点时加载核心站点，避免四重循环网格偏移）
     if (features.length === 0) {
       const basePoints = [
         { lon: 113.6627, lat: 34.8003, density: 86 },
@@ -144,22 +131,16 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       ];
 
       basePoints.forEach(bp => {
-        for (let dx = -0.04; dx <= 0.04; dx += 0.02) {
-          for (let dy = -0.04; dy <= 0.04; dy += 0.02) {
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const factor = Math.max(0.2, 1 - dist * 15);
-            features.push({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [bp.lon + dx, bp.lat + dy]
-              },
-              properties: {
-                density: Math.round(bp.density * factor)
-              }
-            });
+        features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [bp.lon, bp.lat]
+          },
+          properties: {
+            density: bp.density
           }
-        }
+        });
       });
     }
 
@@ -167,7 +148,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       type: 'FeatureCollection',
       features
     };
-  }, [spatialGrid, monitoringPoints, alerts]);
+  }, [monitoringPoints, alerts]);
 
   // 构造站点 GeoJSON
   const stationsGeoJSON = useMemo(() => {
@@ -312,18 +293,18 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
                 ['linear'],
                 ['get', 'density'],
                 0, 0,
-                20, 0.2,
-                40, 0.5,
-                60, 0.8,
-                80, 1.2,
-                120, 2.0
+                15, 0,
+                30, 0.3,
+                50, 0.6,
+                80, 1.0,
+                120, 1.8
               ],
               'heatmap-intensity': [
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                5, 0.7,
-                8, 1.1,
+                5, 0.8,
+                8, 1.2,
                 11, 1.8,
                 14, 2.8
               ],
@@ -332,22 +313,22 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
                 ['linear'],
                 ['heatmap-density'],
                 0, 'rgba(0, 0, 0, 0)',
-                0.15, 'rgba(0, 210, 255, 0.55)',
-                0.35, 'rgba(34, 197, 94, 0.72)',
-                0.55, 'rgba(234, 179, 8, 0.86)',
-                0.75, 'rgba(249, 115, 22, 0.94)',
-                1.0, 'rgba(239, 68, 68, 0.98)'
+                0.1, 'rgba(0, 0, 0, 0)',
+                0.25, 'rgba(34, 197, 94, 0.65)',
+                0.50, 'rgba(234, 179, 8, 0.82)',
+                0.75, 'rgba(249, 115, 22, 0.92)',
+                1.00, 'rgba(239, 68, 68, 0.98)'
               ],
               'heatmap-radius': [
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                5, 18,
-                8, 28,
-                11, 45,
-                14, 75
+                5, 20,
+                8, 32,
+                11, 50,
+                14, 80
               ],
-              'heatmap-opacity': 0.82
+              'heatmap-opacity': 0.85
             }
           },
           {
