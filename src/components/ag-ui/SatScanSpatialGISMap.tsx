@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { HENAN_CITIES_GEO } from '@/lib/geo/henan-geojson';
+import { HENAN_CITIES_GEO, HENAN_BORDER_GEOJSON } from '@/lib/geo/henan-geojson';
 import { useTheme } from '@/lib/theme/theme-context';
 import { MapPin, Layers, Eye, EyeOff, Navigation, Flame, Radio, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
@@ -149,6 +149,10 @@ export const SatScanSpatialGISMap: React.FC<SatScanSpatialGISMapProps> = ({
                 `https://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${tiandituKey}`
               ],
               tileSize: 256
+            },
+            'henan-border-source': {
+              type: 'geojson',
+              data: HENAN_BORDER_GEOJSON as any
             }
           },
           layers: [
@@ -158,6 +162,29 @@ export const SatScanSpatialGISMap: React.FC<SatScanSpatialGISMapProps> = ({
               source: 'tianditu-vec',
               minzoom: 0,
               maxzoom: 18
+            },
+            {
+              id: 'henan-border-fill-layer',
+              type: 'fill',
+              source: 'henan-border-source',
+              minzoom: 0,
+              maxzoom: 9.5, // 放大到城市区县内时自动隐藏
+              paint: {
+                'fill-color': isDark ? '#38bdf8' : '#0284c7',
+                'fill-opacity': isDark ? 0.06 : 0.04
+              }
+            },
+            {
+              id: 'henan-border-line-layer',
+              type: 'line',
+              source: 'henan-border-source',
+              minzoom: 0,
+              maxzoom: 9.5, // 放大到城市区县内时自动隐藏
+              paint: {
+                'line-color': isDark ? '#38bdf8' : '#0284c7',
+                'line-width': 1.2,
+                'line-opacity': isDark ? 0.55 : 0.45
+              }
             },
             {
               id: 'tianditu-cva-layer',

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { HENAN_CITIES_GEO } from '@/lib/geo/henan-geojson';
+import { HENAN_CITIES_GEO, HENAN_BORDER_GEOJSON } from '@/lib/geo/henan-geojson';
 import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { useTheme } from '@/lib/theme/theme-context';
 import { MapPin, RotateCcw, Flame, AlertTriangle, Eye, EyeOff, Navigation, Layers, CheckCircle2 } from 'lucide-react';
@@ -253,6 +253,10 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
             type: 'geojson',
             data: heatmapGeoJSON as any
           },
+          'henan-province-border-source': {
+            type: 'geojson',
+            data: HENAN_BORDER_GEOJSON as any
+          },
           'monitoring-stations-source': {
             type: 'geojson',
             data: stationsGeoJSON as any
@@ -271,6 +275,29 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
               'raster-brightness-min': isDark ? 0.15 : 0,
               'raster-brightness-max': isDark ? 0.75 : 1.0,
               'raster-opacity': isDark ? 0.88 : 0.98
+            }
+          },
+          {
+            id: 'henan-border-fill-layer',
+            type: 'fill',
+            source: 'henan-province-border-source',
+            minzoom: 0,
+            maxzoom: 9.5, // 放大到城市区县内时自动隐藏
+            paint: {
+              'fill-color': isDark ? '#38bdf8' : '#0284c7',
+              'fill-opacity': isDark ? 0.06 : 0.04 // 高透明度默认背景面
+            }
+          },
+          {
+            id: 'henan-border-line-layer',
+            type: 'line',
+            source: 'henan-province-border-source',
+            minzoom: 0,
+            maxzoom: 9.5, // 放大到城市区县内时自动隐藏
+            paint: {
+              'line-color': isDark ? '#38bdf8' : '#0284c7',
+              'line-width': 1.2,
+              'line-opacity': isDark ? 0.55 : 0.45
             }
           },
           {

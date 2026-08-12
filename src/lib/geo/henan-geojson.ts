@@ -1,9 +1,14 @@
+import henanBorderGeoJSON from './henan-province-border.json';
+
 export interface CityGeoFeature {
   name: string;
   code: string;
   center: [number, number]; // [longitude, latitude]
   districts: { name: string; center: [number, number]; baseRiskLevel: 'low' | 'medium' | 'high' }[];
 }
+
+export const HENAN_BORDER_GEOJSON = henanBorderGeoJSON;
+
 
 export const HENAN_CITIES_GEO: Record<string, CityGeoFeature> = {
   '郑州市': {
