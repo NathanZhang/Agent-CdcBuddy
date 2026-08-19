@@ -4,6 +4,7 @@ import { executeSkillServer } from '@/lib/skills/server-executor';
 import { getSkillById } from '@/lib/skills/registry';
 import { fallbackRuleMatch } from '@/lib/skills/dispatcher';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
+import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 
 // 数据统计分析工具
 function calculateDatasetStats(data: any[]) {
@@ -170,18 +171,35 @@ export async function POST(req: NextRequest) {
         throw new Error('LLM返回空数据');
       }
 
-      // 2. 检查大模型是否需要调用 Tool
-      if (choice.tool_calls && choice.tool_calls.length > 0) {
-        const toolCall = choice.tool_calls[0];
-        const skillId = toolCall.function.name;
-        chosenSkillId = skillId;
-        
-        try {
-          parsedArgs = JSON.parse(toolCall.function.arguments || '{}');
-        } catch {
-          parsedArgs = {};
+      // 2. 检查大模型是否需要调用 Tool (包括标准 tool_calls 与 XML 格式 <tool_call>)
+      let toolCallFromXml = null;
+      if (!choice.tool_calls || choice.tool_calls.length === 0) {
+        toolCallFromXml = parseToolCallFromText(choice.content || '');
+      }
+
+      if ((choice.tool_calls && choice.tool_calls.length > 0) || toolCallFromXml) {
+        let skillId = '';
+        let toolCallId = `call_${Date.now()}`;
+
+        if (choice.tool_calls && choice.tool_calls.length > 0) {
+          const toolCall = choice.tool_calls[0];
+          skillId = toolCall.function.name;
+          toolCallId = toolCall.id || toolCallId;
+          try {
+            parsedArgs = JSON.parse(toolCall.function.arguments || '{}');
+          } catch {
+            parsedArgs = {};
+          }
+        } else if (toolCallFromXml) {
+          skillId = toolCallFromXml.name;
+          parsedArgs = toolCallFromXml.args;
         }
 
+        if (!parsedArgs.query && promptText) {
+          parsedArgs.query = promptText;
+        }
+
+        chosenSkillId = skillId;
         const skill = getSkillById(skillId);
         chosenSkillName = skill?.name || skillId;
 
@@ -219,12 +237,21 @@ export async function POST(req: NextRequest) {
         // 将 tool_call 信息及 tool 返回信息加入消息链，进行第二轮 LLM 请求
         messages.push({
           role: 'assistant',
-          content: choice.content || null,
-          tool_calls: choice.tool_calls
+          content: null,
+          tool_calls: [
+            {
+              id: toolCallId,
+              type: 'function',
+              function: {
+                name: skillId,
+                arguments: JSON.stringify(parsedArgs)
+              }
+            }
+          ]
         });
         messages.push({
           role: 'tool',
-          tool_call_id: toolCall.id,
+          tool_call_id: toolCallId,
           name: skillId,
           content: toolSummaryContent
         });
@@ -254,16 +281,19 @@ export async function POST(req: NextRequest) {
 
         if (finalRes.ok) {
           const finalData = await finalRes.json();
-          finalReplyText = finalData.choices?.[0]?.message?.content || '';
-        } else {
-          const errText = await finalRes.text();
-          console.warn(`[BFF LLM API Error 2] status: ${finalRes.status}, body: ${errText}`);
-          finalReplyText = `已成功执行 **【${chosenSkillName}】** 技能，明细已在主工作台渲染。`;
+          finalReplyText = cleanXmlToolCalls(finalData.choices?.[0]?.message?.content || '');
+        }
+
+        if (!finalReplyText.trim()) {
+          finalReplyText = `已成功执行 **【${chosenSkillName}】** 技能，相关分析图表与明细数据已在主工作台渲染。`;
         }
 
       } else {
         // 大模型决定直接文本回复 (通常是知识库 QA 或 基于 currentView 统计直接答复)
-        finalReplyText = choice.content || '';
+        finalReplyText = cleanXmlToolCalls(choice.content || '');
+        if (!finalReplyText.trim()) {
+          finalReplyText = '研判任务已完成。';
+        }
         chosenSkillId = 'skill_vector_nlq';
         chosenSkillName = 'CDC 专家知识库与数据智能问答 (NLQ)';
         

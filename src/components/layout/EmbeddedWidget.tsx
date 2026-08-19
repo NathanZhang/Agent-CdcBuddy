@@ -6,6 +6,7 @@ import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { GenerativeComponentRenderer } from '@/components/ag-ui/GenerativeComponentRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { dispatchSkillPromptStream } from '@/lib/skills/dispatcher';
+import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 
 interface EmbeddedWidgetProps {
   initialPrompt?: string;
@@ -260,8 +261,9 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         return;
       }
 
-      const finalReplyText = result.replyText || latestContent || "处理请求成功。相关分析图表与态势数据已加载完毕。";
+      const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '');
       const finalSkillName = result.skillName || latestSkillName;
+      const finalReplyText = cleanedReply || (finalSkillName ? `已成功执行 **【${finalSkillName}】** 技能，相关分析图表与态势数据已加载完毕。` : "处理请求成功。相关分析图表与态势数据已加载完毕。");
       const finalReasoning = result.reasoningText || latestReasoning;
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
       const finalGenerativeView = result.generativeView || latestView;
@@ -422,29 +424,36 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                   )}
 
                   {/* 文字消息气泡 */}
-                  {(m.text || (!m.isReasoningStreaming && m.role === 'assistant')) && (
-                    <div
-                      className={`p-3 rounded-xl leading-relaxed ${
-                        m.role === 'user'
-                          ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
-                          : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
-                      }`}
-                    >
-                      {m.text ? (
-                        <>
-                          <MarkdownRenderer content={m.text} isUser={m.role === 'user'} />
-                          {m.isContentStreaming && (
-                            <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
-                          )}
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
-                          <span>正在生成研判结论...</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {(() => {
+                    const messageText = m.role === 'assistant' ? cleanXmlToolCalls(m.text) : m.text;
+                    const displayText = messageText || (m.role === 'assistant' && m.skillUsed && !m.isReasoningStreaming && !m.isContentStreaming
+                      ? `已成功执行 **【${m.skillUsed}】** 技能，相关分析图表与态势数据已加载完毕。`
+                      : messageText);
+
+                    return (displayText || (!m.isReasoningStreaming && m.role === 'assistant')) && (
+                      <div
+                        className={`p-3 rounded-xl leading-relaxed ${
+                          m.role === 'user'
+                            ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
+                            : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
+                        }`}
+                      >
+                        {displayText ? (
+                          <>
+                            <MarkdownRenderer content={displayText} isUser={m.role === 'user'} />
+                            {m.isContentStreaming && (
+                              <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                            <span>正在生成研判结论...</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* 对话内嵌生成式组件渲染（地图、表格、图表、工单卡片） */}
                   {m.generativeView && (

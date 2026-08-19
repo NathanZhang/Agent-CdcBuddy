@@ -17,6 +17,7 @@ import { dispatchSkillPrompt, dispatchSkillPromptStream } from '@/lib/skills/dis
 import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/ActiveAlertsModal';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
+import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 
 import { 
   Sparkles, 
@@ -445,8 +446,9 @@ export default function CdcAgentWorkspace() {
         return;
       }
 
-      const finalReplyText = result.replyText || latestContent || "处理请求成功。相关分析图表与态势数据已加载完毕。";
+      const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '');
       const finalSkillName = result.skillName || latestSkillName;
+      const finalReplyText = cleanedReply || (finalSkillName ? `已成功执行 **【${finalSkillName}】** 技能，相关分析图表与态势数据已在主工作台渲染。` : "处理请求成功。相关分析图表与态势数据已加载完毕。");
       const finalReasoning = result.reasoningText || latestReasoning;
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
       const finalGenerativeView = result.generativeView || latestView || activeGenerativeView;
@@ -718,29 +720,36 @@ export default function CdcAgentWorkspace() {
                     )}
 
                     {/* 正式回复内容 (当存在文本或者不在纯思考占位中时渲染) */}
-                    {(m.text || (!m.isReasoningStreaming && m.sender === 'agent')) && (
-                      <div
-                        className={`p-3.5 rounded-xl leading-relaxed ${
-                          m.sender === 'user'
-                            ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
-                            : 'bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-xs'
-                        }`}
-                      >
-                        {m.text ? (
-                          <>
-                            <MarkdownRenderer content={m.text} isUser={m.sender === 'user'} />
-                            {m.isContentStreaming && (
-                              <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
-                            )}
-                          </>
-                        ) : (
-                          <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
-                            <span>正在生成研判结论...</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {(() => {
+                      const messageText = m.sender === 'agent' ? cleanXmlToolCalls(m.text) : m.text;
+                      const displayText = messageText || (m.sender === 'agent' && m.skillUsed && !m.isReasoningStreaming && !m.isContentStreaming
+                        ? `已成功执行 **【${m.skillUsed}】** 技能，相关研判图表与明细数据已在主工作台渲染。`
+                        : messageText);
+
+                      return (displayText || (!m.isReasoningStreaming && m.sender === 'agent')) && (
+                        <div
+                          className={`p-3.5 rounded-xl leading-relaxed ${
+                            m.sender === 'user'
+                              ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
+                              : 'bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-xs'
+                          }`}
+                        >
+                          {displayText ? (
+                            <>
+                              <MarkdownRenderer content={displayText} isUser={m.sender === 'user'} />
+                              {m.isContentStreaming && (
+                                <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                              <span>正在生成研判结论...</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     <div className="flex items-center gap-2 text-[10px] text-slate-500 px-1">
                       {m.skillUsed && (

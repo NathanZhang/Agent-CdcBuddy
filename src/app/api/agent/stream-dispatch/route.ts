@@ -3,6 +3,7 @@ import { getSiliconFlowSkillTools } from '@/lib/skills/llm-router';
 import { executeSkillServer } from '@/lib/skills/server-executor';
 import { getSkillById } from '@/lib/skills/registry';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
+import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -200,6 +201,8 @@ export async function POST(req: NextRequest) {
           const toolCallsMap: Record<number, { id: string; name: string; arguments: string }> = {};
           let hasToolCalls = false;
           let isInThinkTag = false;
+          let isInToolCallTag = false;
+          let toolCallBuffer = '';
 
           while (true) {
             const { done, value } = await reader.read();
@@ -226,10 +229,11 @@ export async function POST(req: NextRequest) {
                   sendEvent('reasoning_chunk', { text: delta.reasoning_content });
                 }
 
-                // 2. 处理 <think>...</think> 文本流（兼容开源模型标签形式）
+                // 2. 处理 content 文本流（包含 <think> 和 <tool_call> 标签拦截）
                 if (delta.content) {
                   let rawText = delta.content as string;
 
+                  // 2.1 处理 <think>...</think>
                   if (rawText.includes('<think>')) {
                     isInThinkTag = true;
                     startReasoningIfNeeded();
@@ -248,24 +252,58 @@ export async function POST(req: NextRequest) {
                       }
                       endReasoningIfNeeded();
                       isInThinkTag = false;
-
-                      if (remainPart) {
-                        accumulatedContent += remainPart;
-                        sendEvent('content_chunk', { text: remainPart });
-                      }
+                      rawText = remainPart;
                     } else {
                       accumulatedReasoning += rawText;
                       sendEvent('reasoning_chunk', { text: rawText });
+                      rawText = '';
                     }
-                  } else {
-                    // 正常内容输出，若思考尚未标记结束则先结束思考
-                    endReasoningIfNeeded();
-                    accumulatedContent += rawText;
-                    sendEvent('content_chunk', { text: rawText });
+                  }
+
+                  // 2.2 处理 <tool_call>...</tool_call>（拦截 XML 文本，防止直接暴露在前端聊天气泡）
+                  if (rawText) {
+                    if (rawText.includes('<tool_call>')) {
+                      isInToolCallTag = true;
+                      endReasoningIfNeeded();
+                      const parts = rawText.split('<tool_call>');
+                      const beforeToolCall = parts[0];
+                      toolCallBuffer += '<tool_call>' + parts.slice(1).join('<tool_call>');
+
+                      if (beforeToolCall) {
+                        const cleanedBefore = cleanXmlToolCalls(beforeToolCall);
+                        if (cleanedBefore) {
+                          accumulatedContent += cleanedBefore;
+                          sendEvent('content_chunk', { text: cleanedBefore });
+                        }
+                      }
+                    } else if (isInToolCallTag) {
+                      toolCallBuffer += rawText;
+                      if (rawText.includes('</tool_call>')) {
+                        isInToolCallTag = false;
+                        const parsedTool = parseToolCallFromText(toolCallBuffer);
+                        if (parsedTool) {
+                          hasToolCalls = true;
+                          const nextIdx = Object.keys(toolCallsMap).length;
+                          toolCallsMap[nextIdx] = {
+                            id: `call_${Date.now()}`,
+                            name: parsedTool.name,
+                            arguments: JSON.stringify(parsedTool.args)
+                          };
+                        }
+                      }
+                    } else {
+                      // 正常内容输出（过滤可能残留的 XML 工具调用标记）
+                      const cleanedChunk = cleanXmlToolCalls(rawText);
+                      if (cleanedChunk) {
+                        endReasoningIfNeeded();
+                        accumulatedContent += cleanedChunk;
+                        sendEvent('content_chunk', { text: cleanedChunk });
+                      }
+                    }
                   }
                 }
 
-                // 3. 处理 tool_calls 增量聚合
+                // 3. 处理标准 tool_calls 结构化增量聚合 (OpenAI 标准)
                 if (delta.tool_calls && Array.isArray(delta.tool_calls)) {
                   hasToolCalls = true;
                   endReasoningIfNeeded();
@@ -288,6 +326,31 @@ export async function POST(req: NextRequest) {
 
           endReasoningIfNeeded();
 
+          // 兜底检查：若文本缓冲区中存在未解析的 <tool_call>，执行补全解析
+          if (!hasToolCalls && toolCallBuffer) {
+            const parsed = parseToolCallFromText(toolCallBuffer);
+            if (parsed) {
+              hasToolCalls = true;
+              toolCallsMap[0] = {
+                id: `call_${Date.now()}`,
+                name: parsed.name,
+                arguments: JSON.stringify(parsed.args)
+              };
+            }
+          }
+          if (!hasToolCalls && accumulatedContent.includes('<tool_call>')) {
+            const parsed = parseToolCallFromText(accumulatedContent);
+            if (parsed) {
+              hasToolCalls = true;
+              toolCallsMap[0] = {
+                id: `call_${Date.now()}`,
+                name: parsed.name,
+                arguments: JSON.stringify(parsed.args)
+              };
+            }
+          }
+          accumulatedContent = cleanXmlToolCalls(accumulatedContent);
+
           // ---------------- 若命中 Tool Call，进入服务端执行与第二阶段总结 ----------------
           if (hasToolCalls) {
             const firstTool = Object.values(toolCallsMap)[0];
@@ -297,6 +360,11 @@ export async function POST(req: NextRequest) {
               parsedArgs = JSON.parse(firstTool.arguments || '{}');
             } catch {
               parsedArgs = {};
+            }
+
+            // 确保 query 参数默认带上用户原始提问
+            if (!parsedArgs.query && promptText) {
+              parsedArgs.query = promptText;
             }
 
             const skill = getSkillById(skillId);
@@ -343,17 +411,20 @@ export async function POST(req: NextRequest) {
               summary: `已完成【${skillName}】执行`
             });
 
+            // 🚀 重置 accumulatedContent 为第二阶段大模型总结准备，彻底消除第一阶段 XML 干扰
+            accumulatedContent = '';
+
             // 🚀 第二阶段：流式总结 Tool 返回的数据
             messages.push({
               role: 'assistant',
-              content: accumulatedContent || null,
+              content: null,
               tool_calls: [
                 {
                   id: firstTool.id || `call_${Date.now()}`,
                   type: 'function',
                   function: {
                     name: skillId,
-                    arguments: firstTool.arguments || '{}'
+                    arguments: JSON.stringify(parsedArgs)
                   }
                 }
               ]
@@ -406,20 +477,27 @@ export async function POST(req: NextRequest) {
                       const parsed = JSON.parse(trimmed.substring(6));
                       const delta = parsed.choices?.[0]?.delta;
                       if (delta?.content) {
-                        accumulatedContent += delta.content;
-                        sendEvent('content_chunk', { text: delta.content });
+                        const cleaned = cleanXmlToolCalls(delta.content);
+                        if (cleaned) {
+                          accumulatedContent += cleaned;
+                          sendEvent('content_chunk', { text: cleaned });
+                        }
                       }
                     } catch {}
                   }
                 }
-              } else {
-                const fallbackReply = `已成功执行 **【${skillName}】** 技能，相关态势与分析图表已在主工作台渲染。`;
-                accumulatedContent += fallbackReply;
+              }
+
+              // 若第二阶段总结内容为空，自动提供规范的研判成功反馈
+              if (!accumulatedContent.trim()) {
+                const fallbackReply = `已为您检索并成功加载 **【${skillName}】** 数据，相关研判图表与明细数据已在主工作台渲染。`;
+                accumulatedContent = fallbackReply;
                 sendEvent('content_chunk', { text: fallbackReply });
               }
             } catch (sumErr) {
               console.warn('[Stream Dispatch Summary Warning]', sumErr);
               const fallbackReply = `已成功执行 **【${skillName}】** 技能，研判数据已更新。`;
+              accumulatedContent = fallbackReply;
               sendEvent('content_chunk', { text: fallbackReply });
             } finally {
               clearTimeout(summaryTimeoutId);
@@ -435,6 +513,7 @@ export async function POST(req: NextRequest) {
 
           } else {
             // 没有调用 Tool，直接回复问答
+            accumulatedContent = cleanXmlToolCalls(accumulatedContent);
             if (!context?.currentView && accumulatedContent) {
               sendEvent('generative_view', {
                 view: {

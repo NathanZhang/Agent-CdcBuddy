@@ -1,4 +1,5 @@
 import React from 'react';
+import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 
 export interface MarkdownRendererProps {
   content: string;
@@ -29,8 +30,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
   if (!content) return null;
 
+  const sanitized = isUser ? content : cleanXmlToolCalls(content);
+  if (!sanitized && !isUser) return null;
+
   // Split content into blocks by code fences, tables, headings, lists, or multiple newlines
-  const sections = splitContentIntoSections(content);
+  const sections = splitContentIntoSections(sanitized || content);
 
   return (
     <div className={`markdown-content space-y-2 text-xs leading-relaxed ${className}`}>
@@ -471,6 +475,16 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
     // Italic (*text* or _text_)
     else if ((token.startsWith('*') && token.endsWith('*')) || (token.startsWith('_') && token.endsWith('_'))) {
       const inner = token.slice(1, -1);
+      // For underscores, ensure it is not an intra-word identifier like some_variable_name
+      if (token.startsWith('_')) {
+        const prevChar = match.index > 0 ? text[match.index - 1] : ' ';
+        const nextChar = match.index + token.length < text.length ? text[match.index + token.length] : ' ';
+        if (/\w/.test(prevChar) || /\w/.test(nextChar)) {
+          parts.push(token);
+          lastIndex = regex.lastIndex;
+          continue;
+        }
+      }
       parts.push(
         <em key={key} className="italic">
           {inner}

@@ -1,6 +1,7 @@
 import { STANDARD_SKILLS, getSkillById } from './registry';
 import { UserRole } from '../rbac/types';
 import { getRouterTimeoutMs } from '../config/llm-timeout';
+import { parseToolCallFromText, cleanXmlToolCalls } from './tool-parser';
 
 export interface LLMRouteResult {
   source: 'llm_tool_calling' | 'llm_direct_answer' | 'rule_fallback';
@@ -148,16 +149,27 @@ export async function routeSkillWithLLM(
       throw new Error('LLM 返回内容为空');
     }
 
-    // 1. 检查是否触发 Tool Calls
-    if (choice.tool_calls && choice.tool_calls.length > 0) {
-      const firstToolCall = choice.tool_calls[0];
-      const skillId = firstToolCall.function.name;
+    // 1. 检查是否触发 Tool Calls (包含标准 tool_calls 与 XML 格式 <tool_call>)
+    let toolCallFromXml = null;
+    if (!choice.tool_calls || choice.tool_calls.length === 0) {
+      toolCallFromXml = parseToolCallFromText(choice.content || '');
+    }
+
+    if ((choice.tool_calls && choice.tool_calls.length > 0) || toolCallFromXml) {
+      let skillId = '';
       let parsedArgs: Record<string, any> = {};
 
-      try {
-        parsedArgs = JSON.parse(firstToolCall.function.arguments || '{}');
-      } catch (e) {
-        console.warn(`[LLM Router] Tool arguments 解析 JSON 失败:`, firstToolCall.function.arguments);
+      if (choice.tool_calls && choice.tool_calls.length > 0) {
+        const firstToolCall = choice.tool_calls[0];
+        skillId = firstToolCall.function.name;
+        try {
+          parsedArgs = JSON.parse(firstToolCall.function.arguments || '{}');
+        } catch (e) {
+          console.warn(`[LLM Router] Tool arguments 解析 JSON 失败:`, firstToolCall.function.arguments);
+        }
+      } else if (toolCallFromXml) {
+        skillId = toolCallFromXml.name;
+        parsedArgs = toolCallFromXml.args;
       }
 
       // 如果 query 参数未提取，默认附带原始提问
@@ -171,7 +183,7 @@ export async function routeSkillWithLLM(
         skillId,
         skillName: skill?.name || skillId,
         args: parsedArgs,
-        reasoning: choice.content || undefined
+        reasoning: choice.content ? cleanXmlToolCalls(choice.content) : undefined
       };
     }
 
@@ -181,7 +193,7 @@ export async function routeSkillWithLLM(
       skillId: 'skill_vector_nlq',
       skillName: 'CDC 专家知识库与数据智能问答 (NLQ)',
       args: { query: promptText },
-      directAnswer: choice.content || ''
+      directAnswer: cleanXmlToolCalls(choice.content || '')
     };
   } catch (err: any) {
     clearTimeout(timeoutId);
