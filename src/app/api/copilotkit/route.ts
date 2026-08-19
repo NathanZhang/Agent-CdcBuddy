@@ -20,7 +20,7 @@ const runtime = new CopilotRuntime({
   agents: {
     default: new BuiltInAgent({
       model: siliconflow(modelName),
-      prompt: '您是 CdcBuddy 疾控病媒生物监测预警智能体。您协助疾控专家研判河南省病媒生物生态数据、病原体检测与抗药性。',
+      prompt: '您是 CdcBuddy 疾控病媒生物监测预警智能体。您协助疾控专家研判河南省病媒生物生态数据、病原体检测与抗药性。思考过程与回复必须全程使用中文。',
     }),
   },
   actions: [

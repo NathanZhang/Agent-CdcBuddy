@@ -1,5 +1,8 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { Copy, Check } from 'lucide-react';
 
 export interface MarkdownRendererProps {
   content: string;
@@ -9,19 +12,26 @@ export interface MarkdownRendererProps {
 
 type TableAlign = 'left' | 'center' | 'right';
 
+interface ListItem {
+  ordered: boolean;
+  number?: string;
+  indent: number;
+  content: string;
+}
+
 type Section =
   | { type: 'code'; content: string; lang?: string }
   | { type: 'heading'; level: number; content: string }
   | { type: 'quote'; content: string }
   | { type: 'hr' }
-  | { type: 'list'; ordered: boolean; content: string; items: string[] }
+  | { type: 'list'; items: ListItem[] }
   | {
       type: 'table';
       headers: string[];
       aligns: TableAlign[];
       rows: string[][];
     }
-  | { type: 'paragraph'; content: string };
+  | { type: 'paragraph'; lines: string[] };
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
@@ -33,38 +43,30 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   const sanitized = isUser ? content : cleanXmlToolCalls(content);
   if (!sanitized && !isUser) return null;
 
-  // Split content into blocks by code fences, tables, headings, lists, or multiple newlines
   const sections = splitContentIntoSections(sanitized || content);
 
   return (
-    <div className={`markdown-content space-y-2 text-xs leading-relaxed ${className}`}>
+    <div className={`markdown-content space-y-2.5 text-xs leading-relaxed ${className}`}>
       {sections.map((sec, idx) => {
         if (sec.type === 'code') {
-          return (
-            <div
-              key={idx}
-              className="my-2 rounded-lg bg-slate-900 text-slate-100 p-3 font-mono text-[11px] overflow-x-auto border border-slate-800"
-            >
-              {sec.lang && (
-                <div className="text-[10px] text-slate-400 font-semibold mb-1 uppercase tracking-wider">
-                  {sec.lang}
-                </div>
-              )}
-              <pre className="whitespace-pre">{sec.content}</pre>
-            </div>
-          );
+          return <CodeBlock key={idx} content={sec.content} lang={sec.lang} />;
         }
 
         if (sec.type === 'heading') {
-          const Tag = `h${Math.min(sec.level + 2, 6)}` as keyof React.JSX.IntrinsicElements;
+          const Tag = `h${Math.min(sec.level + 1, 6)}` as keyof React.JSX.IntrinsicElements;
+          const headingStyles: Record<number, string> = {
+            1: 'text-[13px] font-bold text-sky-700 dark:text-sky-400 mt-2 mb-1 pb-1 border-b border-sky-200/60 dark:border-sky-800/60 flex items-center gap-1.5',
+            2: 'text-xs font-bold text-slate-900 dark:text-slate-100 mt-2 mb-1 flex items-center gap-1.5',
+            3: 'text-xs font-semibold text-slate-800 dark:text-slate-200 mt-1.5 mb-0.5',
+            4: 'text-[11px] font-semibold text-slate-800 dark:text-slate-300 mt-1 mb-0.5',
+            5: 'text-[11px] font-medium text-slate-700 dark:text-slate-300 mt-1',
+            6: 'text-[10px] font-medium text-slate-600 dark:text-slate-400 mt-0.5'
+          };
+
           return (
             <Tag
               key={idx}
-              className={`font-bold ${
-                sec.level === 1
-                  ? 'text-sm text-sky-600 dark:text-sky-400 mt-2 mb-1'
-                  : 'text-xs text-slate-900 dark:text-slate-100 mt-1.5 mb-1'
-              }`}
+              className={headingStyles[sec.level] || headingStyles[2]}
             >
               {renderInline(sec.content, isUser)}
             </Tag>
@@ -83,29 +85,35 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
 
         if (sec.type === 'hr') {
-          return <hr key={idx} className="my-2.5 border-slate-200 dark:border-slate-800" />;
+          return <hr key={idx} className="my-2 border-slate-200/80 dark:border-slate-800" />;
         }
 
         if (sec.type === 'list') {
-          if (sec.ordered) {
-            return (
-              <ol key={idx} className="list-decimal list-inside space-y-1 my-1 pl-1 text-slate-800 dark:text-slate-200">
-                {sec.items.map((item, itemIdx) => (
-                  <li key={itemIdx} className="leading-relaxed">
-                    {renderInline(item, isUser)}
-                  </li>
-                ))}
-              </ol>
-            );
-          }
           return (
-            <ul key={idx} className="list-disc list-inside space-y-1 my-1 pl-1 text-slate-800 dark:text-slate-200">
-              {sec.items.map((item, itemIdx) => (
-                <li key={itemIdx} className="leading-relaxed">
-                  {renderInline(item, isUser)}
-                </li>
-              ))}
-            </ul>
+            <div key={idx} className="my-1.5 space-y-1 pl-1">
+              {sec.items.map((item, itemIdx) => {
+                const indentPadding = item.indent > 0 ? (item.indent === 1 ? 'pl-4' : 'pl-7') : 'pl-0';
+                return (
+                  <div
+                    key={itemIdx}
+                    className={`flex items-start gap-1.5 leading-relaxed text-slate-800 dark:text-slate-200 ${indentPadding}`}
+                  >
+                    {item.ordered ? (
+                      <span className="font-mono text-sky-600 dark:text-sky-400 text-[11px] font-semibold shrink-0 select-none">
+                        {item.number || `${itemIdx + 1}.`}
+                      </span>
+                    ) : (
+                      <span className="text-sky-500 dark:text-sky-400 text-xs shrink-0 select-none leading-[18px]">
+                        {item.indent > 0 ? '◦' : '•'}
+                      </span>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      {renderInline(item.content, isUser)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           );
         }
 
@@ -119,10 +127,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <div
               key={idx}
-              className={`my-2.5 overflow-x-auto rounded-lg border ${
+              className={`my-2 overflow-x-auto rounded-lg border shadow-xs ${
                 isUser
                   ? 'border-white/20 bg-white/10'
-                  : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 shadow-xs'
+                  : 'border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80'
               }`}
             >
               <table className="w-full text-xs border-collapse">
@@ -130,14 +138,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                   className={`${
                     isUser
                       ? 'bg-white/15 text-white border-b border-white/20'
-                      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800'
+                      : 'bg-slate-100/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800'
                   } font-semibold`}
                 >
                   <tr>
                     {sec.headers.map((header, hIdx) => (
                       <th
                         key={hIdx}
-                        className={`px-3 py-2 whitespace-nowrap ${getAlignClass(
+                        className={`px-3 py-2 text-[11px] font-bold ${getAlignClass(
                           sec.aligns[hIdx] || 'left'
                         )}`}
                       >
@@ -165,7 +173,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                       {sec.headers.map((_, cIdx) => (
                         <td
                           key={cIdx}
-                          className={`px-3 py-2 whitespace-nowrap ${getAlignClass(
+                          className={`px-3 py-2 text-[11px] leading-relaxed break-words ${getAlignClass(
                             sec.aligns[cIdx] || 'left'
                           )}`}
                         >
@@ -181,10 +189,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
 
         // Standard Paragraph
-        const lines = sec.content.split('\n');
         return (
-          <p key={idx} className="leading-relaxed">
-            {lines.map((line, lineIdx) => (
+          <p key={idx} className="leading-relaxed text-slate-800 dark:text-slate-200">
+            {sec.lines.map((line, lineIdx) => (
               <React.Fragment key={lineIdx}>
                 {lineIdx > 0 && <br />}
                 {renderInline(line, isUser)}
@@ -193,6 +200,42 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           </p>
         );
       })}
+    </div>
+  );
+};
+
+const CodeBlock: React.FC<{ content: string; lang?: string }> = ({ content, lang }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative my-2 rounded-lg bg-slate-900 text-slate-100 p-3 font-mono text-[11px] overflow-x-auto border border-slate-800 group shadow-xs">
+      <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold mb-1 uppercase tracking-wider pb-1 border-b border-slate-800/80">
+        <span>{lang || 'CODE'}</span>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+          title="复制内容"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400 font-normal">已复制</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span className="font-normal opacity-0 group-hover:opacity-100 transition-opacity">复制</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="whitespace-pre overflow-x-auto leading-relaxed">{content}</pre>
     </div>
   );
 };
@@ -253,46 +296,39 @@ function splitContentIntoSections(raw: string): Section[] {
   let codeLang = '';
   let codeBuffer: string[] = [];
   let paragraphBuffer: string[] = [];
+  let listBuffer: ListItem[] = [];
 
   const flushParagraph = () => {
     if (paragraphBuffer.length > 0) {
-      const text = paragraphBuffer.join('\n').trim();
-      if (text) {
-        // Parse lists if applicable
-        const pLines = text.split('\n');
-        const isBulletList = pLines.length > 0 && pLines.every((l) => /^\s*[-*•]\s+/.test(l));
-        const isNumberedList = pLines.length > 0 && pLines.every((l) => /^\s*\d+[\.\)]\s+/.test(l));
-
-        if (isBulletList) {
-          sections.push({
-            type: 'list',
-            ordered: false,
-            content: text,
-            items: pLines.map((l) => l.replace(/^\s*[-*•]\s+/, '')),
-          });
-        } else if (isNumberedList) {
-          sections.push({
-            type: 'list',
-            ordered: true,
-            content: text,
-            items: pLines.map((l) => l.replace(/^\s*\d+[\.\)]\s+/, '')),
-          });
-        } else {
-          sections.push({
-            type: 'paragraph',
-            content: text,
-          });
-        }
-      }
+      sections.push({
+        type: 'paragraph',
+        lines: [...paragraphBuffer],
+      });
       paragraphBuffer = [];
     }
   };
 
+  const flushList = () => {
+    if (listBuffer.length > 0) {
+      sections.push({
+        type: 'list',
+        items: [...listBuffer],
+      });
+      listBuffer = [];
+    }
+  };
+
+  const flushAll = () => {
+    flushParagraph();
+    flushList();
+  };
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const trimmed = line.trim();
 
-    // Code fence
-    if (line.trim().startsWith('```')) {
+    // 1. Code fence (```lang or ```)
+    if (trimmed.startsWith('```')) {
       if (inCodeBlock) {
         sections.push({
           type: 'code',
@@ -303,9 +339,9 @@ function splitContentIntoSections(raw: string): Section[] {
         inCodeBlock = false;
         codeLang = '';
       } else {
-        flushParagraph();
+        flushAll();
         inCodeBlock = true;
-        codeLang = line.trim().slice(3).trim();
+        codeLang = trimmed.slice(3).trim();
       }
       continue;
     }
@@ -315,28 +351,28 @@ function splitContentIntoSections(raw: string): Section[] {
       continue;
     }
 
-    // Horizontal Rule
-    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
-      flushParagraph();
+    // 2. Horizontal Rule (---, ***, ___)
+    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+      flushAll();
       sections.push({ type: 'hr' });
       continue;
     }
 
-    // Heading
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      flushParagraph();
+    // 3. Heading (# H1 to ###### H6, with or without space)
+    const headingMatch = line.match(/^(#{1,6})\s*(.+)$/);
+    if (headingMatch && headingMatch[2].trim()) {
+      flushAll();
       sections.push({
         type: 'heading',
         level: headingMatch[1].length,
-        content: headingMatch[2],
+        content: headingMatch[2].trim(),
       });
       continue;
     }
 
-    // Quote
+    // 4. Quote (> quote)
     if (line.startsWith('>')) {
-      flushParagraph();
+      flushAll();
       sections.push({
         type: 'quote',
         content: line.replace(/^>\s*/, ''),
@@ -344,9 +380,9 @@ function splitContentIntoSections(raw: string): Section[] {
       continue;
     }
 
-    // Table detection: line has '|' and next line is a table separator
+    // 5. Table detection: line has '|' and next line is a table separator
     if (i + 1 < lines.length && line.includes('|') && isTableSeparator(lines[i + 1])) {
-      flushParagraph();
+      flushAll();
       const headerLine = line;
       const separatorLine = lines[i + 1];
       const headers = splitRowCells(headerLine);
@@ -359,7 +395,7 @@ function splitContentIntoSections(raw: string): Section[] {
         if (
           currentLine.trim() === '' ||
           currentLine.trim().startsWith('```') ||
-          currentLine.match(/^(#{1,6})\s+/) ||
+          currentLine.match(/^(#{1,6})\s*/) ||
           currentLine.startsWith('>') ||
           /^(?:-{3,}|\*{3,}|_{3,})$/.test(currentLine.trim())
         ) {
@@ -383,12 +419,33 @@ function splitContentIntoSections(raw: string): Section[] {
       continue;
     }
 
-    // Empty line -> paragraph separator
-    if (line.trim() === '') {
+    // 6. List items (ordered & unordered, with indentation support)
+    const listMatch = line.match(/^(\s*)([-*•+]|\d+[\.\)])\s+(.*)$/);
+    if (listMatch) {
       flushParagraph();
+      const indentSpaces = listMatch[1].length;
+      const marker = listMatch[2];
+      const itemContent = listMatch[3];
+      const isOrdered = /^\d+[\.\)]$/.test(marker);
+      const indentLevel = indentSpaces >= 4 ? 2 : indentSpaces >= 2 ? 1 : 0;
+
+      listBuffer.push({
+        ordered: isOrdered,
+        number: isOrdered ? marker : undefined,
+        indent: indentLevel,
+        content: itemContent,
+      });
       continue;
     }
 
+    // 7. Empty line -> separator
+    if (trimmed === '') {
+      flushAll();
+      continue;
+    }
+
+    // 8. Normal text line -> paragraph buffer
+    flushList();
     paragraphBuffer.push(line);
   }
 
@@ -400,18 +457,20 @@ function splitContentIntoSections(raw: string): Section[] {
     });
   }
 
-  flushParagraph();
+  flushAll();
   return sections;
 }
 
 // Inline parser for bold, italic, code, links, highlighted brackets
 function renderInline(text: string, isUser: boolean): React.ReactNode[] {
+  if (!text) return [];
+
   // Regex to match:
-  // 1. **bold** or __bold__ (allowing inner whitespace/brackets)
-  // 2. `code`
+  // 1. **bold** or __bold__
+  // 2. `code` or ```code```
   // 3. *italic* or _italic_
   // 4. [text](url)
-  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`[^`]+?`|\*[^*\n]+?\*|_[^_\n]+?_|\[[^\]]+?\]\([^)]+?\))/g;
+  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`{1,3}[^`]+?`{1,3}|\*[^*\n]+?\*|_[^_\n]+?_|\[[^\]]+?\]\([^)]+?\))/g;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -435,7 +494,7 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
             className={
               isUser
                 ? 'font-bold underline underline-offset-2'
-                : 'font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-1 py-0.5 rounded border border-sky-200/80 dark:border-sky-800/80 inline-block mx-0.5 align-baseline text-[12px]'
+                : 'font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-1 py-0.5 rounded border border-sky-200/80 dark:border-sky-800/80 inline-block mx-0.5 align-baseline text-[11px]'
             }
           >
             {inner}
@@ -456,9 +515,10 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
         );
       }
     }
-    // Inline code (`code`)
+    // Inline code (`code` or ```code```)
     else if (token.startsWith('`') && token.endsWith('`')) {
-      const inner = token.slice(1, -1);
+      const codeFenceLen = token.match(/^`+/)?.[0].length || 1;
+      const inner = token.slice(codeFenceLen, -codeFenceLen);
       parts.push(
         <code
           key={key}
@@ -475,7 +535,6 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
     // Italic (*text* or _text_)
     else if ((token.startsWith('*') && token.endsWith('*')) || (token.startsWith('_') && token.endsWith('_'))) {
       const inner = token.slice(1, -1);
-      // For underscores, ensure it is not an intra-word identifier like some_variable_name
       if (token.startsWith('_')) {
         const prevChar = match.index > 0 ? text[match.index - 1] : ' ';
         const nextChar = match.index + token.length < text.length ? text[match.index + token.length] : ' ';

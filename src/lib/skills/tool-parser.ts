@@ -93,8 +93,7 @@ export function cleanXmlToolCalls(text: string): string {
     // 移除孤立的闭合或开放标签
     .replace(/<\/?(?:tool_call|function|parameter)[^>]*>/gi, '')
     // 清理连续多余的空行
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .replace(/\n{4,}/g, '\n\n');
 }
 
 /**
