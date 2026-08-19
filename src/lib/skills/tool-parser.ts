@@ -83,7 +83,7 @@ export function parseToolCallFromText(text: string): ParsedToolCall | null {
  */
 export function cleanXmlToolCalls(text: string): string {
   if (!text) return '';
-  return text
+  const cleaned = text
     // 移除完整的 <tool_call>...</tool_call> 块
     .replace(/<tool_call>[\s\S]*?(?:<\/tool_call>|$)/gi, '')
     // 移除独立的 <function=...>...</function> 块
@@ -93,7 +93,9 @@ export function cleanXmlToolCalls(text: string): string {
     // 移除孤立的闭合或开放标签
     .replace(/<\/?(?:tool_call|function|parameter)[^>]*>/gi, '')
     // 清理连续多余的空行
-    .replace(/\n{4,}/g, '\n\n');
+    .replace(/\n{3,}/g, '\n\n');
+
+  return cleaned.trim();
 }
 
 /**

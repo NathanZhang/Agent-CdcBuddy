@@ -14,8 +14,30 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
     where_clauses = ["1=1"]
     params = []
     if pathogen_name:
-        where_clauses.append("p.pathogen_name LIKE ?")
-        params.append(f"%{pathogen_name}%")
+        import re
+        p_tokens = [t.strip() for t in re.split(r'[,，、与和及/|\s+]+', pathogen_name) if t.strip()]
+        p_conditions = []
+        for token in p_tokens:
+            if '乙脑' in token or '乙型脑炎' in token:
+                p_conditions.append("(p.pathogen_name LIKE '%乙脑%' OR p.pathogen_name LIKE '%乙型脑炎%')")
+            elif '登革' in token:
+                p_conditions.append("p.pathogen_name LIKE '%登革%'")
+            elif '恙虫' in token or '东方体' in token:
+                p_conditions.append("(p.pathogen_name LIKE '%恙虫%' OR p.pathogen_name LIKE '%东方体%')")
+            elif '出血热' in token or '汉坦' in token:
+                p_conditions.append("(p.pathogen_name LIKE '%汉坦%' OR p.pathogen_name LIKE '%出血热%')")
+            elif '发热伴' in token or '布尼亚' in token:
+                p_conditions.append("(p.pathogen_name LIKE '%发热伴%' OR p.pathogen_name LIKE '%布尼亚%')")
+            elif '西尼罗' in token:
+                p_conditions.append("p.pathogen_name LIKE '%西尼罗%'")
+            elif '黄热' in token:
+                p_conditions.append("p.pathogen_name LIKE '%黄热%'")
+            else:
+                p_conditions.append("p.pathogen_name LIKE ?")
+                params.append(f"%{token}%")
+        if p_conditions:
+            where_clauses.append(f"({' OR '.join(p_conditions)})")
+
     if species_name:
         where_clauses.append("s.species_name LIKE ?")
         params.append(f"%{species_name}%")
@@ -37,9 +59,9 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
     JOIN dim_location l ON d.location_id = l.location_id
     WHERE {" AND ".join(where_clauses)}
     GROUP BY p.pathogen_name, s.species_name, l.city, l.district
-    HAVING total_tests > 1
+    HAVING total_tests > 0
     ORDER BY pos_count DESC, total_tests DESC
-    LIMIT 100
+    LIMIT 120
     """
 
     df = pd.read_sql_query(sql, conn, params=params)
@@ -72,22 +94,42 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
             level = "极高风险"
         elif rate > 8.0:
             level = "高风险"
-        elif rate > 2.0:
+        elif rate > 2.0 or pos > 0:
             level = "中风险"
         else:
             level = "低风险"
 
-        p_name = r["pathogen_name"]
+        raw_p_name = r["pathogen_name"]
         disease = "相关虫媒传染病"
-        if "登革" in p_name: disease = "登革热 (Dengue Fever)"
-        elif "乙脑" in p_name: disease = "流行性乙型脑炎 (JE)"
-        elif "恙虫" in p_name or "东方体" in p_name: disease = "恙虫病 (Scrub Typhus)"
-        elif "汉坦" in p_name or "出血热" in p_name: disease = "肾综合征出血热 (HFRS)"
-        elif "布鲁氏" in p_name: disease = "布鲁氏菌病 (Brucellosis)"
-        elif "发热伴" in p_name: disease = "发热伴血小板减少综合征 (SFTS)"
+        clean_p_name = raw_p_name
+
+        if "登革" in raw_p_name:
+            disease = "登革热 (Dengue Fever)"
+            clean_p_name = "登革病毒 (DENV)"
+        elif "乙脑" in raw_p_name or "乙型脑炎" in raw_p_name:
+            disease = "流行性乙型脑炎 (JE)"
+            clean_p_name = "乙型脑炎病毒 (JEV)"
+        elif "恙虫" in raw_p_name or "东方体" in raw_p_name:
+            disease = "恙虫病 (Scrub Typhus)"
+            clean_p_name = "恙虫病东方体"
+        elif "汉坦" in raw_p_name or "出血热" in raw_p_name:
+            disease = "肾综合征出血热 (HFRS)"
+            clean_p_name = "汉坦病毒 (Hantaan Virus)"
+        elif "布鲁氏" in raw_p_name:
+            disease = "布鲁氏菌病 (Brucellosis)"
+            clean_p_name = "布鲁氏菌"
+        elif "发热伴" in raw_p_name or "布尼亚" in raw_p_name:
+            disease = "发热伴血小板减少综合征 (SFTS)"
+            clean_p_name = "发热伴血小板减少综合征病毒"
+        elif "flavivirus" in raw_p_name.lower():
+            disease = "黄病毒科虫媒病毒感染"
+            clean_p_name = "黄病毒属分离株 (Flavivirus)"
+        elif len(clean_p_name) > 35:
+            clean_p_name = clean_p_name[:32] + "..."
 
         item = {
-            "pathogenName": p_name,
+            "pathogenName": clean_p_name,
+            "rawPathogenName": raw_p_name,
             "speciesName": r["species_name"],
             "city": r["city"] or "河南省",
             "district": r["district"] or "监测区",
@@ -99,12 +141,15 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
         }
         items.append(item)
 
-        if level in ["高风险", "极高风险"]:
+        if level in ["高风险", "极高风险"] or (pos > 0 and rate >= 5.0):
             high_risk_locs.append({
                 "city": r["city"],
                 "district": r["district"],
-                "pathogen": p_name,
-                "rate": rate
+                "pathogen": clean_p_name,
+                "speciesName": r["species_name"],
+                "rate": rate,
+                "positiveCount": pos,
+                "testedCount": total
             })
 
     # Apriori 关联规则计算
@@ -116,7 +161,11 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
             itemset.add(f"物种:{tr['species_name']}")
             itemset.add(f"地区:{tr['city']}")
             if tr["pcr_result"] == "阳性":
-                itemset.add(f"阳性:{tr['pathogen_name']}")
+                p_label = tr['pathogen_name']
+                if "登革" in p_label: p_label = "登革病毒"
+                elif "乙脑" in p_label or "乙型脑炎" in p_label: p_label = "乙型脑炎病毒"
+                elif "恙虫" in p_label: p_label = "恙虫病东方体"
+                itemset.add(f"阳性:{p_label}")
             transactions.append(itemset)
 
         n_trans = len(transactions)
@@ -152,10 +201,10 @@ def calculate_pathogen_risk_apriori(db_path: str, pathogen_name: str = None, spe
         rules.sort(key=lambda x: (x["confidence"], x["lift"]), reverse=True)
 
     summary_advice = (
-        f"Apriori 关联规则在 {len(high_risk_locs)} 个重点片区识别出高阳性组合。核心风险集中在 "
+        f"Apriori 关联挖掘在 {len(high_risk_locs)} 个重点区县监测点识别出核酸阳性携带。核心风险集中在 "
         + "、".join([f"{h['city']}{h['district']}({h['pathogen']})" for h in high_risk_locs[:3]])
-        + "，需立即启动宿主防制与应急阻断。"
-        if high_risk_locs else "当前监测周期内全省病原体 PCR 阳性检出率整体处于常态低风险区间。"
+        + "，建议针对优势种宿主立即启动靶向应急消杀与孳生地清除阻断。"
+        if high_risk_locs else "当前监测周期内全省病原体 PCR 阳性检出率整体处于常态低风险区间，重点关注优势蚊种栖息生境防护。"
     )
 
     return {

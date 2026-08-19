@@ -1,6 +1,7 @@
 import { getSkillById } from '@/lib/skills/registry';
 import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 
 export interface DispatchResult {
   success: boolean;
@@ -484,15 +485,18 @@ export async function dispatchSkillPromptStream(
       }
     }
 
-    const finalCleanReply = cleanXmlToolCalls(accumulatedContent);
+    const finalCleanReply = cleanXmlToolCalls(accumulatedContent).trim();
+    const finalView = finalGenerativeView || context?.currentView;
+    const fallbackInterpretation = generateDomainAIInterpretation(chosenSkillId, finalView, promptText);
+
     return {
       success: isSuccess,
       skillId: chosenSkillId || 'skill_vector_nlq',
       skillName: chosenSkillName || '病媒生物协同研判',
-      replyText: finalCleanReply || (chosenSkillName ? `已成功执行 **【${chosenSkillName}】** 技能，相关分析图表与态势数据已在主工作台渲染。` : '研判任务已完成。'),
+      replyText: finalCleanReply || fallbackInterpretation,
       reasoningText: accumulatedReasoning || undefined,
       reasoningDuration: reasoningDuration > 0 ? reasoningDuration : undefined,
-      generativeView: finalGenerativeView,
+      generativeView: finalView,
       source: 'llm_tool_calling'
     };
 

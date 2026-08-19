@@ -18,6 +18,7 @@ import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/Active
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 
 import { 
   Sparkles, 
@@ -446,12 +447,13 @@ export default function CdcAgentWorkspace() {
         return;
       }
 
-      const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '');
+      const finalGenerativeView = result.generativeView || latestView || activeGenerativeView;
+      const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '').trim();
       const finalSkillName = result.skillName || latestSkillName;
-      const finalReplyText = cleanedReply || (finalSkillName ? `已成功执行 **【${finalSkillName}】** 技能，相关分析图表与态势数据已在主工作台渲染。` : "处理请求成功。相关分析图表与态势数据已加载完毕。");
+      const fallbackInterpretation = generateDomainAIInterpretation(result.skillId || latestSkillName, finalGenerativeView, promptText);
+      const finalReplyText = cleanedReply || fallbackInterpretation;
       const finalReasoning = result.reasoningText || latestReasoning;
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
-      const finalGenerativeView = result.generativeView || latestView || activeGenerativeView;
 
       if (result.generativeView) {
         setActiveGenerativeView(result.generativeView);
@@ -721,12 +723,16 @@ export default function CdcAgentWorkspace() {
 
                     {/* 正式回复内容 (当存在文本或者不在纯思考占位中时渲染) */}
                     {(() => {
-                      const messageText = m.sender === 'agent' ? cleanXmlToolCalls(m.text) : m.text;
-                      const displayText = messageText || (m.sender === 'agent' && m.skillUsed && !m.isReasoningStreaming && !m.isContentStreaming
-                        ? `已成功执行 **【${m.skillUsed}】** 技能，相关研判图表与明细数据已在主工作台渲染。`
-                        : messageText);
+                      const messageText = (m.sender === 'agent' ? cleanXmlToolCalls(m.text) : m.text).trim();
+                      const displayText = messageText || (m.sender === 'agent' && !m.isReasoningStreaming && !m.isContentStreaming
+                        ? (m.skillUsed ? `已成功执行 **【${m.skillUsed}】** 技能，相关研判图表与明细数据已在主工作台渲染。` : '')
+                        : '');
 
-                      return (displayText || (!m.isReasoningStreaming && m.sender === 'agent')) && (
+                      const shouldRenderBubble = Boolean(displayText) || (m.sender === 'agent' && !m.isReasoningStreaming && m.isContentStreaming);
+
+                      if (!shouldRenderBubble) return null;
+
+                      return (
                         <div
                           className={`p-3.5 rounded-xl leading-relaxed ${
                             m.sender === 'user'

@@ -5,6 +5,7 @@ import { getSkillById } from '@/lib/skills/registry';
 import { fallbackRuleMatch } from '@/lib/skills/dispatcher';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
 import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 
 // 数据统计分析工具
 function calculateDatasetStats(data: any[]) {
@@ -219,47 +220,52 @@ export async function POST(req: NextRequest) {
           toolExecutionResult = { error: execErr.message || '技能执行异常' };
         }
 
-        // 构建给大模型的 Tool 运行反馈摘要
+        const domainInterpretation = generateDomainAIInterpretation(skillId, toolExecutionResult, promptText);
+
+        // 构建给大模型的 Tool 运行反馈摘要 (精炼紧凑，避免超长 token)
         let toolSummaryContent = '';
         if (toolExecutionResult && Array.isArray(toolExecutionResult.data)) {
           const stats = calculateDatasetStats(toolExecutionResult.data);
-          
-          // 给表格视图附加 summaryStats 指标
           if (stats) {
             finalGenerativeView.summaryStats = stats;
           }
-
           toolSummaryContent = JSON.stringify({
             success: isExecSuccess,
             title: toolExecutionResult.title,
             summaryStats: stats,
-            sampleData: toolExecutionResult.data.slice(0, 5) // 只传前 5 条作为样本，极省 token
+            sampleData: toolExecutionResult.data.slice(0, 5)
+          });
+        } else if (toolExecutionResult && Array.isArray(toolExecutionResult.items)) {
+          toolSummaryContent = JSON.stringify({
+            success: isExecSuccess,
+            totalItems: toolExecutionResult.items.length,
+            highRiskLocations: toolExecutionResult.highRiskLocations,
+            topItems: toolExecutionResult.items.slice(0, 6),
+            associationRules: toolExecutionResult.associationRules?.slice(0, 4),
+            summaryAdvice: toolExecutionResult.summaryAdvice
           });
         } else {
-          toolSummaryContent = JSON.stringify(toolExecutionResult);
+          toolSummaryContent = JSON.stringify(toolExecutionResult).slice(0, 3000);
         }
 
-        // 将 tool_call 信息及 tool 返回信息加入消息链，进行第二轮 LLM 请求
-        messages.push({
-          role: 'assistant',
-          content: null,
-          tool_calls: [
-            {
-              id: toolCallId,
-              type: 'function',
-              function: {
-                name: skillId,
-                arguments: JSON.stringify(parsedArgs)
-              }
-            }
-          ]
-        });
-        messages.push({
-          role: 'tool',
-          tool_call_id: toolCallId,
-          name: skillId,
-          content: toolSummaryContent
-        });
+        const summaryMessages = [
+          {
+            role: 'system',
+            content: `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
+你刚才已成功执行了病媒分析技能【${chosenSkillName}】并获取到了分析数据。
+请基于返回的真实数据结果，向疾控研判专家输出一份结构严谨、详实深入、具有流行病学洞察力的【AI 协同研判解读报告】。
+报告内容应包括：
+1. 核心监测/检测数据与指标概况解读
+2. 高风险区县、重点靶标或异常点位深入研判
+3. 生态关联特征（如宿主媒介、气象、抗药性或关联规则）
+4. 针对性的疾控应对、监测预警与应急防控建议
+请直接输出专业报告正文（Markdown 格式），语言全部使用规范的简体中文。严禁输出空的或占位符，严禁输出任何 XML 标签。`
+          },
+          {
+            role: 'user',
+            content: `用户研判指令: "${promptText}"\n\n【技能 ${chosenSkillName} 执行返回数据结果】:\n${toolSummaryContent}\n\n请输出专业 AI 研判解读内容：`
+          }
+        ];
 
         // 🚀 第二阶段：再次请求大模型，生成融合了 Tool 结果的最终自然语言答复 (独立 Abort Controller 2)
         const controller2 = new AbortController();
@@ -275,8 +281,8 @@ export async function POST(req: NextRequest) {
             },
             body: JSON.stringify({
               model: modelName,
-              messages,
-              temperature: 0.1
+              messages: summaryMessages,
+              temperature: 0.2
             }),
             signal: controller2.signal
           });
@@ -289,8 +295,8 @@ export async function POST(req: NextRequest) {
           finalReplyText = cleanXmlToolCalls(finalData.choices?.[0]?.message?.content || '');
         }
 
-        if (!finalReplyText.trim()) {
-          finalReplyText = `已成功执行 **【${chosenSkillName}】** 技能，相关分析图表与明细数据已在主工作台渲染。`;
+        if (!finalReplyText || finalReplyText.trim().length < 10) {
+          finalReplyText = domainInterpretation;
         }
 
       } else {

@@ -4,6 +4,7 @@ import { executeSkillServer } from '@/lib/skills/server-executor';
 import { getSkillById } from '@/lib/skills/registry';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
 import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -391,7 +392,10 @@ export async function POST(req: NextRequest) {
               toolExecutionResult = { error: execErr.message || '技能执行异常' };
             }
 
-            // 发送 AG-UI 视图与 Tool 结果
+            // 引入领域专业 AI 研判解读
+            const domainInterpretation = generateDomainAIInterpretation(skillId, toolExecutionResult, promptText);
+
+            // 构建给大模型的 Tool 运行反馈摘要 (精炼紧凑，避免超长 token)
             let toolSummaryContent = '';
             if (toolExecutionResult && Array.isArray(toolExecutionResult.data)) {
               const stats = calculateDatasetStats(toolExecutionResult.data);
@@ -404,8 +408,17 @@ export async function POST(req: NextRequest) {
                 summaryStats: stats,
                 sampleData: toolExecutionResult.data.slice(0, 5)
               });
+            } else if (toolExecutionResult && Array.isArray(toolExecutionResult.items)) {
+              toolSummaryContent = JSON.stringify({
+                success: isExecSuccess,
+                totalItems: toolExecutionResult.items.length,
+                highRiskLocations: toolExecutionResult.highRiskLocations,
+                topItems: toolExecutionResult.items.slice(0, 6),
+                associationRules: toolExecutionResult.associationRules?.slice(0, 4),
+                summaryAdvice: toolExecutionResult.summaryAdvice
+              });
             } else {
-              toolSummaryContent = JSON.stringify(toolExecutionResult);
+              toolSummaryContent = JSON.stringify(toolExecutionResult).slice(0, 3000);
             }
 
             sendEvent('generative_view', { view: toolExecutionResult });
@@ -418,28 +431,25 @@ export async function POST(req: NextRequest) {
             // 🚀 重置 accumulatedContent 为第二阶段大模型总结准备，彻底消除第一阶段 XML 干扰
             accumulatedContent = '';
 
-            // 🚀 第二阶段：流式总结 Tool 返回的数据
-            messages.push({
-              role: 'assistant',
-              content: null,
-              tool_calls: [
-                {
-                  id: firstTool.id || `call_${Date.now()}`,
-                  type: 'function',
-                  function: {
-                    name: skillId,
-                    arguments: JSON.stringify(parsedArgs)
-                  }
-                }
-              ]
-            });
-
-            messages.push({
-              role: 'tool',
-              tool_call_id: firstTool.id || `call_${Date.now()}`,
-              name: skillId,
-              content: toolSummaryContent
-            });
+            // 🚀 第二阶段：流式总结 Tool 返回的数据 (采用通用兼容消息格式)
+            const summaryMessages = [
+              {
+                role: 'system',
+                content: `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
+你刚才已成功执行了病媒分析技能【${skillName}】并获取到了分析数据。
+请基于返回的真实数据结果，向疾控研判专家输出一份结构严谨、详实深入、具有流行病学洞察力的【AI 协同研判解读报告】。
+报告内容应包括：
+1. 核心监测/检测数据与指标概况解读
+2. 高风险区县、重点靶标或异常点位深入研判
+3. 生态关联特征（如宿主媒介、气象、抗药性或关联规则）
+4. 针对性的疾控应对、监测预警与应急防控建议
+请直接输出专业报告正文（Markdown 格式），语言全部使用规范的简体中文。严禁输出空的或占位符，严禁输出任何 XML 标签。`
+              },
+              {
+                role: 'user',
+                content: `用户研判指令: "${promptText}"\n\n【技能 ${skillName} 执行返回数据结果】:\n${toolSummaryContent}\n\n请输出专业 AI 研判解读内容：`
+              }
+            ];
 
             const summaryController = new AbortController();
             const summaryTimeoutId = setTimeout(() => summaryController.abort(), timeoutMs);
@@ -453,8 +463,8 @@ export async function POST(req: NextRequest) {
                 },
                 body: JSON.stringify({
                   model: modelName,
-                  messages,
-                  temperature: 0.1,
+                  messages: summaryMessages,
+                  temperature: 0.2,
                   stream: true
                 }),
                 signal: summaryController.signal
@@ -481,10 +491,10 @@ export async function POST(req: NextRequest) {
                       const parsed = JSON.parse(trimmed.substring(6));
                       const delta = parsed.choices?.[0]?.delta;
                       if (delta?.content) {
-                        const cleaned = cleanXmlToolCalls(delta.content);
-                        if (cleaned) {
-                          accumulatedContent += cleaned;
-                          sendEvent('content_chunk', { text: cleaned });
+                        const token = delta.content as string;
+                        if (!token.includes('<tool_call>') && !token.includes('</tool_call>')) {
+                          accumulatedContent += token;
+                          sendEvent('content_chunk', { text: token });
                         }
                       }
                     } catch {}
@@ -492,17 +502,27 @@ export async function POST(req: NextRequest) {
                 }
               }
 
-              // 若第二阶段总结内容为空，自动提供规范的研判成功反馈
-              if (!accumulatedContent.trim()) {
-                const fallbackReply = `已为您检索并成功加载 **【${skillName}】** 数据，相关研判图表与明细数据已在主工作台渲染。`;
-                accumulatedContent = fallbackReply;
-                sendEvent('content_chunk', { text: fallbackReply });
+              // 清洗最终总结内容，若大模型未产生有效输出则流式回退至领域解读
+              const cleanedSummary = cleanXmlToolCalls(accumulatedContent);
+              if (!cleanedSummary || cleanedSummary.length < 10) {
+                accumulatedContent = domainInterpretation;
+                // 按行流式发送领域专业解读，确保 SSE 动态打字机效果
+                const lines = domainInterpretation.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                  const lineText = lines[i] + (i < lines.length - 1 ? '\n' : '');
+                  sendEvent('content_chunk', { text: lineText });
+                }
+              } else {
+                accumulatedContent = cleanedSummary;
               }
             } catch (sumErr) {
               console.warn('[Stream Dispatch Summary Warning]', sumErr);
-              const fallbackReply = `已成功执行 **【${skillName}】** 技能，研判数据已更新。`;
-              accumulatedContent = fallbackReply;
-              sendEvent('content_chunk', { text: fallbackReply });
+              accumulatedContent = domainInterpretation;
+              const lines = domainInterpretation.split('\n');
+              for (let i = 0; i < lines.length; i++) {
+                const lineText = lines[i] + (i < lines.length - 1 ? '\n' : '');
+                sendEvent('content_chunk', { text: lineText });
+              }
             } finally {
               clearTimeout(summaryTimeoutId);
             }
