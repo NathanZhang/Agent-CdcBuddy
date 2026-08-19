@@ -7,7 +7,9 @@ RUN npm ci
 
 FROM dependencies AS builder
 ARG NEXT_PUBLIC_TIANDITU_KEY=""
-ENV NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY}
+ARG NEXT_PUBLIC_GIT_HASH="unknown"
+ENV NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY} \
+    NEXT_PUBLIC_GIT_HASH=${NEXT_PUBLIC_GIT_HASH}
 COPY . .
 RUN npm run build
 
@@ -39,6 +41,7 @@ COPY --chown=node:node docker/entrypoint.sh ./docker/entrypoint.sh
 
 RUN mkdir -p /app/data \
     && chown node:node /app/data \
+    && sed -i 's/\r$//' ./docker/entrypoint.sh \
     && chmod 0755 ./docker/entrypoint.sh
 
 USER node

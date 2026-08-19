@@ -2,11 +2,13 @@ import type { NextConfig } from "next";
 import path from "path";
 import { execSync } from "child_process";
 
-let gitHash = "b3518e6";
-try {
-  gitHash = execSync("git rev-parse --short HEAD").toString().trim();
-} catch {
-  // fallback if git command fails
+let gitHash = process.env.NEXT_PUBLIC_GIT_HASH?.trim() ?? "";
+if (!gitHash) {
+  try {
+    gitHash = execSync("git rev-parse --short HEAD").toString().trim();
+  } catch {
+    gitHash = "unknown";
+  }
 }
 
 const nextConfig: NextConfig = {

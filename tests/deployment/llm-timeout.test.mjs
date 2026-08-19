@@ -7,8 +7,8 @@ import {
   resolveTimeoutMs,
 } from '../../src/lib/config/llm-timeout.ts';
 
-test('uses 30000ms when a timeout is missing', () => {
-  assert.equal(resolveTimeoutMs(undefined), 30_000);
+test('uses 60000ms when a timeout is missing', () => {
+  assert.equal(resolveTimeoutMs(undefined), 60_000);
 });
 
 test('accepts a finite positive integer timeout', () => {
@@ -17,7 +17,7 @@ test('accepts a finite positive integer timeout', () => {
 
 test('rejects invalid timeout values', () => {
   for (const value of ['', '0', '-1', '1.5', 'NaN', 'Infinity']) {
-    assert.equal(resolveTimeoutMs(value), 30_000, `expected ${value || 'empty'} to use the default`);
+    assert.equal(resolveTimeoutMs(value), 60_000, `expected ${value || 'empty'} to use the default`);
   }
 });
 

@@ -2,7 +2,8 @@
 param(
     [string]$ImageName = 'agent-cdcbuddy:1.0.0',
     [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-1.0.0-linux-amd64.tar',
-    [string]$TiandituKey = $env:NEXT_PUBLIC_TIANDITU_KEY
+    [string]$TiandituKey = $env:NEXT_PUBLIC_TIANDITU_KEY,
+    [string]$GitHash
 )
 
 $ErrorActionPreference = 'Stop'
@@ -12,7 +13,13 @@ try {
     & docker info --format '{{.ServerVersion}}' | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'Docker daemon is not available' }
 
-    $buildArgs = @('buildx', 'build', '--progress', 'plain', '--platform', 'linux/amd64', '--load', '--tag', $ImageName)
+    if (-not $GitHash) {
+        $GitHash = (& git rev-parse --short HEAD).Trim()
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to resolve the Git hash for the image build' }
+    }
+    if ($GitHash -notmatch '^[0-9a-f]{7,40}$') { throw "Invalid Git hash: $GitHash" }
+
+    $buildArgs = @('buildx', 'build', '--progress', 'plain', '--platform', 'linux/amd64', '--load', '--tag', $ImageName, '--build-arg', "NEXT_PUBLIC_GIT_HASH=$GitHash")
     if ($TiandituKey) {
         $buildArgs += @('--build-arg', "NEXT_PUBLIC_TIANDITU_KEY=$TiandituKey")
     }
@@ -24,6 +31,9 @@ try {
     if ($LASTEXITCODE -ne 0 -or $platform -ne 'linux/amd64') {
         throw "Unexpected image platform: $platform"
     }
+
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-entrypoint.ps1') -ImageName $ImageName
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-git-hash.ps1') -ImageName $ImageName -ExpectedGitHash $GitHash
 
     $absoluteOutput = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputPath))
     $artifactRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.deploy-artifacts'))
