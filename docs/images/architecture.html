@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent-CdcBuddy 技术架构图</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f0f4f8;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px;
+    }
+
+    /* 架构图主画布外框 */
+    .arch-container {
+      width: 1260px;
+      background: #ffffff;
+      border: 2px solid #3c82af;
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 8px 30px rgba(13, 56, 89, 0.08);
+      position: relative;
+    }
+
+    /* 顶部标题栏 */
+    .arch-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2ecf3;
+      position: relative;
+    }
+    .arch-header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #133958;
+      letter-spacing: 1.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .arch-header .subtitle {
+      font-size: 13px;
+      color: #5c7b94;
+      margin-top: 5px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* 架构层通用行 */
+    .arch-layer {
+      display: flex;
+      margin-bottom: 11px;
+      align-items: stretch;
+      position: relative;
+    }
+    .arch-layer:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 左侧分类红色渐变胶囊标签 */
+    .layer-tag {
+      width: 128px;
+      min-width: 128px;
+      background: linear-gradient(135deg, #f86b68 0%, #ea4f4b 100%);
+      border: 1.5px solid #c93531;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      box-shadow: 0 3px 6px rgba(234, 79, 75, 0.25);
+      margin-right: 14px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+      padding: 8px;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    /* 右侧主内容区域 */
+    .layer-content {
+      flex: 1;
+      background: #ebf6fb;
+      border: 1.5px solid #4a9bc4;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    /* 浅蓝色原子功能卡片 */
+    .arch-card {
+      background: linear-gradient(180deg, #c4e6fb 0%, #90cefa 100%);
+      border: 1.5px solid #2877a5;
+      border-radius: 6px;
+      padding: 7px 12px;
+      color: #0d2a3f;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(32, 102, 142, 0.18);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.25;
+    }
+    .arch-card .card-en {
+      font-size: 9.5px;
+      font-weight: 500;
+      color: #17486a;
+      opacity: 0.85;
+      margin-top: 2px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* 展现层子分组容器 */
+    .sub-section {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid #71b4d6;
+      border-radius: 6px;
+      padding: 6px 10px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .sub-section .sub-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #276288;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sub-section-cards {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* 贯穿右侧的侧边栏支撑体系 (日志系统、权限系统) */
+    .cross-sidebar {
+      width: 112px;
+      min-width: 112px;
+      display: flex;
+      gap: 10px;
+      margin-left: 10px;
+    }
+    .sidebar-pillar {
+      flex: 1;
+      background: linear-gradient(180deg, #99aee9 0%, #768ed4 100%);
+      border: 1.5px solid #4861b5;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(72, 97, 181, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      padding: 10px 4px;
+      text-align: center;
+      writing-mode: vertical-lr;
+      letter-spacing: 4px;
+      font-size: 14.5px;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    }
+    .sidebar-pillar .pillar-en {
+      writing-mode: horizontal-tb;
+      font-size: 9px;
+      font-weight: 500;
+      margin-top: 8px;
+      letter-spacing: 0px;
+      opacity: 0.9;
+    }
+
+    /* 虚线边框模块 (基础设施层) */
+    .dashed-layer {
+      background: #e1eff6 !important;
+      border: 2px dashed #3a8ebd !important;
+    }
+
+    /* 网格与多行卡片布局 */
+    .card-grid {
+      display: flex;
+      width: 100%;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-grid-tight {
+      display: flex;
+      width: 100%;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .flex-1 { flex: 1; }
+    .w-full { width: 100%; }
+
+    /* 模型层分栏排布 */
+    .model-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 4px 0;
+    }
+    .model-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #174d71;
+      min-width: 82px;
+      text-align: right;
+      padding-right: 6px;
+      border-right: 2px solid #82bcdb;
+    }
+
+    /* 底部分割线提示 */
+    .arch-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1.5px dashed #c0d8e7;
+      font-size: 11.5px;
+      color: #55758f;
+    }
+    .arch-footer .badge {
+      background: #e3eff6;
+      border: 1px solid #7eb8d7;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+      color: #1a4d6f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="arch-container">
+    <!-- 顶部标题 -->
+    <div class="arch-header">
+      <h1>
+        <span style="color: #ea4f4b;">Agent-CdcBuddy</span>
+        <span>疾控病媒生物监测预警智能体平台技术架构图</span>
+      </h1>
+      <div class="subtitle">
+        基于 LangGraph 多智能体协同 · Python 科学计算与深度学习算法引擎 · 双数据库与信创国产化架构
+      </div>
+    </div>
+
+    <!-- 1. 应用层 -->
+    <div class="arch-layer">
+      <div class="layer-tag">应用层</div>
+      <div class="layer-content">
+        <div class="card-grid">
+          <div class="arch-card flex-1">
+            <span>病媒密度监测分析</span>
+            <span class="card-en">Surveillance Dynamics</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>杀虫剂抗药性评估</span>
+            <span class="card-en">Resistance Bioassay</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>虫媒传播风险预警</span>
+            <span class="card-en">Transmission Risk</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>消杀处置闭环管理</span>
+            <span class="card-en">Intervention & Retest</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>7×24 后台常驻巡检</span>
+            <span class="card-en">Daemon Surveillance</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>Text2SQL 疾控问答</span>
+            <span class="card-en">CDC ChatBI / QA</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>应急研判专报生成</span>
+            <span class="card-en">Auto Report Export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 展现层 -->
+    <div class="arch-layer">
+      <div class="layer-tag">展现层</div>
+      <div class="layer-content" style="gap: 12px;">
+        <!-- WEB / 大屏 -->
+        <div class="sub-section flex-1">
+          <div class="sub-title">🖥️ WEB 端 / 疾控智能研判大屏 (Next.js 15 & React 19)</div>
+          <div class="sub-section-cards">
+            <div class="arch-card flex-1">
+              <span>国家天地图 GIS 空间层</span>
+              <span class="card-en">Tianditu GIS</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>SaTScan 时空圆柱投影</span>
+              <span class="card-en">3D Cylinder Map</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>ECharts 动态时序图表</span>
+              <span class="card-en">Time-series Charts</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>AG-UI 生成式组件库</span>
+              <span class="card-en">Generative UI</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>Copilot 交互侧边栏</span>
+              <span class="card-en">CopilotKit Widget</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- APP / 移动端与嵌入式 -->
+        <div class="sub-section" style="width: 320px;">
+          <div class="sub-title">📱 移动端采集 & 嵌入式微前端</div>
+          <div class="sub-section-cards">
+            <div class="arch-card flex-1">
+              <span>区县现场采样上报</span>
+              <span class="card-en">Mobile Survey</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>AI 拍照物种识别</span>
+              <span class="card-en">Species Vision</span>
+            </div>
+            <div class="arch-card flex-1">
+              <span>嵌入式浮窗 SDK</span>
+              <span class="card-en">Embedded Plugin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 网关层与应用编排层 (结合右侧纵向支撑体系) -->
+    <div style="display: flex; width: 100%; margin-bottom: 11px;">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 11px;">
+        <!-- 3. 网关层 -->
+        <div class="arch-layer" style="margin-bottom: 0;">
+          <div class="layer-tag">网关层</div>
+          <div class="layer-content">
+            <div class="card-grid">
+              <div class="arch-card flex-1">
+                <span>Next.js API Gateway</span>
+                <span class="card-en">Route Handlers</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>CopilotKit 协议网关</span>
+                <span class="card-en">Runtime Bridge</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>RESTful OpenAPI (v1)</span>
+                <span class="card-en">Standard Endpoints</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>SSE 实时事件推流</span>
+                <span class="card-en">Server-Sent Events</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>JWT 统一会话认证</span>
+                <span class="card-en">Auth & Identity</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>动态限流与熔断</span>
+                <span class="card-en">Rate Limiter</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 应用编排 -->
+        <div class="arch-layer" style="margin-bottom: 0;">
+          <div class="layer-tag" style="padding: 10px 4px;">应用编排<br/><span style="font-size:11px; font-weight:normal; opacity:0.9;">(Agent中枢)</span></div>
+          <div class="layer-content" style="flex-direction: column; gap: 8px;">
+            <!-- 第一排: 多智能体协同 -->
+            <div class="card-grid-tight w-full">
+              <div class="arch-card flex-1" style="background: linear-gradient(180deg, #b0daf8 0%, #7db9f3 100%);">
+                <span>🦟 监测分析智能体</span>
+                <span class="card-en">Surveillance Agent</span>
+              </div>
+              <div class="arch-card flex-1" style="background: linear-gradient(180deg, #b0daf8 0%, #7db9f3 100%);">
+                <span>🧪 抗药性分析智能体</span>
+                <span class="card-en">Resistance Agent</span>
+              </div>
+              <div class="arch-card flex-1" style="background: linear-gradient(180deg, #b0daf8 0%, #7db9f3 100%);">
+                <span>⚠️ 风险评估智能体</span>
+                <span class="card-en">Risk Assessment Agent</span>
+              </div>
+              <div class="arch-card flex-1" style="background: linear-gradient(180deg, #b0daf8 0%, #7db9f3 100%);">
+                <span>🛠️ 处置推荐智能体</span>
+                <span class="card-en">Intervention Agent</span>
+              </div>
+            </div>
+            <!-- 第二排: 编排能力 -->
+            <div class="card-grid-tight w-full">
+              <div class="arch-card flex-1">
+                <span>LangGraph 状态图引擎</span>
+                <span class="card-en">StateGraph Orchestrator</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>SaTScan+LSTM 5步级联管线</span>
+                <span class="card-en">Multi-step Pipeline</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>Prompt 专家策略动态注入</span>
+                <span class="card-en">Policy Injection</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>Text2SQL 语义解析引擎</span>
+                <span class="card-en">NL to SQL Parser</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>国家标准知识库 RAG</span>
+                <span class="card-en">GB/T & WS/T RAG</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>元技能构建器</span>
+                <span class="card-en">Meta-Skill Builder</span>
+              </div>
+              <div class="arch-card flex-1">
+                <span>48h 复测闭环工单流</span>
+                <span class="card-en">Workflow Engine</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧垂直贯穿: 日志系统 & 权限系统 -->
+      <div class="cross-sidebar">
+        <div class="sidebar-pillar">
+          <span>日志审计系统</span>
+          <span class="pillar-en">Audit Log</span>
+        </div>
+        <div class="sidebar-pillar">
+          <span>RBAC权限系统</span>
+          <span class="pillar-en">RBAC Matrix</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 推理和服务部署 -->
+    <div class="arch-layer">
+      <div class="layer-tag" style="font-size: 13.5px; padding: 4px;">推理和服务部署</div>
+      <div class="layer-content">
+        <div class="card-grid">
+          <div class="arch-card flex-1">
+            <span>Python 科学算法执行引擎 (analytics_engine)</span>
+            <span class="card-en">Subprocess IPC / Scientific Engine</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>PyTorch 深度学习运行时 (TorchScript)</span>
+            <span class="card-en">PyTorch CPU / CUDA Runtime</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>大模型统一调度网关</span>
+            <span class="card-en">Dynamic LLM Router / Gateway</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>vLLM / Ollama 私有化高并发推理</span>
+            <span class="card-en">Local High-throughput Inference</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>7×24 Daemon 守护后台运行器</span>
+            <span class="card-en">Surveillance Daemon Runner</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 模型层 -->
+    <div class="arch-layer">
+      <div class="layer-tag">模型层</div>
+      <div class="layer-content" style="flex-direction: column; gap: 7px; align-items: flex-start;">
+        <!-- 中小模型与科学算法 -->
+        <div class="model-group">
+          <div class="model-group-label">中小模型<br/>科学算法</div>
+          <div class="card-grid-tight flex-1">
+            <div class="arch-card">
+              <span>SaTScan 时空扫描统计量</span>
+              <span class="card-en">Poisson / Bernoulli</span>
+            </div>
+            <div class="arch-card">
+              <span>PyTorch 双向 Bi-LSTM</span>
+              <span class="card-en">Deep Time-Series</span>
+            </div>
+            <div class="arch-card">
+              <span>ARIMAX 季节时序预测</span>
+              <span class="card-en">ARIMA + Weather</span>
+            </div>
+            <div class="arch-card">
+              <span>GBDT 气象多因子回归</span>
+              <span class="card-en">Density Regression</span>
+            </div>
+            <div class="arch-card">
+              <span>普通克里金空间插值</span>
+              <span class="card-en">Ordinary Kriging</span>
+            </div>
+            <div class="arch-card">
+              <span>K-Means 优势种聚类</span>
+              <span class="card-en">Shannon Diversity</span>
+            </div>
+            <div class="arch-card">
+              <span>Probit 毒力回归 (LC50)</span>
+              <span class="card-en">Resistance Toxicity</span>
+            </div>
+            <div class="arch-card">
+              <span>Apriori 病原生境挖掘</span>
+              <span class="card-en">Frequent Itemset</span>
+            </div>
+            <div class="arch-card">
+              <span>贝叶斯基因突变演化</span>
+              <span class="card-en">Markov / Bayes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 向量与重排 / 微调 -->
+        <div class="model-group">
+          <div class="model-group-label">向量与微调</div>
+          <div class="card-grid-tight flex-1">
+            <div class="arch-card">
+              <span>bge-large-zh-v1.5</span>
+              <span class="card-en">Vector Embedding</span>
+            </div>
+            <div class="arch-card">
+              <span>bge-reranker-v2-m3</span>
+              <span class="card-en">Cross-Encoder Reranker</span>
+            </div>
+            <div class="arch-card">
+              <span>CDC 疾控专业指令微调 (LoRA / SFT)</span>
+              <span class="card-en">LLaMA-Factory Domain SFT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 大语言模型 -->
+        <div class="model-group">
+          <div class="model-group-label">大语言模型</div>
+          <div class="card-grid-tight flex-1">
+            <div class="arch-card" style="background: linear-gradient(180deg, #a5d3f7 0%, #72b2f2 100%);">
+              <span>Qwen 2.5 / 3.6 (通义千问)</span>
+              <span class="card-en">Primary Agent Core</span>
+            </div>
+            <div class="arch-card">
+              <span>DeepSeek-V3 / R1</span>
+              <span class="card-en">Reasoning Engine</span>
+            </div>
+            <div class="arch-card">
+              <span>书生·浦语 (InternLM2)</span>
+              <span class="card-en">InternLM OpenModel</span>
+            </div>
+            <div class="arch-card">
+              <span>智谱 GLM-4</span>
+              <span class="card-en">Zhipu BigModel</span>
+            </div>
+            <div class="arch-card">
+              <span>百度文心一言 (ERNIE)</span>
+              <span class="card-en">Baidu LLM</span>
+            </div>
+            <div class="arch-card">
+              <span>百川智能 (Baichuan)</span>
+              <span class="card-en">Healthcare LLM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 数据存储层 -->
+    <div class="arch-layer">
+      <div class="layer-tag">数据存储层</div>
+      <div class="layer-content">
+        <div class="card-grid">
+          <div class="arch-card flex-1">
+            <span>时空监测事实库</span>
+            <span class="card-en">vector_monitoring.db (5.6W+)</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>业务持久化闭环库</span>
+            <span class="card-en">app_business.db (工单/预警/专报)</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>PostgreSQL 14+</span>
+            <span class="card-en">Enterprise Production DB</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>人大金仓 KingbaseES</span>
+            <span class="card-en">信创国产化数据库</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>国家/行业标准规范库</span>
+            <span class="card-en">GB/T & WS/T KB</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>省市县 GeoJSON 边界</span>
+            <span class="card-en">Vector GIS Boundary</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>Redis / 状态快照</span>
+            <span class="card-en">Checkpointer Cache</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. 基础设施层 (虚线框风格) -->
+    <div class="arch-layer">
+      <div class="layer-tag">基础设施层</div>
+      <div class="layer-content dashed-layer">
+        <div class="card-grid">
+          <div class="arch-card flex-1">
+            <span>高性能通用 CPU</span>
+            <span class="card-en">Intel Xeon / AMD EPYC</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>AI 专用加速 GPU</span>
+            <span class="card-en">NVIDIA CUDA / 昇腾 NPU</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>Kubernetes (K8s)</span>
+            <span class="card-en">集群纳管与自动扩缩容</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>Docker 容器化交付</span>
+            <span class="card-en">Container Images</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>政务私有云 / 局域信创云</span>
+            <span class="card-en">麒麟 KyLin / 统信 UOS</span>
+          </div>
+          <div class="arch-card flex-1">
+            <span>国家天地图公共服务平台</span>
+            <span class="card-en">Tianditu Map Service</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部标注信息 -->
+    <div class="arch-footer">
+      <div>
+        <span class="badge">架构说明</span>
+        <span>本架构图严格遵循疾控病媒生物监测国标规范、四智能体协同逻辑与信创自主可控标准，打通采集、分析、预警与消杀闭环。</span>
+      </div>
+      <div>
+        <span>平台版本: <b>Agent-CdcBuddy v2.5</b></span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
