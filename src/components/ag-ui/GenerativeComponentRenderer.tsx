@@ -54,6 +54,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
             spatialGrid={view.spatialGrid}
             monitoringPoints={view.monitoringPoints}
             category={view.category || '蚊'}
+            severity={view.severity}
           />
         </div>
       )}

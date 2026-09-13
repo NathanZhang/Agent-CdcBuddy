@@ -164,3 +164,142 @@ export const HENAN_CITIES_GEO: Record<string, CityGeoFeature> = {
     districts: [{ name: '沁园街道', center: [112.59, 35.09], baseRiskLevel: 'low' }]
   }
 };
+
+export interface ResolvedGeoTarget {
+  level: 'province' | 'city' | 'district';
+  cityName: string;
+  districtName?: string;
+  center: [number, number];
+  zoom: number;
+}
+
+export const HENAN_PROVINCE_CENTER: [number, number] = [113.6253, 34.2466];
+export const HENAN_PROVINCE_ZOOM = 6.8;
+export const HENAN_PROVINCE_BBOX: [[number, number], [number, number]] = [
+  [110.35, 31.38],
+  [116.65, 36.36]
+];
+
+/**
+ * 判断是否为全省/全域级范围
+ */
+export function isProvinceLevel(city?: string): boolean {
+  if (!city) return true;
+  const c = city.trim();
+  return (
+    c === '全省' ||
+    c === '全省全景' ||
+    c === '河南省全域' ||
+    c === '河南省' ||
+    c === '河南' ||
+    c === '全域' ||
+    c === '河南省全省' ||
+    c.includes('全省') ||
+    c.includes('全域')
+  );
+}
+
+/**
+ * 城市名称别名归一化对齐（如“洛阳” -> “洛阳市”）
+ */
+export function normalizeCityName(name?: string): string | null {
+  if (!name || isProvinceLevel(name)) return null;
+  const clean = name.trim();
+  if (HENAN_CITIES_GEO[clean]) return clean;
+  
+  const withShi = clean.endsWith('市') ? clean : `${clean}市`;
+  if (HENAN_CITIES_GEO[withShi]) return withShi;
+
+  for (const k of Object.keys(HENAN_CITIES_GEO)) {
+    if (k.replace('市', '') === clean.replace('市', '')) {
+      return k;
+    }
+    if (clean.includes('济源') && k.includes('济源')) {
+      return k;
+    }
+  }
+  return null;
+}
+
+/**
+ * 全省区县反查索引：根据任意区县名称直接反查所属地级市与经纬度
+ */
+export function findDistrictInfo(districtQuery?: string): { districtName: string; cityName: string; center: [number, number] } | null {
+  if (!districtQuery) return null;
+  const q = districtQuery.trim().replace(/^(河南省|河南)/, '');
+  const cleanQ = q.replace(/回族区|区|县|市|街道/g, '');
+  if (!cleanQ) return null;
+
+  for (const [cityName, cityData] of Object.entries(HENAN_CITIES_GEO)) {
+    for (const d of cityData.districts) {
+      const cleanD = d.name.replace(/回族区|区|县|市|街道/g, '');
+      if (d.name === q || cleanD === cleanQ || d.name.includes(cleanQ) || q.includes(cleanD)) {
+        return {
+          districtName: d.name,
+          cityName,
+          center: d.center
+        };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * 统一的河南省-地市-区县三级地图视口自适应解析引擎
+ */
+export function resolveHenanGeoTarget(
+  city?: string,
+  district?: string,
+  alerts?: any[]
+): ResolvedGeoTarget {
+  // 1. 优先解析区县级
+  if (district && district.trim()) {
+    const distInfo = findDistrictInfo(district);
+    if (distInfo) {
+      return {
+        level: 'district',
+        cityName: distInfo.cityName,
+        districtName: distInfo.districtName,
+        center: distInfo.center,
+        zoom: 12.0
+      };
+    }
+    // 若在预警点中存在该区县坐标，直接精准定位
+    if (alerts && alerts.length > 0) {
+      const cleanD = district.replace(/回族区|区|县|市|街道/g, '');
+      const matchedAlert = alerts.find(
+        (a: any) => (a.district && a.district.includes(cleanD)) || (a.title && a.title.includes(cleanD))
+      );
+      if (matchedAlert && matchedAlert.longitude && matchedAlert.latitude) {
+        return {
+          level: 'district',
+          cityName: matchedAlert.city || '郑州市',
+          districtName: matchedAlert.district || district,
+          center: [matchedAlert.longitude, matchedAlert.latitude],
+          zoom: 12.0
+        };
+      }
+    }
+  }
+
+  // 2. 解析地市级
+  const normCity = normalizeCityName(city);
+  if (normCity && HENAN_CITIES_GEO[normCity]) {
+    return {
+      level: 'city',
+      cityName: normCity,
+      center: HENAN_CITIES_GEO[normCity].center,
+      zoom: 9.8
+    };
+  }
+
+  // 3. 全省全景级（默认及兜底）
+  return {
+    level: 'province',
+    cityName: '全省全景',
+    center: HENAN_PROVINCE_CENTER,
+    zoom: HENAN_PROVINCE_ZOOM
+  };
+}
+

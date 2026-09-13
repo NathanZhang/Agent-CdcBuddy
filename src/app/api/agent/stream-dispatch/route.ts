@@ -5,6 +5,7 @@ import { getSkillById } from '@/lib/skills/registry';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
 import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
+import { normalizeReasoningToChinese, isMainlyEnglish } from '@/lib/skills/chinese-reasoning-normalizer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -60,14 +61,14 @@ function calculateDatasetStats(data: any[]) {
   };
 }
 
-const SYSTEM_PROMPT_CDC = `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
-你能够使用病媒生物研判工具集 (Tools) 精准识别和解决各种疾控、数据分析、消杀工单以及问答指令。
-如果用户的问题能够通过工具集解决，你应该主动调用相关工具；并在工具执行返回数据后，对数据进行分析、统计与归纳，给出详实、准确且有洞察力的最终回复。
+const SYSTEM_PROMPT_CDC = `【CRITICAL LANGUAGE CONSTRAINT / 语言规范最高强制指令】：
+1. 你的内部思考推演链（Thinking Process / Reasoning Chain / CoT）**必须 100% 全程使用规范简体中文**！
+2. 绝对严禁在内部思考中使用任何英文单词或英文句子（Strictly NO English in thinking process or reasoning! All inner thoughts MUST be in Simplified Chinese!）！
+3. 请以规范专业的中文疾控专家认知逻辑推演：“【意图研判】分析用户诉求 ->【时空与阈值比对】确认病媒要素 ->【匹配工具决策】确定调用工具与参数”。
 
-【语言与思考强制规范】：
-1. **深度推演思考（Thinking Process / Reasoning Chain / CoT）必须全程使用中文（简体中文）**进行推演分析，严禁使用英文思考！
-2. 你的最终答复也必须全部使用规范的中文（简体中文）。
-3. 在中文思考过程中，请清晰展示你的专业研判逻辑（包括用户意图分析、数据筛选、阈值比对、病媒生态关联、工具调用决策与防控策略评估）。`;
+你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
+你能够使用病媒生物研判工具集 (Tools) 精准识别和解决各种疾控、数据分析、消杀工单以及问答指令。
+如果用户的问题能够通过工具集解决，你应该主动调用相关工具；并在工具执行返回数据后，对数据进行分析、统计与归纳，给出详实、准确且有洞察力的最终回复。`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -120,7 +121,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    messages.push({ role: 'user', content: promptText.trim() });
+    messages.push({ 
+      role: 'user', 
+      content: `${promptText.trim()}\n\n【强制提醒：内部思维链（Thinking Process / CoT）必须全程使用规范简体中文展开推演，严禁使用任何英文】` 
+    });
     const tools = getSiliconFlowSkillTools(userRole);
 
     const encoder = new TextEncoder();
@@ -155,13 +159,19 @@ export async function POST(req: NextRequest) {
         };
 
         // 辅助方法：结束思考
-        const endReasoningIfNeeded = () => {
+        const endReasoningIfNeeded = (skillIdForContext?: string) => {
           if (isReasoningActive) {
             isReasoningActive = false;
+            // 确保思维链终态为中文
+            if (accumulatedReasoning && isMainlyEnglish(accumulatedReasoning)) {
+              accumulatedReasoning = normalizeReasoningToChinese(accumulatedReasoning, promptText, skillIdForContext);
+              sendEvent('reasoning_chunk', { text: '', fullText: accumulatedReasoning });
+            }
             const duration = Date.now() - (reasoningStartTime || overallStartTime);
             sendEvent('reasoning_end', { 
               durationMs: duration, 
-              totalLength: accumulatedReasoning.length 
+              totalLength: accumulatedReasoning.length,
+              finalText: accumulatedReasoning
             });
           }
         };
@@ -374,6 +384,12 @@ export async function POST(req: NextRequest) {
 
             const skill = getSkillById(skillId);
             const skillName = skill?.name || skillId;
+
+            // 再次确保推演思维链以规范专业中文落定
+            if (accumulatedReasoning && isMainlyEnglish(accumulatedReasoning)) {
+              accumulatedReasoning = normalizeReasoningToChinese(accumulatedReasoning, promptText, skillId);
+              sendEvent('reasoning_chunk', { text: '', fullText: accumulatedReasoning });
+            }
 
             sendEvent('tool_call_start', {
               toolId: skillId,

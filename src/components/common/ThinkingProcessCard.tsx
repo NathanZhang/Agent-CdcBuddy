@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -11,6 +11,7 @@ import {
   Sparkles,
   Terminal
 } from 'lucide-react';
+import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
 
 interface ThinkingProcessCardProps {
   reasoningText: string;
@@ -27,6 +28,10 @@ export const ThinkingProcessCard: React.FC<ThinkingProcessCardProps> = ({
   defaultExpanded = false,
   className = ''
 }) => {
+  const displayReasoning = useMemo(() => {
+    return normalizeReasoningToChinese(reasoningText);
+  }, [reasoningText]);
+
   // 如果流式中，默认展开；若已完成且无强制指定，则默认折叠
   const [isExpanded, setIsExpanded] = useState(isStreaming ? true : defaultExpanded);
   const [hasCopied, setHasCopied] = useState(false);
@@ -66,8 +71,8 @@ export const ThinkingProcessCard: React.FC<ThinkingProcessCardProps> = ({
 
   const handleCopyReasoning = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!reasoningText) return;
-    navigator.clipboard.writeText(reasoningText);
+    if (!displayReasoning) return;
+    navigator.clipboard.writeText(displayReasoning);
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2000);
   };
@@ -153,7 +158,7 @@ export const ThinkingProcessCard: React.FC<ThinkingProcessCardProps> = ({
           </div>
 
           <div className="border-l-2 border-sky-400/50 dark:border-sky-500/40 pl-2.5 my-1 text-slate-600 dark:text-slate-300 opacity-95 whitespace-pre-wrap break-words">
-            {reasoningText}
+            {displayReasoning}
             {isStreaming && (
               <span className="inline-block w-1.5 h-3.5 ml-1 bg-sky-500 dark:bg-sky-400 animate-pulse align-middle rounded-[1px]" />
             )}

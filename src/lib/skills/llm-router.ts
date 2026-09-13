@@ -2,6 +2,7 @@ import { STANDARD_SKILLS, getSkillById } from './registry';
 import { UserRole } from '../rbac/types';
 import { getRouterTimeoutMs } from '../config/llm-timeout';
 import { parseToolCallFromText, cleanXmlToolCalls } from './tool-parser';
+import { normalizeReasoningToChinese } from './chinese-reasoning-normalizer';
 
 export interface LLMRouteResult {
   source: 'llm_tool_calling' | 'llm_direct_answer' | 'rule_fallback';
@@ -40,11 +41,12 @@ export function getSiliconFlowSkillTools(userRole?: UserRole) {
   }));
 }
 
-const CDC_ROUTER_SYSTEM_PROMPT = `你是由河南省疾病预防控制中心构建的 AI 协同研判中枢意图调度器 (CdcBuddy Router)。
-你的职责是精准理解用户的自然语言需求，结合多轮对话上下文，从提供的工具集 (Tools) 中挑选最契合的病媒生物研判技能并抽取出结构化参数。
+const CDC_ROUTER_SYSTEM_PROMPT = `【CRITICAL LANGUAGE CONSTRAINT / 语言规范最高准则】：
+1. 内部深度思考推演链（Thinking Process / Reasoning Chain / CoT）与参数提取必须**100% 全程使用规范简体中文**，严禁使用英文推演！
+2. 严禁在内部思考中输出任何英文（Strictly NO English in inner reasoning）！
 
-【语言与思考强制规范】：
-内部深度思考（Thinking Process / Reasoning Chain / CoT）与参数提取必须**全程使用中文（简体中文）**，严禁使用英文推演！
+你是由河南省疾病预防控制中心构建的 AI 协同研判中枢意图调度器 (CdcBuddy Router)。
+你的职责是精准理解用户的自然语言需求，结合多轮对话上下文，从提供的工具集 (Tools) 中挑选最契合的病媒生物研判技能并抽取出结构化参数。
 
 ### 核心分流准则（按优先级从高到低）：
 0. **【顶级优先】创建自定义分析技能 / 对话式新技能构建** -> 必须调用 \`skill_meta_custom_builder\`：
@@ -57,7 +59,8 @@ const CDC_ROUTER_SYSTEM_PROMPT = `你是由河南省疾病预防控制中心构�
 3. **优势种结构与聚类** -> 调用 \`skill_species_composition\` (K-Means 物种构成比)。
 4. **杀虫剂耐药与科学用药** -> 调用 \`skill_resistance_evaluation\` (抗药性评估与轮换方案)。
 5. **病原筛查与 PCR 阳性率** -> 调用 \`skill_pathogen_risk\` (登革热/乙脑/发热伴等病原风险)。
-6. **时空预警与全省热力地图** -> 调用 \`skill_spatial_early_warning\`。
+6. **时空预警与全省热力地图** -> 调用 \`skill_spatial_early_warning\`：
+   - 提取参数：\`city\` (地级市名称，若要求全省/全域则留空或"河南省全域"), \`district\` (区县名称), \`severity\` ("red" | "orange" | "yellow" | "all"，若提到"严重"或"红色"预警应提取为"red"), \`category\` (病媒种类)。
 7. **预警分发推送** -> 调用 \`skill_alert_push_dispatch\`。
 8. **处置消杀工单与闭环核销** -> 调用 \`skill_disposal_workflow\`。
 9. **气象融合中长期密度预测** -> 调用 \`skill_density_forecast\` (GBDT 模型)。
@@ -115,7 +118,10 @@ export async function routeSkillWithLLM(
     }
   }
 
-  messages.push({ role: 'user', content: promptText });
+  messages.push({ 
+    role: 'user', 
+    content: `${promptText}\n\n【强制指令：内部思考链必须全程使用中文简体推演，严禁使用任何英文】` 
+  });
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), getRouterTimeoutMs());
@@ -181,12 +187,13 @@ export async function routeSkillWithLLM(
       }
 
       const skill = getSkillById(skillId);
+      const rawReasoning = choice.content ? cleanXmlToolCalls(choice.content) : undefined;
       return {
         source: 'llm_tool_calling',
         skillId,
         skillName: skill?.name || skillId,
         args: parsedArgs,
-        reasoning: choice.content ? cleanXmlToolCalls(choice.content) : undefined
+        reasoning: rawReasoning ? normalizeReasoningToChinese(rawReasoning, promptText, skillId) : undefined
       };
     }
 

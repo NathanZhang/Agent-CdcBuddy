@@ -2,6 +2,7 @@ import { getSkillById } from '@/lib/skills/registry';
 import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
+import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
 
 export interface DispatchResult {
   success: boolean;
@@ -431,7 +432,10 @@ export async function dispatchSkillPromptStream(
                 break;
 
               case 'reasoning_chunk':
-                if (data.text) {
+                if (data.fullText) {
+                  accumulatedReasoning = data.fullText;
+                  context?.onReasoningChunk?.(data.fullText, accumulatedReasoning);
+                } else if (data.text) {
                   accumulatedReasoning += data.text;
                   context?.onReasoningChunk?.(data.text, accumulatedReasoning);
                 }
@@ -439,6 +443,9 @@ export async function dispatchSkillPromptStream(
 
               case 'reasoning_end':
                 reasoningDuration = data.durationMs || 0;
+                if (data.finalText) {
+                  accumulatedReasoning = data.finalText;
+                }
                 context?.onReasoningEnd?.(reasoningDuration);
                 break;
 
@@ -494,7 +501,7 @@ export async function dispatchSkillPromptStream(
       skillId: chosenSkillId || 'skill_vector_nlq',
       skillName: chosenSkillName || '病媒生物协同研判',
       replyText: finalCleanReply || fallbackInterpretation,
-      reasoningText: accumulatedReasoning || undefined,
+      reasoningText: normalizeReasoningToChinese(accumulatedReasoning, promptText, chosenSkillId) || undefined,
       reasoningDuration: reasoningDuration > 0 ? reasoningDuration : undefined,
       generativeView: finalView,
       source: 'llm_tool_calling'

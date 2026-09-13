@@ -3,7 +3,16 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { HENAN_CITIES_GEO, HENAN_BORDER_GEOJSON } from '@/lib/geo/henan-geojson';
+import { 
+  HENAN_CITIES_GEO, 
+  HENAN_BORDER_GEOJSON, 
+  resolveHenanGeoTarget, 
+  isProvinceLevel,
+  normalizeCityName,
+  HENAN_PROVINCE_BBOX,
+  HENAN_PROVINCE_CENTER,
+  HENAN_PROVINCE_ZOOM
+} from '@/lib/geo/henan-geojson';
 import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { useTheme } from '@/lib/theme/theme-context';
 import { MapPin, RotateCcw, Flame, AlertTriangle, Eye, EyeOff, Navigation, Layers, CheckCircle2 } from 'lucide-react';
@@ -35,6 +44,7 @@ interface VectorMapProps {
   selectedCity?: string;
   selectedDistrict?: string;
   category?: string;
+  severity?: string;
   onSelectCity?: (city: string) => void;
   onSelectDistrict?: (district: string) => void;
   title?: string;
@@ -47,6 +57,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   selectedCity,
   selectedDistrict,
   category = '蚊',
+  severity,
   onSelectCity,
   onSelectDistrict,
   title = '河南省病媒生物监测与时空风险地图'
@@ -60,8 +71,9 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   const [selectedAlert, setSelectedAlert] = useState<EarlyWarningAlertItem | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<MonitoringStationPoint | null>(null);
   
-  const [currentViewCity, setCurrentViewCity] = useState<string>(selectedCity || '全省全景');
-  const [currentViewDistrict, setCurrentViewDistrict] = useState<string | undefined>(selectedDistrict);
+  const initialGeoTarget = useMemo(() => resolveHenanGeoTarget(selectedCity, selectedDistrict, alerts), []);
+  const [currentViewCity, setCurrentViewCity] = useState<string>(initialGeoTarget.cityName);
+  const [currentViewDistrict, setCurrentViewDistrict] = useState<string | undefined>(initialGeoTarget.districtName);
   const [mapLayerType, setMapLayerType] = useState<'vec' | 'img'>('vec'); // vec: 天地图矢量, img: 天地图影像
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
   const [showAlertPins, setShowAlertPins] = useState<boolean>(true);
@@ -198,20 +210,8 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       `https://t${s}.tianditu.gov.cn/${annoLayer}_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=${annoLayer}&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${tiandituKey}`
     );
 
-    let initCenter: [number, number] = [113.6253, 34.2466];
-    let initZoom = 6.8;
-
-    if (selectedCity && selectedCity !== '全省全景' && HENAN_CITIES_GEO[selectedCity]) {
-      initCenter = HENAN_CITIES_GEO[selectedCity].center;
-      initZoom = 9.5;
-    }
-    if (selectedDistrict && (selectedDistrict.includes('金水') || selectedDistrict.includes('管城'))) {
-      initCenter = [113.6710, 34.7780];
-      initZoom = 11.2;
-    } else if (alerts.length > 0 && selectedCity && selectedCity !== '全省全景') {
-      initCenter = [alerts[0].longitude, alerts[0].latitude];
-      initZoom = 11.0;
-    }
+    const initCenter = initialGeoTarget.center;
+    const initZoom = initialGeoTarget.zoom;
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
@@ -397,6 +397,9 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     map.on('render', cleanMapLibreAttribution);
     map.on('load', () => {
       cleanMapLibreAttribution();
+      if (initialGeoTarget.level === 'province') {
+        map.fitBounds(HENAN_PROVINCE_BBOX, { padding: 30, duration: 0 });
+      }
       // 渲染地级市行政标记点
       cityMarkersRef.current.forEach(m => m.remove());
       cityMarkersRef.current = [];
@@ -494,11 +497,12 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     districtMarkersRef.current = [];
 
     // 全省全景状态下不显示区县 pin，防止扎堆
-    if (currentViewCity === '全省全景' || currentViewCity === '河南省全域') {
+    if (isProvinceLevel(currentViewCity)) {
       return;
     }
 
-    const currentCityGeo = HENAN_CITIES_GEO[currentViewCity];
+    const normCity = normalizeCityName(currentViewCity);
+    const currentCityGeo = normCity ? HENAN_CITIES_GEO[normCity] : null;
     if (currentCityGeo && currentCityGeo.districts) {
       currentCityGeo.districts.forEach(dist => {
         const isHighlighted = currentViewDistrict && (
@@ -528,7 +532,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     }
   }, [currentViewCity, currentViewDistrict]);
 
-  // 渲染预警点位标记 Pins
+  // 渲染预警点位标记 Pins（支持按预警级别过滤）
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -538,7 +542,11 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
 
     if (!showAlertPins) return;
 
-    alerts.forEach(alert => {
+    const displayAlerts = (severity && severity !== 'all')
+      ? alerts.filter(a => a.level === severity)
+      : alerts;
+
+    displayAlerts.forEach(alert => {
       const el = document.createElement('div');
       const colorClass = alert.level === 'red' 
         ? 'bg-red-600 border-red-200 text-white ring-4 ring-red-500/40 shadow-red-500/50' 
@@ -560,35 +568,36 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
 
       alertMarkersRef.current.push(marker);
     });
-  }, [alerts, showAlertPins]);
+  }, [alerts, showAlertPins, severity]);
 
-  // 当外部传入城市或区县变更时，自动平滑漫游镜头
+  // 当外部传入城市、区县或预警数据变更时，使用地理引擎自适应平滑漫游镜头
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    if (selectedCity && selectedCity !== '全省全景' && selectedCity !== '河南省全域' && HENAN_CITIES_GEO[selectedCity]) {
-      setCurrentViewCity(selectedCity);
-      if (selectedDistrict) {
-        setCurrentViewDistrict(selectedDistrict);
-        const cityData = HENAN_CITIES_GEO[selectedCity];
-        const targetDist = cityData.districts?.find(d => 
-          selectedDistrict.includes(d.name) || d.name.includes(selectedDistrict.replace('区', ''))
-        );
-        if (targetDist) {
-          map.flyTo({ center: targetDist.center, zoom: 12.0, duration: 1000 });
-          return;
-        }
-      }
-      map.flyTo({ center: HENAN_CITIES_GEO[selectedCity].center, zoom: 10.0, duration: 1000 });
+    const target = resolveHenanGeoTarget(selectedCity, selectedDistrict, alerts);
+
+    if (target.level === 'province') {
+      setCurrentViewCity('全省全景');
+      setCurrentViewDistrict(undefined);
+      map.fitBounds(HENAN_PROVINCE_BBOX, { padding: 30, duration: 800 });
+    } else if (target.level === 'district') {
+      setCurrentViewCity(target.cityName);
+      setCurrentViewDistrict(target.districtName);
+      map.flyTo({ center: target.center, zoom: target.zoom, pitch: 0, bearing: 0, duration: 900 });
+    } else if (target.level === 'city') {
+      setCurrentViewCity(target.cityName);
+      setCurrentViewDistrict(undefined);
+      map.flyTo({ center: target.center, zoom: target.zoom, pitch: 0, bearing: 0, duration: 900 });
     }
-  }, [selectedCity, selectedDistrict]);
+  }, [selectedCity, selectedDistrict, alerts]);
 
   const resetView = () => {
     if (mapRef.current) {
-      mapRef.current.flyTo({ center: [113.6253, 34.2466], zoom: 6.8, pitch: 0, bearing: 0, duration: 1000 });
+      mapRef.current.fitBounds(HENAN_PROVINCE_BBOX, { padding: 30, duration: 800 });
       setCurrentViewCity('全省全景');
       setCurrentViewDistrict(undefined);
+      if (onSelectCity) onSelectCity('全省全景');
     }
   };
 
@@ -600,8 +609,9 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     }
   };
 
-  const currentCityGeo = currentViewCity !== '全省全景' && currentViewCity !== '河南省全域' 
-    ? HENAN_CITIES_GEO[currentViewCity] 
+  const normCurrentCity = normalizeCityName(currentViewCity);
+  const currentCityGeo = !isProvinceLevel(currentViewCity) && normCurrentCity
+    ? HENAN_CITIES_GEO[normCurrentCity] 
     : null;
 
   return (

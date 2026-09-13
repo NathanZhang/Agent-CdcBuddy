@@ -5,6 +5,7 @@ import { getVectorDataProvider } from '../db/sqlite-provider';
 import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
 import { EarlyWarningAlertItem } from '../db/data-provider';
 import { executeText2Sql } from './text2sql-engine';
+import { isProvinceLevel, normalizeCityName, findDistrictInfo } from '../geo/henan-geojson';
 
 export async function executeSkillServer(skillId: string, args: Record<string, any>) {
   const provider = getVectorDataProvider();
@@ -81,15 +82,29 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     case 'skill_early_warning':
     case 'spatial_early_warning':
     case 'spatial_idw': {
+      let queryCity = args.city;
+      let queryDistrict = args.district;
+
+      // 若传入了区县但缺少城市或为全省，自动反查所属地级市
+      if (queryDistrict && (!queryCity || isProvinceLevel(queryCity))) {
+        const found = findDistrictInfo(queryDistrict);
+        if (found) {
+          queryCity = found.cityName;
+          queryDistrict = found.districtName;
+        }
+      } else if (queryCity && !isProvinceLevel(queryCity)) {
+        queryCity = normalizeCityName(queryCity) || queryCity;
+      }
+
       const spatialResult = await runAnalyticsEngine('spatial_idw', {
-        city: args.city,
-        district: args.district,
+        city: queryCity && !isProvinceLevel(queryCity) ? queryCity : undefined,
+        district: queryDistrict,
         category: args.category || '蚊'
       });
       let alerts = (spatialResult.alerts || []).filter((a: any) => {
-        if (args.city && a.city !== args.city) return false;
-        if (args.district) {
-          const targetDistricts = args.district.replace('、', ',').replace('和', ',').split(',');
+        if (queryCity && !isProvinceLevel(queryCity) && a.city !== queryCity) return false;
+        if (queryDistrict) {
+          const targetDistricts = queryDistrict.replace('、', ',').replace('和', ',').split(',');
           const matches = targetDistricts.some((td: string) => {
             const cleanTd = td.trim().replace('回族区', '').replace('区', '').replace('县', '').replace('市', '');
             return a.district.includes(cleanTd) || cleanTd.includes(a.district.replace('区', ''));
@@ -106,11 +121,11 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         }
       }
 
-      if (alerts.length === 0 && (args.city || args.district)) {
+      if (alerts.length === 0 && (queryCity || queryDistrict)) {
         alerts = ACTIVE_ALERTS_LIST.filter(a => {
-          if (args.city && a.city !== args.city) return false;
-          if (args.district) {
-            const targetDistricts = args.district.replace('、', ',').replace('和', ',').split(',');
+          if (queryCity && !isProvinceLevel(queryCity) && a.city !== queryCity) return false;
+          if (queryDistrict) {
+            const targetDistricts = queryDistrict.replace('、', ',').replace('和', ',').split(',');
             const matches = targetDistricts.some((td: string) => {
               const cleanTd = td.trim().replace('回族区', '').replace('区', '').replace('县', '').replace('市', '');
               return a.district.includes(cleanTd) || cleanTd.includes(a.district.replace('区', ''));
@@ -126,11 +141,19 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         alerts = spatialResult.alerts || [];
       }
 
-      const locations = await provider.getLocations(args.city);
+      // 预警严重等级过滤（如用户明确要求标记所有严重红色预警区域）
+      if (args.severity && args.severity !== 'all') {
+        const severityFiltered = alerts.filter((a: any) => a.level === args.severity);
+        if (severityFiltered.length > 0) {
+          alerts = severityFiltered;
+        }
+      }
+
+      const locations = await provider.getLocations(queryCity && !isProvinceLevel(queryCity) ? queryCity : undefined);
       return {
         type: 'SPATIAL_EARLY_WARNING_MAP',
-        city: args.city || '河南省全域',
-        district: args.district,
+        city: queryCity || '河南省全域',
+        district: queryDistrict,
         category: args.category || '蚊',
         severity: args.severity || 'all',
         alerts: alerts,
