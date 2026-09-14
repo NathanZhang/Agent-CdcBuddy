@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, MapPin } from 'lucide-react';
+import { dispatchGeoLocate } from '@/lib/geo/geo-event-bus';
+import { parseGeoProtocolUrl, parseLegacyCoordinateText } from '@/lib/geo/geo-entity-parser';
 
 export interface MarkdownRendererProps {
   content: string;
@@ -477,7 +479,8 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
 
   while ((match = regex.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      parts.push(text.substring(lastIndex, match.index));
+      const plainSegment = text.substring(lastIndex, match.index);
+      parts.push(...parseLegacyCoordsInText(plainSegment, `head-${match.index}`));
     }
 
     const token = match[0];
@@ -554,15 +557,37 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
     else if (token.startsWith('[') && token.includes('](') && token.endsWith(')')) {
       const linkMatch = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
       if (linkMatch) {
+        const linkText = linkMatch[1];
+        const linkUrl = linkMatch[2];
+
+        // 🚀 核心特性：识别 geo: 协议隐式坐标链接 [地名描述](geo:lat,lon)
+        if (linkUrl.startsWith('geo:')) {
+          const geoTarget = parseGeoProtocolUrl(linkUrl);
+          if (geoTarget) {
+            parts.push(
+              <GeoLocationBadge
+                key={key}
+                title={linkText}
+                lat={geoTarget.lat}
+                lon={geoTarget.lon}
+                level={geoTarget.level}
+                zoom={geoTarget.zoom}
+              />
+            );
+            lastIndex = regex.lastIndex;
+            continue;
+          }
+        }
+
         parts.push(
           <a
             key={key}
-            href={linkMatch[2]}
+            href={linkUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sky-500 underline hover:text-sky-400 font-medium"
           >
-            {linkMatch[1]}
+            {linkText}
           </a>
         );
       } else {
@@ -576,8 +601,112 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
   }
 
   if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex));
+    const trailingText = text.substring(lastIndex);
+    parts.push(...parseLegacyCoordsInText(trailingText, `tail-${lastIndex}`));
   }
 
   return parts;
 }
+
+/**
+ * 容错辅助函数：检查纯文本中是否有未按链接包装的历史经纬度坐标 (如 34.335°N、113.685°E)
+ * 若有，将其升级为可点击的定位徽章；若无，返回原生文本
+ */
+function parseLegacyCoordsInText(textSegment: string, baseKey: string): React.ReactNode[] {
+  if (!textSegment) return [];
+
+  // 匹配类似 34.335°N、113.685°E 或 34.335°N, 113.685°E
+  const coordRegex = /([0-9]{1,3}(?:\.[0-9]{2,6})?\s*°?\s*[NSns]\s*[,、，\s]+\s*[0-9]{1,3}(?:\.[0-9]{2,6})?\s*°?\s*[EWew])/g;
+  const subParts: React.ReactNode[] = [];
+  let subLastIdx = 0;
+  let m: RegExpExecArray | null;
+
+  while ((m = coordRegex.exec(textSegment)) !== null) {
+    if (m.index > subLastIdx) {
+      subParts.push(textSegment.substring(subLastIdx, m.index));
+    }
+    const matchedCoordText = m[0];
+    const coords = parseLegacyCoordinateText(matchedCoordText);
+    if (coords) {
+      subParts.push(
+        <GeoLocationBadge
+          key={`${baseKey}-legacy-${m.index}`}
+          title={matchedCoordText}
+          lat={coords.lat}
+          lon={coords.lon}
+          zoom={13.5}
+        />
+      );
+    } else {
+      subParts.push(matchedCoordText);
+    }
+    subLastIdx = coordRegex.lastIndex;
+  }
+
+  if (subLastIdx < textSegment.length) {
+    subParts.push(textSegment.substring(subLastIdx));
+  }
+
+  return subParts;
+}
+
+/**
+ * 地理位置交互微胶囊徽章组件
+ * 悬浮带发光高亮与定位提示，点击后向全局事件总线派发定位事件，零外部状态耦合
+ */
+interface GeoLocationBadgeProps {
+  title: string;
+  lat: number;
+  lon: number;
+  level?: 'red' | 'orange' | 'yellow' | 'info';
+  zoom?: number;
+}
+
+const GeoLocationBadge: React.FC<GeoLocationBadgeProps> = ({
+  title,
+  lat,
+  lon,
+  level,
+  zoom = 13.5
+}) => {
+  const [clicked, setClicked] = useState(false);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setClicked(true);
+    setTimeout(() => setClicked(false), 1200);
+
+    dispatchGeoLocate({
+      lat,
+      lon,
+      title,
+      zoom,
+      level
+    });
+  };
+
+  const levelBorderColor = level === 'red'
+    ? 'border-red-400/80 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-100'
+    : level === 'orange'
+    ? 'border-orange-400/80 bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 hover:bg-orange-100'
+    : 'border-sky-300/80 dark:border-sky-700 bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60';
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      title={`点击在地图定位：${title} (${lat.toFixed(4)}, ${lon.toFixed(4)})`}
+      className={`inline-flex items-center gap-1 mx-0.5 px-1.5 py-0.5 rounded-md border text-[11px] font-medium leading-none align-baseline cursor-pointer transition-all duration-200 group shadow-2xs select-none ${levelBorderColor} ${
+        clicked ? 'scale-95 ring-2 ring-sky-400' : 'hover:scale-[1.02]'
+      }`}
+    >
+      <MapPin className={`w-3 h-3 shrink-0 text-sky-500 transition-transform group-hover:-translate-y-0.5 ${clicked ? 'animate-bounce' : ''}`} />
+      <span className="font-semibold">{title}</span>
+      <span className="text-[9px] opacity-70 group-hover:opacity-100 underline decoration-dotted ml-0.5">
+        定位
+      </span>
+    </button>
+  );
+};
+

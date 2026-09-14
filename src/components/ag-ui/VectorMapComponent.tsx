@@ -16,6 +16,7 @@ import {
 import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { useTheme } from '@/lib/theme/theme-context';
 import { MapPin, RotateCcw, Flame, AlertTriangle, Eye, EyeOff, Navigation, Layers, CheckCircle2 } from 'lucide-react';
+import { subscribeGeoLocate, GeoLocateDetail } from '@/lib/geo/geo-event-bus';
 
 export interface SpatialGridPoint {
   lat: number;
@@ -67,6 +68,8 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   const cityMarkersRef = useRef<maplibregl.Marker[]>([]);
   const alertMarkersRef = useRef<maplibregl.Marker[]>([]);
   const districtMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const activePinMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const activePinPopupRef = useRef<maplibregl.Popup | null>(null);
   
   const [selectedAlert, setSelectedAlert] = useState<EarlyWarningAlertItem | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<MonitoringStationPoint | null>(null);
@@ -591,6 +594,104 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
       map.flyTo({ center: target.center, zoom: target.zoom, pitch: 0, bearing: 0, duration: 900 });
     }
   }, [selectedCity, selectedDistrict, alerts]);
+
+  // 🚀 核心联动：监听来自智能体研判结论中【地址微胶囊】点击的定位事件
+  useEffect(() => {
+    const unsubscribe = subscribeGeoLocate((detail: GeoLocateDetail) => {
+      const map = mapRef.current;
+      if (!map) return;
+
+      const { lat, lon, title, zoom = 13.5, level } = detail;
+
+      // 1. 镜头平滑飞向目标经纬度点位
+      map.flyTo({
+        center: [lon, lat],
+        zoom: zoom,
+        pitch: 28,
+        bearing: 0,
+        duration: 1100,
+        essential: true
+      });
+
+      // 2. 清理先前的聚焦标注与气泡
+      if (activePinMarkerRef.current) {
+        activePinMarkerRef.current.remove();
+        activePinMarkerRef.current = null;
+      }
+      if (activePinPopupRef.current) {
+        activePinPopupRef.current.remove();
+        activePinPopupRef.current = null;
+      }
+
+      // 3. 构建高亮波纹光环 Marker (双层扩散涟漪动效)
+      const el = document.createElement('div');
+      el.className = 'relative flex items-center justify-center cursor-pointer select-none';
+      el.style.width = '42px';
+      el.style.height = '42px';
+
+      // 涟漪扩散动效
+      const ripple = document.createElement('div');
+      ripple.className = 'absolute inset-0 rounded-full bg-sky-500/35 animate-ping';
+      el.appendChild(ripple);
+
+      // 外光晕闪烁环
+      const ring = document.createElement('div');
+      ring.className = 'absolute -inset-1 rounded-full border-2 border-sky-400 animate-pulse';
+      el.appendChild(ring);
+
+      // 中心图钉
+      const pin = document.createElement('div');
+      pin.className = 'relative w-9 h-9 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-500 border-2 border-white shadow-2xl flex items-center justify-center text-white text-sm font-black drop-shadow-lg transform transition-transform hover:scale-110';
+      pin.innerHTML = '📍';
+      el.appendChild(pin);
+
+      // 4. 构建信息 Popup 卡片
+      const popupHtml = `
+        <div style="padding: 10px 12px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: #1e293b; min-width: 200px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 6px;">
+            <span style="font-size: 14px;">🎯</span>
+            <span style="color: #0284c7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title || '研判聚焦目标点'}</span>
+          </div>
+          <div style="font-size: 11px; line-height: 1.6; color: #475569;">
+            <div><strong>空间坐标:</strong> ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E</div>
+            <div style="margin-top: 6px; padding: 4px 8px; border-radius: 4px; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 10px; font-weight: 500;">
+              ✨ 智能体研判结论联动定位
+            </div>
+          </div>
+        </div>
+      `;
+
+      const popup = new maplibregl.Popup({
+        offset: 22,
+        closeButton: true,
+        closeOnClick: false,
+        className: 'cdc-locate-popup'
+      }).setHTML(popupHtml);
+
+      // 5. 添加至地图并默认展开气泡
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([lon, lat])
+        .setPopup(popup)
+        .addTo(map);
+
+      marker.togglePopup();
+
+      activePinMarkerRef.current = marker;
+      activePinPopupRef.current = popup;
+    });
+
+    return () => {
+      unsubscribe();
+      if (activePinMarkerRef.current) {
+        activePinMarkerRef.current.remove();
+        activePinMarkerRef.current = null;
+      }
+      if (activePinPopupRef.current) {
+        activePinPopupRef.current.remove();
+        activePinPopupRef.current = null;
+      }
+    };
+  }, []);
 
   const resetView = () => {
     if (mapRef.current) {

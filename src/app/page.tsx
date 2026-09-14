@@ -19,6 +19,7 @@ import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
+import { subscribeGeoLocate } from '@/lib/geo/geo-event-bus';
 
 import { 
   Sparkles, 
@@ -163,6 +164,22 @@ export default function CdcAgentWorkspace() {
 
   useEffect(() => {
     fetchCustomSkills();
+  }, []);
+
+  // 当用户在对话流中点击地址微胶囊时，若当前工作台非地图组件，自动切回地图视图以展示定位
+  useEffect(() => {
+    const unsubscribe = subscribeGeoLocate((detail) => {
+      setActiveGenerativeView((prev: any) => {
+        if (!prev || prev.type !== 'SPATIAL_EARLY_WARNING_MAP') {
+          return {
+            ...INITIAL_GENERATIVE_VIEW,
+            city: '河南省全域'
+          };
+        }
+        return prev;
+      });
+    });
+    return unsubscribe;
   }, []);
 
   const handleDeleteCustomSkill = async (skillId: string) => {

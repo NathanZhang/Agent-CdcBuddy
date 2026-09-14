@@ -3,6 +3,8 @@
  * 为各项病媒分析技能的执行结果生成严谨、详实、结构化且具备流行病学洞察力的专业研判解读内容
  */
 
+import { matchHenanPlaceCoordinates } from '@/lib/geo/geo-entity-parser';
+
 export function generateDomainAIInterpretation(
   skillId: string,
   result: any,
@@ -47,13 +49,19 @@ export function generateDomainAIInterpretation(
           const pName = h.pathogen || h.pathogenName;
           const rate = h.rate !== undefined ? h.rate : h.positivityRate;
           const species = h.speciesName ? `（媒介：${h.speciesName}）` : '';
-          text += `* 📍 **${h.city} ${h.district}**：检出 **${pName}**${species}，阳性检出率达 **${rate}%**（风险等级：${rate > 10 ? '极高' : '高'}）。\n`;
+          const placeText = `${h.city} ${h.district}`;
+          const coords = matchHenanPlaceCoordinates(placeText);
+          const locLink = coords ? `[${placeText}](geo:${coords.lat},${coords.lon})` : `**${placeText}**`;
+          text += `* 📍 ${locLink}：检出 **${pName}**${species}，阳性检出率达 **${rate}%**（风险等级：${rate > 10 ? '极高' : '高'}）。\n`;
         });
       } else if (items.length > 0) {
         const topItems = items.slice(0, 3);
         text += `全省未出现成片暴发高阳性区县，主要检出点位呈点状散发：\n`;
         topItems.forEach(it => {
-          text += `* 📍 **${it.city} ${it.district}**：${it.speciesName}检出 **${it.pathogenName}**，阳性率 **${it.positivityRate}%** (${it.positiveCount}/${it.testedCount}批次)。\n`;
+          const placeText = `${it.city} ${it.district}`;
+          const coords = matchHenanPlaceCoordinates(placeText);
+          const locLink = coords ? `[${placeText}](geo:${coords.lat},${coords.lon})` : `**${placeText}**`;
+          text += `* 📍 ${locLink}：${it.speciesName}检出 **${it.pathogenName}**，阳性率 **${it.positivityRate}%** (${it.positiveCount}/${it.testedCount}批次)。\n`;
         });
       } else {
         text += `* 本监测周期内未发现超标异常聚集区县，处于常态背景水平。\n`;
@@ -116,9 +124,14 @@ export function generateDomainAIInterpretation(
       text += `* **全域预警概况**：当前区域共触发 **${alerts.length}** 起活跃预警（🔴 严重预警 **${redCount}** 起，🟠 较重预警 **${orangeCount}** 起，🟡 一般预警 **${yellowCount}** 起）。\n`;
       
       if (alerts.length > 0) {
-        text += `* **首要预警热点**：**${alerts[0].title}**（当前密度指数达 **${alerts[0].currentDensity}**，超出基线预警阈值 **${alerts[0].threshold}**）。\n`;
-        text += `* **触发动因**：${alerts[0].triggerReason}\n`;
-        text += `* **推荐处置策略**：${alerts[0].recommendedAction}\n\n`;
+        const first = alerts[0];
+        const placeDesc = `${first.city || ''}${first.district || ''}${first.street || ''}` || first.title;
+        const link = (first.latitude && first.longitude)
+          ? `[${placeDesc}](geo:${first.latitude},${first.longitude}?title=${encodeURIComponent(first.title)}&level=${first.level || 'red'})`
+          : `**${placeDesc}**`;
+        text += `* **首要预警热点**：${link}（当前密度指数达 **${first.currentDensity}**，超出基线预警阈值 **${first.threshold}**）。\n`;
+        text += `* **触发动因**：${first.triggerReason}\n`;
+        text += `* **推荐处置策略**：${first.recommendedAction}\n\n`;
       }
 
       text += `#### 🚨 应急响应指引\n`;
