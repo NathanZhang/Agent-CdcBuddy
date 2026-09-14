@@ -219,9 +219,20 @@ export async function POST(req: NextRequest) {
           let isInToolCallTag = false;
           let toolCallBuffer = '';
 
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+          let stage1IdleTimer: NodeJS.Timeout | null = null;
+          const resetStage1IdleTimer = () => {
+            if (stage1IdleTimer) clearTimeout(stage1IdleTimer);
+            stage1IdleTimer = setTimeout(() => {
+              reqController.abort();
+            }, timeoutMs);
+          };
+
+          try {
+            resetStage1IdleTimer();
+            while (true) {
+              const { done, value } = await reader.read();
+              resetStage1IdleTimer();
+              if (done) break;
 
             lineBuffer += decoder.decode(value, { stream: true });
             const lines = lineBuffer.split('\n');
@@ -338,8 +349,11 @@ export async function POST(req: NextRequest) {
               }
             }
           }
+        } finally {
+          if (stage1IdleTimer) clearTimeout(stage1IdleTimer);
+        }
 
-          endReasoningIfNeeded();
+        endReasoningIfNeeded();
 
           // 兜底检查：若文本缓冲区中存在未解析的 <tool_call>，执行补全解析
           if (!hasToolCalls && toolCallBuffer) {
@@ -471,50 +485,71 @@ export async function POST(req: NextRequest) {
             const summaryTimeoutId = setTimeout(() => summaryController.abort(), timeoutMs);
 
             try {
-              const summaryRes = await fetch(`${baseURL}/chat/completions`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                  model: modelName,
-                  messages: summaryMessages,
-                  temperature: 0.2,
-                  stream: true
-                }),
-                signal: summaryController.signal
-              });
+              let summaryRes: Response;
+              try {
+                summaryRes = await fetch(`${baseURL}/chat/completions`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                  },
+                  body: JSON.stringify({
+                    model: modelName,
+                    messages: summaryMessages,
+                    temperature: 0.2,
+                    stream: true
+                  }),
+                  signal: summaryController.signal
+                });
+              } finally {
+                // 响应连接建立后立即清除初始连接超时，防止流式输出耗时超过固定阈值被截断
+                clearTimeout(summaryTimeoutId);
+              }
 
               if (summaryRes.ok && summaryRes.body) {
                 const summaryReader = summaryRes.body.getReader();
                 let summaryLineBuffer = '';
 
-                while (true) {
-                  const { done, value } = await summaryReader.read();
-                  if (done) break;
+                // 滑动空闲超时：仅在流长时间无数据到达时超时，避免大模型正常生成长文本被掐断
+                let idleTimer: NodeJS.Timeout | null = null;
+                const resetIdleTimer = () => {
+                  if (idleTimer) clearTimeout(idleTimer);
+                  idleTimer = setTimeout(() => {
+                    summaryController.abort();
+                  }, timeoutMs);
+                };
 
-                  summaryLineBuffer += decoder.decode(value, { stream: true });
-                  const lines = summaryLineBuffer.split('\n');
-                  summaryLineBuffer = lines.pop() || '';
+                try {
+                  resetIdleTimer();
+                  while (true) {
+                    const { done, value } = await summaryReader.read();
+                    resetIdleTimer();
+                    if (done) break;
 
-                  for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed || !trimmed.startsWith('data: ')) continue;
-                    if (trimmed === 'data: [DONE]') continue;
+                    summaryLineBuffer += decoder.decode(value, { stream: true });
+                    const lines = summaryLineBuffer.split('\n');
+                    summaryLineBuffer = lines.pop() || '';
 
-                    try {
-                      const parsed = JSON.parse(trimmed.substring(6));
-                      const delta = parsed.choices?.[0]?.delta;
-                      if (delta?.content) {
-                        const token = delta.content as string;
-                        if (!token.includes('<tool_call>') && !token.includes('</tool_call>')) {
-                          accumulatedContent += token;
-                          sendEvent('content_chunk', { text: token });
+                    for (const line of lines) {
+                      const trimmed = line.trim();
+                      if (!trimmed || !trimmed.startsWith('data: ')) continue;
+                      if (trimmed === 'data: [DONE]') continue;
+
+                      try {
+                        const parsed = JSON.parse(trimmed.substring(6));
+                        const delta = parsed.choices?.[0]?.delta;
+                        if (delta?.content) {
+                          const token = delta.content as string;
+                          if (!token.includes('<tool_call>') && !token.includes('</tool_call>')) {
+                            accumulatedContent += token;
+                            sendEvent('content_chunk', { text: token });
+                          }
                         }
-                      }
-                    } catch {}
+                      } catch {}
+                    }
                   }
+                } finally {
+                  if (idleTimer) clearTimeout(idleTimer);
                 }
               }
 
@@ -533,14 +568,15 @@ export async function POST(req: NextRequest) {
               }
             } catch (sumErr) {
               console.warn('[Stream Dispatch Summary Warning]', sumErr);
-              accumulatedContent = domainInterpretation;
-              const lines = domainInterpretation.split('\n');
-              for (let i = 0; i < lines.length; i++) {
-                const lineText = lines[i] + (i < lines.length - 1 ? '\n' : '');
-                sendEvent('content_chunk', { text: lineText });
+              // 仅在未能生成任何有效正文时使用保底模板，防止与已流式发送的内容产生混乱重叠
+              if (!accumulatedContent || accumulatedContent.trim().length < 20) {
+                accumulatedContent = domainInterpretation;
+                const lines = domainInterpretation.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                  const lineText = lines[i] + (i < lines.length - 1 ? '\n' : '');
+                  sendEvent('content_chunk', { text: lineText });
+                }
               }
-            } finally {
-              clearTimeout(summaryTimeoutId);
             }
 
             sendEvent('finish', {
