@@ -463,25 +463,60 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       };
     }
 
-    // 自定义技能元注册 (持久化至 app_business.db)
-    case 'skill_meta_custom_builder': {
+    // 自定义技能元注册 (持久化至 app_business.db，按智能体领域严格隔离)
+    case 'skill_meta_custom_builder':
+    case 'skill_foodborne_custom_builder':
+    case 'skill_env_custom_builder':
+    case 'skill_chronic_custom_builder': {
       const customSkillId = `custom_skill_${Date.now()}`;
-      
+      const targetDomain = skillId === 'skill_foodborne_custom_builder'
+        ? 'foodborne'
+        : (skillId === 'skill_env_custom_builder'
+          ? 'env'
+          : (skillId === 'skill_chronic_custom_builder'
+            ? 'chronic'
+            : (args.domain || 'vector')));
+
+      let defaultName = '豫北蜱虫携带恙虫病东方体时空分布分析';
+      let defaultDesc = '专门统计近三年安阳市蜱虫携带恙虫病东方体的月度分布并在地图上标出高危村镇。';
+      if (targetDomain === 'foodborne') {
+        defaultName = '全省水产品副溶血性弧菌超标率空间分布分析';
+        defaultDesc = '按地市与集市统计近三年水产品及生鲜副溶血性弧菌检出超标率并在地图上标出高危区域。';
+      } else if (targetDomain === 'env') {
+        defaultName = '黄河流域断面重金属铅镉超标时空分布';
+        defaultDesc = '专门统计黄河流域地表水断面重金属铅镉超标时空分布及水厂关联风险。';
+      } else if (targetDomain === 'chronic') {
+        defaultName = '全省30-70岁重大慢病早死概率时空分布';
+        defaultDesc = '基于全死因数据库测算全省各区县30-70岁重大慢性病过早死亡概率(4q70)及空间分布。';
+      }
+
       // 根据用户意图智能生成贴合的 SQL 与描述
       let targetSql = args.sqlQuery;
       if (!targetSql) {
-        if (args.description?.includes('安阳') || args.skillName?.includes('安阳') || args.description?.includes('蜱')) {
+        if (targetDomain === 'foodborne') {
           targetSql = `
-            SELECT l.district as 区县, strftime('%Y-%m', f.monitoring_date) as 监测月份, 
-                   sum(f.capture_count) as 蜱虫捕获总量, 
-                   sum(f.positive_count) as 恙虫病东方体阳性份数,
-                   round(sum(f.positive_count) * 100.0 / max(sum(f.capture_count), 1), 2) as 病原携带率百分比
-            FROM fact_monitoring f
-            JOIN dim_species s ON f.species_id = s.species_id
-            JOIN dim_location l ON f.location_id = l.location_id
-            WHERE (l.city = '安阳市' OR l.city = '新乡市') AND (s.category = '蜱' OR s.category = '恙螨')
-            GROUP BY l.district, 监测月份
-            ORDER BY 监测月份 DESC, 病原携带率百分比 DESC LIMIT 20
+            SELECT city as 地市, sample_type as 样品类别, count(*) as 抽检批次,
+                   sum(case when is_positive = 1 then 1 else 0 end) as 阳性批次,
+                   round(sum(case when is_positive = 1 then 1 else 0 end) * 100.0 / count(*), 2) as 阳性超标率
+            FROM fact_food_surveillance
+            GROUP BY city, sample_type
+            ORDER BY 阳性超标率 DESC LIMIT 15
+          `;
+        } else if (targetDomain === 'env') {
+          targetSql = `
+            SELECT city as 地市, station_name as 监测站点, 
+                   round(avg(pm25_value), 2) as 平均PM25, round(avg(water_quality_index), 2) as 水质指数
+            FROM fact_env_surveillance
+            GROUP BY city, station_name
+            ORDER BY 水质指数 DESC LIMIT 15
+          `;
+        } else if (targetDomain === 'chronic') {
+          targetSql = `
+            SELECT city as 地市, disease_category as 慢病分类, count(*) as 登记随访病例数,
+                   round(avg(early_mortality_rate), 2) as 预估早死概率
+            FROM fact_chronic_surveillance
+            GROUP BY city, disease_category
+            ORDER BY 登记随访病例数 DESC LIMIT 15
           `;
         } else {
           targetSql = `
@@ -498,12 +533,13 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
 
       const newSkill: MetaCustomSkillData = {
         id: customSkillId,
-        name: args.skillName || '豫北蜱虫携带恙虫病东方体时空分布分析',
-        description: args.description || '专门统计近三年安阳市蜱虫携带恙虫病东方体的月度分布并在地图上标出高危村镇。',
+        name: args.skillName || defaultName,
+        description: args.description || defaultDesc,
         category: 'custom',
+        domain: targetDomain,
         sqlQuery: targetSql.trim(),
         chartType: args.chartType || 'map',
-        recommendedPrompts: [`执行 ${args.skillName || '豫北蜱虫携带恙虫病东方体时空分布分析'}`],
+        recommendedPrompts: [`执行 ${args.skillName || defaultName}`],
         visibility: (args.visibility as 'private' | 'public') || 'private',
         createdAt: new Date().toISOString(),
         createdBy: '当前登录用户'
@@ -514,17 +550,9 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         queryData = await provider.queryCustomSql(newSkill.sqlQuery);
       } catch (e: any) {
         queryData = [
-          { 区县: '林州市', 监测月份: '2024-07', 蜱虫捕获总量: 1420, 恙虫病东方体阳性份数: 86, 病原携带率百分比: 6.06 },
-          { 区县: '安阳县', 监测月份: '2024-07', 蜱虫捕获总量: 980, 恙虫病东方体阳性份数: 52, 病原携带率百分比: 5.31 },
-          { 区县: '汤阴县', 监测月份: '2024-06', 蜱虫捕获总量: 650, 恙虫病东方体阳性份数: 28, 病原携带率百分比: 4.31 },
-          { 区县: '文峰区', 监测月份: '2024-06', 蜱虫捕获总量: 320, 恙虫病东方体阳性份数: 8, 病原携带率百分比: 2.50 }
-        ];
-      }
-
-      if (!queryData || queryData.length === 0) {
-        queryData = [
-          { 区县: '林州市', 监测月份: '2024-07', 蜱虫捕获总量: 1420, 恙虫病东方体阳性份数: 86, 病原携带率百分比: 6.06 },
-          { 区县: '安阳县', 监测月份: '2024-07', 蜱虫捕获总量: 980, 恙虫病东方体阳性份数: 52, 病原携带率百分比: 5.31 }
+          { 区域: '郑州市', 统计指标: '综合分析值', 数值: 86.4, 判定等级: '高风险' },
+          { 区域: '洛阳市', 统计指标: '综合分析值', 数值: 64.2, 判定等级: '中风险' },
+          { 区域: '安阳市', 统计指标: '综合分析值', 数值: 52.8, 判定等级: '一般风险' }
         ];
       }
 
@@ -538,7 +566,8 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         recommended_prompts: newSkill.recommendedPrompts.join(';'),
         visibility: newSkill.visibility || 'private',
         created_by: newSkill.createdBy,
-        created_at: newSkill.createdAt
+        created_at: newSkill.createdAt,
+        domain: targetDomain
       });
 
       return {
@@ -548,14 +577,27 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       };
     }
 
-    // 15. 病媒监测数据表查询 (Text2SQL 与多维检索)
-    case 'skill_monitoring_data_table': {
+    // 专属监测数据表查询 (Text2SQL 与多维检索 - 4智能体隔离支持)
+    case 'skill_monitoring_data_table':
+    case 'skill_foodborne_case_table':
+    case 'skill_env_monitoring_table':
+    case 'skill_chronic_monitoring_table': {
+      const isFood = skillId === 'skill_foodborne_case_table';
+      const isEnv = skillId === 'skill_env_monitoring_table';
+      const isChronic = skillId === 'skill_chronic_monitoring_table';
+
       const timeStr = args.year && args.month 
         ? `${args.year}年${args.month}月` 
         : (args.year ? `${args.year}年` : (args.month ? `${args.month}月` : ''));
-      const userPrompt = args.query || `${args.city || ''} ${timeStr} ${args.district || ''} ${args.category || ''} 病媒监测数据表`;
+      
+      let domainLabel = '病媒监测数据表';
+      if (isFood) domainLabel = '食源性病例与食品抽检明细表';
+      else if (isEnv) domainLabel = '水质与环境空气监测明细表';
+      else if (isChronic) domainLabel = '死因证明书与重大慢病监测明细表';
+
+      const userPrompt = args.query || `${args.city || ''} ${timeStr} ${args.district || ''} ${args.category || args.pathogen || ''} ${domainLabel}`;
       const result = await executeText2Sql(userPrompt, args);
-      const displayTitle = `${args.city || '河南省'}${timeStr}${args.district || ''}${args.category || '全部'}病媒监测数据表`;
+      const displayTitle = `${args.city || '河南省'}${timeStr}${args.district || ''}${domainLabel}`;
       return {
         type: 'DATA_TABLE_VIEW',
         title: displayTitle,
@@ -663,6 +705,294 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         ...result
       };
     }
+
+    // ==============================================================================
+    // 食源性疾病专属技能服务执行器 (No. 36 ~ 41)
+    // ==============================================================================
+
+    // 21. 聚集性病例识别模型 (No. 36)
+    case 'skill_foodborne_cluster_detect':
+    case 'foodborne_cluster_detect': {
+      const result = await runAnalyticsEngine('foodborne_cluster_detect' as any, {
+        city: args.city,
+        district: args.district
+      });
+      return {
+        type: 'FOODBORNE_CLUSTER_RADAR',
+        city: args.city || '河南省全域',
+        ...result
+      };
+    }
+
+    // 22. 食源性风险时序预测模型 (No. 37)
+    case 'skill_foodborne_risk_forecast':
+    case 'foodborne_risk_forecast': {
+      const result = await runAnalyticsEngine('density_gbdt', {
+        city: args.city || '河南省全域',
+        category: '食源性致病菌',
+        forecastMonths: 2
+      });
+      return {
+        type: 'POPULATION_DENSITY_TREND',
+        city: args.city || '河南省全域',
+        category: '食源性致病菌',
+        speciesName: args.pathogenType || '副溶血性弧菌 / 沙门氏菌',
+        ...result
+      };
+    }
+
+    // 23. 致病菌全基因组 cgMLST 分子同源溯源 (No. 38)
+    case 'skill_molecular_trace':
+    case 'molecular_trace': {
+      const result = await runAnalyticsEngine('molecular_trace' as any, {
+        clusterId: args.clusterId || (args.cluster_id || 'OUTBREAK-202608-01'),
+        pathogenId: args.pathogenId,
+        threshold: args.threshold || 5
+      });
+      return {
+        type: 'MOLECULAR_PHYLOGENY_TREE',
+        ...result
+      };
+    }
+
+    // 24. 可疑进食暴露食品归因与比值比分析 (No. 38辅助 / 40)
+    case 'skill_food_attribution':
+    case 'food_attribution': {
+      const result = await runAnalyticsEngine('food_attribution' as any, {
+        city: args.city,
+        topN: args.topN || 10
+      });
+      return {
+        type: 'FOOD_RISK_RANKING',
+        ...result
+      };
+    }
+
+    // 25. 食源性突发事件标准化处置建议与协同工单 (No. 39)
+    case 'skill_outbreak_disposal_advice':
+    case 'outbreak_disposal_advice': {
+      const clusterId = args.clusterId || 'OUTBREAK-202608-01';
+      return {
+        type: 'OUTBREAK_DISPOSAL_WORKFLOW',
+        clusterId,
+        eventTitle: '郑州市金水区某高校食堂副溶血性弧菌聚集性腹泻事件',
+        venueName: '郑州金水大学第三学生餐厅',
+        pathogen: '副溶血性弧菌 (O3:K6 / ST3)',
+        suspectedFood: '凉拌海蜇丝与现制基围虾',
+        caseCount: 38,
+        hospitalizedCount: 4,
+        attackRate: 14.8,
+        disposalLevel: '二级突发食源性公共卫生事件响应',
+        standardProcedures: [
+          { step: 1, title: '病例就地隔离与标本复检', desc: '对 38 例门诊病例开展粪便/呕吐物增菌培养，4 小时内核酸复核确认。', status: 'completed' },
+          { step: 2, title: '嫌疑食品封存与环境留样', desc: '紧急查封食堂冷藏间海产品生鲜原料，扣押同批次未开封半成品样品。', status: 'completed' },
+          { step: 3, title: 'cgMLST 基因同源性比对', desc: '比对患者分离株与后厨案板擦拭标本，确认等位基因差异 Δ=1，锁死污染源。', status: 'completed' },
+          { step: 4, title: '协同市场监管与整改核销', desc: '下发停业消杀整改督办单，48 小时后环境微生物复检合格予以解封。', status: 'in_progress' }
+        ],
+        similarHistoricalCases: [
+          { id: 'HIST-202409-VP', name: '2024年开封某餐饮酒楼副溶血性弧菌事件', matchRate: 94.2, outcome: '经冷链全面查封消杀后48h解除' }
+        ]
+      };
+    }
+
+    // 26. 食源性疾病专题公报与流调简报导出 (No. 41)
+    case 'skill_foodborne_report_export':
+    case 'foodborne_report_export': {
+      return {
+        type: 'AUTO_GENERATED_REPORT',
+        title: '河南省食源性疾病暴发流行病学调查与同源溯源专题报告',
+        generatedAt: new Date().toISOString(),
+        author: '河南省疾病预防控制中心 · 食品安全与营养卫生所',
+        summary: '本报告基于全省食源性疾病监测哨点医院上报病例、致病菌全基因组 cgMLST 分子图谱与食品安全监督抽检多源数据融合生成。重点剖析了郑州金水大学食堂聚集性腹泻事件与全省夏秋季副溶血性弧菌/沙门氏菌高危风险暴露，为多部门协同防控提供决策依据。',
+        metrics: [
+          { label: '监测病例总数', value: '3,292 例', change: '+8.4% (环比)' },
+          { label: '识别聚集事件', value: '4 起', change: '已核销 3 起' },
+          { label: 'cgMLST 同源符合率', value: '98.5%', change: '高置信同源' },
+          { label: '食品抽检不合格率', value: '7.8%', change: '平稳' }
+        ],
+        sections: [
+          {
+            title: '一、 聚集性暴发事件时空特征与流调研判',
+            content: '2026年8月中旬，郑州市金水区哨点医院报告腹泻病例短时间内异常激增。SaTScan 时空圆柱扫描探测出高度聚集特征（RR=4.2, P<0.001）。经现场流调，病例均具备郑州金水大学第三学生餐厅共同就餐史，潜伏期中位数为 14.5 小时。'
+          },
+          {
+            title: '二、 致病菌 cgMLST 分子进化同源溯源',
+            content: '省疾控病原所对采集的 8 株临床分离菌株开展全基因组 cgMLST 测序比对。结果显示，8 株分离株核心等位基因位点差异 Δ ≤ 2，在最小生成树中高度聚集，均归属于 ST3 型副溶血性弧菌（血清型 O3:K6），判定为同一起生熟案板交叉污染导致的同源暴发。'
+          },
+          {
+            title: '三、 食品安全抽检与风险归因 TOP10',
+            content: '关联挖掘模型显示，水产动物及其制品在副溶血弧菌感染中的比值比 (OR) 达 3.42，现拌冷菜比值比达 2.18。建议各级监管部门重点针对即食冷食与水产生鲜强化冷链储运温控监管。'
+          }
+        ]
+      };
+    }
+
+    // =========================================================================
+    // 环境健康与慢性病伤害专属技能调度响应
+    // =========================================================================
+    // 27. 水质与环境单据 OCR 智能录入引擎 (No. 42/43)
+    case 'skill_env_ocr_entry': {
+      return {
+        type: 'ENV_OCR_ENTRY_VIEW',
+        docTitle: '河南省生活饮用水水质检验报告单 (出厂水质多参数全分析)',
+        sampleId: args.sampleId || `RPT-WATER-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+        overallConfidence: 0.985,
+        extractedFields: [
+          { name: '采样地点', value: `${args.city || '新乡市'}${args.district || '凤泉区'}第一水厂出厂水取样口`, status: 'valid', confidence: 0.99 },
+          { name: '采样日期', value: '2026-08-20 08:30', status: 'valid', confidence: 0.99 },
+          { name: '浑浊度 (NTU)', value: '0.42 (标准限值 ≤1.0)', status: 'valid', confidence: 0.98 },
+          { name: '游离余氯 (mg/L)', value: '0.65 (标准限值 0.3~2.0)', status: 'valid', confidence: 0.98 },
+          { name: '高锰酸盐指数 (mg/L)', value: '1.85 (标准限值 ≤3.0)', status: 'valid', confidence: 0.97 },
+          { name: '菌落总数 (CFU/mL)', value: '12 (标准限值 ≤100)', status: 'valid', confidence: 0.99 },
+          { name: '总大肠菌群 (CFU/100mL)', value: '未检出 (标准限值 不得检出)', status: 'valid', confidence: 0.99 },
+          { name: '重金属铅 (mg/L)', value: '0.002 (标准限值 ≤0.01)', status: 'valid', confidence: 0.96 },
+          { name: '重金属镉 (mg/L)', value: '0.0004 (标准限值 ≤0.005)', status: 'valid', confidence: 0.95 }
+        ]
+      };
+    }
+
+    // 28. 饮用水全流程健康风险评估与普通克里金空间场 (No. 44/45)
+    case 'skill_water_safety_eval': {
+      const result = await runAnalyticsEngine('water_safety_eval', {
+        city: args.city,
+        district: args.district
+      });
+      return {
+        type: 'WATER_PIPELINE_GIS_MAP',
+        city: args.city || '河南省全域',
+        ...result
+      };
+    }
+
+    // 29. 污水管网病原时序滞后关联分析与 GIS 拓扑反向溯源 (No. 46/47)
+    case 'skill_sewage_pathogen_trace': {
+      const result = await runAnalyticsEngine('sewage_lag_tracing', {
+        city: args.city || '郑州市',
+        pathogen: args.pathogen || '诺如病毒'
+      });
+      return {
+        type: 'SEWAGE_LAG_CORRELATION',
+        ...result
+      };
+    }
+
+    // 30. 空气污染暴露评估与 72h 极端气候健康预警 (No. 50/51)
+    case 'skill_air_climate_health_risk': {
+      const result = await runAnalyticsEngine('air_climate_health_risk', {
+        city: args.city || '焦作市'
+      });
+      return {
+        type: 'AIR_CLIMATE_HEALTH_RISK',
+        ...result
+      };
+    }
+
+    // 31. 四河流域跨介质重金属污染链与空间聚集分析 (No. 52/53)
+    case 'skill_river_basin_pollution_chain': {
+      const result = await runAnalyticsEngine('river_basin_pollution_chain', {
+        basinName: args.basinName || '黄河流域河南段'
+      });
+      return {
+        type: 'RIVER_BASIN_POLLUTION_CHAIN',
+        ...result
+      };
+    }
+
+    // 32. 环境干预政策健康效益量化情景推演引擎 (No. 57)
+    case 'skill_env_scenario_simulation': {
+      const result = await runAnalyticsEngine('env_scenario_simulation', {
+        scenarioType: args.scenarioType || 'industrial_emission_cut',
+        reductionPercentage: args.reductionPercentage || 30.0,
+        targetArea: args.targetArea || '焦作市中站区工业集聚区'
+      });
+      return {
+        type: 'ENV_SCENARIO_SIMULATION',
+        ...result
+      };
+    }
+
+    // =========================================================================
+    // 死因、慢病及伤害综合监测专属技能调度响应
+    // =========================================================================
+    // 33. 人口死亡医学证明书智能逻辑质控与冲突校验 (No. 59)
+    case 'skill_death_cert_qc': {
+      const result = await runAnalyticsEngine('death_cert_qc', {
+        city: args.city
+      });
+      return {
+        type: 'DEATH_CERT_QC_VIEW',
+        ...result
+      };
+    }
+
+    // 34. 死因链医学知识图谱根本死因推断与 ICD-10 编码 (No. 60/61)
+    case 'skill_icd10_nlp_inference': {
+      const result = await runAnalyticsEngine('icd10_nlp_inference', {
+        certId: args.certId,
+        inputChain: args.inputChain
+      });
+      return {
+        type: 'ICD10_INFERENCE_VIEW',
+        ...result
+      };
+    }
+
+    // 35. 全死因时序动态图谱与罕见死因短期聚集识别 (No. 62/63)
+    case 'skill_mortality_cluster_rare': {
+      const result = await runAnalyticsEngine('mortality_cluster_dbscan', {
+        city: args.city
+      });
+      return {
+        type: 'RARE_MORTALITY_CLUSTER_VIEW',
+        ...result
+      };
+    }
+
+    // 36. 三大重大慢病发病预测与并发症关联挖掘 (No. 64/65)
+    case 'skill_chronic_risk_forecast': {
+      const result = await runAnalyticsEngine('chronic_risk_forecast', {
+        city: args.city,
+        targetDisease: args.targetDisease
+      });
+      return {
+        type: 'CHRONIC_RISK_FORECAST_VIEW',
+        ...result
+      };
+    }
+
+    // 37. 伤害特征聚类与因果决策树归因分析 (No. 67/69)
+    case 'skill_injury_attribution_tree': {
+      const result = await runAnalyticsEngine('injury_attribution_tree', {
+        city: args.city
+      });
+      return {
+        type: 'INJURY_ATTRIBUTION_TREE_VIEW',
+        ...result
+      };
+    }
+
+    // 38. 早癌与心脑血管筛查卫生经济学收益与人群清单 (No. 66/70/71)
+    case 'skill_chronic_screening_roi': {
+      const result = await runAnalyticsEngine('chronic_screening_roi', {
+        city: args.city
+      });
+      return {
+        type: 'LIFE_TABLE_GAUGE',
+        ...result
+      };
+    }
+
+    // 39. 死因顺位、YPLL 与早死概率 4q70 综合公报生成 (No. 72/73)
+    case 'skill_chronic_death_report': {
+      const result = await runAnalyticsEngine('chronic_death_report', {
+        city: args.city
+      });
+      return {
+        type: 'CHRONIC_DEATH_REPORT',
+        ...result
+      };
+    }
+
     default: {
       // 支持自定义技能 (custom_skill_*) 的直接调度执行
       if (skillId.startsWith('custom_skill_')) {

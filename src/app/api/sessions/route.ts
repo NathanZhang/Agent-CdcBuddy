@@ -9,14 +9,15 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId') || undefined;
+    const domain = searchParams.get('domain') || undefined;
     const keyword = searchParams.get('keyword') || undefined;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : 50;
     const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!, 10) : 0;
 
     const provider = getAppBusinessProvider();
     const [sessions, total] = await Promise.all([
-      provider.getChatSessions({ userId, keyword, limit, offset }),
-      provider.getChatSessionCount({ userId, keyword })
+      provider.getChatSessions({ userId, domain, keyword, limit, offset }),
+      provider.getChatSessionCount({ userId, domain, keyword })
     ]);
 
     return NextResponse.json({
@@ -59,6 +60,7 @@ export async function POST(req: NextRequest) {
       userId,
       userName,
       userRole,
+      domain,
       title,
       lastGenerativeView,
       initialMessages
@@ -80,6 +82,7 @@ export async function POST(req: NextRequest) {
       user_id: userId,
       user_name: userName,
       user_role: userRole || 'PUBLIC_VIEWER',
+      domain: domain || 'vector',
       title: finalTitle,
       last_generative_view: lastGenerativeView || null,
       is_pinned: 0,
@@ -94,6 +97,7 @@ export async function POST(req: NextRequest) {
         userId: created.user_id,
         userName: created.user_name,
         userRole: created.user_role,
+        domain: created.domain,
         title: created.title,
         messageCount: created.message_count,
         isPinned: created.is_pinned === 1,
@@ -112,12 +116,13 @@ export async function POST(req: NextRequest) {
 
 /**
  * DELETE /api/sessions
- * 清空指定用户的所有会话历史
+ * 清空指定用户的所有会话历史 (支持按 domain 隔离)
  */
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
+    const domain = searchParams.get('domain') || undefined;
 
     if (!userId) {
       return NextResponse.json(
@@ -127,7 +132,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const provider = getAppBusinessProvider();
-    const ok = await provider.clearUserChatSessions(userId);
+    const ok = await provider.clearUserChatSessions(userId, domain);
 
     return NextResponse.json({
       code: 0,

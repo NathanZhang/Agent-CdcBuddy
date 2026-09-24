@@ -5,6 +5,7 @@ import { useRbac } from '@/lib/rbac/rbac-context';
 import { useTheme, ThemeMode } from '@/lib/theme/theme-context';
 import { UserRole } from '@/lib/rbac/types';
 import { Shield, UserCheck, Layers, Sun, Moon, Laptop, Bot } from 'lucide-react';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
 interface NavbarProps {
   onOpenSkills: () => void;
@@ -23,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { currentUser, activeRole, switchRole } = useRbac();
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const profile = getCurrentAgentProfile();
 
   const themeOptions: { mode: ThemeMode; label: string; icon: React.ReactNode }[] = [
     { mode: 'system', label: '跟随系统', icon: <Laptop className="w-3.5 h-3.5" /> },
@@ -40,14 +42,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-base font-extrabold bg-gradient-to-r from-sky-600 via-cyan-600 to-slate-900 dark:from-sky-400 dark:via-cyan-200 dark:to-white bg-clip-text text-transparent">
-              CdcBuddy · 疾控病媒生物监测预警智能体
+              {profile.fullName}
             </h1>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold font-mono">
-              (v1.8-{process.env.NEXT_PUBLIC_GIT_HASH || 'b3518e6'})
+              (v2.0-{process.env.NEXT_PUBLIC_GIT_HASH || 'b3518e6'})
             </span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            河南省疾病预防控制中心 · 消毒与媒介生物控制所
+            {profile.institute}
           </p>
         </div>
       </div>

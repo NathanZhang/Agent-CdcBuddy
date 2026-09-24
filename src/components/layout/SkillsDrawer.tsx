@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import { VectorSkill } from '@/lib/skills/types';
 import { useRbac } from '@/lib/rbac/rbac-context';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 import { CustomSkillEditModal, EditableSkillData } from './CustomSkillEditModal';
 import { 
   Layers, 
@@ -79,34 +80,42 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
   if (!isOpen) return null;
 
-  // 格式化自定义技能为标准 VectorSkill 结构并合并去重
-  const formattedCustomSkills: VectorSkill[] = customSkills.map(cs => ({
-    id: cs.id,
-    name: cs.name,
-    category: 'custom',
-    categoryName: '自定义技能',
-    requirementNo: 'Custom',
-    description: cs.description || '由用户在对话中动态生成的分析技能',
-    iconName: 'Sparkles',
-    badgeColor: 'pink',
-    visibility: (cs.visibility as 'private' | 'public') || 'private',
-    recommendedPrompts: Array.isArray(cs.recommendedPrompts) ? cs.recommendedPrompts : [`执行 ${cs.name}`],
-    requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
-    parametersSchema: { type: 'object', properties: {} },
-    execute: async (args) => {
-      const url = typeof window !== 'undefined' ? '/api/skills' : 'http://localhost:3000/api/skills';
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skillId: cs.id, args })
-      });
-      const json = await res.json();
-      return json.data;
-    }
-  }));
+  const profile = getCurrentAgentProfile();
 
-  // 合并并根据 ID 与技能名称双重防重
-  const rawSkills: VectorSkill[] = [...STANDARD_SKILLS, ...formattedCustomSkills];
+  // 格式化当前智能体所属领域的自定义技能为标准 VectorSkill 结构并合并去重
+  const formattedCustomSkills: VectorSkill[] = customSkills
+    .filter(cs => !cs.domain || cs.domain === profile.domain)
+    .map(cs => ({
+      id: cs.id,
+      name: cs.name,
+      category: 'custom',
+      categoryName: '自定义技能',
+      requirementNo: 'Custom',
+      description: cs.description || '由用户在对话中动态生成的分析技能',
+      iconName: 'Sparkles',
+      badgeColor: 'pink',
+      domain: cs.domain || profile.domain,
+      visibility: (cs.visibility as 'private' | 'public') || 'private',
+      recommendedPrompts: Array.isArray(cs.recommendedPrompts) ? cs.recommendedPrompts : [`执行 ${cs.name}`],
+      requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
+      parametersSchema: { type: 'object', properties: {} },
+      execute: async (args) => {
+        const url = typeof window !== 'undefined' ? '/api/skills' : 'http://localhost:3000/api/skills';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skillId: cs.id, args })
+        });
+        const json = await res.json();
+        return json.data;
+      }
+    }));
+
+  // 合并并根据当前智能体的专属技能进行严格隔离筛选
+  const domainStandardSkills = STANDARD_SKILLS.filter(s => 
+    profile.skillIds ? profile.skillIds.includes(s.id) : (s.domain === profile.domain)
+  );
+  const rawSkills: VectorSkill[] = [...domainStandardSkills, ...formattedCustomSkills];
   const seenSkillIds = new Set<string>();
   const allSkills: VectorSkill[] = [];
   for (const s of rawSkills) {
@@ -116,15 +125,27 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
     }
   }
 
+  const categoryNameMap: Record<string, string> = {
+    population: '种群/病例动态',
+    resistance: '抗药性评估',
+    pathogen: '病原与溯源',
+    warning: '预警探测',
+    forecast: '风险预测',
+    disposal: '处置闭环',
+    report: '专题报告',
+    table: '监测数据',
+    custom: '自定义技能'
+  };
+
+  // 动态呈现当前智能体真实拥有的分类标签
+  const uniqueCategories = Array.from(new Set(allSkills.map(s => s.category).filter(Boolean)));
   const categories = [
     { id: 'all', name: '全部技能', count: allSkills.length },
-    { id: 'population', name: '种群动态', count: allSkills.filter(s => s.category === 'population').length },
-    { id: 'resistance', name: '抗药性评估', count: allSkills.filter(s => s.category === 'resistance').length },
-    { id: 'pathogen', name: '病原学筛查', count: allSkills.filter(s => s.category === 'pathogen').length },
-    { id: 'warning', name: '预警响应', count: allSkills.filter(s => s.category === 'warning').length },
-    { id: 'forecast', name: '风险预测', count: allSkills.filter(s => s.category === 'forecast').length },
-    { id: 'report', name: '专题报告', count: allSkills.filter(s => s.category === 'report').length },
-    { id: 'custom', name: '自定义技能', count: allSkills.filter(s => s.category === 'custom').length }
+    ...uniqueCategories.map(cat => ({
+      id: cat,
+      name: categoryNameMap[cat] || (allSkills.find(s => s.category === cat)?.categoryName || cat),
+      count: allSkills.filter(s => s.category === cat).length
+    }))
   ];
 
   const filteredSkills = allSkills.filter(s => {

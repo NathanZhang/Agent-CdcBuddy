@@ -422,7 +422,7 @@ function splitContentIntoSections(raw: string): Section[] {
     }
 
     // 6. List items (ordered & unordered, with indentation support)
-    const listMatch = line.match(/^(\s*)([-*•+]|\d+[\.\)])\s+(.*)$/);
+    const listMatch = line.match(/^(\s*)([-*•+·]|\d+[\.\)])\s+(.*)$/);
     if (listMatch) {
       flushParagraph();
       const indentSpaces = listMatch[1].length;
@@ -471,8 +471,8 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
   // 1. **bold** or __bold__
   // 2. `code` or ```code```
   // 3. *italic* or _italic_
-  // 4. [text](url)
-  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`{1,3}[^`]+?`{1,3}|\*[^*\n]+?\*|_[^_\n]+?_|\[[^\]]+?\]\([^)]+?\))/g;
+  // 4. [text](url) or 【text】(url) or with Chinese parentheses
+  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`{1,3}[^`]+?`{1,3}|\*[^*\n]+?\*|_[^_\n]+?_|[\[【][^\]】\n]+?[\]】]\s*[（\(][^）\)\n]+?[）\)])/g;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -553,15 +553,18 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
         </em>
       );
     }
-    // Link ([text](url))
-    else if (token.startsWith('[') && token.includes('](') && token.endsWith(')')) {
-      const linkMatch = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    // Link ([text](url) or 【text】(url) with optional spaces and Chinese parentheses)
+    else if (
+      (token.startsWith('[') || token.startsWith('【')) &&
+      (token.endsWith(')') || token.endsWith('）'))
+    ) {
+      const linkMatch = token.match(/^[\[【]([^\]】]+?)[\]】]\s*[（\(]([^）\)]+?)[）\)]$/);
       if (linkMatch) {
         const linkText = linkMatch[1];
-        const linkUrl = linkMatch[2];
+        const linkUrl = linkMatch[2].trim();
 
         // 🚀 核心特性：识别 geo: 协议隐式坐标链接 [地名描述](geo:lat,lon)
-        if (linkUrl.startsWith('geo:')) {
+        if (linkUrl.toLowerCase().startsWith('geo:')) {
           const geoTarget = parseGeoProtocolUrl(linkUrl);
           if (geoTarget) {
             parts.push(

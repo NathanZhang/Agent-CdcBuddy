@@ -165,6 +165,80 @@ def main():
             prompt_policy=args.get("promptPolicy") or args.get("prompt_policy"),
             trigger_source=args.get("triggerSource") or args.get("trigger_source", "timer_scheduled")
         )
+    elif task in ["foodborne_cluster_detect", "foodborne_clusters"]:
+        from foodborne.outbreak_scanner import scan_outbreak_clusters
+        fb_db = db_path
+        if "vector_monitoring.db" in fb_db:
+            fb_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../foodborne_monitoring.db"))
+        result = scan_outbreak_clusters(
+            db_path=fb_db,
+            city=args.get("city"),
+            district=args.get("district")
+        )
+    elif task in ["molecular_trace", "cgmlst_clustering"]:
+        from foodborne.cgmlst_cluster import calculate_cgmlst_clustering
+        fb_db = db_path
+        if "vector_monitoring.db" in fb_db:
+            fb_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../foodborne_monitoring.db"))
+        result = calculate_cgmlst_clustering(
+            db_path=fb_db,
+            pathogen_id=args.get("pathogenId"),
+            cluster_id=args.get("clusterId"),
+            threshold=int(args.get("threshold", 5))
+        )
+    elif task in ["food_attribution", "food_risk_ranking"]:
+        from foodborne.food_attribution import calculate_food_attribution
+        fb_db = db_path
+        if "vector_monitoring.db" in fb_db:
+            fb_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../foodborne_monitoring.db"))
+        result = calculate_food_attribution(
+            db_path=fb_db,
+            city=args.get("city"),
+            top_n=int(args.get("topN", 10))
+        )
+    # =========================================================================
+    # 环境健康风险监测预警计算任务 (Environmental Health Tasks)
+    # =========================================================================
+    elif task in ["water_safety_eval", "water_health_risk"]:
+        from env.water_rf_kriging import evaluate_water_health_risk
+        result = evaluate_water_health_risk(city=args.get("city"), district=args.get("district"))
+    elif task in ["sewage_lag_tracing", "sewage_pathogen_trace"]:
+        from env.sewage_lag_tracing import analyze_sewage_lag_correlation
+        result = analyze_sewage_lag_correlation(city=args.get("city", "郑州市"), pathogen=args.get("pathogen", "诺如病毒"))
+    elif task in ["air_climate_health_risk", "air_dlnm_eval"]:
+        from env.air_climate_dlnm import evaluate_air_climate_health_risk
+        result = evaluate_air_climate_health_risk(city=args.get("city", "焦作市"))
+    elif task in ["river_basin_pollution_chain", "river_heavy_metal"]:
+        from env.river_chain_autocorr import analyze_river_basin_pollution_chain
+        result = analyze_river_basin_pollution_chain(basin_name=args.get("basinName", "黄河流域河南段"))
+    elif task in ["env_scenario_simulation", "env_policy_sim"]:
+        from env.scenario_simulation import simulate_environmental_scenario
+        result = simulate_environmental_scenario(
+            scenario_type=args.get("scenarioType", "industrial_emission_cut"),
+            reduction_percentage=float(args.get("reductionPercentage", 30.0)),
+            target_area=args.get("targetArea", "焦作市中站区工业集聚区")
+        )
+    # =========================================================================
+    # 死因、慢病及伤害综合监测预警计算任务 (Chronic & Injury Tasks)
+    # =========================================================================
+    elif task in ["death_cert_qc", "death_quality_check"]:
+        from chronic.death_cert_qc import validate_death_certificate_quality
+        result = validate_death_certificate_quality(city=args.get("city"))
+    elif task in ["icd10_nlp_inference", "icd10_inference"]:
+        from chronic.icd10_nlp_inference import infer_underlying_cause_and_icd10
+        result = infer_underlying_cause_and_icd10(cert_id=args.get("certId"), input_chain=args.get("inputChain"))
+    elif task in ["mortality_cluster_dbscan", "mortality_cluster_rare"]:
+        from chronic.mortality_cluster_dbscan import detect_mortality_patterns_and_rare_clusters
+        result = detect_mortality_patterns_and_rare_clusters(target_city=args.get("city"))
+    elif task in ["chronic_risk_forecast", "chronic_risk_gbdt"]:
+        from chronic.chronic_risk_gbdt import predict_chronic_risk_and_complications
+        result = predict_chronic_risk_and_complications(city=args.get("city"), target_disease=args.get("targetDisease"))
+    elif task in ["injury_attribution_tree", "injury_tree_attribution"]:
+        from chronic.injury_tree_attribution import analyze_injury_clusters_and_attribution
+        result = analyze_injury_clusters_and_attribution(city=args.get("city"))
+    elif task in ["chronic_screening_roi", "chronic_death_report", "lifetable_4q70_roi"]:
+        from chronic.lifetable_4q70_roi import calculate_lifetable_4q70_and_screening_roi
+        result = calculate_lifetable_4q70_and_screening_roi(city=args.get("city"))
     else:
         result = {"error": f"Unknown task: {task}"}
 

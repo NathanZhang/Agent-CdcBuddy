@@ -3,10 +3,12 @@ import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import { executeSkillServer } from '@/lib/skills/server-executor';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const domain = searchParams.get('domain') || undefined;
     const bizProvider = getAppBusinessProvider();
-    const customSkillsData = await bizProvider.getAllCustomSkills();
+    const customSkillsData = await bizProvider.getAllCustomSkills(domain);
     
     const customSkills = customSkillsData.map(cs => ({
       id: cs.skill_id,
@@ -20,13 +22,18 @@ export async function GET() {
       requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
       visibility: (cs.visibility as 'private' | 'public') || 'private',
       isCustom: true,
+      domain: cs.domain || 'vector',
       sqlQuery: cs.sql_query,
       chartType: cs.chart_type,
       createdBy: cs.created_by,
       createdAt: cs.created_at
     }));
 
-    const standardSkills = STANDARD_SKILLS.map(s => ({
+    const filteredStandard = domain 
+      ? STANDARD_SKILLS.filter(s => s.domain === domain)
+      : STANDARD_SKILLS;
+
+    const standardSkills = filteredStandard.map(s => ({
       id: s.id,
       name: s.name,
       category: s.category,
@@ -35,6 +42,7 @@ export async function GET() {
       description: s.description,
       iconName: s.iconName,
       badgeColor: s.badgeColor,
+      domain: s.domain,
       recommendedPrompts: s.recommendedPrompts,
       requiredRoles: s.requiredRoles,
       visibility: 'public' as const,

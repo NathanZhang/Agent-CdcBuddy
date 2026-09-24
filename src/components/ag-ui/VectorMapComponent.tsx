@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
@@ -17,6 +17,7 @@ import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { useTheme } from '@/lib/theme/theme-context';
 import { MapPin, RotateCcw, Flame, AlertTriangle, Eye, EyeOff, Navigation, Layers, CheckCircle2 } from 'lucide-react';
 import { subscribeGeoLocate, GeoLocateDetail } from '@/lib/geo/geo-event-bus';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
 export interface SpatialGridPoint {
   lat: number;
@@ -44,6 +45,8 @@ interface VectorMapProps {
   monitoringPoints?: MonitoringStationPoint[];
   selectedCity?: string;
   selectedDistrict?: string;
+  targetLat?: number;
+  targetLon?: number;
   category?: string;
   severity?: string;
   onSelectCity?: (city: string) => void;
@@ -57,12 +60,73 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   monitoringPoints = [],
   selectedCity,
   selectedDistrict,
+  targetLat,
+  targetLon,
   category = '蚊',
   severity,
   onSelectCity,
   onSelectDistrict,
-  title = '河南省病媒生物监测与时空风险地图'
+  title
 }) => {
+  const profile = getCurrentAgentProfile();
+  const domain = profile.domain || 'vector';
+
+  // 根据当前智能体领域自适应地图标题、图例与单位
+  const defaultTitle = useMemo(() => {
+    switch (domain) {
+      case 'foodborne':
+        return '河南省食源性疾病暴发与时空风险地图';
+      case 'env':
+        return '河南省环境健康水质与空气风险地图';
+      case 'chronic':
+        return '河南省慢病死因与高危时空分布地图';
+      default:
+        return '河南省病媒生物监测与时空风险地图';
+    }
+  }, [domain]);
+
+  const mapTitle = (title && title !== '河南省病媒生物监测与时空风险地图') ? title : defaultTitle;
+
+  const legendConfig = useMemo(() => {
+    switch (domain) {
+      case 'foodborne':
+        return {
+          title: '食源聚集风险热力梯度',
+          unit: '风险指数 / 罹患率',
+          level1: '一级暴发 (严重)',
+          level2: '二级较重 (中危)',
+          level3: '三级一般 (关注)',
+          level4: '常态受控'
+        };
+      case 'env':
+        return {
+          title: '环境健康综合风险指数',
+          unit: '综合指数 / AQI',
+          level1: '重度污染 / 超标',
+          level2: '中度风险',
+          level3: '轻度异常',
+          level4: '达标优良'
+        };
+      case 'chronic':
+        return {
+          title: '重大慢病早死风险梯度',
+          unit: '粗死亡率 (1/10万)',
+          level1: '极高危区域',
+          level2: '高危预警',
+          level3: '中等水平',
+          level4: '低发基线'
+        };
+      default:
+        return {
+          title: '蚊媒空间热力梯度',
+          unit: '只/台次',
+          level1: '一级暴发 (≥80)',
+          level2: '二级较重 (50~79)',
+          level3: '三级一般 (30~49)',
+          level4: '受控 (<30)'
+        };
+    }
+  }, [domain]);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const cityMarkersRef = useRef<maplibregl.Marker[]>([]);
@@ -74,7 +138,18 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   const [selectedAlert, setSelectedAlert] = useState<EarlyWarningAlertItem | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<MonitoringStationPoint | null>(null);
   
-  const initialGeoTarget = useMemo(() => resolveHenanGeoTarget(selectedCity, selectedDistrict, alerts), []);
+  const initialGeoTarget = useMemo(() => {
+    if (targetLat && targetLon) {
+      return {
+        level: 'district' as const,
+        cityName: selectedCity || '河南省',
+        districtName: selectedDistrict,
+        center: [targetLon, targetLat] as [number, number],
+        zoom: 13.5
+      };
+    }
+    return resolveHenanGeoTarget(selectedCity, selectedDistrict, alerts);
+  }, []);
   const [currentViewCity, setCurrentViewCity] = useState<string>(initialGeoTarget.cityName);
   const [currentViewDistrict, setCurrentViewDistrict] = useState<string | undefined>(initialGeoTarget.districtName);
   const [mapLayerType, setMapLayerType] = useState<'vec' | 'img'>('vec'); // vec: 天地图矢量, img: 天地图影像
@@ -595,89 +670,105 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
     }
   }, [selectedCity, selectedDistrict, alerts]);
 
+  // 核心定位标记方法：飞向目标点并渲染发光波纹与弹窗
+  const showActiveTargetPin = useCallback((map: maplibregl.Map, detail: GeoLocateDetail) => {
+    const { lat, lon, title, zoom = 13.5 } = detail;
+
+    // 1. 镜头平滑飞向目标经纬度点位
+    map.flyTo({
+      center: [lon, lat],
+      zoom: zoom,
+      pitch: 28,
+      bearing: 0,
+      duration: 1100,
+      essential: true
+    });
+
+    // 2. 清理先前的聚焦标注与气泡
+    if (activePinMarkerRef.current) {
+      activePinMarkerRef.current.remove();
+      activePinMarkerRef.current = null;
+    }
+    if (activePinPopupRef.current) {
+      activePinPopupRef.current.remove();
+      activePinPopupRef.current = null;
+    }
+
+    // 3. 构建高亮波纹光环 Marker (双层扩散涟漪动效)
+    const el = document.createElement('div');
+    el.className = 'relative flex items-center justify-center cursor-pointer select-none';
+    el.style.width = '42px';
+    el.style.height = '42px';
+
+    // 涟漪扩散动效
+    const ripple = document.createElement('div');
+    ripple.className = 'absolute inset-0 rounded-full bg-sky-500/35 animate-ping';
+    el.appendChild(ripple);
+
+    // 外光晕闪烁环
+    const ring = document.createElement('div');
+    ring.className = 'absolute -inset-1 rounded-full border-2 border-sky-400 animate-pulse';
+    el.appendChild(ring);
+
+    // 中心图钉
+    const pin = document.createElement('div');
+    pin.className = 'relative w-9 h-9 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-500 border-2 border-white shadow-2xl flex items-center justify-center text-white text-sm font-black drop-shadow-lg transform transition-transform hover:scale-110';
+    pin.innerHTML = '📍';
+    el.appendChild(pin);
+
+    // 4. 构建信息 Popup 卡片
+    const popupHtml = `
+      <div style="padding: 10px 12px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: #1e293b; min-width: 200px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 6px;">
+          <span style="font-size: 14px;">🎯</span>
+          <span style="color: #0284c7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title || '研判聚焦目标点'}</span>
+        </div>
+        <div style="font-size: 11px; line-height: 1.6; color: #475569;">
+          <div><strong>空间坐标:</strong> ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E</div>
+          <div style="margin-top: 6px; padding: 4px 8px; border-radius: 4px; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 10px; font-weight: 500;">
+            ✨ 智能体研判结论联动定位
+          </div>
+        </div>
+      </div>
+    `;
+
+    const popup = new maplibregl.Popup({
+      offset: 22,
+      closeButton: true,
+      closeOnClick: false,
+      className: 'cdc-locate-popup'
+    }).setHTML(popupHtml);
+
+    // 5. 添加至地图并默认展开气泡
+    const marker = new maplibregl.Marker({ element: el })
+      .setLngLat([lon, lat])
+      .setPopup(popup)
+      .addTo(map);
+
+    marker.togglePopup();
+
+    activePinMarkerRef.current = marker;
+    activePinPopupRef.current = popup;
+  }, []);
+
+  // 监听来自外部 props 的 targetLat/targetLon 变化并自动聚焦
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !targetLat || !targetLon) return;
+    showActiveTargetPin(map, {
+      lat: targetLat,
+      lon: targetLon,
+      title: selectedDistrict || selectedCity || '研判聚焦目标点',
+      zoom: 13.5
+    });
+  }, [targetLat, targetLon, selectedDistrict, selectedCity, showActiveTargetPin]);
+
   // 🚀 核心联动：监听来自智能体研判结论中【地址微胶囊】点击的定位事件
   useEffect(() => {
     const unsubscribe = subscribeGeoLocate((detail: GeoLocateDetail) => {
       const map = mapRef.current;
       if (!map) return;
-
-      const { lat, lon, title, zoom = 13.5, level } = detail;
-
-      // 1. 镜头平滑飞向目标经纬度点位
-      map.flyTo({
-        center: [lon, lat],
-        zoom: zoom,
-        pitch: 28,
-        bearing: 0,
-        duration: 1100,
-        essential: true
-      });
-
-      // 2. 清理先前的聚焦标注与气泡
-      if (activePinMarkerRef.current) {
-        activePinMarkerRef.current.remove();
-        activePinMarkerRef.current = null;
-      }
-      if (activePinPopupRef.current) {
-        activePinPopupRef.current.remove();
-        activePinPopupRef.current = null;
-      }
-
-      // 3. 构建高亮波纹光环 Marker (双层扩散涟漪动效)
-      const el = document.createElement('div');
-      el.className = 'relative flex items-center justify-center cursor-pointer select-none';
-      el.style.width = '42px';
-      el.style.height = '42px';
-
-      // 涟漪扩散动效
-      const ripple = document.createElement('div');
-      ripple.className = 'absolute inset-0 rounded-full bg-sky-500/35 animate-ping';
-      el.appendChild(ripple);
-
-      // 外光晕闪烁环
-      const ring = document.createElement('div');
-      ring.className = 'absolute -inset-1 rounded-full border-2 border-sky-400 animate-pulse';
-      el.appendChild(ring);
-
-      // 中心图钉
-      const pin = document.createElement('div');
-      pin.className = 'relative w-9 h-9 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-500 border-2 border-white shadow-2xl flex items-center justify-center text-white text-sm font-black drop-shadow-lg transform transition-transform hover:scale-110';
-      pin.innerHTML = '📍';
-      el.appendChild(pin);
-
-      // 4. 构建信息 Popup 卡片
-      const popupHtml = `
-        <div style="padding: 10px 12px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: #1e293b; min-width: 200px;">
-          <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 6px;">
-            <span style="font-size: 14px;">🎯</span>
-            <span style="color: #0284c7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title || '研判聚焦目标点'}</span>
-          </div>
-          <div style="font-size: 11px; line-height: 1.6; color: #475569;">
-            <div><strong>空间坐标:</strong> ${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E</div>
-            <div style="margin-top: 6px; padding: 4px 8px; border-radius: 4px; background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 10px; font-weight: 500;">
-              ✨ 智能体研判结论联动定位
-            </div>
-          </div>
-        </div>
-      `;
-
-      const popup = new maplibregl.Popup({
-        offset: 22,
-        closeButton: true,
-        closeOnClick: false,
-        className: 'cdc-locate-popup'
-      }).setHTML(popupHtml);
-
-      // 5. 添加至地图并默认展开气泡
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([lon, lat])
-        .setPopup(popup)
-        .addTo(map);
-
-      marker.togglePopup();
-
-      activePinMarkerRef.current = marker;
-      activePinPopupRef.current = popup;
+      showActiveTargetPin(map, detail);
     });
 
     return () => {
@@ -691,7 +782,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
         activePinPopupRef.current = null;
       }
     };
-  }, []);
+  }, [showActiveTargetPin]);
 
   const resetView = () => {
     if (mapRef.current) {
@@ -728,8 +819,8 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
           <div className="pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200 dark:border-sky-500/30 flex items-center gap-2 text-xs shadow-md">
             <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-bold">
               <Flame className="w-4 h-4 text-rose-500 animate-pulse" />
-              <span className="text-slate-900 dark:text-slate-100 hidden sm:inline">{title}</span>
-              <span className="text-slate-900 dark:text-slate-100 sm:hidden">病媒时空风险地图</span>
+              <span className="text-slate-900 dark:text-slate-100 hidden sm:inline">{mapTitle}</span>
+              <span className="text-slate-900 dark:text-slate-100 sm:hidden">{mapTitle}</span>
             </div>
             <span className="text-slate-300 dark:text-slate-700">|</span>
             <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300">
@@ -841,9 +932,9 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
           <span className="text-[11px] font-bold text-slate-900 dark:text-white flex items-center gap-1">
             <Flame className="w-3.5 h-3.5 text-rose-500" />
-            <span>蚊媒空间热力梯度</span>
+            <span>{legendConfig.title}</span>
           </span>
-          <span className="text-[10px] text-slate-500 dark:text-slate-300 font-mono">只/台次</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-300 font-mono">{legendConfig.unit}</span>
         </div>
 
         {/* 连续色彩渐变条 */}
@@ -852,10 +943,10 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
             background: 'linear-gradient(to right, rgba(0,210,255,0.7), rgba(34,197,94,0.85), rgba(234,179,8,0.9), rgba(249,115,22,0.95), rgba(239,68,68,1.0))'
           }} />
           <div className="flex justify-between text-[10px] font-mono text-slate-600 dark:text-slate-300 font-semibold">
-            <span>0</span>
-            <span>30</span>
-            <span>50</span>
-            <span>≥80</span>
+            <span>低</span>
+            <span>中</span>
+            <span>较重</span>
+            <span>高危</span>
           </div>
         </div>
 
@@ -863,19 +954,19 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
         <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-0.5 text-[10px]">
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-red-600 animate-ping inline-block"></span>
-            <span className="text-red-600 dark:text-red-400 font-bold">一级暴发 (≥80)</span>
+            <span className="text-red-600 dark:text-red-400 font-bold">{legendConfig.level1}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-orange-500 inline-block"></span>
-            <span className="text-orange-600 dark:text-orange-400 font-bold">二级较重 (50~79)</span>
+            <span className="text-orange-600 dark:text-orange-400 font-bold">{legendConfig.level2}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
-            <span className="text-amber-600 dark:text-amber-300 font-bold">三级一般 (30~49)</span>
+            <span className="text-amber-600 dark:text-amber-300 font-bold">{legendConfig.level3}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold">受控 (&lt;30)</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{legendConfig.level4}</span>
           </div>
         </div>
       </div>

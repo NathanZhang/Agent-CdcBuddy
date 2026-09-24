@@ -22,6 +22,7 @@ import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 interface ActiveAlertsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  alerts?: EarlyWarningAlertItem[];
   onSelectAlertForAnalysis?: (alert: EarlyWarningAlertItem) => void;
   onLocateOnMap?: (city: string, alert: EarlyWarningAlertItem) => void;
 }
@@ -32,9 +33,11 @@ export { ACTIVE_ALERTS_LIST };
 export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
   isOpen,
   onClose,
+  alerts,
   onSelectAlertForAnalysis,
   onLocateOnMap
 }) => {
+  const currentAlerts = alerts && alerts.length > 0 ? alerts : ACTIVE_ALERTS_LIST;
   const [levelFilter, setLevelFilter] = useState<'all' | 'red' | 'orange' | 'yellow'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'in_progress' | 'resolved'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -43,16 +46,19 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
   if (!isOpen) return null;
 
   // 统计指标
-  const totalCount = ACTIVE_ALERTS_LIST.length;
-  const redCount = ACTIVE_ALERTS_LIST.filter(a => a.level === 'red').length;
-  const orangeCount = ACTIVE_ALERTS_LIST.filter(a => a.level === 'orange').length;
-  const yellowCount = ACTIVE_ALERTS_LIST.filter(a => a.level === 'yellow').length;
-  const pendingCount = ACTIVE_ALERTS_LIST.filter(a => a.disposalStatus === 'pending').length;
-  const inProgressCount = ACTIVE_ALERTS_LIST.filter(a => a.disposalStatus === 'in_progress').length;
-  const resolvedCount = ACTIVE_ALERTS_LIST.filter(a => a.disposalStatus === 'resolved').length;
+  const totalCount = currentAlerts.length;
+  const redCount = currentAlerts.filter(a => a.level === 'red').length;
+  const orangeCount = currentAlerts.filter(a => a.level === 'orange').length;
+  const yellowCount = currentAlerts.filter(a => a.level === 'yellow').length;
+  const pendingCount = currentAlerts.filter(a => a.disposalStatus === 'pending').length;
+  const inProgressCount = currentAlerts.filter(a => a.disposalStatus === 'in_progress').length;
+  const resolvedCount = currentAlerts.filter(a => a.disposalStatus === 'resolved').length;
+
+  // 动态提取当前预警包含的所有类别
+  const availableCategories = ['all', ...Array.from(new Set(currentAlerts.map(a => a.category).filter(Boolean)))];
 
   // 过滤列表
-  const filteredAlerts = ACTIVE_ALERTS_LIST.filter(a => {
+  const filteredAlerts = currentAlerts.filter(a => {
     if (levelFilter !== 'all' && a.level !== levelFilter) return false;
     if (statusFilter !== 'all' && a.disposalStatus !== statusFilter) return false;
     if (categoryFilter !== 'all' && a.category !== categoryFilter) return false;
@@ -85,14 +91,14 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">
-                  全省病媒生物活跃预警实时清单与处置态势
+                  全省活跃预警与突发事件清单及处置态势
                 </h3>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40">
                   共 {totalCount} 起监测预警
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                覆盖河南省 18 个地市，依据气象条件、单次捕获密度与病原 PCR 检测指标自动触发
+                覆盖河南省各级监测网络，依据实时监测数据、致病检测指标与时空聚集扫描自动触发
               </p>
             </div>
           </div>
@@ -196,10 +202,10 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
               />
             </div>
 
-            {/* 病媒类别筛选 */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+            {/* 类别筛选 */}
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-800 flex-wrap">
               <span className="text-slate-400 text-[11px] px-1">类别:</span>
-              {['all', '蚊', '蝇', '鼠', '蟑', '蜱', '恙螨'].map((cat) => (
+              {availableCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}

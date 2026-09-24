@@ -41,6 +41,7 @@ export interface VectorSkill {
   recommendedPrompts: string[];
   requiredRoles: UserRole[];
   parametersSchema?: SkillParameterSchema;
+  domain?: 'vector' | 'foodborne' | 'env' | 'chronic' | 'common';
   visibility?: 'private' | 'public';
   execute: (args: Record<string, any>, context?: SkillContext) => Promise<any>;
 }
@@ -50,6 +51,7 @@ export interface MetaCustomSkillData {
   name: string;
   description: string;
   category: 'custom';
+  domain?: string;
   sqlQuery: string;
   chartType: 'trend' | 'bar' | 'pie' | 'map' | 'table';
   recommendedPrompts: string[];

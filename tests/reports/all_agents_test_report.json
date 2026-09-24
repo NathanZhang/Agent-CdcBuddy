@@ -1,0 +1,33 @@
+{
+  "execution_time": "2026-09-24T19:01:46.219275",
+  "suites": {
+    "vector": {
+      "name": "病媒生物与宿主动物监测预警智能体",
+      "passed": 19,
+      "total": 19,
+      "status": "PASSED"
+    },
+    "foodborne": {
+      "name": "食源性疾病监测预警智能体",
+      "passed": 6,
+      "total": 6,
+      "status": "PASSED"
+    },
+    "env": {
+      "name": "环境健康风险监测预警智能体",
+      "passed": 10,
+      "total": 10,
+      "status": "PASSED"
+    },
+    "chronic": {
+      "name": "死因、慢病及伤害综合监测预警智能体",
+      "passed": 9,
+      "total": 9,
+      "status": "PASSED"
+    }
+  },
+  "total_tests": 44,
+  "total_passed": 44,
+  "total_failed": 0,
+  "overall_status": "PASSED"
+}

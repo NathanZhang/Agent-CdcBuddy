@@ -19,7 +19,7 @@ import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
-import { subscribeGeoLocate } from '@/lib/geo/geo-event-bus';
+import { subscribeGeoLocate, dispatchGeoLocate } from '@/lib/geo/geo-event-bus';
 
 import { 
   Sparkles, 
@@ -42,71 +42,10 @@ import {
   Plus,
   RotateCcw
 } from 'lucide-react';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
-const INITIAL_GENERATIVE_VIEW = {
-  type: 'SPATIAL_EARLY_WARNING_MAP',
-  city: '河南省全域',
-  severity: 'all',
-  alerts: [
-    {
-      alertId: 'ALERT-202408-101',
-      title: '郑州市金水区 白纹伊蚊密度超标预警',
-      level: 'red',
-      levelName: '严重预警 (一级)',
-      category: '蚊',
-      city: '郑州市',
-      district: '金水区',
-      street: '未来路街道办事处',
-      latitude: 34.8003,
-      longitude: 113.6627,
-      triggerReason: '单次诱蚊灯捕获量达 86 只/台次（基线 30 只），气温 31.5℃，相对湿度 78%，具备暴发滋生条件。',
-      currentDensity: 86,
-      threshold: 30,
-      affectedPopulationEstimate: 32000,
-      recommendedAction: '立即启动突发虫媒应急消杀，实施 2.5% 高效氯氟氰菊酯空间超低容量喷雾与积水清除。',
-      disposalStatus: 'in_progress',
-      triggerTime: '2026-08-08 08:30:00'
-    },
-    {
-      alertId: 'ALERT-202408-102',
-      title: '安阳市汤阴县 长角血蜱携病风险预警',
-      level: 'orange',
-      levelName: '较重预警 (二级)',
-      category: '蜱',
-      city: '安阳市',
-      district: '汤阴县',
-      street: '韩庄镇',
-      latitude: 35.922,
-      longitude: 114.358,
-      triggerReason: '羊体寄生蜱指数达 12.4 只/羊，PCR 检测出发热伴血小板减少综合征病毒核酸阳性。',
-      currentDensity: 52,
-      threshold: 50,
-      affectedPopulationEstimate: 14500,
-      recommendedAction: '对羊舍与周边灌木实施敌百虫滞留喷洒，下发牧民个人防护指南。',
-      disposalStatus: 'pending',
-      triggerTime: '2026-08-08 09:15:00'
-    },
-    {
-      alertId: 'ALERT-202408-103',
-      title: '信阳市浉河区 恙螨幼虫密度黄警',
-      level: 'yellow',
-      levelName: '一般预警 (三级)',
-      category: '恙螨',
-      city: '信阳市',
-      district: '浉河区',
-      street: '东双河镇',
-      latitude: 32.116,
-      longitude: 114.065,
-      triggerReason: '鼠体恙螨感染率达 28.5%，进入夏秋季流行活跃期。',
-      currentDensity: 38,
-      threshold: 30,
-      affectedPopulationEstimate: 8200,
-      recommendedAction: '开展灭鼠防螨综合治理，清理杂草。',
-      disposalStatus: 'resolved',
-      triggerTime: '2026-08-08 07:45:00'
-    }
-  ]
-};
+const profile = getCurrentAgentProfile();
+const INITIAL_GENERATIVE_VIEW = profile.initialGenerativeView;
 
 export interface ChatMessageItem {
   id: string;
@@ -124,7 +63,7 @@ const getInitialChatHistory = (): ChatMessageItem[] => [
   {
     id: 'init-1',
     sender: 'agent',
-    text: `您好！我是您的 **CdcBuddy 疾控病媒生物监测预警智能体**。\n\n系统已连通河南省 **5.6万+ 条病媒生态、病原PCR检测与抗药性真实监测数据**。您可以点击上方推荐卡片，或直接向我下发分析指令。`,
+    text: `您好！我是您的 **${profile.fullName}**。\n\n系统已连通【${profile.institute}】全域监测预警底座数据库。您可以点击上方推荐卡片，或直接向我下发业务分析指令。`,
     timestamp: '11:30'
   }
 ];
@@ -150,7 +89,7 @@ export default function CdcAgentWorkspace() {
   // 获取并同步自定义技能列表
   const fetchCustomSkills = async () => {
     try {
-      const res = await fetch('/api/skills');
+      const res = await fetch(`/api/skills?domain=${profile.domain}`);
       if (res.ok) {
         const json = await res.json();
         if (json.customSkills && Array.isArray(json.customSkills)) {
@@ -169,11 +108,31 @@ export default function CdcAgentWorkspace() {
   // 当用户在对话流中点击地址微胶囊时，若当前工作台非地图组件，自动切回地图视图以展示定位
   useEffect(() => {
     const unsubscribe = subscribeGeoLocate((detail) => {
+      if (detail.source === 'map-replay') return;
+
+      const targetCity = detail.title.includes('市') 
+        ? detail.title.split(/区|县|街道|某/)[0] + '市' 
+        : '河南省全域';
+
       setActiveGenerativeView((prev: any) => {
-        if (!prev || prev.type !== 'SPATIAL_EARLY_WARNING_MAP') {
+        const isMap = prev && prev.type === 'SPATIAL_EARLY_WARNING_MAP';
+
+        // 延迟重派发定位事件，保证重新装载完成的 VectorMapComponent 能即刻平滑漫游聚焦
+        setTimeout(() => {
+          dispatchGeoLocate({
+            ...detail,
+            source: 'map-replay'
+          });
+        }, 350);
+
+        if (!isMap) {
           return {
-            ...INITIAL_GENERATIVE_VIEW,
-            city: '河南省全域'
+            type: 'SPATIAL_EARLY_WARNING_MAP',
+            city: targetCity,
+            district: detail.title,
+            targetLat: detail.lat,
+            targetLon: detail.lon,
+            alerts: profile.alerts || []
           };
         }
         return prev;
@@ -266,7 +225,7 @@ export default function CdcAgentWorkspace() {
     const initUserSession = async () => {
       if (!currentUser.id) return;
       try {
-        const res = await fetch(`/api/sessions?userId=${encodeURIComponent(currentUser.id)}&limit=1`);
+        const res = await fetch(`/api/sessions?userId=${encodeURIComponent(currentUser.id)}&domain=${encodeURIComponent(profile.domain)}&limit=1`);
         if (res.ok) {
           const json = await res.json();
           const list = json.data?.sessions;
@@ -510,6 +469,7 @@ export default function CdcAgentWorkspace() {
               userId: currentUser.id,
               userName: currentUser.name,
               userRole: currentUser.role,
+              domain: profile.domain,
               title: suggestedTitle,
               lastGenerativeView: finalGenerativeView,
               initialMessages: [userMsg, finalAgentMsg]
@@ -567,7 +527,10 @@ export default function CdcAgentWorkspace() {
     }
   };
 
-  const totalSkillsCount = STANDARD_SKILLS.length + customSkills.length;
+  const domainStandardSkills = STANDARD_SKILLS.filter(s => 
+    profile.skillIds ? profile.skillIds.includes(s.id) : true
+  );
+  const totalSkillsCount = domainStandardSkills.length + customSkills.length;
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
@@ -583,65 +546,34 @@ export default function CdcAgentWorkspace() {
       {/* 统计指标浮动指示条 */}
       <div className="shrink-0 bg-slate-100/90 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800/80 px-6 py-2 flex items-center justify-between overflow-x-auto text-xs text-slate-600 dark:text-slate-300 gap-6 transition-colors">
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={() => handleExecutePrompt('请汇总展示病媒生物治理监测记录（48,530条）的详细概览，按蚊、蝇、鼠、蟑、蜱、螨六大类群统计监测样本量与捕获总量，并结合气象温湿度补全情况进行多维分析。')}
-            title="点击通过 AI 交互查询 48,530 条病媒治理监测记录详情"
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>治理监测记录:</span>
-            <strong className="text-sky-600 dark:text-sky-400 font-mono group-hover:underline underline-offset-2">48,530</strong>
-            <span className="text-slate-500 dark:text-slate-400 text-[11px]">条</span>
-          </button>
-
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-
-          <button
-            onClick={() => handleExecutePrompt('请检索并分析全省 7,336 组批 PCR 病原检测数据详情，列出登革病毒、乙脑病毒、布尼亚病毒、立克次体等主要检出靶标分布及阳性率态势。')}
-            title="点击通过 AI 交互查询 7,336 组批 PCR 病原检测数据详情"
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-          >
-            <span>PCR 病原检测:</span>
-            <strong className="text-rose-600 dark:text-rose-400 font-mono group-hover:underline underline-offset-2">7,336</strong>
-            <span className="text-slate-500 dark:text-slate-400 text-[11px]">组批</span>
-          </button>
-
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-
-          <button
-            onClick={() => handleExecutePrompt('请调取 365 组杀虫剂抗药性毒力测定实验数据，分析拟除虫菊酯、有机磷等主要药剂在各地市优势蚊蝇种群中的抗性倍数及抗性等级分布。')}
-            title="点击通过 AI 交互查询 365 组抗药性毒力测定数据详情"
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-          >
-            <span>抗药性毒力测定:</span>
-            <strong className="text-amber-600 dark:text-amber-400 font-mono group-hover:underline underline-offset-2">365</strong>
-            <span className="text-slate-500 dark:text-slate-400 text-[11px]">组</span>
-          </button>
-
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-
-          <button
-            onClick={() => handleExecutePrompt('请展示全省 18 地市 126 区县共 2,037 个监测点位的地理空间覆盖分布与点位明细，按地市统计点位密度和重点监测生境。')}
-            title="点击通过 AI 交互查询全省 18 地市 / 126 区县 (2,037 点位) 空间覆盖详情"
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
-          >
-            <span>覆盖全省行政区:</span>
-            <strong className="text-slate-900 dark:text-slate-100 font-mono group-hover:underline underline-offset-2">18 地市 / 126 区县</strong>
-            <span className="text-slate-500 dark:text-slate-400 text-[11px]">(2,037 点位)</span>
-          </button>
+          {profile.metricsBar.items.map((item, idx) => (
+            <React.Fragment key={item.id}>
+              {idx > 0 && <span className="text-slate-300 dark:text-slate-700">|</span>}
+              <button
+                onClick={() => handleExecutePrompt(item.prompt)}
+                title={item.tooltip}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-slate-200/70 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 transition-all cursor-pointer group hover:shadow-xs border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+              >
+                {item.pulse && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>}
+                <span>{item.label}:</span>
+                <strong className={`${item.colorClass} font-mono group-hover:underline underline-offset-2`}>{item.value}</strong>
+                <span className="text-slate-500 dark:text-slate-400 text-[11px]">{item.unit}</span>
+              </button>
+            </React.Fragment>
+          ))}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setIsAlertsModalOpen(true)}
-            title={`点击查看全省 ${ACTIVE_ALERTS_LIST.length} 起活跃预警实时清单与处置态势`}
+            title={`点击查看全省 ${profile.metricsBar.activeAlertsCount} 起活跃预警实时清单与处置态势`}
             className="text-[11px] px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/20 dark:hover:bg-red-500/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-500/40 font-bold flex items-center gap-1.5 shadow-xs transition-all hover:scale-105 active:scale-95 group cursor-pointer"
           >
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-            <span>🚨 活跃预警: {ACTIVE_ALERTS_LIST.length} 起</span>
+            <span>🚨 {profile.metricsBar.activeAlertsTitle || `活跃预警: ${profile.metricsBar.activeAlertsCount} 起`}</span>
             <span className="text-[10px] underline text-red-600 dark:text-red-400 group-hover:text-red-800 dark:group-hover:text-white">查看详情 »</span>
           </button>
-          <span className="text-slate-500 text-[11px]">最新数据期: 2025-11-11</span>
+          <span className="text-slate-500 text-[11px]">最新数据期: {profile.metricsBar.latestDataPeriod}</span>
         </div>
       </div>
 
@@ -870,6 +802,7 @@ export default function CdcAgentWorkspace() {
         onClose={() => setIsHistoryOpen(false)}
         userId={currentUser.id}
         userName={currentUser.name}
+        domain={profile.domain}
         currentSessionId={currentSessionId}
         onSelectSession={handleLoadSession}
         onNewSession={handleNewSession}
@@ -886,16 +819,20 @@ export default function CdcAgentWorkspace() {
       <ActiveAlertsModal
         isOpen={isAlertsModalOpen}
         onClose={() => setIsAlertsModalOpen(false)}
+        alerts={profile.alerts}
         onLocateOnMap={(city, alert) => {
           setActiveGenerativeView({
             type: 'SPATIAL_EARLY_WARNING_MAP',
             city: city,
+            district: alert.district,
             severity: alert.level,
-            alerts: [alert]
+            alerts: [alert],
+            targetLat: alert.latitude,
+            targetLon: alert.longitude
           });
         }}
         onSelectAlertForAnalysis={(alert) => {
-          handleExecutePrompt(`请对 ${alert.city}${alert.district} 的预警 "${alert.title}" (编号: ${alert.alertId}) 进行专项病媒风险深度研判，分析周边种群抗药性并给出详细的应急消杀调度方案。`);
+          handleExecutePrompt(`请对 ${alert.city}${alert.district} 的预警 "${alert.title}" (编号: ${alert.alertId}) 进行专项风险深度研判，分析周边关联因素并给出详细的应急处置方案。`);
         }}
       />
     </div>

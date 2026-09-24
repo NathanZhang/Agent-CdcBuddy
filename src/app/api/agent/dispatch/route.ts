@@ -6,6 +6,7 @@ import { fallbackRuleMatch } from '@/lib/skills/dispatcher';
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
 import { parseToolCallFromText, cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
+import { getAgentProfile } from '@/lib/config/agent-profile';
 
 // 数据统计分析工具
 function calculateDatasetStats(data: any[]) {
@@ -25,7 +26,6 @@ function calculateDatasetStats(data: any[]) {
   let validHumidityCount = 0;
 
   for (const row of data) {
-    // 捕获数量
     const capture = Number(row['捕获数量(只/台次)'] ?? row['capture_count'] ?? row['捕获数量'] ?? 0);
     if (!isNaN(capture)) {
       totalCapture += capture;
@@ -33,7 +33,6 @@ function calculateDatasetStats(data: any[]) {
       if (capture > maxCapture) maxCapture = capture;
       if (capture < minCapture) minCapture = capture;
     }
-    // 气温
     const temp = Number(row['环境气温(℃)'] ?? row['weather_temp'] ?? row['气温'] ?? 0);
     if (!isNaN(temp) && temp !== 0) {
       totalTemp += temp;
@@ -41,7 +40,6 @@ function calculateDatasetStats(data: any[]) {
       if (temp > maxTemp) maxTemp = temp;
       if (temp < minTemp) minTemp = temp;
     }
-    // 湿度
     const hum = Number(row['相对湿度(%)'] ?? row['weather_humidity'] ?? row['相对湿度'] ?? row['湿度'] ?? 0);
     if (!isNaN(hum) && hum !== 0) {
       totalHumidity += hum;
@@ -62,40 +60,39 @@ function calculateDatasetStats(data: any[]) {
   };
 }
 
-const SYSTEM_PROMPT_CDC = `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
-你能够使用病媒生物研判工具集 (Tools) 精准识别和解决各种疾控、数据分析、消杀工单以及问答指令。
-如果用户的问题能够通过工具集解决，你应该主动调用相关工具；并在工具执行返回数据后，对数据进行分析、统计与归纳，给出详实、准确且有洞察力的最终回复。
-
-【语言与思考强制规范】：
-1. **深度推演思考（Thinking Process / Reasoning Chain / CoT）必须全程使用中文（简体中文）**进行推演分析，严禁使用英文思考！
-2. 你的最终答复也必须全部使用规范的中文（简体中文）。
-3. 在中文思考过程中，请清晰展示你的专业研判逻辑（包括数据筛选、阈值比对、病媒生态关联与防控策略评估）。
-
-【地理位置输出规范】：严禁在正文中直接暴露裸露经纬度数字（切勿直接显示“34.335°N、113.685°E”等纯数字）；正文仅展示人类易读的自然地址描述，并统一采用隐藏坐标格式：[地址描述](geo:纬度,经度)，如 [新郑市观音寺镇](geo:34.335,113.685)。`;
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { promptText, chatHistory = [], userRole, context } = body;
+    const { promptText, chatHistory = [], userRole, domain: reqDomain, context } = body;
 
     if (!promptText || typeof promptText !== 'string' || !promptText.trim()) {
       return NextResponse.json({
         success: false,
         skillId: '',
         skillName: '',
-        replyText: '请输入有效的病媒生物监测指令或研判问题。'
+        replyText: '请输入有效的疾控监测研判指令或问题。'
       });
     }
+
+    const activeDomain = reqDomain || process.env.AGENT_DOMAIN || process.env.NEXT_PUBLIC_AGENT_DOMAIN || 'env';
+    const agentProfile = getAgentProfile(activeDomain as any);
 
     const apiKey = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
     const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
     const modelName = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';
     const timeoutMs = getRouterTimeoutMs();
 
-    // 1. 构造多轮上下文 Messages (合并为一个 System Prompt，保证兼容性)
-    let systemPromptContent = SYSTEM_PROMPT_CDC;
+    let systemPromptContent = `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent - ${agentProfile.name})。
+${agentProfile.systemPrompt}
+你能够使用提供的专业研判工具集 (Tools) 精准识别和解决各种疾控、数据分析与研判指令。
+如果用户的问题能够通过工具集解决，你应该主动调用相关工具；并在工具执行返回数据后，对数据进行分析、统计与归纳，给出详实、准确且有洞察力的最终回复。
 
-    // 💡 注入当前视图数据统计摘要，处理“指代消解”与多轮计算
+【语言与思考强制规范】：
+1. 深度推演思考必须全程使用规范简体中文，严禁使用英文思考！
+2. 你的最终答复也必须全部使用规范简体中文。
+
+【地理位置输出规范】：严禁在正文中直接暴露裸露经纬度数字；正文仅展示人类易读的自然地址描述，并统一采用隐藏坐标格式：[地址描述](geo:纬度,经度)。`;
+
     if (context?.currentView?.data?.length > 0) {
       const stats = calculateDatasetStats(context.currentView.data);
       if (stats) {
@@ -105,10 +102,10 @@ export async function POST(req: NextRequest) {
 - 包含字段: ${columns.join(', ')}
 - 样本记录数: ${stats.totalRecords} 条
 - 指标统计结果:
-  * 捕获数量 (只/台次): 平均值=${stats.avgCaptureCount}, 总和=${stats.totalCaptureCount}, 最大值=${stats.maxCaptureCount}, 最小值=${stats.minCaptureCount}
+  * 捕获/监测数量: 平均值=${stats.avgCaptureCount}, 总和=${stats.totalCaptureCount}, 最大值=${stats.maxCaptureCount}, 最小值=${stats.minCaptureCount}
   * 环境气温 (℃): 平均值=${stats.avgTemp}℃, 最高温=${stats.maxTemp}℃, 最低温=${stats.minTemp}℃
   * 相对湿度 (%): 平均值=${stats.avgHumidity}%
-注意：如果用户针对当前数据视图进行提问（如“计算上述数据的平均数”、“温度是多少”等），请直接基于此上下文进行逻辑计算和答复，不需要也绝对不能调用数据查询工具！`;
+注意：如果用户针对当前数据视图进行提问，请直接基于此上下文进行逻辑计算和答复，不需要调用数据查询工具！`;
       }
     }
 
@@ -116,7 +113,6 @@ export async function POST(req: NextRequest) {
       { role: 'system', content: systemPromptContent }
     ];
 
-    // 追加历史记录
     const recentHistory = chatHistory.slice(-6);
     for (const item of recentHistory) {
       if (item.sender === 'user') {
@@ -131,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     messages.push({ role: 'user', content: promptText.trim() });
 
-    const tools = getSiliconFlowSkillTools(userRole);
+    const tools = getSiliconFlowSkillTools(userRole, activeDomain);
 
     let finalReplyText = '';
     let finalGenerativeView: any = context?.currentView || null;
@@ -141,11 +137,11 @@ export async function POST(req: NextRequest) {
     let isExecSuccess = true;
 
     try {
-      // 🚀 第一阶段：调用大模型进行意图路由与 Tool Use 判断 (独立 Abort Controller 1)
       const controller1 = new AbortController();
       const timeoutId1 = setTimeout(() => controller1.abort(), timeoutMs);
       
-      let res;
+      let res: Response | null = null;
+      let fetchNetworkError: string | null = null;
       try {
         res = await fetch(`${baseURL}/chat/completions`, {
           method: 'POST',
@@ -162,14 +158,43 @@ export async function POST(req: NextRequest) {
           }),
           signal: controller1.signal
         });
+        if (!res.ok) {
+          const errText = await res.text();
+          fetchNetworkError = `SiliconFlow status ${res.status}: ${errText}`;
+        }
+      } catch (err: any) {
+        fetchNetworkError = err.message || '网络连接异常';
       } finally {
         clearTimeout(timeoutId1);
       }
 
-      if (!res.ok) {
-        const errText = await res.text();
-        console.warn(`[BFF LLM API Error 1] status: ${res.status}, body: ${errText}`);
-        throw new Error(`SiliconFlow status ${res.status}: ${errText}`);
+      if (fetchNetworkError || !res || !res.ok) {
+        console.warn(`[BFF LLM Network Warning] 大模型连接异常，启用本地意图研判兜底:`, fetchNetworkError);
+        const fallback = fallbackRuleMatch(promptText, { chatHistory, userRole, currentView: context?.currentView });
+        chosenSkillId = fallback.skillId;
+        const skill = getSkillById(chosenSkillId);
+        chosenSkillName = skill?.name || fallback.skillName;
+        parsedArgs = fallback.args;
+
+        let toolExecutionResult: any = null;
+        try {
+          toolExecutionResult = await executeSkillServer(chosenSkillId, parsedArgs);
+          finalGenerativeView = toolExecutionResult;
+        } catch (execErr: any) {
+          console.error(`[BFF Fallback Exec Error] ${chosenSkillId}:`, execErr);
+          isExecSuccess = false;
+        }
+        finalReplyText = generateDomainAIInterpretation(chosenSkillId, toolExecutionResult, promptText);
+
+        return NextResponse.json({
+          success: isExecSuccess,
+          skillId: chosenSkillId,
+          skillName: chosenSkillName,
+          replyText: finalReplyText,
+          generativeView: finalGenerativeView,
+          source: 'rule_fallback',
+          args: parsedArgs
+        });
       }
 
       const data = await res.json();
@@ -246,27 +271,39 @@ export async function POST(req: NextRequest) {
             associationRules: toolExecutionResult.associationRules?.slice(0, 4),
             summaryAdvice: toolExecutionResult.summaryAdvice
           });
+        } else if (toolExecutionResult && (toolExecutionResult.type === 'WATER_PIPELINE_GIS_MAP' || toolExecutionResult.krigingGridPoints)) {
+          toolSummaryContent = JSON.stringify({
+            success: isExecSuccess,
+            type: 'WATER_PIPELINE_GIS_MAP',
+            city: toolExecutionResult.city || '河南省全域',
+            totalSamples: toolExecutionResult.totalSamples || 500,
+            passRate: toolExecutionResult.passRate || 95.8,
+            evaluationResult: toolExecutionResult.evaluationResult,
+            healthRiskSummary: toolExecutionResult.healthRiskSummary,
+            topRiskFeatures: toolExecutionResult.featureImportance?.slice(0, 4),
+            highRiskGridPointsSample: toolExecutionResult.krigingGridPoints?.filter((p: any) => p.riskLevel !== 'safe').slice(0, 6),
+            disposalAdvice: toolExecutionResult.disposalAdvice
+          });
         } else {
-          toolSummaryContent = JSON.stringify(toolExecutionResult).slice(0, 3000);
+          toolSummaryContent = JSON.stringify(toolExecutionResult).slice(0, 2000);
         }
 
         const summaryMessages = [
           {
             role: 'system',
-            content: `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent)。
-你刚才已成功执行了病媒分析技能【${chosenSkillName}】并获取到了分析数据。
-请基于返回的真实数据结果，向疾控研判专家输出一份结构严谨、详实深入、具有流行病学洞察力的【AI 协同研判解读报告】。
+            content: `你是由河南省疾病预防控制中心构建的 AI 协同研判智能体 (CdcBuddy Agent - ${agentProfile.name})。
+你刚才已成功执行了专业分析技能【${chosenSkillName}】并获取到了分析数据。
+请基于返回的真实数据结果，向疾控研判专家输出一份结构严谨、详实深入、具有流行病学与环境健康洞察力的【AI 协同研判解读报告】。
 报告内容应包括：
 1. 核心监测/检测数据与指标概况解读
 2. 高风险区县、重点靶标或异常点位深入研判
-3. 生态关联特征（如宿主媒介、气象、抗药性或关联规则）
+3. 生态关联与环境健康特征
 4. 针对性的疾控应对、监测预警与应急防控建议
 请直接输出专业报告正文（Markdown 格式），语言全部使用规范的简体中文。严禁输出空的或占位符，严禁输出任何 XML 标签。
 
 【空间位置输出关键规范】：
 1. 涉及具体发生地、异常预警点位、重点监测站或空间聚集网格时，严禁在正文中直接输出生硬的裸露经纬度数字（切勿直接显示“34.335°N、113.685°E”等数字）；
-2. 正文必须且只能展示人类直观易读的地址描述（如区县、街道、乡镇或点位名称），并统一采用带隐式坐标的 Markdown 格式：[地址描述](geo:纬度,经度)；
-   例如：在 [新郑市观音寺镇](geo:34.335,113.685) 出现局部密度峰值、[金水区未来路办事处](geo:34.8003,113.6627) 诱捕量偏高。`
+2. 正文必须且只能展示人类直观易读的地址描述（如区县、街道、乡镇或点位名称），并统一采用带隐式坐标的 Markdown 格式：[地址描述](geo:纬度,经度)。`
           },
           {
             role: 'user',

@@ -286,6 +286,10 @@ export class AppBusinessProvider {
       if (!hasVisibility) {
         db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN visibility TEXT DEFAULT 'private'`).run();
       }
+      const hasDomain = columns.some(c => c.name === 'domain');
+      if (!hasDomain) {
+        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
+      }
     } catch (e) {
       // 忽略检查异常
     }
@@ -295,6 +299,7 @@ export class AppBusinessProvider {
     this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
     const visibility = skill.visibility || 'private';
+    const domain = skill.domain || 'vector';
 
     // 检查是否已存在同名自定义技能，若存在则更新已有记录，避免同名生成多条重复记录
     const existingByName = db.prepare('SELECT skill_id FROM biz_custom_skills WHERE name = ?').get(skill.name) as { skill_id: string } | undefined;
@@ -303,8 +308,8 @@ export class AppBusinessProvider {
     db.prepare(`
       INSERT OR REPLACE INTO biz_custom_skills (
         skill_id, name, description, category, sql_query, chart_type,
-        recommended_prompts, visibility, created_by, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        recommended_prompts, visibility, created_by, created_at, domain
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       finalSkillId,
       skill.name,
@@ -315,7 +320,8 @@ export class AppBusinessProvider {
       skill.recommended_prompts,
       visibility,
       skill.created_by,
-      skill.created_at
+      skill.created_at,
+      domain
     );
   }
 
@@ -334,7 +340,7 @@ export class AppBusinessProvider {
     db.prepare(`
       UPDATE biz_custom_skills
       SET name = ?, description = ?, sql_query = ?, chart_type = ?,
-          recommended_prompts = ?, visibility = ?
+          recommended_prompts = ?, visibility = ?, domain = ?
       WHERE skill_id = ?
     `).run(
       merged.name,
@@ -343,6 +349,7 @@ export class AppBusinessProvider {
       merged.chart_type,
       merged.recommended_prompts,
       merged.visibility || 'private',
+      merged.domain || 'vector',
       skillId
     );
 
@@ -362,9 +369,15 @@ export class AppBusinessProvider {
     return db.prepare('SELECT * FROM biz_custom_skills WHERE skill_id = ?').get(skillId) as BizCustomSkill | undefined;
   }
 
-  async getAllCustomSkills(): Promise<BizCustomSkill[]> {
+  async getAllCustomSkills(domain?: string): Promise<BizCustomSkill[]> {
     this.ensureCustomSkillsTableSchema();
     const db = this.getDb();
+    if (domain) {
+      if (domain === 'vector') {
+        return db.prepare(`SELECT * FROM biz_custom_skills WHERE (domain = 'vector' OR domain IS NULL) ORDER BY created_at DESC`).all() as BizCustomSkill[];
+      }
+      return db.prepare(`SELECT * FROM biz_custom_skills WHERE domain = ? ORDER BY created_at DESC`).all(domain) as BizCustomSkill[];
+    }
     return db.prepare('SELECT * FROM biz_custom_skills ORDER BY created_at DESC').all() as BizCustomSkill[];
   }
 
@@ -377,6 +390,7 @@ export class AppBusinessProvider {
         user_id VARCHAR(64) NOT NULL,
         user_name VARCHAR(64) NOT NULL,
         user_role VARCHAR(64) NOT NULL,
+        domain VARCHAR(32) DEFAULT 'vector',
         title VARCHAR(256) NOT NULL,
         last_generative_view TEXT,
         message_count INTEGER DEFAULT 0,
@@ -386,7 +400,7 @@ export class AppBusinessProvider {
       );
 
       CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_updated
-      ON biz_chat_sessions(user_id, is_pinned DESC, updated_at DESC);
+      ON biz_chat_sessions(user_id, domain, is_pinned DESC, updated_at DESC);
 
       CREATE TABLE IF NOT EXISTS biz_chat_messages (
         message_id VARCHAR(64) PRIMARY KEY,
@@ -406,9 +420,15 @@ export class AppBusinessProvider {
       ON biz_chat_messages(session_id, created_at ASC);
     `);
 
-    // 动态平滑迁移：若老表缺少 reasoning 列则自动增加
+    // 动态平滑迁移：检查并补充列
     try {
       const db = this.getDb();
+      const sessionCols = db.prepare(`PRAGMA table_info(biz_chat_sessions)`).all() as Array<{ name: string }>;
+      const sessionColNames = new Set(sessionCols.map(c => c.name));
+      if (!sessionColNames.has('domain')) {
+        db.prepare(`ALTER TABLE biz_chat_sessions ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
+      }
+
       const cols = db.prepare(`PRAGMA table_info(biz_chat_messages)`).all() as Array<{ name: string }>;
       const colNames = new Set(cols.map(c => c.name));
       if (!colNames.has('reasoning_text')) {
@@ -435,6 +455,11 @@ export class AppBusinessProvider {
     if (filter?.userId) {
       sql += ' AND user_id = ?';
       params.push(filter.userId);
+    }
+
+    if (filter?.domain) {
+      sql += ' AND (domain = ? OR (domain IS NULL AND ? = \'vector\'))';
+      params.push(filter.domain, filter.domain);
     }
 
     if (filter?.keyword && filter.keyword.trim()) {
@@ -488,6 +513,11 @@ export class AppBusinessProvider {
     if (filter?.userId) {
       sql += ' AND user_id = ?';
       params.push(filter.userId);
+    }
+
+    if (filter?.domain) {
+      sql += ' AND (domain = ? OR (domain IS NULL AND ? = \'vector\'))';
+      params.push(filter.domain, filter.domain);
     }
 
     if (filter?.keyword && filter.keyword.trim()) {
@@ -572,6 +602,7 @@ export class AppBusinessProvider {
       user_id: session.user_id,
       user_name: session.user_name,
       user_role: session.user_role,
+      domain: session.domain || 'vector',
       title: session.title,
       last_generative_view: session.last_generative_view || null,
       message_count: session.initialMessages ? session.initialMessages.length : 0,
@@ -583,14 +614,15 @@ export class AppBusinessProvider {
     const insertTx = db.transaction(() => {
       db.prepare(`
         INSERT INTO biz_chat_sessions (
-          session_id, user_id, user_name, user_role, title,
+          session_id, user_id, user_name, user_role, domain, title,
           last_generative_view, message_count, is_pinned, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         newRecord.session_id,
         newRecord.user_id,
         newRecord.user_name,
         newRecord.user_role,
+        newRecord.domain,
         newRecord.title,
         newRecord.last_generative_view ? JSON.stringify(newRecord.last_generative_view) : null,
         newRecord.message_count,
@@ -754,17 +786,25 @@ export class AppBusinessProvider {
   }
 
   /**
-   * 清空指定用户的所有会话
+   * 清空指定用户的会话 (支持按 domain 隔离清空)
    */
-  async clearUserChatSessions(userId: string): Promise<boolean> {
+  async clearUserChatSessions(userId: string, domain?: string): Promise<boolean> {
     this.ensureChatSessionTables();
     const db = this.getDb();
     const clearTx = db.transaction(() => {
-      db.prepare(`
-        DELETE FROM biz_chat_messages
-        WHERE session_id IN (SELECT session_id FROM biz_chat_sessions WHERE user_id = ?)
-      `).run(userId);
-      db.prepare('DELETE FROM biz_chat_sessions WHERE user_id = ?').run(userId);
+      if (domain) {
+        db.prepare(`
+          DELETE FROM biz_chat_messages
+          WHERE session_id IN (SELECT session_id FROM biz_chat_sessions WHERE user_id = ? AND (domain = ? OR (domain IS NULL AND ? = 'vector')))
+        `).run(userId, domain, domain);
+        db.prepare('DELETE FROM biz_chat_sessions WHERE user_id = ? AND (domain = ? OR (domain IS NULL AND ? = \'vector\'))').run(userId, domain, domain);
+      } else {
+        db.prepare(`
+          DELETE FROM biz_chat_messages
+          WHERE session_id IN (SELECT session_id FROM biz_chat_sessions WHERE user_id = ?)
+        `).run(userId);
+        db.prepare('DELETE FROM biz_chat_sessions WHERE user_id = ?').run(userId);
+      }
     });
     clearTx();
     return true;

@@ -37,6 +37,7 @@ interface SessionHistoryDrawerProps {
   onClose: () => void;
   userId: string;
   userName: string;
+  domain?: string;
   currentSessionId: string | null;
   onSelectSession: (sessionId: string) => void;
   onNewSession: () => void;
@@ -47,6 +48,7 @@ export const SessionHistoryDrawer: React.FC<SessionHistoryDrawerProps> = ({
   onClose,
   userId,
   userName,
+  domain,
   currentSessionId,
   onSelectSession,
   onNewSession
@@ -64,6 +66,9 @@ export const SessionHistoryDrawer: React.FC<SessionHistoryDrawerProps> = ({
     setLoading(true);
     try {
       let url = `/api/sessions?userId=${encodeURIComponent(userId)}&limit=100`;
+      if (domain) {
+        url += `&domain=${encodeURIComponent(domain)}`;
+      }
       if (keyword && keyword.trim()) {
         url += `&keyword=${encodeURIComponent(keyword.trim())}`;
       }
@@ -79,7 +84,7 @@ export const SessionHistoryDrawer: React.FC<SessionHistoryDrawerProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, domain]);
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -146,11 +151,15 @@ export const SessionHistoryDrawer: React.FC<SessionHistoryDrawerProps> = ({
     }
   };
 
-  // 清空该用户全部历史会话
+  // 清空该用户全部历史会话 (按当前智能体领域隔离)
   const handleClearAllUserSessions = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`/api/sessions?userId=${encodeURIComponent(userId)}`, {
+      let url = `/api/sessions?userId=${encodeURIComponent(userId)}`;
+      if (domain) {
+        url += `&domain=${encodeURIComponent(domain)}`;
+      }
+      const res = await fetch(url, {
         method: 'DELETE'
       });
       if (res.ok) {

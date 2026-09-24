@@ -19,6 +19,22 @@ import { SatScanSpatialCard } from './SatScanSpatialCard';
 import { LSTMPredictorCard } from './LSTMPredictorCard';
 import { ComposableWorkflowCard } from './ComposableWorkflowCard';
 import { DaemonSurveillanceCard } from './DaemonSurveillanceCard';
+import { FoodborneClusterRadar } from './FoodborneClusterRadar';
+import { MolecularPhylogenyTree } from './MolecularPhylogenyTree';
+import { FoodRiskRankingChart } from './FoodRiskRankingChart';
+import { OutbreakEpidemiologyCard } from './OutbreakEpidemiologyCard';
+import { WaterPipelineGisMap } from './WaterPipelineGisMap';
+import { SewageLagCorrelationChart } from './SewageLagCorrelationChart';
+import { AirClimateHealthRiskCard } from './AirClimateHealthRiskCard';
+import { RiverBasinPollutionChainCard } from './RiverBasinPollutionChainCard';
+import { EnvScenarioSimulationCard } from './EnvScenarioSimulationCard';
+import { EnvOcrEntryCard } from './EnvOcrEntryCard';
+import { DeathCertQcCard } from './DeathCertQcCard';
+import { Icd10InferenceCard } from './Icd10InferenceCard';
+import { RareMortalityClusterCard } from './RareMortalityClusterCard';
+import { ChronicRiskForecastCard } from './ChronicRiskForecastCard';
+import { InjuryAttributionTreeCard } from './InjuryAttributionTreeCard';
+import { LifeTable4q70ReportCard } from './LifeTable4q70ReportCard';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { Bot } from 'lucide-react';
 
@@ -51,6 +67,8 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
             alerts={view.alerts}
             selectedCity={view.city}
             selectedDistrict={view.district}
+            targetLat={view.targetLat}
+            targetLon={view.targetLon}
             spatialGrid={view.spatialGrid}
             monitoringPoints={view.monitoringPoints}
             category={view.category || '蚊'}
@@ -136,6 +154,73 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
 
       {view.type === 'DAEMON_SURVEILLANCE_VIEW' && (
         <DaemonSurveillanceCard data={view} />
+      )}
+
+      {/* 食源性疾病专属生成式组件 */}
+      {view.type === 'FOODBORNE_CLUSTER_RADAR' && (
+        <FoodborneClusterRadar data={view} />
+      )}
+
+      {view.type === 'MOLECULAR_PHYLOGENY_TREE' && (
+        <MolecularPhylogenyTree data={view} />
+      )}
+
+      {view.type === 'FOOD_RISK_RANKING' && (
+        <FoodRiskRankingChart data={view} />
+      )}
+
+      {view.type === 'OUTBREAK_DISPOSAL_WORKFLOW' && (
+        <OutbreakEpidemiologyCard data={view} />
+      )}
+
+      {/* 环境健康风险因素专属生成式组件 */}
+      {view.type === 'WATER_PIPELINE_GIS_MAP' && (
+        <WaterPipelineGisMap data={view} />
+      )}
+
+      {view.type === 'SEWAGE_LAG_CORRELATION' && (
+        <SewageLagCorrelationChart data={view} />
+      )}
+
+      {view.type === 'AIR_CLIMATE_HEALTH_RISK' && (
+        <AirClimateHealthRiskCard data={view} />
+      )}
+
+      {view.type === 'RIVER_BASIN_POLLUTION_CHAIN' && (
+        <RiverBasinPollutionChainCard data={view} />
+      )}
+
+      {view.type === 'ENV_SCENARIO_SIMULATION' && (
+        <EnvScenarioSimulationCard data={view} />
+      )}
+
+      {view.type === 'ENV_OCR_ENTRY_VIEW' && (
+        <EnvOcrEntryCard data={view} />
+      )}
+
+      {/* 死因慢病及伤害综合监测专属生成式组件 */}
+      {view.type === 'DEATH_CERT_QC_VIEW' && (
+        <DeathCertQcCard data={view} />
+      )}
+
+      {view.type === 'ICD10_INFERENCE_VIEW' && (
+        <Icd10InferenceCard data={view} />
+      )}
+
+      {view.type === 'RARE_MORTALITY_CLUSTER_VIEW' && (
+        <RareMortalityClusterCard data={view} />
+      )}
+
+      {view.type === 'CHRONIC_RISK_FORECAST_VIEW' && (
+        <ChronicRiskForecastCard data={view} />
+      )}
+
+      {view.type === 'INJURY_ATTRIBUTION_TREE_VIEW' && (
+        <InjuryAttributionTreeCard data={view} />
+      )}
+
+      {(view.type === 'LIFE_TABLE_GAUGE' || view.type === 'CHRONIC_DEATH_REPORT') && (
+        <LifeTable4q70ReportCard data={view} />
       )}
 
       {view.type === 'NLQ_KNOWLEDGE_ANSWER' && (

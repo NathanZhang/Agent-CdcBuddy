@@ -22,10 +22,18 @@ export interface RouterChatHistoryItem {
 /**
  * 将项目内的 VectorSkill 转换为符合 OpenAI / SiliconFlow 规范的 Function Tools 定义
  */
-export function getSiliconFlowSkillTools(userRole?: UserRole) {
-  const availableSkills = userRole
+export function getSiliconFlowSkillTools(userRole?: UserRole, domain?: string) {
+  let availableSkills = userRole
     ? STANDARD_SKILLS.filter(s => !s.requiredRoles || s.requiredRoles.includes(userRole))
     : STANDARD_SKILLS;
+
+  if (domain) {
+    const domainSpecific = availableSkills.filter(s => s.domain === domain);
+    const commonSkills = availableSkills.filter(s => !s.domain || s.domain === 'all');
+    if (domainSpecific.length > 0) {
+      availableSkills = [...domainSpecific, ...commonSkills];
+    }
+  }
 
   return availableSkills.map(skill => ({
     type: 'function',

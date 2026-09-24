@@ -222,6 +222,7 @@ export interface BizCustomSkill {
   visibility?: 'private' | 'public';
   created_by: string;
   created_at: string;
+  domain?: string;
 }
 
 // ---------------- 历史会话与消息持久化实体类型 ----------------
@@ -230,6 +231,7 @@ export interface BizChatSession {
   user_id: string;
   user_name: string;
   user_role: string;
+  domain?: string;
   title: string;
   last_generative_view?: string | any;
   message_count: number;
@@ -253,6 +255,7 @@ export interface BizChatMessage {
 
 export interface ChatSessionFilter {
   userId?: string;
+  domain?: string;
   keyword?: string;
   limit?: number;
   offset?: number;

@@ -3,6 +3,7 @@ import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
 export interface DispatchResult {
   success: boolean;
@@ -191,15 +192,24 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('自定义技能') || q.includes('定制技能') ||
     q.includes('帮我创建') || q.includes('创建技能')
   ) {
-    matchedSkillId = 'skill_meta_custom_builder';
+    const currentDomain = getCurrentAgentProfile().domain || 'vector';
+    if (currentDomain === 'foodborne') {
+      matchedSkillId = 'skill_foodborne_custom_builder';
+    } else if (currentDomain === 'env') {
+      matchedSkillId = 'skill_env_custom_builder';
+    } else if (currentDomain === 'chronic') {
+      matchedSkillId = 'skill_chronic_custom_builder';
+    } else {
+      matchedSkillId = 'skill_meta_custom_builder';
+    }
     const rawDesc = promptText.replace(/^(帮我)?(创建|新建|定义|定制)(一个)?(新)?技能[:：]?\s*/i, '').trim();
-    skillArgs.description = rawDesc || '用户对话动态创建的病媒分析技能';
+    skillArgs.description = rawDesc || `用户对话动态创建的专属分析技能`;
     if (rawDesc.includes('安阳') && rawDesc.includes('蜱')) {
       skillArgs.skillName = '豫北蜱虫携带恙虫病东方体时空分布分析';
     } else if (rawDesc.length > 0) {
       skillArgs.skillName = rawDesc.slice(0, 20);
     } else {
-      skillArgs.skillName = '用户定制病媒分析技能';
+      skillArgs.skillName = '用户定制专属分析技能';
     }
     skillArgs.chartType = rawDesc.includes('地图') || rawDesc.includes('村镇') ? 'map' : 'bar';
   } else if (
@@ -241,6 +251,35 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     matchedSkillId = 'skill_daemon_surveillance';
     skillArgs.promptPolicy = promptText;
     skillArgs.triggerSource = 'manual_invoke';
+  } else if (
+    // 食源性疾病：cgMLST 同源进化树与分子溯源
+    q.includes('同源') || q.includes('cgmlst') || q.includes('进化树') || 
+    q.includes('分子溯源') || q.includes('基因带型') || q.includes('pfge') || q.includes('克隆株')
+  ) {
+    matchedSkillId = 'skill_molecular_trace';
+    const obMatch = promptText.match(/OUTBREAK-\d+(?:-\d+)?/i);
+    if (obMatch) skillArgs.clusterId = obMatch[0].toUpperCase();
+  } else if (
+    // 食源性疾病：嫌疑食品归因与比值比 TOP10
+    (q.includes('食品') || q.includes('进食') || q.includes('食物')) && 
+    (q.includes('归因') || q.includes('比值比') || q.includes('排行') || q.includes('top') || q.includes('抽检'))
+  ) {
+    matchedSkillId = 'skill_food_attribution';
+  } else if (
+    // 食源性疾病：聚集性暴发事件、流调处置与预测
+    q.includes('食源') || q.includes('暴发') || q.includes('聚集性') || 
+    q.includes('副溶血') || q.includes('沙门氏') || q.includes('诺如') || 
+    q.includes('李斯特') || q.includes('食物中毒')
+  ) {
+    if (q.includes('处置') || q.includes('工单') || q.includes('提纲') || q.includes('协同')) {
+      matchedSkillId = 'skill_outbreak_disposal_advice';
+    } else if (q.includes('预测') || q.includes('未来') || q.includes('趋势') || q.includes('外推')) {
+      matchedSkillId = 'skill_foodborne_risk_forecast';
+    } else if (q.includes('报告') || q.includes('简报') || q.includes('公报')) {
+      matchedSkillId = 'skill_foodborne_report_export';
+    } else {
+      matchedSkillId = 'skill_foodborne_cluster_detect';
+    }
   } else if (
     q.includes('工单') || q.includes('处置') || q.includes('消杀') || 
     q.includes('派工') || q.includes('核销') || q.includes('闭环') ||
@@ -317,9 +356,98 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('全部数据') || (q.includes('数据') && q.includes('表')) ||
     (isDataQueryVerb && isDataNoun) || (skillArgs.city && isDataNoun)
   ) {
-    // 监测数据明细查询 Text2SQL (规则增强版)
-    matchedSkillId = 'skill_monitoring_data_table';
+    const currentDomain = getCurrentAgentProfile().domain || 'vector';
+    if (currentDomain === 'foodborne') {
+      matchedSkillId = 'skill_foodborne_case_table';
+    } else if (currentDomain === 'env') {
+      matchedSkillId = 'skill_env_monitoring_table';
+    } else if (currentDomain === 'chronic') {
+      matchedSkillId = 'skill_chronic_monitoring_table';
+    } else {
+      matchedSkillId = 'skill_monitoring_data_table';
+    }
     skillArgs.query = promptText;
+  } else if (
+    q.includes('克里金') || q.includes('饮用水') || q.includes('水质') || 
+    q.includes('末梢水') || q.includes('出厂水') || q.includes('管网水') ||
+    q.includes('供水管网') || q.includes('三氯甲烷') || q.includes('致癌危害商值') ||
+    q.includes('非致癌健康风险')
+  ) {
+    matchedSkillId = 'skill_water_safety_eval';
+  } else if (
+    q.includes('污水') || q.includes('管网溯源') || q.includes('反向溯源') || 
+    q.includes('滞后相关') || q.includes('滞后关联') || q.includes('排水管网')
+  ) {
+    matchedSkillId = 'skill_sewage_pathogen_trace';
+    if (q.includes('新冠')) skillArgs.pathogen = '新冠病毒';
+    else if (q.includes('诺如')) skillArgs.pathogen = '诺如病毒';
+  } else if (
+    q.includes('空气质量') || q.includes('极端天气') || q.includes('热浪') || 
+    q.includes('dlnm') || q.includes('臭氧') || q.includes('pm2.5') || q.includes('气候健康')
+  ) {
+    matchedSkillId = 'skill_air_climate_health_risk';
+  } else if (
+    q.includes('流域') || q.includes('跨介质') || q.includes('污染链') || 
+    q.includes('黄河流域') || q.includes('淮河流域') || q.includes('海河流域') || q.includes('长江流域')
+  ) {
+    matchedSkillId = 'skill_river_basin_pollution_chain';
+  } else if (
+    q.includes('情景模拟') || q.includes('政策推演') || q.includes('控排') || q.includes('减排')
+  ) {
+    matchedSkillId = 'skill_env_scenario_simulation';
+  } else if (
+    // 慢病与死因：死因医学证明书智能逻辑质控与冲突校验 (No. 59)
+    q.includes('死因证明') || q.includes('死亡医学证明') || (q.includes('质控') && q.includes('死因')) ||
+    q.includes('死因链倒置') || q.includes('逻辑冲突') || q.includes('完整率')
+  ) {
+    matchedSkillId = 'skill_death_cert_qc';
+  } else if (
+    // 慢病与死因：死因链医学知识图谱根本死因推断与 ICD-10 编码 (No. 60/61)
+    q.includes('根本死因') || q.includes('icd10') || q.includes('icd-10') || 
+    q.includes('死因推导') || q.includes('医学知识图谱') || q.includes('编码')
+  ) {
+    matchedSkillId = 'skill_icd10_nlp_inference';
+  } else if (
+    // 慢病与死因：全死因时序动态图谱与罕见死因短期聚集识别 (No. 62/63)
+    q.includes('罕见死因') || (q.includes('死因') && (q.includes('聚集') || q.includes('激增'))) ||
+    q.includes('循环系统疾病') || q.includes('心脑血管死亡')
+  ) {
+    matchedSkillId = 'skill_mortality_cluster_rare';
+  } else if (
+    // 慢病与死因：三大重大慢病发病预测与并发症关联挖掘 (No. 64/66)
+    q.includes('慢病预测') || q.includes('恶性肿瘤') || q.includes('脑卒中') || 
+    q.includes('三高共管') || q.includes('并发症') || q.includes('发病率时空演变') ||
+    (q.includes('慢病') && (q.includes('预测') || q.includes('发病')))
+  ) {
+    matchedSkillId = 'skill_chronic_risk_forecast';
+  } else if (
+    // 慢病与死因：伤害特征聚类与因果决策树归因分析 (No. 67/69)
+    q.includes('伤害') || q.includes('跌倒') || q.includes('农机') || 
+    q.includes('一氧化碳中毒') || q.includes('意外伤害')
+  ) {
+    matchedSkillId = 'skill_injury_attribution_tree';
+  } else if (
+    // 慢病与死因：早癌与心脑血管筛查卫生经济学收益与人群清单 (No. 70/71)
+    q.includes('早癌筛查') || (q.includes('筛查') && (q.includes('收益') || q.includes('经济学') || q.includes('清单') || q.includes('cea')))
+  ) {
+    matchedSkillId = 'skill_chronic_screening_roi';
+  } else if (
+    // 慢病与死因：死因顺位、YPLL 与早死概率 4q70 综合公报生成 (No. 72/73)
+    q.includes('早死概率') || q.includes('4q70') || q.includes('ypll') || 
+    q.includes('减寿年数') || q.includes('死因顺位') || q.includes('综合公报') ||
+    q.includes('简略寿命表')
+  ) {
+    matchedSkillId = 'skill_chronic_death_report';
+  } else if (
+    // 食源性疾病：聚集性病例与暴发识别
+    q.includes('食源') && (q.includes('聚集') || q.includes('暴发') || q.includes('就餐') || q.includes('雷达'))
+  ) {
+    matchedSkillId = 'skill_foodborne_cluster_detect';
+  } else if (
+    // 食源性疾病：传播与扩散模拟
+    q.includes('传播模拟') || q.includes('扩散模拟') || (q.includes('食源') && q.includes('模拟'))
+  ) {
+    matchedSkillId = 'skill_foodborne_spread_sim';
   } else if (
     q.includes('调度') || q.includes('派单') || q.includes('推送') || 
     q.includes('预警清单') || q.includes('预警依据') || q.includes('分级预警')
@@ -330,10 +458,28 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('空间分布') || q.includes('分布图') || q.includes('点位') || 
     q.includes('超标') || q.includes('预警')
   ) {
-    matchedSkillId = 'skill_spatial_early_warning';
-    if (q.includes('严重')) skillArgs.severity = 'red';
+    const currentDomain = getCurrentAgentProfile().domain || 'vector';
+    if (currentDomain === 'chronic') {
+      matchedSkillId = 'skill_mortality_cluster_rare';
+    } else if (currentDomain === 'env') {
+      matchedSkillId = 'skill_water_safety_eval';
+    } else if (currentDomain === 'foodborne') {
+      matchedSkillId = 'skill_foodborne_cluster_detect';
+    } else {
+      matchedSkillId = 'skill_spatial_early_warning';
+      if (q.includes('严重')) skillArgs.severity = 'red';
+    }
   } else {
-    matchedSkillId = 'skill_vector_nlq';
+    const currentDomain = getCurrentAgentProfile().domain || 'vector';
+    if (currentDomain === 'foodborne') {
+      matchedSkillId = 'skill_foodborne_case_table';
+    } else if (currentDomain === 'env') {
+      matchedSkillId = 'skill_env_monitoring_table';
+    } else if (currentDomain === 'chronic') {
+      matchedSkillId = 'skill_chronic_monitoring_table';
+    } else {
+      matchedSkillId = 'skill_vector_nlq';
+    }
     skillArgs.query = promptText;
   }
 
@@ -377,6 +523,7 @@ export async function dispatchSkillPromptStream(
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
+        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || process.env.NEXT_PUBLIC_AGENT_DOMAIN || 'env',
         context: {
           currentView: context?.currentView
         }
@@ -540,6 +687,7 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
+        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || process.env.NEXT_PUBLIC_AGENT_DOMAIN || 'env',
         context: {
           currentView: context?.currentView
         }

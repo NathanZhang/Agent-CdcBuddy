@@ -8,7 +8,7 @@
 /coverage
 
 # next.js
-/.next/
+/.next*/
 /out/
 
 # production
@@ -36,7 +36,7 @@ __pycache__/
 *.db
 *.db-journal
 logs/
-.server.pid
+.server*.pid
 /scripts/deploy/deploy.config.ps1
 .deploy-artifacts/
 

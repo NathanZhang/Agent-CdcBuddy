@@ -20,16 +20,18 @@ export interface ParsedGeoTarget {
  *   geo:34.335,113.685?title=观音寺镇&level=red&zoom=13.5
  */
 export function parseGeoProtocolUrl(url: string): ParsedGeoTarget | null {
-  if (!url || !url.startsWith('geo:')) {
+  if (!url) return null;
+  const cleanUrl = url.trim();
+  if (!cleanUrl.toLowerCase().startsWith('geo:')) {
     return null;
   }
 
   try {
-    const rawPath = url.slice(4); // 移除 'geo:'
+    const rawPath = cleanUrl.slice(4).trim(); // 移除 'geo:'
     const [coordsPart, queryPart] = rawPath.split('?');
     if (!coordsPart) return null;
 
-    const parts = coordsPart.split(',').map(s => parseFloat(s.trim()));
+    const parts = coordsPart.replace(/[,，;；]/g, ' ').split(/\s+/).filter(Boolean).map(s => parseFloat(s.trim()));
     if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) {
       return null;
     }

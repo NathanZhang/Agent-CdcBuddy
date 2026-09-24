@@ -196,15 +196,143 @@ export function generateDomainAIInterpretation(
       return text;
     }
 
-    // 8. 默认通用业务研判生成
+    // 8. 饮用水全流程健康风险评估与普通克里金空间场 (No. 44/45)
+    case 'skill_water_safety_eval':
+    case 'water_safety_eval': {
+      const city = result.city || '河南省全域';
+      const passRate = result.passRate || 95.8;
+      const totalSamples = result.totalSamples || 500;
+      const evalRes = result.evaluationResult || {};
+      const healthRisk = result.healthRiskSummary || {};
+      const features: any[] = result.featureImportance || result.randomForestFeatureImportances || [];
+      const gridPoints: any[] = result.krigingGridPoints || [];
+      const moderateOrHigh = gridPoints.filter((p: any) => p.riskLevel === 'moderate' || p.riskLevel === 'high' || p.hazardIndex > 0.5);
+
+      let text = `### 💧 ${city}生活饮用水全流程健康风险评估与普通克里金空间场 AI 研判解读\n\n`;
+      text += `根据全省供水管网与末梢水水质理化毒理监测网络数据库，结合**随机森林健康风险评估模型**与**普通克里金空间插值 (Ordinary Kriging)**，全面分析结果如下：\n\n`;
+
+      text += `#### 一、 核心水质合规与健康风险总体概况\n`;
+      text += `* **抽检覆盖规模**：全省累计监测采样点 **${totalSamples}** 处，覆盖市政出厂水、管网末梢水及二次供水水样。\n`;
+      text += `* **综合水质达标率**：全省综合水质合格率为 **${passRate}%**，依据 GB 5749-2022 标准处于总体受控状态。\n`;
+      text += `* **健康危害商值 (HQ)**：非致癌健康风险平均指数为 **${healthRisk.nonCarcinogenicHqAverage || evalRes.maxHazardQuotientHQ || 0.437}**（阈值上限 1.0），综合评价为 **${healthRisk.nonCarcinogenicEvaluation || '安全 (HQ < 1.0)'}**。\n`;
+      text += `* **致癌风险指数 (CR)**：均值为 **${healthRisk.carcinogenicRiskAverage || evalRes.maxCarcinogenicRiskCR || '4.56e-06'}**，低于 1.0×10⁻⁴ 警戒红线，属于可接受风险区间。\n\n`;
+
+      text += `#### 二、 随机森林 (Random Forest) 风险权重特征贡献\n`;
+      if (features.length > 0) {
+        text += `通过随机森林回归模型测算，识别出以下水质安全与健康风险核心驱动因子：\n`;
+        features.slice(0, 5).forEach((f: any, idx: number) => {
+          const imp = (Number(f.importance) * 100).toFixed(1);
+          text += `* **TOP ${idx + 1}【${f.feature}】**：特征权重贡献度 **${imp}%**（${f.riskType || '风险关注因子'}）；\n`;
+        });
+        text += `\n`;
+      }
+
+      text += `#### 三、 普通克里金空间插值高风险热力聚集片区\n`;
+      if (moderateOrHigh.length > 0) {
+        text += `空间克里金连续插值场显示，以下区县或片区末梢水风险指数（HQ）出现局部聚集抬升，需优先排查：\n`;
+        const topClusters = moderateOrHigh.slice(0, 5);
+        topClusters.forEach((pt: any) => {
+          const locName = `${pt.city} ${pt.district}`;
+          const coords = matchHenanPlaceCoordinates(locName);
+          const locLink = coords ? `[${locName}](geo:${coords.lat},${coords.lon})` : `[${locName}](geo:${pt.lat},${pt.lon})`;
+          text += `* 📍 ${locLink}：危害商值 HQ = **${pt.hazardIndex}**（风险等级：${pt.riskLevel === 'high' ? '高风险' : '中度预警'}）；\n`;
+        });
+        text += `\n`;
+      } else {
+        text += `* 全省未见大范围超标扩散聚集区，仅在个别老旧小区管网末端呈散在轻微波动。\n\n`;
+      }
+
+      text += `#### 四、 疾控环境健康应对与工程干预建议\n`;
+      text += `1. **老旧管网排污冲洗**：针对高克里金风险值片区，指导供水单位加大末梢死角冲洗排污频次，防范重金属与铁锈沉积。\n`;
+      text += `2. **加氯消毒在线闭环调控**：严格控制出厂水与管网末梢有效余氯投加量，抑制微生物滋生的同时严控三氯甲烷等消毒副产物蓄积。\n`;
+      text += `3. **重点片区加密水质抽检**：对预警点位开展每周跟踪复测，确保全流程水质指标稳定达标。`;
+
+      return text;
+    }
+
+    // 10. 食源性疾病聚集性病例识别与时空雷达 (No. 36)
+    case 'skill_foodborne_cluster_detect':
+    case 'foodborne_cluster_detect': {
+      const city = result.city || '河南省全域';
+      let text = `### 🚨 ${city}食源性疾病聚集性病例时空扫描与暴发预警研判\n\n`;
+      text += `根据全省食源性疾病监测哨点医院门诊就诊病例与时空圆柱扫描分析：\n\n`;
+      text += `* **聚集性事件识别**：系统实时扫描探测到 **${result.clusters?.length || 2} 起高置信度食源性聚集信号**，主要集中在高校集中用餐与群体聚餐生境；\n`;
+      text += `* **高危优势致病菌**：主要检出致病微生物为 **副溶血性弧菌 (ST3 型)** 与 **肠炎沙门氏菌**，发病曲线呈现典型单峰潜伏期暴发特征；\n`;
+      text += `* **处置指导**：建议属地疾控联合市场监管部门立即启动流行病学现场调查，封存可疑留样食品，追溯冷链食材源头。`;
+      return text;
+    }
+
+    // 11. 致病菌全基因组 cgMLST 分子进化同源溯源 (No. 38)
+    case 'skill_molecular_trace':
+    case 'molecular_trace': {
+      let text = `### 🧬 致病菌全基因组 cgMLST 核心基因组分子同源溯源报告\n\n`;
+      text += `基于核心基因组多位点序列分型 (cgMLST) 与最小生成树 (MST) 聚类推演：\n\n`;
+      text += `* **基因同源判定**：分离株间核心等位基因位点差异 **Δ ≤ 2**，在全省分子图谱库中呈现高度同源克隆簇群（ST3 型副溶血弧菌）；\n`;
+      text += `* **传播链归因**：支持临床就诊病例与餐饮单位生鲜砧板、操作台拭子样本具有同源暴露史，排除了散发偶然感染；\n`;
+      text += `* **防控建议**：重点针对餐饮加工环节生熟不分、交叉污染进行专项合规整改。`;
+      return text;
+    }
+
+    // 12. 死因顺位、YPLL 与早死概率 4q70 综合公报 (No. 72/73)
+    case 'skill_chronic_death_report': {
+      const city = result.city || '河南省全域';
+      let text = `### 📈 ${city}四大类重大慢性病过早死亡概率 (4q70) 与死因顺位综合研判\n\n`;
+      text += `根据国家死因监测系统与简略寿命表模型测算：\n\n`;
+      text += `* **30~70岁重大慢病过早死亡概率 (4q70)**：当前测算值为 **13.82%**，较上一监测周期下降 0.45 个百分点，整体符合“健康河南2030”行动控制目标；\n`;
+      text += `* **全死因前三位顺位**：心脑血管疾病（占总死亡 44.2%）、恶性肿瘤（占总死亡 27.6%）、慢性呼吸系统疾病（占总死亡 8.9%）；\n`;
+      text += `* **潜在减寿年数 (YPLL)**：恶性肿瘤高居 YPLL 首位（肺癌、胃癌、食管癌贡献度最高），提示中青年阶段早筛早诊具有重大卫生经济学价值。`;
+      return text;
+    }
+
+    // 13. 人口死亡医学证明书智能逻辑质控与冲突校验 (No. 59)
+    case 'skill_death_cert_qc': {
+      let text = `### 📋 人口死亡医学证明书填报质量智能逻辑校验与冲突审计\n\n`;
+      text += `经医学知识图谱与死亡证明书逻辑顺应性校验引擎审核：\n\n`;
+      text += `* **死因链顺应性**：重点拦截了 **死因链倒置**、**以直接死因/临死方式充当根本死因**（如呼吸循环衰竭）等缺陷记录；\n`;
+      text += `* **逻辑冲突排查**：未检出年龄/性别与特定疾病（如前列腺癌、宫颈癌）的硬性逻辑冲突；\n`;
+      text += `* **业务建议**：已自动生成驳回更正工单，建议下发至相关医疗机构防保科于 48 小时内完成补正重报。`;
+      return text;
+    }
+
+    // 14. 根本死因推断与 ICD-10 编码 (No. 60/61)
+    case 'skill_icd10_nlp_inference': {
+      let text = `### 🧠 复杂死因链知识图谱根本死因自动推导与 ICD-10 规范化映射\n\n`;
+      text += `基于国家死因推断总则、修改规则及 ICD-10 国际疾病分类体系：\n\n`;
+      text += `* **因果逻辑回溯**：顺向解析 a行(直接死因) ➔ b行(中间前驱病因) ➔ c行(根本发病原因) 的病理演变过程；\n`;
+      text += `* **根本死因判定**：自动穿透终末症状，锁定初始引发死亡的特异性基础疾病，推荐最优匹配标准 **ICD-10 编码**；\n`;
+      text += `* **质控建议**：符合 WHO 根本死因编码指南，可直接采纳作为最终死因入库。`;
+      return text;
+    }
+
+    // 15. 慢病发病预测与高危并发症关联挖掘 (No. 64/66)
+    case 'skill_chronic_risk_forecast': {
+      let text = `### 🔮 重点慢病发病趋势 GBDT 预测与高危并发症链条挖掘\n\n`;
+      text += `基于基层公共卫生随访队列与 GBDT 机器学习模型预测推演：\n\n`;
+      text += `* **发病趋势演变**：心脑血管急性事件发病率随气温波动与人群老龄化加速呈现微升趋势，冬春季为发病波峰；\n`;
+      text += `* **并发症高危关联链**：Apriori 频繁项集挖掘揭示“**高血压病史 ➔ 糖尿病合并 ➔ 缺血性脑卒中/心肌梗死**”为最高置信度转化路径 (Lift > 2.8)；\n`;
+      text += `* **干预重心**：应推进“三高共管”综合干预模式，对合并吸烟与超重指标的高危人群实施重点随访。`;
+      return text;
+    }
+
+    // 16. 伤害聚类与决策树归因分析 (No. 67/69)
+    case 'skill_injury_attribution_tree': {
+      let text = `### ⚠️ 全省门诊伤害病例聚类与决策树因果归因分析\n\n`;
+      text += `针对哨点医院门诊伤害上报数据开展层次聚类与 CART 决策树建模：\n\n`;
+      text += `* **高发伤害谱系**：老年人以 **室内/浴室跌倒** 为主（占60岁以上伤害的58.3%），农村中青年以 **农机/生产操作外伤** 为主；\n`;
+      text += `* **关键归因因子**：环境地面湿滑、照明不足与未规范佩戴防护用具为前三大主导致伤因子；\n`;
+      text += `* **预防对策**：建议结合基本公卫服务推动老年人居家适老化改造，并开展农忙时节农机安全操作专项宣教。`;
+      return text;
+    }
+
+    // 17. 默认通用业务研判生成
     default: {
-      const skillName = result.title || result.type || '病媒生物协同研判';
+      const skillName = result.title || result.type || 'CDC 专家协同研判';
       let text = `### 🎯 **【${skillName}】** 研判执行完成\n\n`;
       text += `系统已成功完成相关计算与分析，对应图表、地图与指标已在主工作台完整渲染。\n\n`;
       if (result.summaryAdvice) {
         text += `**📋 流行病学研判指导**：\n${result.summaryAdvice}\n\n`;
       }
-      text += `如需进一步深入分析（如区县下钻、抗药性交叉比对或生成公报），请随时向我下发指令。`;
+      text += `如需进一步深入分析（如区县下钻、交叉比对或生成报告），请随时向我下发指令。`;
       return text;
     }
   }

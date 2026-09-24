@@ -1,13 +1,26 @@
 {
   "name": "agent-cdc-buddy",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
+    "dev:vector": "NEXT_PUBLIC_AGENT_DOMAIN=vector PORT=3001 next dev -p 3001",
+    "dev:foodborne": "NEXT_PUBLIC_AGENT_DOMAIN=foodborne PORT=3002 next dev -p 3002",
+    "dev:env": "NEXT_PUBLIC_AGENT_DOMAIN=env PORT=3003 next dev -p 3003",
+    "dev:chronic": "NEXT_PUBLIC_AGENT_DOMAIN=chronic PORT=3004 next dev -p 3004",
     "build": "next build",
     "start": "next start",
+    "start:vector": "NEXT_PUBLIC_AGENT_DOMAIN=vector PORT=3001 next start -p 3001",
+    "start:foodborne": "NEXT_PUBLIC_AGENT_DOMAIN=foodborne PORT=3002 next start -p 3002",
+    "start:env": "NEXT_PUBLIC_AGENT_DOMAIN=env PORT=3003 next start -p 3003",
+    "start:chronic": "NEXT_PUBLIC_AGENT_DOMAIN=chronic PORT=3004 next start -p 3004",
     "lint": "next lint",
-    "test": "./.venv/bin/python tests/automated_test_suite.py"
+    "test": "./.venv/bin/python tests/automated_test_suite.py",
+    "test:vector": "./.venv/bin/python tests/automated_test_suite.py",
+    "test:foodborne": "./.venv/bin/python tests/suites/test_suite_foodborne.py",
+    "test:env": "./.venv/bin/python tests/suites/test_suite_env.py",
+    "test:chronic": "./.venv/bin/python tests/suites/test_suite_chronic.py",
+    "test:all": "./.venv/bin/python tests/run_all_agent_tests.py"
   },
   "dependencies": {
     "@copilotkit/react-core": "^1.4.0",

@@ -7,10 +7,36 @@ import {
   Activity, 
   MapPin, 
   Sparkles, 
-  ChevronDown,
-  ChevronUp,
-  X
+  ChevronDown, 
+  ChevronUp, 
+  X,
+  AlertTriangle,
+  GitBranch,
+  FileText,
+  Droplets,
+  SunMedium,
+  SlidersHorizontal,
+  ClipboardCheck,
+  HeartPulse,
+  FileCheck2
 } from 'lucide-react';
+import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
+
+const ICON_MAP: Record<string, any> = {
+  TrendingUp,
+  ShieldAlert,
+  Activity,
+  MapPin,
+  AlertTriangle,
+  GitBranch,
+  FileText,
+  Droplets,
+  SunMedium,
+  SlidersHorizontal,
+  ClipboardCheck,
+  HeartPulse,
+  FileCheck2
+};
 
 interface RecommendationPromptsProps {
   onSelectPrompt: (prompt: string) => void;
@@ -23,6 +49,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const containerRef = useRef<HTMLDivElement>(null);
+  const profile = getCurrentAgentProfile();
 
   // 点击外部自动收起浮动面板
   useEffect(() => {
@@ -39,52 +66,13 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
     };
   }, [isExpanded]);
 
-  const categories = [
-    {
-      title: '时空态势与预警排查',
-      color: 'bg-red-500/10 dark:bg-gradient-to-b dark:from-red-500/20 dark:to-orange-500/10 border-red-200 dark:border-red-500/30',
-      icon: MapPin,
-      iconColor: 'text-red-600 dark:text-red-400',
-      prompts: [
-        '在地图上展示全省当前的病媒生物预警热力分布，标记所有严重（红色）预警区域。',
-        '下钻查看郑州市金水区和管城区的蚊媒密度空间热力与超标监测点。',
-        '针对全省当前的严重等级预警生成今日消杀调度派单清单与处置依据。'
-      ]
-    },
-    {
-      title: '种群消长与趋势预测',
-      color: 'bg-sky-500/10 dark:bg-gradient-to-b dark:from-sky-500/20 dark:to-cyan-500/10 border-sky-200 dark:border-sky-500/30',
-      icon: TrendingUp,
-      iconColor: 'text-sky-600 dark:text-sky-400',
-      prompts: [
-        '分析近几年全省蚊类密度随气温变化的季节消长规律，并预测未来3个月密度波动。',
-        '分析郑州市蚊类优势种群构成比（白纹伊蚊与淡色库蚊比例）及多样性指数。',
-        '结合未来高温多雨气象，通过 GBDT 模型预测下月成蚊暴发峰值。'
-      ]
-    },
-    {
-      title: '抗药性测定与科学消杀',
-      color: 'bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-500/20 dark:to-yellow-500/10 border-amber-200 dark:border-amber-500/30',
-      icon: ShieldAlert,
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      prompts: [
-        '评估全省淡色库蚊对氯氰菊酯和残杀威的抗药性等级及用药调整建议。',
-        '查询德国小蠊在郑州市对各类杀虫剂的 LC50 毒力测定结果与轮换方案。',
-        '预测未来1年全省淡色库蚊对拟除虫菊酯类的 KDR 耐药基因频率演化。'
-      ]
-    },
-    {
-      title: '病原学筛查与专题报告',
-      color: 'bg-purple-500/10 dark:bg-gradient-to-b dark:from-purple-500/20 dark:to-pink-500/10 border-purple-200 dark:border-purple-500/30',
-      icon: Activity,
-      iconColor: 'text-purple-600 dark:text-purple-400',
-      prompts: [
-        '显示平顶山2022年6月全部病媒监测数据表',
-        '排查全省蚊媒登革病毒与乙脑病毒的 PCR 阳性检出率及高风险区县。',
-        '生成郑州市2024年夏季蚊媒监测与登革热风险评估专项报告并准备导出。'
-      ]
-    }
-  ];
+  const categories = (profile.categories || []).map((cat) => ({
+    title: cat.title,
+    color: cat.color,
+    icon: ICON_MAP[cat.iconName] || Sparkles,
+    iconColor: cat.iconColor,
+    prompts: cat.prompts
+  }));
 
   const totalPromptsCount = categories.reduce((sum, c) => sum + c.prompts.length, 0);
 

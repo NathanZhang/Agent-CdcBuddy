@@ -17,7 +17,16 @@ export interface AnalyticsEngineTask {
     | 'lstm_predictor'
     | 'satscan_kmeans_lstm_pipeline'
     | 'composable_workflow'
-    | 'daemon_surveillance_cycle';
+    | 'daemon_surveillance_cycle'
+    | 'foodborne_cluster'
+    | 'foodborne_phylogeny'
+    | 'food_attribution'
+    | 'water_safety_eval'
+    | 'sewage_lag_tracing'
+    | 'air_climate_health_risk'
+    | 'river_basin_pollution_chain'
+    | 'env_scenario_simulation'
+    | (string & {});
   args?: Record<string, any>;
 }
 
