@@ -44,9 +44,6 @@ import {
 } from 'lucide-react';
 import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
-const profile = getCurrentAgentProfile();
-const INITIAL_GENERATIVE_VIEW = profile.initialGenerativeView;
-
 export interface ChatMessageItem {
   id: string;
   sender: 'user' | 'agent' | 'system';
@@ -59,25 +56,35 @@ export interface ChatMessageItem {
   timestamp: string;
 }
 
-const getInitialChatHistory = (): ChatMessageItem[] => [
+const getInitialChatHistory = (p: ReturnType<typeof getCurrentAgentProfile>): ChatMessageItem[] => [
   {
     id: 'init-1',
     sender: 'agent',
-    text: `您好！我是您的 **${profile.fullName}**。\n\n系统已连通【${profile.institute}】全域监测预警底座数据库。您可以点击上方推荐卡片，或直接向我下发业务分析指令。`,
+    text: `您好！我是您的 **${p.fullName}**。\n\n系统已连通【${p.institute}】全域监测预警底座数据库。您可以点击上方推荐卡片，或直接向我下发业务分析指令。`,
     timestamp: '11:30'
   }
 ];
 
 export default function CdcAgentWorkspace() {
   const { currentUser, activeRole } = useRbac();
+  const profile = getCurrentAgentProfile();
+  const INITIAL_GENERATIVE_VIEW = profile.initialGenerativeView;
+
   const [isSkillsOpen, setIsSkillsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
   const [showFloatingCopilot, setShowFloatingCopilot] = useState(false);
   const [activeGenerativeView, setActiveGenerativeView] = useState<any>(INITIAL_GENERATIVE_VIEW);
 
-  // 当前会话状态
+  // 当前会话状态 (利用 ref 避免长时间流式执行中的闭包过期)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const currentSessionIdRef = useRef<string | null>(null);
+
+  const updateSessionId = useCallback((id: string | null) => {
+    currentSessionIdRef.current = id;
+    setCurrentSessionId(id);
+  }, []);
+
   const [currentSessionTitle, setCurrentSessionTitle] = useState<string>('新研判会话');
   const [isSessionLoading, setIsSessionLoading] = useState(false);
 
@@ -154,7 +161,7 @@ export default function CdcAgentWorkspace() {
     }
   };
 
-  const [chatHistory, setChatHistory] = useState<ChatMessageItem[]>(getInitialChatHistory());
+  const [chatHistory, setChatHistory] = useState<ChatMessageItem[]>(() => getInitialChatHistory(profile));
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const isCancelledRef = useRef<boolean>(false);
@@ -177,19 +184,19 @@ export default function CdcAgentWorkspace() {
         const json = await res.json();
         const data = json.data;
         if (data) {
-          setCurrentSessionId(data.sessionId);
+          updateSessionId(data.sessionId);
           setCurrentSessionTitle(data.title || '历史研判会话');
           if (Array.isArray(data.messages) && data.messages.length > 0) {
             setChatHistory(data.messages);
           } else {
-            setChatHistory(getInitialChatHistory());
+            setChatHistory(getInitialChatHistory(profile));
           }
 
           // 重新加载并还原当时工作台的 AG-UI 生成式视图快照
           if (data.lastGenerativeView) {
             setActiveGenerativeView(data.lastGenerativeView);
           } else {
-            setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
+            setActiveGenerativeView(profile.initialGenerativeView);
           }
         }
       }
@@ -198,7 +205,7 @@ export default function CdcAgentWorkspace() {
     } finally {
       setIsSessionLoading(false);
     }
-  }, []);
+  }, [profile, updateSessionId]);
 
   /**
    * 开启新会话
@@ -211,11 +218,11 @@ export default function CdcAgentWorkspace() {
     }
     setIsThinking(false);
     setInputPrompt('');
-    setCurrentSessionId(null);
+    updateSessionId(null);
     setCurrentSessionTitle('新研判会话');
-    setChatHistory(getInitialChatHistory());
-    setActiveGenerativeView(INITIAL_GENERATIVE_VIEW);
-  }, []);
+    setChatHistory(getInitialChatHistory(profile));
+    setActiveGenerativeView(profile.initialGenerativeView);
+  }, [profile, updateSessionId]);
 
   /**
    * 当切换 RBAC 用户身份时，自动拉取并加载该用户的最近历史会话
@@ -457,7 +464,7 @@ export default function CdcAgentWorkspace() {
 
       // ---------------- 真实落库持久化：创建会话或追加消息 ----------------
       try {
-        let activeId = currentSessionId;
+        let activeId = currentSessionIdRef.current || currentSessionId;
         const suggestedTitle = promptText.length > 25 ? `${promptText.substring(0, 24)}...` : promptText;
 
         if (!activeId) {
@@ -478,13 +485,16 @@ export default function CdcAgentWorkspace() {
           if (createRes.ok) {
             const json = await createRes.json();
             if (json.data?.sessionId) {
-              setCurrentSessionId(json.data.sessionId);
+              updateSessionId(json.data.sessionId);
               setCurrentSessionTitle(json.data.title || suggestedTitle);
             }
+          } else {
+            const errBody = await createRes.text().catch(() => '');
+            console.error('会话入库失败 HTTP:', createRes.status, errBody);
           }
         } else {
           // 当前已有会话，执行 POST /api/sessions/[id]
-          await fetch(`/api/sessions/${activeId}`, {
+          const appendRes = await fetch(`/api/sessions/${activeId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -493,6 +503,10 @@ export default function CdcAgentWorkspace() {
               suggestedTitle: currentSessionTitle === '新研判会话' ? suggestedTitle : undefined
             })
           });
+          if (!appendRes.ok) {
+            const errBody = await appendRes.text().catch(() => '');
+            console.error('追加会话消息失败 HTTP:', appendRes.status, errBody);
+          }
           if (currentSessionTitle === '新研判会话') {
             setCurrentSessionTitle(suggestedTitle);
           }

@@ -91,7 +91,9 @@ export async function POST(
       message_id: m.id || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       session_id: sessionId,
       sender: m.sender as ('user' | 'agent' | 'system'),
-      text: m.text,
+      text: m.text || '',
+      reasoning_text: m.reasoningText || m.reasoning_text || undefined,
+      reasoning_duration: m.reasoningDuration ?? m.reasoning_duration ?? undefined,
       skill_used: m.skillUsed || m.skill_used || undefined,
       generative_view_snapshot: m.generativeViewSnapshot || m.generative_view_snapshot || undefined,
       timestamp: m.timestamp || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })

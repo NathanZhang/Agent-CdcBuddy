@@ -3,7 +3,7 @@ import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
-import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
+import { getCurrentAgentProfile, getCurrentAgentDomain } from '@/lib/config/agent-profile';
 
 export interface DispatchResult {
   success: boolean;
@@ -523,7 +523,7 @@ export async function dispatchSkillPromptStream(
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
-        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || process.env.NEXT_PUBLIC_AGENT_DOMAIN || 'env',
+        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain(),
         context: {
           currentView: context?.currentView
         }
@@ -687,7 +687,7 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
-        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || process.env.NEXT_PUBLIC_AGENT_DOMAIN || 'env',
+        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain(),
         context: {
           currentView: context?.currentView
         }

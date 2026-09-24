@@ -20,6 +20,7 @@
     "test:foodborne": "./.venv/bin/python tests/suites/test_suite_foodborne.py",
     "test:env": "./.venv/bin/python tests/suites/test_suite_env.py",
     "test:chronic": "./.venv/bin/python tests/suites/test_suite_chronic.py",
+    "test:sessions": "./.venv/bin/python tests/test_all_agents_session_history.py",
     "test:all": "./.venv/bin/python tests/run_all_agent_tests.py"
   },
   "dependencies": {
