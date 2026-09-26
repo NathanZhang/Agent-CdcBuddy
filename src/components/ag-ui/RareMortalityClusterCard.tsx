@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import ReactECharts from 'echarts-for-react';
+import { useTheme } from '@/lib/theme/theme-context';
 import { 
   AlertTriangle, 
   MapPin, 
@@ -17,6 +19,7 @@ interface RareMortalityClusterCardProps {
 }
 
 export const RareMortalityClusterCard: React.FC<RareMortalityClusterCardProps> = ({ data = {} }) => {
+  const { isDark } = useTheme();
   const target = data?.analysisTarget || '河南省全域';
   const rareClusters = data?.rareMortalityClustersDetected || [
     {
@@ -36,6 +39,139 @@ export const RareMortalityClusterCard: React.FC<RareMortalityClusterCardProps> =
 
   const arimaTrend = data?.arimaMortalityTrend || [];
   const dbscanClusters = data?.dbscanSpatialClusters || [];
+
+  // ECharts ARIMA 全死因月度死亡时序消长与未来3个月预测
+  const months = arimaTrend.map((t: any) => t.month);
+  let lastHistIdx = -1;
+  arimaTrend.forEach((t: any, idx: number) => {
+    if (!t.isPredicted) lastHistIdx = idx;
+  });
+
+  const historicalRates = arimaTrend.map((t: any) => {
+    if (!t.isPredicted) return t.crudeMortalityRatePer100k;
+    return null;
+  });
+
+  const predictedRates = arimaTrend.map((t: any, idx: number) => {
+    if (idx === lastHistIdx) return t.crudeMortalityRatePer100k;
+    if (t.isPredicted) return t.crudeMortalityRatePer100k;
+    return null;
+  });
+
+  const echartsOption = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+      borderColor: isDark ? '#f59e0b' : '#fbbf24',
+      textStyle: { color: isDark ? '#f8fafc' : '#0f172a', fontSize: 12 },
+      extraCssText: isDark ? '' : 'box-shadow: 0 4px 16px rgba(0,0,0,0.12);',
+      formatter: (params: any) => {
+        const idx = params[0]?.dataIndex ?? 0;
+        const pt = arimaTrend[idx];
+        if (!pt) return '';
+        return `
+          <div style="font-weight:bold;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span>${pt.month} ${pt.isPredicted ? '前瞻预测' : '实测死亡登记'}</span>
+            ${pt.isPredicted ? '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,0.15);color:#f59e0b;font-weight:bold;">ARIMA推演</span>' : ''}
+          </div>
+          <div style="font-size:12px;line-height:1.6;">
+            <div><span style="color:#f43f5e;margin-right:4px;">●</span>粗死亡率: <b style="color:#f43f5e">${pt.crudeMortalityRatePer100k} / 10万</b></div>
+            <div style="color:${isDark ? '#94a3b8' : '#64748b'};">报告死亡人数: <b>${pt.reportedDeaths?.toLocaleString()} 例</b></div>
+          </div>
+        `;
+      }
+    },
+    legend: {
+      data: ['历史死亡率 (1/10万)', 'ARIMA前瞻推演 (未来3月)'],
+      textStyle: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 },
+      top: 0,
+      right: 10
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '10%',
+      top: '18%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: months,
+      axisLine: { lineStyle: { color: isDark ? '#475569' : '#cbd5e1' } },
+      axisLabel: { 
+        color: isDark ? '#94a3b8' : '#64748b', 
+        fontSize: 11,
+        formatter: (val: string) => val.slice(5)
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '粗死亡率 (1/10万)',
+      nameTextStyle: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 },
+      splitLine: { lineStyle: { color: isDark ? '#334155' : '#e2e8f0', type: 'dashed' } },
+      axisLabel: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 }
+    },
+    series: [
+      {
+        name: '历史死亡率 (1/10万)',
+        type: 'line',
+        data: historicalRates,
+        smooth: 0.3,
+        lineStyle: { color: '#f43f5e', width: 3 },
+        itemStyle: { 
+          color: '#f43f5e',
+          borderColor: isDark ? '#0f172a' : '#ffffff',
+          borderWidth: 2
+        },
+        symbol: 'circle',
+        symbolSize: 6,
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: isDark ? 'rgba(244, 63, 94, 0.35)' : 'rgba(244, 63, 94, 0.2)' },
+              { offset: 1, color: 'rgba(244, 63, 94, 0.01)' }
+            ]
+          }
+        }
+      },
+      {
+        name: 'ARIMA前瞻推演 (未来3月)',
+        type: 'line',
+        data: predictedRates,
+        smooth: 0.3,
+        lineStyle: { color: '#f59e0b', width: 3, type: 'dashed' },
+        itemStyle: { 
+          color: '#f59e0b',
+          borderColor: isDark ? '#0f172a' : '#ffffff',
+          borderWidth: 2
+        },
+        symbol: 'circle',
+        symbolSize: 6,
+        markPoint: {
+          data: [
+            {
+              type: 'max',
+              name: '预测达峰',
+              symbol: 'pin',
+              symbolSize: 40,
+              itemStyle: { color: '#d97706' },
+              label: {
+                formatter: (p: any) => `${p.value}`,
+                fontSize: 10,
+                color: '#fff',
+                fontWeight: 'bold',
+                offset: [0, -3]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  };
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 rounded-xl p-5 border border-amber-200 dark:border-amber-500/30 shadow-md space-y-5">
@@ -134,34 +270,37 @@ export const RareMortalityClusterCard: React.FC<RareMortalityClusterCardProps> =
             <span className="text-[11px] text-slate-400">虚线高亮为模型前瞻推演</span>
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-end justify-between gap-1.5 h-32 pt-2 px-1">
-              {arimaTrend.slice(-10).map((pt: any, i: number) => {
-                const heightPct = Math.max(15, Math.min(100, Math.round((pt.crudeMortalityRatePer100k / 4.5) * 100)));
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 px-1.5 py-0.5 rounded bg-slate-800 text-white text-[10px] pointer-events-none whitespace-nowrap z-10">
-                      {pt.month}: {pt.reportedDeaths}例 ({pt.crudeMortalityRatePer100k}/10万)
-                    </div>
-                    <span className={`text-[10px] font-bold ${pt.isPredicted ? 'text-amber-500' : 'text-slate-400'}`}>
-                      {pt.reportedDeaths}
-                    </span>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-t-md h-full flex items-end">
-                      <div 
-                        className={`w-full rounded-t-md transition-all duration-500 ${
-                          pt.isPredicted 
-                            ? 'bg-amber-400 border-2 border-dashed border-amber-600' 
-                            : 'bg-rose-400 dark:bg-rose-600/70 hover:bg-rose-500'
-                        }`}
-                        style={{ height: `${heightPct}%` }}
-                      />
-                    </div>
-                    <span className={`text-[9px] ${pt.isPredicted ? 'text-amber-500 font-bold' : 'text-slate-500'}`}>
-                      {pt.month.slice(5)}
-                    </span>
+          <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+            {/* ECharts ARIMA 全死因月度死亡时序消长折线图 */}
+            <div className="h-56 w-full">
+              <ReactECharts 
+                option={echartsOption} 
+                style={{ height: '100%', width: '100%' }} 
+              />
+            </div>
+
+            {/* 最近月份点估计与预测快速指标胶囊 */}
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+              {arimaTrend.slice(-10).map((pt: any, i: number) => (
+                <div 
+                  key={i} 
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    pt.isPredicted 
+                      ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/50 shadow-sm' 
+                      : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800'
+                  }`}
+                >
+                  <div className={`text-[10px] font-medium ${pt.isPredicted ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-slate-500'}`}>
+                    {pt.month.slice(5)}月
                   </div>
-                );
-              })}
+                  <div className={`text-xs font-black mt-0.5 ${pt.isPredicted ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-200'}`}>
+                    {pt.crudeMortalityRatePer100k}
+                  </div>
+                  <div className="text-[9px] text-slate-400 mt-0.5 truncate" title={`${pt.reportedDeaths}例`}>
+                    {pt.reportedDeaths}例
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
