@@ -1,0 +1,116 @@
+version: '3.8'
+
+# ==============================================================================
+# CdcBuddy 疾控全域四智能体平台 - Docker Compose 集群编排配置
+# 涵盖四大领域智能体独立容器与端口映射:
+#   - vector-agent:    3001 -> 3000 (病媒生物与宿主动物)
+#   - foodborne-agent: 3002 -> 3000 (食源性疾病)
+#   - env-agent:       3003 -> 3000 (环境健康风险)
+#   - chronic-agent:   3004 -> 3000 (死因慢病伤害)
+# ==============================================================================
+
+services:
+  # 🦟 1. 病媒生物与宿主动物监测预警智能体
+  vector-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_TIANDITU_KEY: ${NEXT_PUBLIC_TIANDITU_KEY:-}
+    image: agent-cdcbuddy:latest
+    container_name: cdcbuddy-vector
+    restart: unless-stopped
+    ports:
+      - "${VECTOR_PORT:-3001}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - NEXT_PUBLIC_AGENT_DOMAIN=vector
+      - AGENT_DOMAIN=vector
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      - SILICONFLOW_BASE_URL=${SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
+      - SILICONFLOW_MODEL=${SILICONFLOW_MODEL:-Qwen/Qwen3.6-27B}
+      - NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY:-}
+      - APP_BUSINESS_DB_PATH=/app/data/app_business.db
+    volumes:
+      - ./data:/app/data
+      - ./vector_monitoring.db:/app/vector_monitoring.db:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🍲 2. 食源性疾病监测预警智能体
+  foodborne-agent:
+    image: agent-cdcbuddy:latest
+    container_name: cdcbuddy-foodborne
+    restart: unless-stopped
+    ports:
+      - "${FOODBORNE_PORT:-3002}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - NEXT_PUBLIC_AGENT_DOMAIN=foodborne
+      - AGENT_DOMAIN=foodborne
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      - SILICONFLOW_BASE_URL=${SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
+      - SILICONFLOW_MODEL=${SILICONFLOW_MODEL:-Qwen/Qwen3.6-27B}
+      - NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY:-}
+      - APP_BUSINESS_DB_PATH=/app/data/app_business.db
+    volumes:
+      - ./data:/app/data
+      - ./foodborne_monitoring.db:/app/foodborne_monitoring.db
+    depends_on:
+      - vector-agent
+
+  # 💧 3. 环境健康风险监测预警智能体
+  env-agent:
+    image: agent-cdcbuddy:latest
+    container_name: cdcbuddy-env
+    restart: unless-stopped
+    ports:
+      - "${ENV_PORT:-3003}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - NEXT_PUBLIC_AGENT_DOMAIN=env
+      - AGENT_DOMAIN=env
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      - SILICONFLOW_BASE_URL=${SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
+      - SILICONFLOW_MODEL=${SILICONFLOW_MODEL:-Qwen/Qwen3.6-27B}
+      - NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY:-}
+      - APP_BUSINESS_DB_PATH=/app/data/app_business.db
+    volumes:
+      - ./data:/app/data
+      - ./env_monitoring.db:/app/env_monitoring.db
+    depends_on:
+      - vector-agent
+
+  # 🩺 4. 死因、慢病及伤害综合监测预警智能体
+  chronic-agent:
+    image: agent-cdcbuddy:latest
+    container_name: cdcbuddy-chronic
+    restart: unless-stopped
+    ports:
+      - "${CHRONIC_PORT:-3004}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - NEXT_PUBLIC_AGENT_DOMAIN=chronic
+      - AGENT_DOMAIN=chronic
+      - SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      - SILICONFLOW_BASE_URL=${SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
+      - SILICONFLOW_MODEL=${SILICONFLOW_MODEL:-Qwen/Qwen3.6-27B}
+      - NEXT_PUBLIC_TIANDITU_KEY=${NEXT_PUBLIC_TIANDITU_KEY:-}
+      - APP_BUSINESS_DB_PATH=/app/data/app_business.db
+    volumes:
+      - ./data:/app/data
+      - ./chronic_monitoring.db:/app/chronic_monitoring.db
+    depends_on:
+      - vector-agent
+
+networks:
+  default:
+    name: cdcbuddy-network

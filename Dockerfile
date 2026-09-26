@@ -36,7 +36,7 @@ COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --chown=node:node analytics_engine ./analytics_engine
-COPY --chown=node:node scripts/init_business_db.py ./scripts/init_business_db.py
+COPY --chown=node:node scripts ./scripts
 COPY --chown=node:node docker/entrypoint.sh ./docker/entrypoint.sh
 
 RUN mkdir -p /app/data \

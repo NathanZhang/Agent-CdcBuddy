@@ -1,184 +1,325 @@
-# Agent-CdcBuddy (疾控病媒生物监测预警智能体平台)
+# Agent-CdcBuddy (疾控全域四智能体综合监测预警平台)
 
-> **基于大语言模型、LangGraph 状态图与 CopilotKit 的新一代疾控中心 (CDC) 病媒生物监测、抗药性评估、时空扫描聚类、LSTM 深度预测与消杀闭环全流程智能协作平台。**
+> **面向国家、省、市、县四级疾病预防控制中心（CDC）的新一代全域多智能体协同监测预警平台。基于通用大语言模型、LangGraph 状态机编排与 CopilotKit 交互框架，构建覆盖“病媒生物、食源性疾病、环境健康、死因慢病与伤害”四大领域的全链条智能闭环。**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.7-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0.0-blue?style=flat&logo=react)](https://react.dev/)
 [![CopilotKit](https://img.shields.io/badge/CopilotKit-1.4.0-6366F1?style=flat)](https://copilotkit.ai/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-0.2+-FF6F00?style=flat)](https://langchain-ai.github.io/langgraph/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?style=flat&logo=pytorch)](https://pytorch.org/)
+[![Tests](https://img.shields.io/badge/Tests-44%2F44%20Passing-brightgreen?style=flat)](tests/reports/all_agents_test_report.md)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
 ---
 
-## 🌟 核心特性与平台全景
+## 🌟 平台全景与四智能体架构
 
-Agent-CdcBuddy 专为国家、省、市、县四级疾病预防控制中心（CDC）及爱卫办量身打造，打通**“现场采集 ➔ 智能识别 ➔ 后台常驻巡检 ➔ SaTScan 时空聚类 ➔ LSTM 深度预测 ➔ 动态预警 ➔ 处置闭环 ➔ 专报生成”**全链条业务流。
+Agent-CdcBuddy 严格依据疾控专业规范与国家标准，打通**“多源采集 ➔ 智能质控 ➔ 常驻巡检 ➔ 统计推断与深度学习 ➔ 动态预警 ➔ 处置闭环 ➔ 决策专报”**全流程，全面覆盖 **54 项疾控专业核心功能**（对照国家需求 No. 23 ~ No. 76）：
 
 ```
-                    ┌─────────────────────────────────────────────────────────┐
-                    │               Agent-CdcBuddy 智能中枢                     │
-                    │         (LangGraph StateGraph 多智能体协同编排)           │
-                    └────────────────────────────┬────────────────────────────┘
-                                                 │
-          ┌──────────────────────┬───────────────┴──────────────┬──────────────────────┐
-          ▼                      ▼                              ▼                      ▼
-┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-│  监测分析智能体   │   │  抗药性分析智能体 │   │  风险评估智能体   │   │  处置推荐智能体   │
-│Surveillance Agent│   │ Resistance Agent │   │  Risk Agent      │   │Intervention Agent│
-├──────────────────┤   ├──────────────────┤   ├──────────────────┤   ├──────────────────┤
-│• 种群动态ARIMA消长│   │• 抗药性ML分级判定│   │• 动力学传播风险  │   │• 智能处置方案生成│
-│• 优势种聚类与多样│   │• LC50 毒力回归测定│   │• PCR 病原关联挖掘│   │• 派发消杀流转工单│
-│• GBDT密度长期预测│   │• 贝叶斯基因演化图│   │• 空间时空动态预警│   │• 48h复测核销闭环 │
-│• 7×24常驻守护巡检│   │• 耐药突变阻断处方│   │• SaTScan时空扫描 │   │• 专报一键导出PDF │
-└─────────┬────────┘   └─────────┬────────┘   └─────────┬────────┘   └─────────┬────────┘
-          └──────────────────────┼──────────────────────────────┴──────────────────────┘
-                                 │
-                 ┌───────────────┴───────────────┐
-                 ▼                               ▼
-       ┌───────────────────┐           ┌───────────────────┐
-       │ 生成式 UI (AG-UI) │           │ Python 科学算法引擎│
-       ├───────────────────┤           ├───────────────────┤
-       │• 国家天地图 GIS   │           │• LangGraph 编排   │
-       │• SaTScan 时空扫描 │           │• SaTScan 时空扫描 │
-       │• PyTorch LSTM 图  │           │• PyTorch LSTM 预测│
-       │• 7×24 守护监控卡  │           │• ARIMA/LSTM 预测  │
-       │• ECharts 双轴时序 │           │• GBDT 气象驱动回归│
-       │• 抗药性热力矩阵   │           │• 克里金/IDW空间插值│
-       │• 风险动态仪表盘   │           │• Apriori 病原关联 │
-       │• 处置工单操作卡   │           │• 贝叶斯耐药演化   │
-       │• 自动化专报导出   │           │• Shannon 多样性   │
-       └───────────────────┘           └───────────────────┘
+                       ┌─────────────────────────────────────────────────────────┐
+                       │               Agent-CdcBuddy 智能协同中枢                 │
+                       │           (LangGraph / CopilotKit / 统一网关编排)         │
+                       └────────────────────────────┬────────────────────────────┘
+                                                    │
+          ┌─────────────────────────┬───────────────┴───────────────┬─────────────────────────┐
+          ▼                         ▼                               ▼                         ▼
+┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
+│  🦟 病媒与宿主    │     │  🍲 食源性疾病    │     │  💧 环境健康风险  │     │  🩺 死因慢病伤害  │
+│监测预警智能体     │     │监测预警智能体     │     │监测预警智能体     │     │综合监测智能体     │
+│(Vector Agent)     │     │(Foodborne Agent)  │     │(Env Health Agent) │     │(Chronic Agent)    │
+│Port: 3001 | No.23~35│   │Port: 3002 | No.36~41│   │Port: 3003 | No.42~58│   │Port: 3004 | No.59~76│
+├───────────────────┤     ├───────────────────┤     ├───────────────────┤     ├───────────────────┤
+│• 种群消长ARIMA预测│     │• 聚集暴发时空扫描 │     │• 水质RF-Kriging插值│    │• 死亡医学证明质控 │
+│• 优势种K-Means聚类│     │• 发病风险扩散预测 │     │• 污水滞后流行病学 │     │• ICD-10 NLP智能编码│
+│• LC50毒力回归分析 │     │• cgMLST分子系统树 │     │• 极端气候DLNM响应 │     │• 时空DBSCAN罕见聚集│
+│• 贝叶斯耐药基因演化│   │• 食品暴露归因排行 │     │• 四河流域自相关链 │     │• 慢病GBDT风险预测 │
+│• SaTScan时空扫描  │     │• 处置工单闭环派发 │     │• 三级动态预警下发 │     │• 简略寿命表4q70评估│
+│• 7×24常驻守护巡检 │     │• 暴发流调简报导出 │     │• 水质冲洗处置方案 │     │• 伤害决策树归因分析│
+└─────────┬─────────┘     └─────────┬─────────┘     └─────────┬─────────┘     └─────────┬─────────┘
+          └─────────────────────────┼───────────────────────────────┴─────────────────────────┘
+                                    │
+                    ┌───────────────┴───────────────┐
+                    ▼                               ▼
+          ┌───────────────────┐           ┌───────────────────┐
+          │  生成式 UI (AG-UI) │           │ Python 科学算法引擎│
+          ├───────────────────┤           ├───────────────────┤
+          │• 天地图 GIS 空间层│           │• SaTScan 时空圆柱 │
+          │• 交互式地理实体徽章│           │• PyTorch 双向 LSTM│
+          │• ECharts 时序/雷达│           │• ARIMA / GBDT 回归│
+          │• 分子系统发育树图 │           │• cgMLST 最小生成树│
+          │• 决策归因树与热力 │           │• DLNM 暴露滞后响应│
+          │• 7×24 守护监控卡  │           │• Kriging 空间插值 │
+          │• 处置工单复测核销 │           │• Apriori 关联挖掘 │
+          │• 决策专报一键导出 │           │• 贝叶斯/马尔可夫演化│
+          └───────────────────┘           └───────────────────┘
+```
+
+> 📐 **技术架构全景图**：详见 [docs/技术架构图与各层详细设计说明.md](docs/技术架构图与各层详细设计说明.md)，可直接访问 [矢量架构图 SVG](docs/images/architecture.svg) 或 [交互式 HTML 架构图](docs/images/architecture.html)。
+
+---
+
+## 🚀 四智能体业务矩阵与核心能力
+
+### 1. 🦟 病媒生物与宿主动物监测预警智能体 (`vector` | 端口 3001)
+- **业务覆盖**：对照需求 No. 23 ~ No. 35，服务于疾控中心媒介生物控制科室。
+- **核心算法与能力**：
+  - **种群消长预测 (ARIMA / Bi-LSTM)**：对蚊、蝇、鼠、蜚蠊等多生境密度进行 3 个月波动预测（置信区间 95%）。
+  - **优势种聚类 (K-Means & Shannon 多样性)**：自动解析群落构成比与空间异质性。
+  - **抗药性毒力回归 (Probit)**：测定 LC50/KT50 毒力参数，结合马尔可夫/贝叶斯模型推演耐药突变趋势。
+  - **病原关联与 SaTScan 扫描**：结合 PCR 筛查（登革热、乙脑、疟原虫等），使用 Kulldorff 空间-时间扫描统计量（Poisson 模型，999 次蒙特卡洛检验）识别高危聚集区。
+  - **7×24 小时后台守护 (Daemon Agent)**：动态注入专家自然语言 Prompt Policy 策略，周期性自动巡检与异常告警。
+  - **处置闭环与移动端 API**：自动关联 GB/T 23797 标准生成消杀工单，跟踪 48h 复测核销，提供移动端 AI 拍照识别与数据质控接口。
+
+### 2. 🍲 食源性疾病监测预警智能体 (`foodborne` | 端口 3002)
+- **业务覆盖**：对照需求 No. 36 ~ No. 41，服务于食品安全与营养卫生科室。
+- **核心算法与能力**：
+  - **聚集性病例异常识别 (`outbreak_scanner.py`)**：基于时空聚集度检测与病例密度偏离度算法，实时捕捉食源性暴发苗头。
+  - **发病风险与扩散预测 (`risk_forecast.py`)**：融合气象季节温度、历年同期基线与就诊时序，预测未来扩散风险指数。
+  - **致病菌分子溯源 (`cgmlst_cluster.py`)**：基于核心基因组多位点序列分型 (cgMLST) 等位基因差异矩阵与最小生成树，构建沙门氏菌、副溶血性弧菌等分子系统发育树与传播链。
+  - **食品暴露归因分析 (`food_attribution.py`)**：采用流行病学优势比 (Odds Ratio) 与群体归因分值，精准锁定嫌疑高危食品与餐品来源。
+  - **处置工单与报告流转**：自动生成现场调查方案、封存样品建议与流调简报导出。
+
+### 3. 💧 环境健康风险监测预警智能体 (`env` | 端口 3003)
+- **业务覆盖**：对照需求 No. 42 ~ No. 58，服务于环境与健康科室。
+- **核心算法与能力**：
+  - **多介质数据智能录入与标化**：支持生活饮用水、污水、空气、公共场所等多维检测报告智能解析（OCR 录入卡片）。
+  - **水质安全空间平滑评估 (`water_rf_kriging.py`)**：结合 Random Forest 与普通克里金空间插值，实时绘制给水管网末梢水质超标风险热力面，推送管网冲洗方案。
+  - **污水流行病学时空溯源 (`sewage_lag_tracing.py`)**：分析污水中特定病原载量（如诺如病毒、肠道病毒）与临床门诊病例的时空滞后互相关系数（Cross-Correlation），实现提前 7~14 天的早期预警。
+  - **空气质量与极端气候健康响应 (`air_climate_dlnm.py`)**：运用分布式滞后非线性模型 (DLNM) 拟合温度/PM2.5 对心脑血管及呼吸系统疾病发病的超额风险响应曲面。
+  - **四河流域跨介质链式空间自相关 (`river_chain_autocorr.py`)**：基于全局/局部 Moran's I 追踪沿河流域断面水质污染向周边人群发病率的链式传递。
+  - **环境政策情景推演 (`scenario_simulation.py`)**：模拟极端天气应对或治理减排下的疾病发生率推演。
+
+### 4. 🩺 死因、慢病及伤害综合监测预警智能体 (`chronic` | 端口 3004)
+- **业务覆盖**：对照需求 No. 59 ~ No. 76，服务于慢性非传染性疾病防制科室。
+- **核心算法与能力**：
+  - **死亡医学证明书智能质控 (`death_cert_qc.py`)**：针对死亡逻辑顺序倒置、垃圾代码 (Garbage Codes)、空白缺项开展全自动规则质控与漏报核验。
+  - **根本死因推理与 ICD-10 NLP 编码 (`icd10_nlp_inference.py`)**：基于死因链语义解析与国家死因库规则，智能判定根本死因并归类标准 ICD-10 编码。
+  - **罕见死因时空聚集监测 (`mortality_cluster_dbscan.py`)**：结合时空 DBSCAN 密度聚类算法发现罕见病/不明原因死亡异常聚集，辅以 ARIMA 死亡率历史拟合与未来预测 ECharts 曲线。
+  - **慢病发病预测 (`chronic_risk_gbdt.py`)**：融合高血压、糖尿病危险因素基线及气象气温，基于 GBDT 模型输出高危人群发病概率。
+  - **简略寿命表与 4q70 早死概率测算 (`lifetable_4q70_roi.py`)**：根据各年龄组死亡率构建简略寿命表，计算 30~70 岁四类重大慢病早死概率（$4q70$）、潜在减寿年数 (PYLL) 及干预投入产出比 (ROI)。
+  - **伤害时空聚类与决策树归因 (`injury_tree_attribution.py`)**：针对跌倒、交通事故、溺水等伤害病例，构建多级决策归因树与高危人群画像。
+
+---
+
+## 🧮 科学算法与深度学习引擎 (`analytics_engine/`)
+
+```text
+analytics_engine/
+├── engine.py                         # 统一算法调度分发中枢
+├── langgraph_app.py                  # LangGraph 状态机与多智能体流转图
+├── satscan_lstm_pipeline.py          # SaTScan + LSTM 5步级联科学计算流水线
+├── daemon_surveillance.py            # 7×24 小时常驻巡检守护引擎
+│
+├── [病媒与宿主动物]
+│   ├── satscan_cluster.py            # Kulldorff 空间-时间扫描统计量算法
+│   ├── lstm_predictor.py             # PyTorch 双向多变量 LSTM 深度预测模型
+│   ├── population_dynamics.py        # ARIMA / 季节消长外推预测
+│   ├── density_gbdt.py               # GBDT 气象驱动密度回归
+│   ├── spatial_interpolation.py      # 普通克里金 (Kriging) 与 IDW 空间插值
+│   ├── pathogen_apriori.py           # Apriori 频繁项集关联规则挖掘
+│   ├── resistance_ml.py              # Probit 毒力回归与耐药性分级
+│   ├── resistance_evolution.py       # 贝叶斯/马尔可夫耐药突变演化模型
+│   ├── species_clustering.py         # K-Means 优势种聚类与 Shannon 多样性
+│   └── transmission_risk.py          # SEIR 动力学传播风险模型
+│
+├── foodborne/                        # [食源性疾病]
+│   ├── outbreak_scanner.py           # 聚集病例时空聚类扫描与暴发识别
+│   ├── risk_forecast.py              # 发病风险与扩散预测模型
+│   ├── cgmlst_cluster.py             # cgMLST 核心基因组分子溯源聚类与发育树
+│   └── food_attribution.py           # 流行病学优势比食品暴露归因分析
+│
+├── env/                              # [环境健康风险]
+│   ├── water_rf_kriging.py           # 水质管网 Random Forest-Kriging 空间插值
+│   ├── sewage_lag_tracing.py         # 污水病原载量时空滞后互相关分析
+│   ├── air_climate_dlnm.py           # 分布式滞后非线性模型 (DLNM) 暴露-响应曲面
+│   ├── river_chain_autocorr.py       # 四河流域跨介质空间自相关 (Moran's I)
+│   └── scenario_simulation.py        # 环境健康政策情景模拟与推演
+│
+└── chronic/                          # [死因慢病伤害]
+    ├── death_cert_qc.py              # 死亡证明书逻辑质控与垃圾代码筛查
+    ├── icd10_nlp_inference.py        # 根本死因因果链推理与 ICD-10 编码
+    ├── mortality_cluster_dbscan.py   # 时空 DBSCAN 罕见死因聚集探测与 ARIMA
+    ├── chronic_risk_gbdt.py          # 慢病高危发病风险 GBDT 预测
+    ├── injury_tree_attribution.py    # 伤害病例多维决策树归因分析
+    └── lifetable_4q70_roi.py         # 简略寿命表、4q70 早死概率与 ROI 评估
 ```
 
 ---
 
-## 🚀 核心架构与技术能力
+## 🎨 AG-UI 生成式界面组件矩阵
 
-### 1. 🤖 四智能体协同与 LangGraph 编排体系
-- **🦟 监测分析智能体 (Surveillance Agent)**：基于 5.6 万条多维监测数据，实现蚊、蝇、鼠、蜚蠊、蜱等重点病媒生物的密度消长分析、空间集聚识别与种群多样性测算；内置 **7×24 小时后台常驻守护（Daemon Agent）**，支持专家自然语言提示词（Prompt Policy）动态注入巡检策略与定时/事件驱动巡检。
-- **🧪 抗药性分析智能体 (Resistance Agent)**：构建拟除虫菊酯、有机磷、氨基甲酸酯等常用杀虫剂的抗性矩阵，输出 LC50 毒力回归参数与 1 年内 KDR 等位基因演化预测。
-- **⚠️ 风险评估智能体 (Risk Assessment Agent)**：结合病原学 PCR 检测结果（登革病毒、乙脑、疟原虫、汉坦病毒等）与气象生境，量化 0~100 综合传播风险指数，并通过 **SaTScan 时空圆柱扫描（Space-Time Scan Statistic）** 探测高风险聚集区。
-- **🛠️ 处置推荐智能体 (Intervention Agent)**：依据国家标准（GB/T、WS/T）自动生成物理清除、化学超低容量喷雾（ULV）、生物灭幼方案，下发流转工单并跟踪 48 小时复测核销。
+平台基于 Next.js 15 + React 19 + Tailwind CSS 构建了专业、高保真的 AG-UI 生成式交互组件：
 
-### 2. 🧮 Python 科学计算算法引擎 (`analytics_engine/`)
-系统内嵌高性能 Python 算法服务模块与 LangGraph 状态图编排：
-- `langgraph_app.py`：基于 LangGraph 的有状态多智能体协同图与计算流水线。
-- `satscan_cluster.py`：Kulldorff 空间-时间扫描统计量（Poisson / Bernoulli 模型）聚类算法，自动探测高风险聚集圆柱区。
-- `lstm_predictor.py`：基于 PyTorch 的双向多变量 LSTM 深度时序预测模型（融合温湿度与历史密度）。
-- `satscan_lstm_pipeline.py`：级联流水线：`数据抽取 ➔ SaTScan 时空扫描 ➔ K-Means 亚群风险剖析 ➔ LSTM 深度预测 ➔ 综合研判`。
-- `daemon_surveillance.py`：7×24 小时后台常驻自动巡检守护引擎。
-- `population_dynamics.py`：时间序列 ARIMA / LSTM 季节消长预测与置信区间计算。
-- `density_gbdt.py`：融合温湿度、生境特征的 GBDT 密度预测与特征重要性权重分析。
-- `spatial_interpolation.py`：基于普通克里金 (Ordinary Kriging) 与反距离权重 (IDW) 的空间密度平滑插值。
-- `pathogen_apriori.py`：Apriori 关联规则挖掘高危病原体-媒介昆虫-易感生境组合。
-- `resistance_ml.py` & `resistance_evolution.py`：耐药性机器学习分级与马尔可夫/贝叶斯基因突变演化。
-- `species_clustering.py` & `transmission_risk.py`：K-Means 优势种聚类、Shannon-Wiener 多样性指数与传播动力学模型。
-
-### 3. 💾 双数据库协同持久化架构
-- **时空监测事实库 (`vector_monitoring.db`)**：涵盖河南省 18 地市 5.6 万+ 条捕获记录、PCR 筛查与抗药性生物测定事实表（星型模型）。
-- **业务持久化闭环库 (`app_business.db`)**：独立持久化消杀处置工单 (`biz_disposal_tickets`)、分级预警事件 (`biz_early_warning_events`)、移动端审核流 (`biz_mobile_submissions`)、国家标准规范库 (`biz_kb_standards`)、生成专报归档 (`biz_generated_reports`) 与自定义技能 (`biz_custom_skills`)。
-- **支持国产信创平滑迁移**：具备 DAL 数据访问抽象层，一键无缝切换至 **PostgreSQL 14+** 或 **人大金仓 (KingbaseES V8/V9)**。
-
-### 4. 🎨 AG-UI 生成式界面与多模态交互
-- **国家天地图 (Tianditu) GIS**：支持全省宏观热力图、点位聚类、区县/街道平滑下钻与脉冲高亮预警，集成 **SaTScan 扫描聚类圆柱图层**。
-- **可视化图表库**：SaTScan + LSTM 科学计算研判卡、7×24 后台守护卡、双轴气温关联时序折线图、南丁格尔玫瑰图、耐药热力矩阵图、传播风险动态仪表盘。
-- **多模态与专报生成**：支持移动端 AI 拍照物种识别模拟、自然语言 Text2SQL 智能查询、一键导出 PDF / Markdown 专题研判公报。
-- **对话式元技能扩展 (Meta-Skill Builder)**：通过对话自动解析意图、编译安全 SQL、绑定可视化模板并注册至技能集市。
-
-### 5. 🔒 细粒度 RBAC 权限体系
-内置四大角色权限矩阵：
-- **省级管理员**：全省全域数据透视、阈值管理、算法调优、自定义技能发布与专报审批。
-- **市级专家**：辖区监测分析、抗药性评估、预警推送、消杀指导与工单派发。
-- **区县监测员**：现场采集上报、移动端录入、质控核验、工单执行与 48h 复测核销。
-- **公众用户**：常见病媒科普、科普问答、辖区一般预警概览。
+| 领域 | 核心 AG-UI 组件 | 功能与交互说明 |
+| :--- | :--- | :--- |
+| **通用** | `GenerativeComponentRenderer` | 智能体渲染总线，根据后端技能返回类型动态挂载专业卡片 |
+| **通用** | `ThinkingProcessCard` | 纯中文标准化思考链展示，折叠/展开多阶段推理逻辑 |
+| **通用** | `ActiveAlertsModal` | 全域分级预警事件弹窗，支持一键下发应急派单 |
+| **病媒** | `VectorMapComponent` | 国家天地图 GIS，叠加河南省市县 GeoJSON 矢量边界与真实监测点位热力面 |
+| **病媒** | `SatScanSpatialGISMap` | 空间经纬度与时间轴构成的 SaTScan 三维圆柱扫描投影 |
+| **病媒** | `DensityTrendChart` | 双轴气象气温关联折线图与 LSTM 90 天置信带预测 |
+| **病媒** | `ResistanceMatrixChart` | 拟除虫菊酯、有机磷等杀虫剂耐药热力矩阵图 |
+| **病媒** | `PathogenRiskCard` | PCR 阳性率、风险指数仪表盘与 Apriori 关联规则卡片 |
+| **病媒** | `SpeciesCompositionChart`| 优势种群构成比南丁格尔玫瑰图与 Shannon 指数 |
+| **食源** | `FoodborneClusterRadar` | 食源性病例多维聚类雷达图与暴发时空态势图 |
+| **食源** | `MolecularPhylogenyTree` | cgMLST 等位基因分子系统发育树与同源株传播链 |
+| **食源** | `FoodRiskRankingChart` | 嫌疑食品暴露归因危险度 (OR) 排行榜 |
+| **食源** | `OutbreakEpidemiologyCard`| 流行病学调查摘要、三间分布特征卡与应急处置建议 |
+| **环境** | `WaterPipelineGisMap` | 给水管网末梢水质 RF-Kriging 风险热力插值图与冲洗建议 |
+| **环境** | `SewageLagCorrelationChart`| 污水病原载量与临床就诊时序滞后曲线图（提前预警窗口） |
+| **环境** | `AirClimateHealthRiskCard`| DLNM 极端气温/空气污染滞后非线性响应曲面与超额就诊风险 |
+| **环境** | `RiverBasinPollutionChainCard`| 淮河/黄河等四河流域跨介质链式空间自相关传递图 |
+| **环境** | `EnvScenarioSimulationCard`| 环境治理/减排政策推演模拟控制面板 |
+| **环境** | `EnvOcrEntryCard` | 环境多介质检测报告多模态 OCR 结构化录入卡片 |
+| **慢病** | `DeathCertQcCard` | 死亡医学证明书智能质控、逻辑倒置校验与漏报核查卡 |
+| **慢病** | `Icd10InferenceCard` | 根本死因因果推断图谱与标准 ICD-10 编码推理卡 |
+| **慢病** | `RareMortalityClusterCard`| 时空 DBSCAN 罕见死因聚集预警 + ARIMA 死亡率拟合预测 ECharts 曲线 |
+| **慢病** | `ChronicRiskForecastCard` | 慢病高危人群 GBDT 预测风险分布与特征重要性权重 |
+| **慢病** | `LifeTable4q70ReportCard` | 简略寿命表生命期望值、4q70 早死概率与防制 ROI 分析 |
+| **慢病** | `InjuryAttributionTreeCard`| 伤害致因决策树分类、高危地点与人群画像卡片 |
 
 ---
 
-## 🛠️ 快速启动指南
+## 🌐 平台关键创新技术特性
 
-### 1. 环境准备
+### 1. 纯中文思维链与专业领域解读
+- **中文推理标准化 (`chinese-reasoning-normalizer.ts`)**：内置过滤器消除英文思考碎片，确保思考过程全中文严谨呈现。
+- **AI 领域专家解读生成器 (`interpretation-generator.ts`)**：算法计算结果出炉后，自动触发领域专家解读引擎，生成涵盖“流行病学背景、数据发现、研判结论、干预建议”的标准公文式综述。
+
+### 2. 地理实体空间联动总线 (Geo Event Bus)
+- 对话中提及的地理实体（如“郑州市金水区”、“洛阳市涧西区”）会被自动识别并渲染为**可交互的地理徽章**。
+- 点击徽章即可触发全局地理事件总线，天地图 GIS 即刻自动平滑漫游、缩放并高亮对应辖区行政边界与点位。
+
+### 3. 会话状态完备持久化与流式推流
+- 深度优化了基于 Server-Sent Events (SSE) 的实时流式派发通道 (`stream-dispatch`)，打字机式平滑渲染推理过程与算法进展。
+- 完整持久化用户会话，支持历史会话无缝回溯、思考过程恢复与复核。
+
+### 4. 细粒度 RBAC 权限与信创数据库适配
+- **四大角色权限矩阵**：省级管理员（全域透视/算法微调/专报发布）、市级专家（辖区研判/预警推送/派发工单）、区县监测员（现场录入/质控核验/复测核销）、公众用户（健康科普与公开预警）。
+- **五数据库协同事实底座**：
+  - `vector_monitoring.db`：5.6万+ 条病媒生态监测事实表
+  - `foodborne_monitoring.db`：食源性病例监测与分子分型事实表
+  - `env_monitoring.db`：水质、空气、污水多介质监测事实表
+  - `chronic_monitoring.db`：死因证明、慢病随访、伤害监测事实表
+  - `app_business.db`：流转工单、分级预警、知识库标准与用户会话库
+- **信创环境就绪**：提供统一 DAL 抽象层，一键无缝平滑迁移至 **PostgreSQL 14+** 或 **人大金仓 (KingbaseES V8/V9)**。
+
+---
+
+## 🛠️ 集群运维与快速启动指南
+
+系统通过标准化运维调度脚本 `server.sh` 统一管理多智能体集群：
+
+```text
+┌───────────────┬──────────────────────────┬──────────┬──────────────┐
+│  智能体标识   │ 业务应用名称             │ 服务端口 │ 构建隔离目录 │
+├───────────────┼──────────────────────────┼──────────┼──────────────┤
+│ vector        │ 病媒生物监测预警智能体   │ 3001     │ .next_vector │
+│ foodborne     │ 食源性疾病监测预警智能体 │ 3002     │ .next_foodborne│
+│ env           │ 环境健康风险监测预警智能体│ 3003    │ .next_env    │
+│ chronic       │ 死因慢病伤害综合监测智能体│ 3004    │ .next_chronic│
+└───────────────┴──────────────────────────┴──────────┴──────────────┘
+```
+
+### 1. 环境准备与依赖安装
 - **Node.js**：v18.0.0+ (推荐 v20+)
-- **Python**：v3.9+ (内置科学计算与深度学习依赖 numpy, scipy, scikit-learn, pandas, torch, langgraph 等)
+- **Python**：v3.9+ (内置 numpy, scipy, scikit-learn, pandas, torch, langgraph 等)
 
-### 2. 获取代码与依赖安装
 ```bash
 git clone https://github.com/NathanZhang/Agent-CdcBuddy.git
 cd Agent-CdcBuddy
 
-# 安装前端与 CopilotKit 依赖
+# 安装前端依赖
 npm install
 
-# 安装 Python 算法与深度学习依赖
+# 安装 Python 科学计算依赖
 pip install -r requirements.txt
 ```
 
-### 3. 初始部署数据库准备说明 (重要)
-
-系统运行依赖**双数据库架构**（时空监测事实底座库 + 业务持久化闭环库）：
-
-| 数据库文件 | 作用与定位 | 初始部署是否需要拷贝 / 运行初始化脚本？ |
-| :--- | :--- | :--- |
-| **`app_business.db`**<br>(业务持久化库) | 存储消杀处置工单、分级预警事件、移动端审核流、国家标准知识库 (GB/T 23797等)、自定义技能等 | **无需手动拷贝**。执行 `./server.sh start` 会**自动检测并执行** `python3 scripts/init_business_db.py` 完成建表与种子数据入库。若手动使用 `npm run dev` 启动，只需预先执行一次 `python3 scripts/init_business_db.py` 即可。 |
-| **`vector_monitoring.db`**<br>(时空监测事实库) | 包含河南省 18 地市 126 区县 5.6万+ 条多维病媒生态监测、病原 PCR 筛查与抗药性生物测定事实表 (~28MB) | 1. **本地开发/同级目录部署**：若工程与 `Agent-CdcBuddy-DataMock` 同级存放，`./server.sh` 会**自动识别并复制**；<br>2. **全新独立服务器 / 云端独立部署**：因 `.gitignore` 排除大体积 `.db` 文件，需将 `vector_monitoring.db` **手动拷贝至工程根目录**；<br>3. **生产数据库部署**：按文档指引导入至 PostgreSQL / 人大金仓 KingbaseES。 |
-
-### 4. 配置环境变量
-复制环境变量模版并填入对应配置：
+### 2. 环境变量配置
 ```bash
 cp .env.example .env.local
 ```
 编辑 `.env.local`：
 ```env
-# 硅基流动 SiliconFlow 大模型服务配置
+# 硅基流动 SiliconFlow 大模型配置 (支持 Qwen 2.5 / Qwen 3.6 等)
 SILICONFLOW_API_KEY=sk-your-siliconflow-api-key
 SILICONFLOW_BASE_URL=https://api.siliconflow.cn/v1
 SILICONFLOW_MODEL=Qwen/Qwen3.6-27B
 
-# 国家地理信息公共服务平台 天地图 Tianditu 开发者 Key (可选，用于空间GIS底图)
+# 国家天地图 (Tianditu) Key (用于地图空间底图)
 NEXT_PUBLIC_TIANDITU_KEY=your_tianditu_browser_key
 ```
 
-### 5. 统一运维启动服务
-
-系统提供标准化运维脚本 `server.sh`，可一键完成环境检测、Python 虚拟环境配置、数据库自动校验初始化与服务启动：
-
+### 3. 一键启动四智能体集群或单领域服务
 ```bash
-# 启动开发服务器 (默认端口 3000)
-./server.sh start dev
+# 【常用】一键启动全部 4 个智能体集群开发服务 (端口 3001~3004)
+./server.sh start all dev
 
-# 或者直接启动
-./start.sh
+# 启动单个智能体
+./server.sh start vector dev      # 启动病媒生物智能体 (http://localhost:3001)
+./server.sh start foodborne dev   # 启动食源性智能体   (http://localhost:3002)
+./server.sh start env dev         # 启动环境健康智能体 (http://localhost:3003)
+./server.sh start chronic dev     # 启动死因慢病智能体 (http://localhost:3004)
 
-# 查看当前运行状态与 PID
+# 生产模式部署运行 (会自动执行构建)
+./server.sh start all prod
+
+# 查看集群各智能体运行状态及端口
 ./server.sh status
 
-# 实时查看系统运行日志
-./server.sh logs
+# 实时查看指定智能体日志
+./server.sh logs vector
+./server.sh logs chronic
 
-# 停止服务
-./server.sh stop
-# 或 ./stop.sh
+# 停止指定或全部智能体
+./server.sh stop all
 ```
 
-打开浏览器访问：**`http://localhost:3000`** 即可进入系统主控制台。
+### 4. Docker 容器化与 Docker Compose 编排
+平台支持标准化容器镜像构建与 Docker Compose 一键启动集群：
+
+```bash
+# 1. 复制环境变量
+cp .env.local .env
+
+# 2. 一键启动四智能体容器集群 (Port: 3001~3004)
+docker compose up -d
+
+# 3. 查看容器集群健康状态
+docker compose ps
+```
+
+> 📖 **完整部署指南**：详见 [docs/系统部署与运维操作手册.md](docs/系统部署与运维操作手册.md)，包含系统依赖、五大数据库初始化、systemd 守护进程、Nginx 反代与信创迁移全流程。
+
 
 ---
 
 ## 🧪 自动化测试与科学计算验证
 
-Agent-CdcBuddy 提供了全覆盖的自动化测试套件与无 Mock 科学计算评估脚本：
+系统拥有严密的无 Mock 自动化测试验证体系，覆盖四大领域的真实数据计算、空间推断与端到端业务流：
 
 ```bash
-# 运行完整自动化测试套件
-python3 tests/automated_test_suite.py
+# 执行全域四智能体 44 项测试套件
+./server.sh test all
+# 或直接运行：
+python3 tests/run_all_agent_tests.py
 
-# 运行 LangGraph / SaTScan / LSTM 全量深度评估套件
-python3 tests/comprehensive_evaluation_test.py
+# 执行单个智能体专属测试
+./server.sh test vector     # 病媒 19 项用例
+./server.sh test foodborne  # 食源 6 项用例
+./server.sh test env        # 环境 10 项用例
+./server.sh test chronic    # 慢病 9 项用例
 ```
 
-- **测试范围**：15 项核心出厂与重型流水线技能、Meta-Skill 创建、移动端识别/质控/上报 API、4 种 RBAC 角色权限、SaTScan 扫描聚类显著性、PyTorch LSTM 预测误差。
-- **测试通过率**：**100% 全部 PASS**。
-- **测试报告**：详见 [自动化测试执行报告 (Markdown)](tests/test_execution_report.md) 及 [JSON 报告](tests/test_execution_report.json)。
+### 自动化回归测试报告概要
+
+- **测试用例总计**：**44 项**
+- **通过率**：**100% 全部通过 (44/44 PASSED)**
+- **详细测试报告**：
+  - 📋 [CDC 全域四智能体平台自动化测试综合回归报告 (Markdown)](tests/reports/all_agents_test_report.md)
+  - 📊 [JSON 格式原始测试数据](tests/reports/all_agents_test_report.json)
 
 ---
 
@@ -186,87 +327,94 @@ python3 tests/comprehensive_evaluation_test.py
 
 ```text
 Agent-CdcBuddy/
-├── README.md                          # 项目核心总览与使用手册
-├── package.json                       # 前端依赖与 NPM 脚本
-├── requirements.txt                   # Python 科学计算与深度学习依赖
-├── server.sh                          # 统一运维管理脚本 (start|stop|restart|status|logs)
-├── start.sh / stop.sh                 # 极简启动与停止脚本
-├── vector_monitoring.db               # 疾控多维时空监测只读事实库 (5.6万条数据)
-├── app_business.db                    # 业务状态持久化数据库 (工单/预警/审核/自定义技能)
-├── analytics_engine/                  # Python 科学算法、深度学习与 LangGraph 引擎
-│   ├── engine.py                      # 统一算法调度入口
-│   ├── langgraph_app.py               # LangGraph 状态图与多智能体编排
-│   ├── satscan_cluster.py             # SaTScan 空间-时间扫描统计量聚类
-│   ├── lstm_predictor.py              # PyTorch 双向多变量 LSTM 时序预测
-│   ├── satscan_lstm_pipeline.py       # SaTScan + LSTM 多步科学计算流水线
-│   ├── daemon_surveillance.py         # 7×24 小时后台常驻巡检守护引擎
-│   ├── population_dynamics.py         # ARIMA 种群消长时序模型
-│   ├── density_gbdt.py                # GBDT 气象驱动密度预测
-│   ├── spatial_interpolation.py       # 克里金 / IDW 空间插值
-│   ├── pathogen_apriori.py            # Apriori 病原关联规则挖掘
-│   ├── resistance_ml.py               # 抗药性分类与 LC50 回归
-│   ├── resistance_evolution.py        # 贝叶斯耐药基因演化模型
-│   ├── species_clustering.py          # 优势种聚类与 Shannon 多样性
-│   └── transmission_risk.py           # 动力学传播风险综合评估
-├── src/                               # 核心应用源码
-│   ├── app/                           # Next.js App Router
-│   │   ├── api/copilotkit/            # CopilotKit Runtime 后端端点
-│   │   ├── api/v1/mobile/             # 移动端 RESTful 开放 API (识别/质控/上报)
-│   │   ├── api/skills/                # 自定义技能 RESTful API
-│   │   ├── globals.css                # 全局样式与暗黑主题
-│   │   └── page.tsx                   # 疾控主工作区与智能体会话中枢
-│   ├── components/                    # 组件库
-│   │   ├── ag-ui/                     # AG-UI 生成式界面组件 (地图/图表/工单/专报/SaTScan/Daemon 等)
-│   │   ├── common/                    # 通用基础组件 (Header, Sidebar, CopilotIcon 等)
-│   │   └── layout/                    # 布局与嵌入式浮窗组件 (EmbeddedWidget)
-│   └── lib/                           # 核心业务库
-│       ├── analytics/                 # 前端与 Python 算法/LangGraph 引擎适配桥梁
-│       ├── data/                      # 静态元数据与词典
-│       ├── db/                        # 数据库抽象层 DAL (SQLite / PostgreSQL / 金仓)
-│       ├── geo/                       # GIS 地理坐标与图层工具
-│       ├── rbac/                      # 角色权限鉴定与策略中枢
-│       ├── skills/                    # 15 项出厂业务 Skills 定义与执行器
-│       └── theme/                     # 主题设计系统
-├── docs/                              # 开发者与业务技术文档中心
+├── README.md                          # 项目核心总览与使用手册 (本文件)
+├── package.json                       # 前端依赖配置与 Next.js 脚本
+├── requirements.txt                   # Python 科学计算、深度学习与 LangGraph 依赖
+├── server.sh                          # 统一四智能体集群运维脚本 (start|stop|restart|status|test|logs)
+├── start.sh / stop.sh                 # 快速启停脚本
+├── Dockerfile                         # 跨平台标准容器镜像构建定义
+│
+├── vector_monitoring.db               # 事实底座 1：病媒生态监测事实库 (5.6万+ 条)
+├── foodborne_monitoring.db            # 事实底座 2：食源性疾病与分子分型事实库
+├── env_monitoring.db                  # 事实底座 3：水质/空气/污水多介质环境事实库
+├── chronic_monitoring.db              # 事实底座 4：死因证明/慢病/伤害综合监测库
+├── app_business.db                    # 业务状态库：工单/预警/审核/知识库/会话
+│
+├── analytics_engine/                  # Python 科学计算、时空推断与深度学习引擎
+│   ├── engine.py                      # 统一算法入口
+│   ├── langgraph_app.py               # LangGraph 状态图
+│   ├── satscan_lstm_pipeline.py       # SaTScan + LSTM 级联流水线
+│   ├── daemon_surveillance.py         # 7×24 后台守护巡检
+│   ├── foodborne/                     # 食源性疾病算法集 (暴发扫描/cgMLST/食品暴露归因)
+│   ├── env/                           # 环境健康算法集 (水质RF-Kriging/污水滞后/DLNM/自相关)
+│   └── chronic/                       # 死因慢病算法集 (质控/ICD-10 NLP/时空DBSCAN/寿命表)
+│
+├── src/                               # Next.js 核心全栈源码
+│   ├── app/                           # App Router
+│   │   ├── api/agent/dispatch/        # 智能体通用派发接口
+│   │   ├── api/agent/stream-dispatch/ # 智能体 SSE 实时流式派发通道
+│   │   ├── api/copilotkit/            # CopilotKit Runtime 交互端点
+│   │   ├── api/sessions/              # 会话历史与状态恢复 API
+│   │   ├── api/skills/                # 动态业务技能 API
+│   │   └── page.tsx                   # 疾控多智能体主工作台
+│   ├── components/
+│   │   ├── ag-ui/                     # 20+ 款 AG-UI 生成式专家图表/地图/工单组件
+│   │   ├── common/                    # Markdown 渲染器、思维链卡片等基础组件
+│   │   └── layout/                    # 导航栏、推荐卡片、会话抽屉、嵌入式浮窗
+│   └── lib/
+│       ├── analytics/                 # Node.js 与 Python 科学计算引擎桥梁
+│       ├── config/                    # agent-profile 四智能体领域配置与元数据
+│       ├── db/                        # 统一 DAL 数据库持久层 (SQLite/PG/人大金仓)
+│       ├── geo/                       # 天地图 GIS、GeoJSON 边界与地理实体解析
+│       ├── rbac/                      # 细粒度角色权限中枢
+│       └── skills/                    # 技能注册中枢、解释器、思维链规范器
+│
+├── docs/                              # 体系化技术文档中心
 │   ├── 需求功能对照清单及使用教程.md
+│   ├── 技术架构图与各层详细设计说明.md
+│   ├── 疾控全域四智能体综合监测预警平台功能扩展实施方案.md
 │   ├── 基于LangGraph的多智能体协同与多步科学计算流水线方案.md
-│   ├── LangGraph升级完整性与无Mock核验评估报告.md
 │   ├── 算法引擎与四智能体架构设计规范.md
-│   ├── Text2SQL与多模态交互及智能问答指南.md
 │   ├── 自动化测试与质量保障指南.md
-│   ├── 移动端API开发指南及调用示例.md
 │   ├── 生产环境PostgreSQL及人大金仓(KingbaseES)迁移指南.md
-│   ├── 自定义Skills对话扩展指南.md
-│   └── 嵌入式浮窗与API模式接入指南及示例代码.md
-├── scripts/                           # 数据库初始化与运维脚本
-│   └── init_business_db.py            # 业务持久化库初始化脚本
-└── tests/                             # 自动化测试与验证
-    ├── automated_test_suite.py        # 核心全链路自动化测试套件
-    ├── comprehensive_evaluation_test.py # 深度科学计算与全量评估测试
-    ├── test_execution_report.md       # 自动化测试执行报告 (Markdown)
-    └── test_execution_report.json     # 自动化测试结果 (JSON)
+│   └── images/                        # 技术架构图 (PNG / SVG / HTML)
+│
+├── plan/                              # 实施路线与用户手册
+│   ├── 疾控全域四智能体综合监测预警平台-用户操作手册.md
+│   ├── 人工智能-四智能体-功能清单.md
+│   └── CdcBuddy_Agent_Technical_Whitepaper.docx
+│
+├── scripts/                           # 数据库初始化与自动化生成脚本
+│   ├── init_business_db.py            # 业务持久化库初始化
+│   ├── init_foodborne_mock.py         # 食源性疾病数据模拟底座初始化
+│   ├── init_env_mock.py               # 环境健康数据模拟底座初始化
+│   ├── init_chronic_mock.py           # 死因慢病数据模拟底座初始化
+│   └── generate_architecture_diagram.py # 技术架构图自动化生成脚本
+│
+└── tests/                             # 自动化测试套件
+    ├── run_all_agent_tests.py         # 四智能体全量自动化回归测试入口
+    ├── suites/                        # 各智能体领域独立测试套件
+    └── reports/                       # 自动化测试报告 (Markdown / JSON)
 ```
 
 ---
 
-## 📚 详细技术与接入文档中心
+## 📚 详细技术与业务文档索引
 
-| 文档名称 | 内容概述 | 适用对象 |
+| 文档名称 | 核心内容概述 | 建议阅读对象 |
 | :--- | :--- | :--- |
-| 📖 [**需求功能对照清单及使用教程**](docs/需求功能对照清单及使用教程.md) | 对照第 23~35 项国家业务需求及高级流水线，详解技能、AG-UI 组件与实操 Prompt | 业务专家 / 疾控人员 / 评测专家 |
-| 🚀 [**基于LangGraph的多智能体协同与流水线方案**](docs/基于LangGraph的多智能体协同与多步科学计算流水线方案.md) | LangGraph 状态图架构、后台常驻守护、SaTScan+LSTM 科学计算流水线实施方案 | 架构师 / 算法工程师 / 研发团队 |
-| 📊 [**LangGraph升级完整性与无Mock核验评估报告**](docs/LangGraph升级完整性与无Mock核验评估报告.md) | 涵盖 LangGraph 状态图、真实数学算法核验与无 Mock 全量计算评估报告 | 评测专家 / 质量保障团队 |
-| 🧠 [**算法引擎与四智能体架构设计规范**](docs/算法引擎与四智能体架构设计规范.md) | 四智能体协同逻辑、Python 算法引擎数学模型、PyTorch LSTM 与双库 DAL 设计 | 架构师 / 算法工程师 / 研发人员 |
-| 💬 [**Text2SQL与多模态交互及智能问答指南**](docs/Text2SQL与多模态交互及智能问答指南.md) | 知识库检索引擎、Text2SQL 安全查询、拍照识别、多模态研判与专报导出 | 研发人员 / AI 应用工程师 |
-| 🧪 [**自动化测试与质量保障指南**](docs/自动化测试与质量保障指南.md) | 自动化测试框架结构、15 项技能测试用例、Meta-Skill 与安全测试详情 | 测试工程师 / 质量保障团队 |
-| 📱 [**移动端API开发指南及调用示例**](docs/移动端API开发指南及调用示例.md) | 现场拍照识别、实时质控校验、数据采集上报等 RESTful API 与多语言示例 | 移动端开发者 / 前端工程师 |
-| 🏢 [**生产环境PostgreSQL及人大金仓迁移指南**](docs/生产环境PostgreSQL及人大金仓(KingbaseES)迁移指南.md) | 双数据库 DDL 建表脚本、数据一键迁移管道与信创环境适配方案 | 运维工程师 / DBA / 信创部署团队 |
-| 🛠️ [**自定义Skills对话扩展指南**](docs/自定义Skills对话扩展指南.md) | Meta-Skill 动态技能创建原理、语义解析、SQL 自动编译与动态注册 | 业务专家 / 系统管理员 |
-| 🪟 [**嵌入式浮窗与API模式接入指南及示例代码**](docs/嵌入式浮窗与API模式接入指南及示例代码.md) | 单行 Script、React 组件、Vue3 Iframe 快速引入既有业务系统指南 | 第三方系统集成商 / 研发人员 |
+| 📖 [**用户操作与功能使用手册**](plan/疾控全域四智能体综合监测预警平台-用户操作手册.md) | 全面覆盖 54 个功能点，详解四智能体页面布局、常用推荐卡片、操作 Prompt 与 AG-UI 视窗 | 业务专家 / 疾控人员 / 评测专家 |
+| 🛠️ [**系统部署与运维操作手册**](docs/系统部署与运维操作手册.md) | 涵盖环境配置、五大数据库初始化、server.sh 集群运维、Docker/Compose 编排与常见排错 FAQ | 运维工程师 / DevOps / 系统管理员 |
+| 🏛️ [**技术架构图与各层详细设计说明**](docs/技术架构图与各层详细设计说明.md) | 包含 2680×1840 高清全景架构图、SVG 源码、交互式 HTML 及 7 层架构设计说明 | 架构师 / 技术决策者 / 研发人员 |
+| 🚀 [**四智能体综合平台功能扩展方案**](docs/疾控全域四智能体综合监测预警平台功能扩展实施方案.md) | 食源性疾病、环境健康、死因慢病四大领域扩展全量技术方案与模型规格说明 | 系统分析师 / 研发团队 |
+| 🧮 [**算法引擎与四智能体架构设计规范**](docs/算法引擎与四智能体架构设计规范.md) | 详细推导 SaTScan、LSTM、DLNM、cgMLST、DBSCAN 等数学模型与无 Mock 落地规范 | 算法工程师 / 流行病学统计专家 |
+| 🧪 [**自动化测试与质量保障指南**](docs/自动化测试与质量保障指南.md) | 44 项测试用例定义、无 Mock 数据验证逻辑与测试回归标准 | 测试工程师 / 质量保障团队 |
+| 🏢 [**PostgreSQL及人大金仓迁移指南**](docs/生产环境PostgreSQL及人大金仓(KingbaseES)迁移指南.md) | 国产信创环境适配、双数据库 DDL 建表脚本与生产高可用部署指引 | 运维工程师 / DBA / 信创项目经理 |
+| 📱 [**移动端 API 开发指南及调用示例**](docs/移动端API开发指南及调用示例.md) | 现场采样、异常上报、AI 物种识别 RESTful API 规范与联调代码 | 移动端开发者 / 前端工程师 |
 
 ---
 
 ## 📄 开源协议与声明
 
-本项目基于 [MIT License](LICENSE) 开源发布。
-本项目所涉及的演示监测数据均经脱敏与合成处理，旨在为公共卫生与疾病预防控制领域的智能化转型提供高标准的开源技术范式与参考实现。
+本项目基于 [MIT License](LICENSE) 开源发布。  
+本项目中涉及的所有演示数据均经过严格的合成与脱敏处理，不包含任何真实患者个人隐私信息，旨在为我国公共卫生与疾病预防控制信息化、智能化建设提供具备前沿工程参考价值的标准技术范式。
