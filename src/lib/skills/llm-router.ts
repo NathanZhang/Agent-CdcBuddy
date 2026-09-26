@@ -29,7 +29,7 @@ export function getSiliconFlowSkillTools(userRole?: UserRole, domain?: string) {
 
   if (domain) {
     const domainSpecific = availableSkills.filter(s => s.domain === domain);
-    const commonSkills = availableSkills.filter(s => !s.domain || s.domain === 'all');
+    const commonSkills = availableSkills.filter(s => !s.domain || s.domain === 'common');
     if (domainSpecific.length > 0) {
       availableSkills = [...domainSpecific, ...commonSkills];
     }

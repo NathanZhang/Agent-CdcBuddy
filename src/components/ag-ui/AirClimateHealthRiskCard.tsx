@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import ReactECharts from 'echarts-for-react';
+import { useTheme } from '@/lib/theme/theme-context';
 import { 
   SunMedium, 
   Wind, 
@@ -19,6 +21,7 @@ interface AirClimateHealthRiskCardProps {
 }
 
 export const AirClimateHealthRiskCard: React.FC<AirClimateHealthRiskCardProps> = ({ data = {} }) => {
+  const { isDark } = useTheme();
   const city = data?.city || '焦作市';
   const current = data?.currentMonitoring || {
     aqi: 79,
@@ -62,6 +65,151 @@ export const AirClimateHealthRiskCard: React.FC<AirClimateHealthRiskCardProps> =
       '发布托幼机构及中小学校暂停户外大课间体育活动的健康指引；',
       '建议心血管慢病患者全天开启室内空气净化与空调温湿度调控(26℃为宜)；',
       '联动社区卫生服务中心储备急救硝酸甘油与速效哮喘吸入剂。'
+    ]
+  };
+
+  // 提取 DLNM 滞后相对危险度 (RR) 及 95% CI 数据配置 ECharts
+  const lagLabels = dlnmCurve.map((pt: any) => `Lag ${pt.lagDay}`);
+  const rrValues = dlnmCurve.map((pt: any) => Number(pt.relativeRiskRR));
+  const ciLowers = dlnmCurve.map((pt: any) => Number(pt.ci95Low));
+  const ciUppers = dlnmCurve.map((pt: any) => Number(pt.ci95High));
+  
+  let peakIdx = 0;
+  let maxRR = -Infinity;
+  rrValues.forEach((val: number, i: number) => {
+    if (val > maxRR) {
+      maxRR = val;
+      peakIdx = i;
+    }
+  });
+
+  const echartsOption = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+      borderColor: isDark ? '#f43f5e' : '#fb7185',
+      textStyle: { color: isDark ? '#f8fafc' : '#0f172a', fontSize: 12 },
+      extraCssText: isDark ? '' : 'box-shadow: 0 4px 16px rgba(0,0,0,0.12);',
+      formatter: (params: any) => {
+        const idx = params[0]?.dataIndex ?? 0;
+        const pt = dlnmCurve[idx];
+        if (!pt) return '';
+        const isPeak = idx === peakIdx;
+        return `
+          <div style="font-weight:bold;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span>Lag ${pt.lagDay} 天效应</span>
+            ${isPeak ? '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(244,63,94,0.15);color:#f43f5e;font-weight:bold;">效应峰值</span>' : ''}
+          </div>
+          <div style="font-size:12px;line-height:1.6;">
+            <div><span style="color:#f43f5e;margin-right:4px;">●</span>相对危险度 (RR): <b style="color:#f43f5e">${Number(pt.relativeRiskRR).toFixed(2)} 倍</b></div>
+            <div style="color:${isDark ? '#94a3b8' : '#64748b'};">95% 置信区间: [${Number(pt.ci95Low).toFixed(2)} ~ ${Number(pt.ci95High).toFixed(2)}]</div>
+            ${pt.desc ? `<div style="font-size:11px;color:${isDark ? '#cbd5e1' : '#475569'};margin-top:4px;padding-top:4px;border-top:1px dashed ${isDark ? '#334155' : '#e2e8f0'};">${pt.desc}</div>` : ''}
+          </div>
+        `;
+      }
+    },
+    legend: {
+      data: ['相对危险度 (RR)', '95% 置信区间 (CI)'],
+      textStyle: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 },
+      top: 0,
+      right: 10
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '10%',
+      top: '18%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: lagLabels,
+      axisLine: { lineStyle: { color: isDark ? '#475569' : '#cbd5e1' } },
+      axisLabel: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 }
+    },
+    yAxis: {
+      type: 'value',
+      name: '相对危险度 (RR)',
+      min: 0.85,
+      max: 1.8,
+      nameTextStyle: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 },
+      splitLine: { lineStyle: { color: isDark ? '#334155' : '#e2e8f0', type: 'dashed' } },
+      axisLabel: { color: isDark ? '#94a3b8' : '#64748b', fontSize: 11 }
+    },
+    series: [
+      {
+        name: '95% 置信区间下界',
+        type: 'line',
+        data: ciLowers,
+        lineStyle: { opacity: 0 },
+        stack: 'confidence-band',
+        symbol: 'none'
+      },
+      {
+        name: '95% 置信区间 (CI)',
+        type: 'line',
+        data: ciUppers.map((u: number, idx: number) => +(Math.max(0, u - (ciLowers[idx] || 0))).toFixed(4)),
+        lineStyle: { opacity: 0 },
+        areaStyle: {
+          color: isDark ? 'rgba(244, 63, 94, 0.18)' : 'rgba(244, 63, 94, 0.12)'
+        },
+        stack: 'confidence-band',
+        symbol: 'none'
+      },
+      {
+        name: '相对危险度 (RR)',
+        type: 'line',
+        data: rrValues,
+        smooth: 0.35,
+        lineStyle: { color: '#f43f5e', width: 3 },
+        itemStyle: { 
+          color: '#f43f5e',
+          borderColor: isDark ? '#0f172a' : '#ffffff',
+          borderWidth: 2
+        },
+        symbol: 'circle',
+        symbolSize: 7,
+        markPoint: {
+          data: [
+            {
+              type: 'max',
+              name: '峰值',
+              symbol: 'pin',
+              symbolSize: 42,
+              itemStyle: { color: '#e11d48' },
+              label: {
+                formatter: (p: any) => `${p.value}`,
+                fontSize: 10,
+                color: '#ffffff',
+                fontWeight: 'bold',
+                offset: [0, -3]
+              }
+            }
+          ]
+        },
+        markLine: {
+          symbol: ['none', 'none'],
+          silent: true,
+          data: [
+            {
+              yAxis: 1.0,
+              lineStyle: {
+                color: isDark ? '#64748b' : '#94a3b8',
+                type: 'dashed',
+                width: 1.5
+              },
+              label: {
+                position: 'insideEndTop',
+                formatter: '基准无风险线 (RR=1.0)',
+                color: isDark ? '#94a3b8' : '#64748b',
+                fontSize: 10
+              }
+            }
+          ]
+        }
+      }
     ]
   };
 
@@ -129,33 +277,38 @@ export const AirClimateHealthRiskCard: React.FC<AirClimateHealthRiskCardProps> =
           <span className="text-[11px] text-slate-400">滞后达峰期：{dlnm.lagPeakDay}</span>
         </div>
 
-        <div className="flex items-end justify-between gap-1.5 h-32 pt-2 px-2">
+        {/* ECharts DLNM 滞后相对危险度 (RR) 曲线与 95% CI 带状图 */}
+        <div className="h-56 w-full">
+          <ReactECharts 
+            option={echartsOption} 
+            style={{ height: '100%', width: '100%' }} 
+          />
+        </div>
+
+        {/* 0~7 天各滞后日点估计与 95% CI 快速指标胶囊 */}
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
           {dlnmCurve.map((pt: any, idx: number) => {
-            const isPeak = idx === 2;
+            const isPeak = idx === peakIdx;
             const rr = Number(pt.relativeRiskRR);
-            const heightPct = Math.max(15, Math.round(((rr - 1.0) / 0.5) * 85 + 15));
 
             return (
-              <div key={idx} className="flex-1 flex flex-col items-center gap-1 group relative">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 px-1.5 py-0.5 rounded bg-slate-800 text-white text-[10px] pointer-events-none whitespace-nowrap z-10">
-                  RR={rr.toFixed(2)} (95% CI: {pt.ci95Low}~{pt.ci95High})
+              <div 
+                key={idx} 
+                className={`p-2 rounded-lg text-center transition-all ${
+                  isPeak 
+                    ? 'bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-500/50 shadow-sm' 
+                    : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800'
+                }`}
+              >
+                <div className={`text-[10px] font-medium ${isPeak ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'}`}>
+                  Lag {pt.lagDay}
                 </div>
-                <span className={`text-[10px] font-bold ${isPeak ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400'}`}>
+                <div className={`text-xs font-black mt-0.5 ${isPeak ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-200'}`}>
                   {rr.toFixed(2)}
-                </span>
-                <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-t-md h-full flex items-end">
-                  <div 
-                    className={`w-full rounded-t-md transition-all duration-500 ${
-                      isPeak 
-                        ? 'bg-rose-500 shadow-md shadow-rose-500/30' 
-                        : 'bg-amber-400 dark:bg-amber-600/70 hover:bg-amber-500'
-                    }`}
-                    style={{ height: `${heightPct}%` }}
-                  />
                 </div>
-                <span className={`text-[10px] ${isPeak ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
-                  Lag{pt.lagDay}
-                </span>
+                <div className="text-[9px] text-slate-400 mt-0.5 truncate" title={`95% CI: ${pt.ci95Low}~${pt.ci95High}`}>
+                  {pt.ci95Low}~{pt.ci95High}
+                </div>
               </div>
             );
           })}

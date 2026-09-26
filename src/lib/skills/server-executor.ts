@@ -727,10 +727,10 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     // 22. 食源性风险时序预测模型 (No. 37)
     case 'skill_foodborne_risk_forecast':
     case 'foodborne_risk_forecast': {
-      const result = await runAnalyticsEngine('density_gbdt', {
+      const result = await runAnalyticsEngine('foodborne_risk_forecast' as any, {
         city: args.city || '河南省全域',
-        category: '食源性致病菌',
-        forecastMonths: 2
+        pathogenType: args.pathogenType || '沙门氏菌 / 副溶血性弧菌',
+        forecastMonths: args.forecastMonths || 3
       });
       return {
         type: 'POPULATION_DENSITY_TREND',

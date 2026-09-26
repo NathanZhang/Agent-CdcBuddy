@@ -34,7 +34,7 @@ export const ResistanceMatrixChart: React.FC<ResistanceMatrixProps> = ({ data })
 
       {/* 抗药性矩阵列表 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data.items.slice(0, 6).map((item, idx) => {
+        {(data?.items || []).slice(0, 6).map((item, idx) => {
           const isHigh = item.resistanceLevel === '高抗';
           const isMedium = item.resistanceLevel === '中抗';
           const isLow = item.resistanceLevel === '低抗';
@@ -94,7 +94,7 @@ export const ResistanceMatrixChart: React.FC<ResistanceMatrixProps> = ({ data })
           <RefreshCw className="w-4 h-4" />
           <span>国家卫生健康委与省疾控中心消杀药剂轮换策略:</span>
         </div>
-        {data.rotationSuggestions.map((sug, idx) => (
+        {(data?.rotationSuggestions || []).map((sug, idx) => (
           <div key={idx} className="flex items-start gap-2 leading-relaxed">
             <span className="text-amber-600 dark:text-amber-400 font-bold">•</span>
             <span>{sug}</span>

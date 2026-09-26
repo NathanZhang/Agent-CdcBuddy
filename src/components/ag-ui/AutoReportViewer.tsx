@@ -81,10 +81,10 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
           {data.summary}
         </div>
 
-        {data.sections.map((sec, idx) => (
+        {(data?.sections || []).map((sec, idx) => (
           <div key={idx} className="space-y-2">
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 border-l-4 border-sky-500 pl-2.5">
-              {sec.heading}
+              {sec.heading || (sec as any).title}
             </h2>
             <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed whitespace-pre-line pl-3">
               {sec.content}

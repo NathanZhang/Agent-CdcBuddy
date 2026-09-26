@@ -196,6 +196,17 @@ def main():
             city=args.get("city"),
             top_n=int(args.get("topN", 10))
         )
+    elif task in ["foodborne_risk_forecast", "foodborne_forecast"]:
+        from foodborne.risk_forecast import calculate_foodborne_risk_forecast
+        fb_db = db_path
+        if "vector_monitoring.db" in fb_db:
+            fb_db = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../foodborne_monitoring.db"))
+        result = calculate_foodborne_risk_forecast(
+            db_path=fb_db,
+            city=args.get("city"),
+            pathogen=args.get("pathogenType") or args.get("speciesName") or args.get("pathogen"),
+            forecast_months=int(args.get("forecastMonths", 3))
+        )
     # =========================================================================
     # 环境健康风险监测预警计算任务 (Environmental Health Tasks)
     # =========================================================================

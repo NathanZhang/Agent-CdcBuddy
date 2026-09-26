@@ -114,7 +114,7 @@ export const SewageLagCorrelationChart: React.FC<SewageLagCorrelationChartProps>
               const heightPct = Math.max(10, Math.round((r / 1.0) * 100));
 
               return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group relative">
+                <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1.5 group relative">
                   {/* Tooltip on hover */}
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 px-1.5 py-0.5 rounded bg-slate-800 text-white text-[10px] pointer-events-none whitespace-nowrap z-10">
                     Lag {item.lagDays}天: r={r.toFixed(3)}
@@ -122,7 +122,7 @@ export const SewageLagCorrelationChart: React.FC<SewageLagCorrelationChartProps>
                   <span className={`text-[10px] font-bold ${isPeak ? 'text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400'}`}>
                     {r.toFixed(2)}
                   </span>
-                  <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-t-md h-full flex items-end">
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-t-md h-24 flex items-end">
                     <div 
                       className={`w-full rounded-t-md transition-all duration-500 ${
                         isPeak 

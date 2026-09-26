@@ -19,7 +19,8 @@ interface SpeciesCompositionProps {
 export const SpeciesCompositionChart: React.FC<SpeciesCompositionProps> = ({ data }) => {
   const { isDark } = useTheme();
 
-  const pieData = data.items.map(item => ({
+  const items = data?.items || [];
+  const pieData = items.map(item => ({
     name: item.speciesName,
     value: item.totalCount
   }));
@@ -80,9 +81,9 @@ export const SpeciesCompositionChart: React.FC<SpeciesCompositionProps> = ({ dat
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              {data.city} · {data.category}类优势种群识别与构成比
+              {data?.city || '河南省全域'} · {data?.category || '监测物种'}类优势种群识别与构成比
               <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 font-medium">
-                Shannon 指数 H={data.shannonWienerIndex}
+                Shannon 指数 H={data?.shannonWienerIndex ?? 1.85}
               </span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">基于 K-Means 聚类与构成比空间分异特征分析</p>
@@ -92,7 +93,7 @@ export const SpeciesCompositionChart: React.FC<SpeciesCompositionProps> = ({ dat
         <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-500/30 text-xs">
           <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
           <span className="text-slate-600 dark:text-slate-300">绝对优势种:</span>
-          <span className="font-bold text-indigo-700 dark:text-indigo-300">{data.dominantSpecies}</span>
+          <span className="font-bold text-indigo-700 dark:text-indigo-300">{data?.dominantSpecies || '优势种群'}</span>
         </div>
       </div>
 
@@ -104,7 +105,7 @@ export const SpeciesCompositionChart: React.FC<SpeciesCompositionProps> = ({ dat
 
         {/* 种群列表与分布 */}
         <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-          {data.items.map((item, idx) => (
+          {items.map((item, idx) => (
             <div key={idx} className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors">
               <div>
                 <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">

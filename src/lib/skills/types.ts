@@ -10,6 +10,7 @@ export type SkillCategory =
   | 'nlq'          // 自然语言问答 (No. 33)
   | 'report'       // 专题报告生成 (No. 34)
   | 'mobile'       // 移动端辅助与API (No. 35)
+  | 'disposal'     // 现场流调处置与协同工单
   | 'custom';      // 用户对话式自定义技能
 
 export interface SkillContext {
