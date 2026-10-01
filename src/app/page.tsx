@@ -824,6 +824,7 @@ export default function CdcAgentWorkspace() {
 
       {/* 嵌入式浮窗组件 (默认位于左下角，默认隐藏，独立运行模式) */}
       <EmbeddedWidget 
+        domain={profile.domain}
         isVisible={showFloatingCopilot}
         onClose={() => setShowFloatingCopilot(false)}
         syncWorkspace={false}

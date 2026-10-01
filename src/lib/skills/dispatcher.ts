@@ -3,7 +3,7 @@ import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
-import { getCurrentAgentProfile, getCurrentAgentDomain, findAlertAcrossAllDomains } from '@/lib/config/agent-profile';
+import { getCurrentAgentProfile, getCurrentAgentDomain, findAlertAcrossAllDomains, AgentDomainType, getAgentProfile } from '@/lib/config/agent-profile';
 
 export interface DispatchResult {
   success: boolean;
@@ -19,6 +19,7 @@ export interface DispatchResult {
 }
 
 export interface DispatchContext {
+  domain?: AgentDomainType;
   chatHistory?: Array<{ sender: string; text: string; skillUsed?: string }>;
   currentView?: any;
   userRole?: string;
@@ -45,6 +46,7 @@ export interface RuleMatchResult {
 export function fallbackRuleMatch(promptText: string, context?: DispatchContext): RuleMatchResult {
   const trimmed = promptText.trim();
   const q = trimmed.toLowerCase();
+  const currentDomain = context?.domain || (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentProfile().domain || 'vector';
   let matchedSkillId = 'skill_spatial_early_warning';
   const skillArgs: any = {};
 
@@ -192,7 +194,6 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('自定义技能') || q.includes('定制技能') ||
     q.includes('帮我创建') || q.includes('创建技能')
   ) {
-    const currentDomain = getCurrentAgentProfile().domain || 'vector';
     if (currentDomain === 'foodborne') {
       matchedSkillId = 'skill_foodborne_custom_builder';
     } else if (currentDomain === 'env') {
@@ -286,7 +287,6 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('施药') || q.includes('超低容量') || q.includes('喷洒') ||
     (skillArgs.alertId && (q.includes('研判') || q.includes('方案') || q.includes('应对')))
   ) {
-    const currentDomain = (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentProfile().domain || 'vector';
     if (currentDomain === 'chronic' || (skillArgs.alertId && skillArgs.alertId.includes('CHR'))) {
       matchedSkillId = 'skill_chronic_early_warning_disposal';
     } else if (currentDomain === 'env' || (skillArgs.alertId && skillArgs.alertId.includes('ENV'))) {
@@ -366,7 +366,6 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('全部数据') || (q.includes('数据') && q.includes('表')) ||
     (isDataQueryVerb && isDataNoun) || (skillArgs.city && isDataNoun)
   ) {
-    const currentDomain = getCurrentAgentProfile().domain || 'vector';
     if (currentDomain === 'foodborne') {
       matchedSkillId = 'skill_foodborne_case_table';
     } else if (currentDomain === 'env') {
@@ -451,7 +450,7 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     matchedSkillId = 'skill_chronic_death_report';
   } else if (
     // 慢病与死因：直报网络覆盖率与机构台账 (No. 59/64)
-    (getCurrentAgentProfile().domain === 'chronic') && (
+    (currentDomain === 'chronic') && (
       q.includes('覆盖率') || q.includes('直报网络') || q.includes('医疗卫生机构') || 
       q.includes('各级医疗') || q.includes('直报机构') || q.includes('直报覆盖')
     )
@@ -479,7 +478,6 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
     q.includes('空间分布') || q.includes('分布图') || q.includes('点位') || 
     q.includes('超标') || q.includes('预警')
   ) {
-    const currentDomain = getCurrentAgentProfile().domain || 'vector';
     if (currentDomain === 'chronic') {
       matchedSkillId = 'skill_mortality_cluster_rare';
     } else if (currentDomain === 'env') {
@@ -491,7 +489,6 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
       if (q.includes('严重')) skillArgs.severity = 'red';
     }
   } else {
-    const currentDomain = getCurrentAgentProfile().domain || 'vector';
     if (currentDomain === 'foodborne') {
       matchedSkillId = 'skill_foodborne_case_table';
     } else if (currentDomain === 'env') {
@@ -523,12 +520,15 @@ export async function dispatchSkillPromptStream(
   context?: DispatchContext
 ): Promise<DispatchResult> {
   const trimmed = promptText.trim();
+  const activeDomain = context?.domain || (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain();
+  const targetProfile = getAgentProfile(activeDomain);
+
   if (!trimmed) {
     return {
       success: false,
       skillId: '',
       skillName: '',
-      replyText: '请输入有效的病媒生物监测指令或问题。'
+      replyText: `请输入有效的${targetProfile.badgeTitle}监测指令或问题。`
     };
   }
 
@@ -545,7 +545,7 @@ export async function dispatchSkillPromptStream(
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
-        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain(),
+        domain: activeDomain,
         context: {
           currentView: context?.currentView
         }
@@ -690,12 +690,15 @@ export async function dispatchSkillPromptStream(
  */
 export async function dispatchSkillPrompt(promptText: string, context?: DispatchContext): Promise<DispatchResult> {
   const trimmed = promptText.trim();
+  const activeDomain = context?.domain || (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain();
+  const targetProfile = getAgentProfile(activeDomain);
+
   if (!trimmed) {
     return {
       success: false,
       skillId: '',
       skillName: '',
-      replyText: '请输入有效的病媒生物监测指令或问题。'
+      replyText: `请输入有效的${targetProfile.badgeTitle}监测指令或问题。`
     };
   }
 
@@ -709,7 +712,7 @@ export async function dispatchSkillPrompt(promptText: string, context?: Dispatch
         promptText: trimmed,
         chatHistory: context?.chatHistory || [],
         userRole: context?.userRole,
-        domain: (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentDomain(),
+        domain: activeDomain,
         context: {
           currentView: context?.currentView
         }

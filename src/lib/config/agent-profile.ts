@@ -29,6 +29,21 @@ export interface AgentMetricsBar {
   latestDataPeriod: string;
 }
 
+export interface FloatingWidgetConfig {
+  assistantTitle: string;
+  badge: string;
+  statusText: string;
+  welcomeMessage: string;
+  quickPrompts: string[];
+  inputPlaceholder: string;
+  gradientClass: string;
+  shadowClass: string;
+  borderClass: string;
+  activeBgClass: string;
+  accentTextClass: string;
+  tagClass: string;
+}
+
 export interface AgentProfile {
   domain: AgentDomainType;
   name: string;
@@ -46,6 +61,7 @@ export interface AgentProfile {
   skillIds: string[];
   metricsBar: AgentMetricsBar;
   alerts: EarlyWarningAlertItem[];
+  floatingWidget: FloatingWidgetConfig;
 }
 
 export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
@@ -218,7 +234,26 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       activeAlertsTitle: '活跃预警: 15 起',
       latestDataPeriod: '2025-11-11'
     },
-    alerts: ACTIVE_ALERTS_LIST
+    alerts: ACTIVE_ALERTS_LIST,
+    floatingWidget: {
+      assistantTitle: 'CdcBuddy 疾控病媒 AI 助手',
+      badge: 'SSE Stream',
+      statusText: '● 实时推演与流式交互',
+      welcomeMessage: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。\n\n我已支持在对话流中直接渲染**时空态势地图、Text2SQL 数据明细表、ECharts 消长预测图及应急处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
+      quickPrompts: [
+        '显示郑州市2024年5月全部病媒监测数据表',
+        '查看河南省白纹伊蚊空间预警地图',
+        '分析郑州市淡色库蚊密度消长趋势',
+        '全省五大类卫生杀虫剂抗药性评估'
+      ],
+      inputPlaceholder: '输入病媒监测问题或指令 (如：显示郑州监测表)...',
+      gradientClass: 'from-sky-600 to-cyan-500',
+      shadowClass: 'shadow-sky-500/30',
+      borderClass: 'border-sky-500/40',
+      activeBgClass: 'bg-sky-600 hover:bg-sky-500',
+      accentTextClass: 'text-sky-600 dark:text-sky-400',
+      tagClass: 'bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800'
+    }
   },
 
   foodborne: {
@@ -438,7 +473,26 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
         disposalStatus: 'in_progress',
         triggerTime: '2026-08-10 10:00:00'
       }
-    ]
+    ],
+    floatingWidget: {
+      assistantTitle: 'CdcBuddy 食源安全 AI 助手',
+      badge: 'SSE Stream',
+      statusText: '● 聚集流调与分子溯源',
+      welcomeMessage: '您好！我是 **CdcBuddy 食源性疾病监测智能助手**。\n\n我已支持在对话流中直接渲染**暴发聚集雷达、cgMLST 分子同源进化树、高风险食品归因排行及流调处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
+      quickPrompts: [
+        '排查全省近7天哨点医院食源性聚集暴发',
+        '下钻分析郑州市高校食堂副溶血性弧菌聚集事件',
+        '对比单增李斯特菌 cgMLST 分子同源进化树',
+        '展示河南省食源性疾病高风险食品TOP10归因'
+      ],
+      inputPlaceholder: '输入食源疾病监测指令 (如：排查聚集性疫情)...',
+      gradientClass: 'from-orange-600 to-amber-500',
+      shadowClass: 'shadow-orange-500/30',
+      borderClass: 'border-orange-500/40',
+      activeBgClass: 'bg-orange-600 hover:bg-orange-500',
+      accentTextClass: 'text-orange-600 dark:text-orange-400',
+      tagClass: 'bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800'
+    }
   },
 
   env: {
@@ -637,7 +691,26 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
         disposalStatus: 'in_progress',
         triggerTime: '2026-08-22 16:30:00'
       }
-    ]
+    ],
+    floatingWidget: {
+      assistantTitle: 'CdcBuddy 环境健康 AI 助手',
+      badge: 'SSE Stream',
+      statusText: '● 水质环境与暴露推演',
+      welcomeMessage: '您好！我是 **CdcBuddy 环境健康风险监测智能助手**。\n\n我已支持在对话流中直接渲染**生活饮用水管网 GIS 态势、污水病原拓扑溯源、极端气候健康风险及风险处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
+      quickPrompts: [
+        '展示全省生活饮用水水质超标克里金空间分布',
+        '计算郑州市重点污水厂病原浓度与门诊滞后相关',
+        '评估高温热浪天气对心脑血管脆弱人群健康风险',
+        '排查新乡市凤泉区水厂出厂水总大肠菌群超标'
+      ],
+      inputPlaceholder: '输入环境健康风险指令 (如：评估水质安全)...',
+      gradientClass: 'from-cyan-600 to-teal-500',
+      shadowClass: 'shadow-cyan-500/30',
+      borderClass: 'border-cyan-500/40',
+      activeBgClass: 'bg-cyan-600 hover:bg-cyan-500',
+      accentTextClass: 'text-cyan-600 dark:text-cyan-400',
+      tagClass: 'bg-cyan-50 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800'
+    }
   },
 
   chronic: {
@@ -865,7 +938,26 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
         disposalStatus: 'resolved',
         triggerTime: '2026-08-12 10:00:00'
       }
-    ]
+    ],
+    floatingWidget: {
+      assistantTitle: 'CdcBuddy 死因慢病 AI 助手',
+      badge: 'SSE Stream',
+      statusText: '● 死亡证明质控与早死率测算',
+      welcomeMessage: '您好！我是 **CdcBuddy 死因、慢病及伤害综合监测智能助手**。\n\n我已支持在对话流中直接渲染**简略寿命表早死率仪表盘、死因质控校验明细、伤害特征聚类树及慢病干预指南**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
+      quickPrompts: [
+        '测算全省30~70岁重大慢病过早死亡概率(4q70)',
+        '校验本周全省死亡医学证明书死因链逻辑质控',
+        '分析全省哨点医院老年跌倒与意外伤害聚类特征',
+        '生成各区县高发恶性肿瘤早癌筛查推荐清单'
+      ],
+      inputPlaceholder: '输入死因慢病监测指令 (如：测算4q70早死率)...',
+      gradientClass: 'from-rose-600 to-pink-500',
+      shadowClass: 'shadow-rose-500/30',
+      borderClass: 'border-rose-500/40',
+      activeBgClass: 'bg-rose-600 hover:bg-rose-500',
+      accentTextClass: 'text-rose-600 dark:text-rose-400',
+      tagClass: 'bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800'
+    }
   }
 };
 

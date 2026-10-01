@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Bot, X, Send, Shield, Maximize2, Minimize2, RefreshCw, Sparkles, Square } from 'lucide-react';
+import { Bot, X, Send, Shield, Maximize2, Minimize2, RefreshCw, Sparkles, Square, RotateCcw } from 'lucide-react';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { GenerativeComponentRenderer } from '@/components/ag-ui/GenerativeComponentRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { dispatchSkillPromptStream } from '@/lib/skills/dispatcher';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
+import { AgentDomainType, getAgentProfile, getCurrentAgentDomain, AGENT_PROFILES } from '@/lib/config/agent-profile';
 
 interface EmbeddedWidgetProps {
   initialPrompt?: string;
@@ -14,6 +15,7 @@ interface EmbeddedWidgetProps {
   isVisible?: boolean;
   onClose?: () => void;
   syncWorkspace?: boolean; // 是否与底层工作台同步，嵌入独立业务系统时为 false
+  domain?: AgentDomainType; // 显式指定智能体领域 (vector | foodborne | env | chronic)
 }
 
 interface ChatMessage {
@@ -33,13 +35,19 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   onSendMessage,
   isVisible = false,
   onClose,
-  syncWorkspace = false
+  syncWorkspace = false,
+  domain
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputVal, setInputVal] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 动态确定当前智能体 Domain 与 Profile
+  const activeDomain: AgentDomainType = domain || getCurrentAgentDomain();
+  const profile = getAgentProfile(activeDomain);
+  const fwConfig = profile.floatingWidget;
 
   // 打断控制器
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -49,21 +57,81 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
   const [size, setSize] = useState<{ width: number; height: number }>({ width: 520, height: 620 });
   const [isResizing, setIsResizing] = useState(false);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'init-1',
-      role: 'assistant',
-      text: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。\n\n我已支持在对话流中直接渲染**时空态势地图、Text2SQL 数据明细表、ECharts 消长预测图及应急处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
-      timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-    }
-  ]);
+  // 独立的四智能体对话消息历史（每个智能体独立维持会话，互不干扰）
+  const [domainMessages, setDomainMessages] = useState<Record<AgentDomainType, ChatMessage[]>>(() => {
+    const initMap: Record<AgentDomainType, ChatMessage[]> = {
+      vector: [
+        {
+          id: 'init-vector',
+          role: 'assistant',
+          text: AGENT_PROFILES.vector.floatingWidget?.welcomeMessage || `您好！我是 **${AGENT_PROFILES.vector.fullName}**。`,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ],
+      foodborne: [
+        {
+          id: 'init-foodborne',
+          role: 'assistant',
+          text: AGENT_PROFILES.foodborne.floatingWidget?.welcomeMessage || `您好！我是 **${AGENT_PROFILES.foodborne.fullName}**。`,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ],
+      env: [
+        {
+          id: 'init-env',
+          role: 'assistant',
+          text: AGENT_PROFILES.env.floatingWidget?.welcomeMessage || `您好！我是 **${AGENT_PROFILES.env.fullName}**。`,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ],
+      chronic: [
+        {
+          id: 'init-chronic',
+          role: 'assistant',
+          text: AGENT_PROFILES.chronic.floatingWidget?.welcomeMessage || `您好！我是 **${AGENT_PROFILES.chronic.fullName}**。`,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]
+    };
+    return initMap;
+  });
 
-  const quickPrompts = [
-    '显示郑州市2024年5月全部病媒监测数据表',
-    '查看河南省白纹伊蚊空间预警地图',
-    '分析郑州市淡色库蚊密度消长趋势',
-    '全省五大类卫生杀虫剂抗药性评估'
-  ];
+  const messages = domainMessages[activeDomain] || [];
+
+  const updateCurrentMessages = useCallback((updater: (prev: ChatMessage[]) => ChatMessage[]) => {
+    setDomainMessages(prev => ({
+      ...prev,
+      [activeDomain]: updater(prev[activeDomain] || [])
+    }));
+  }, [activeDomain]);
+
+  // 重置当前智能体的独立浮窗会话
+  const handleResetCurrentSession = useCallback(() => {
+    if (abortControllerRef.current) {
+      isCancelledRef.current = true;
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsThinking(false);
+    setDomainMessages(prev => ({
+      ...prev,
+      [activeDomain]: [
+        {
+          id: `init-${activeDomain}-${Date.now()}`,
+          role: 'assistant',
+          text: fwConfig.welcomeMessage,
+          timestamp: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]
+    }));
+  }, [activeDomain, fwConfig.welcomeMessage]);
+
+  // 当外部显隐状态开启时，自动展开浮窗窗口
+  useEffect(() => {
+    if (isVisible) {
+      setIsOpen(true);
+    }
+  }, [isVisible]);
 
   // 当有新消息或展开弹窗时，自动平滑滚动到底部
   useEffect(() => {
@@ -129,7 +197,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       abortControllerRef.current = null;
     }
     setIsThinking(false);
-    setMessages(prev => prev.map(m => {
+    updateCurrentMessages(prev => prev.map(m => {
       if (m.isReasoningStreaming || m.isContentStreaming) {
         return {
           ...m,
@@ -140,7 +208,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       }
       return m;
     }));
-  }, []);
+  }, [updateCurrentMessages]);
 
   // 如果处于隐藏状态，则不渲染在界面上
   if (!isVisible) {
@@ -182,7 +250,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       timestamp: nowTime
     };
 
-    setMessages(prev => [...prev, userMsg, placeholderAgentMsg]);
+    updateCurrentMessages(prev => [...prev, userMsg, placeholderAgentMsg]);
     setInputVal('');
     setIsThinking(true);
 
@@ -207,17 +275,18 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
 
     try {
       const result = await dispatchSkillPromptStream(userText, {
+        domain: activeDomain, // 明确传递当前独立智能体 Domain
         chatHistory,
         signal: controller.signal,
         onReasoningStart: () => {
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             isReasoningStreaming: true
           } : m));
         },
         onReasoningChunk: (_chunk, fullReasoning) => {
           latestReasoning = fullReasoning;
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             reasoningText: fullReasoning,
             isReasoningStreaming: true
@@ -225,7 +294,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         },
         onReasoningEnd: (durMs) => {
           reasoningDurationMs = durMs;
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             reasoningDuration: durMs,
             isReasoningStreaming: false,
@@ -234,7 +303,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         },
         onContentChunk: (_chunk, fullContent) => {
           latestContent = fullContent;
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             text: fullContent,
             isReasoningStreaming: false,
@@ -243,14 +312,14 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
         },
         onToolCallStart: (info) => {
           latestSkillName = info.toolName;
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             skillUsed: info.toolName
           } : m));
         },
         onGenerativeView: (view) => {
           latestView = view;
-          setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+          updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
             ...m,
             generativeView: view
           } : m));
@@ -268,7 +337,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
       const finalGenerativeView = result.generativeView || latestView;
 
-      setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+      updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
         ...m,
         text: finalReplyText,
         skillUsed: finalSkillName,
@@ -282,7 +351,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       if (err.name === 'AbortError' || controller.signal.aborted || isCancelledRef.current) {
         return;
       }
-      setMessages(prev => prev.map(m => m.id === agentMsgId ? {
+      updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
         ...m,
         text: `⚠️ 执行出现异常：${err.message || '系统错误，请重试'}`,
         isReasoningStreaming: false,
@@ -308,7 +377,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       {isOpen && (
         <div
           style={{ width: `${currentWidth}px`, height: `${currentHeight}px` }}
-          className={`relative bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-sky-500/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-150 mb-3 max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)]`}
+          className={`relative bg-white/98 dark:bg-slate-950/98 backdrop-blur-xl rounded-2xl border ${fwConfig.borderClass} shadow-2xl flex flex-col overflow-hidden transition-all duration-150 mb-3 max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)]`}
         >
           {/* ====== 鼠标拖动缩放 (Resize Handles) ====== */}
           {!isExpanded && (
@@ -316,24 +385,24 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
               {/* 顶部边缘拖动手柄 (调整高度) */}
               <div
                 onMouseDown={(e) => handleResizeMouseDown('top', e)}
-                className="absolute top-0 left-0 right-4 h-2 cursor-ns-resize z-50 hover:bg-sky-500/30 transition-colors"
+                className="absolute top-0 left-0 right-4 h-2 cursor-ns-resize z-50 hover:bg-slate-400/20 transition-colors"
                 title="拖动调整窗口高度"
               />
 
               {/* 右侧边缘拖动手柄 (调整宽度) */}
               <div
                 onMouseDown={(e) => handleResizeMouseDown('right', e)}
-                className="absolute top-4 right-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-sky-500/30 transition-colors"
+                className="absolute top-4 right-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-slate-400/20 transition-colors"
                 title="拖动调整窗口宽度"
               />
 
               {/* 右上角角落拖动手柄 (同时调整宽高) */}
               <div
                 onMouseDown={(e) => handleResizeMouseDown('top-right', e)}
-                className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize z-50 flex items-center justify-center hover:bg-sky-500/40 rounded-tr-2xl transition-colors group"
+                className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize z-50 flex items-center justify-center hover:bg-slate-400/30 rounded-tr-2xl transition-colors group"
                 title="拖动右上角自由缩放窗口"
               >
-                <div className="w-1.5 h-1.5 border-t-2 border-r-2 border-sky-400 opacity-60 group-hover:opacity-100" />
+                <div className="w-1.5 h-1.5 border-t-2 border-r-2 border-current opacity-60 group-hover:opacity-100" />
               </div>
             </>
           )}
@@ -341,21 +410,28 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
           {/* 窗口头部 */}
           <div className="p-3 bg-slate-50 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white text-xs shadow-sm shadow-sky-600/30">
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${fwConfig.gradientClass} flex items-center justify-center text-white text-xs shadow-sm ${fwConfig.shadowClass}`}>
                 <Shield className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">CdcBuddy 疾控病媒 AI 助手</h4>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 font-mono">
-                    SSE Stream
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">{fwConfig.assistantTitle}</h4>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${fwConfig.tagClass}`}>
+                    {fwConfig.badge}
                   </span>
                 </div>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">● 实时推演与流式交互</span>
+                <span className={`text-[10px] font-medium ${fwConfig.accentTextClass}`}>{fwConfig.statusText}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-1 text-slate-400">
+              <button
+                onClick={handleResetCurrentSession}
+                className="p-1.5 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="清空重置当前智能体会话"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="p-1.5 hover:text-slate-700 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
@@ -388,12 +464,12 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
               <Sparkles className="w-3 h-3 text-amber-500" />
               推荐:
             </span>
-            {quickPrompts.map((qp, idx) => (
+            {fwConfig.quickPrompts.map((qp, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSendPrompt(qp)}
                 disabled={isThinking}
-                className="shrink-0 px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-900/40 text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-300 border border-slate-200 dark:border-slate-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-[10px] cursor-pointer"
+                className="shrink-0 px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-[10px] cursor-pointer"
               >
                 {qp}
               </button>
@@ -408,7 +484,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                 className={`flex gap-2.5 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5 shadow-sm">
+                  <div className={`w-6 h-6 rounded-full bg-gradient-to-tr ${fwConfig.gradientClass} flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5 shadow-sm`}>
                     🤖
                   </div>
                 )}
@@ -434,7 +510,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                       <div
                         className={`p-3 rounded-xl leading-relaxed ${
                           m.role === 'user'
-                            ? 'bg-sky-600 text-white rounded-br-none shadow-sm shadow-sky-600/20'
+                            ? `bg-gradient-to-tr ${fwConfig.gradientClass} text-white rounded-br-none shadow-sm ${fwConfig.shadowClass}`
                             : 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-bl-none'
                         }`}
                       >
@@ -442,12 +518,12 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                           <>
                             <MarkdownRenderer content={displayText} isUser={m.role === 'user'} />
                             {m.isContentStreaming && (
-                              <span className="inline-block w-1.5 h-3 ml-1 bg-sky-500 animate-pulse align-middle" />
+                              <span className="inline-block w-1.5 h-3 ml-1 bg-current animate-pulse align-middle" />
                             )}
                           </>
                         ) : (
                           <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 py-0.5">
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-500" />
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-current" />
                             <span>正在生成研判结论...</span>
                           </div>
                         )}
@@ -465,7 +541,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                   {/* 消息元信息 */}
                   <div className="flex items-center gap-2 text-[10px] text-slate-400 px-1">
                     {m.skillUsed && (
-                      <span className="px-1.5 py-0.2 rounded bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20 font-medium">
+                      <span className={`px-1.5 py-0.2 rounded font-medium ${fwConfig.tagClass}`}>
                         ⚡ {m.skillUsed}
                       </span>
                     )}
@@ -483,7 +559,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
           <div className="p-3 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 shrink-0">
             <input
               type="text"
-              placeholder="输入病媒监测问题或指令 (如：显示郑州监测表)..."
+              placeholder={fwConfig.inputPlaceholder}
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={(e) => {
@@ -491,7 +567,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                   handleSendPrompt(inputVal);
                 }
               }}
-              className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
+              className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-slate-500 transition-colors"
             />
             {isThinking ? (
               <button
@@ -507,7 +583,7 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
                 onClick={() => handleSendPrompt(inputVal)}
                 disabled={!inputVal.trim()}
                 title="发送指令"
-                className="p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer shrink-0"
+                className={`p-2.5 rounded-xl ${fwConfig.activeBgClass} disabled:opacity-50 text-white shadow-md ${fwConfig.shadowClass} transition-all cursor-pointer shrink-0`}
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -519,8 +595,8 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
       {/* 悬浮圆形启动按钮 (位于屏幕左下角) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-500 text-white flex items-center justify-center shadow-xl shadow-sky-500/30 hover:scale-110 active:scale-95 transition-all border-2 border-white dark:border-sky-400 group cursor-pointer"
-        title={isOpen ? '收起浮窗助手' : '展开 Copilot 悬浮助手'}
+        className={`w-14 h-14 rounded-full bg-gradient-to-tr ${fwConfig.gradientClass} text-white flex items-center justify-center shadow-xl ${fwConfig.shadowClass} hover:scale-110 active:scale-95 transition-all border-2 border-white dark:${fwConfig.borderClass} group cursor-pointer`}
+        title={isOpen ? `收起 ${fwConfig.assistantTitle}` : `展开 ${fwConfig.assistantTitle}`}
       >
         {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6 group-hover:animate-bounce" />}
       </button>
