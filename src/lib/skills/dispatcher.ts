@@ -377,6 +377,7 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
       matchedSkillId = 'skill_monitoring_data_table';
     }
     skillArgs.query = promptText;
+    skillArgs.domain = currentDomain;
   } else if (
     q.includes('克里金') || q.includes('饮用水') || q.includes('水质') || 
     q.includes('末梢水') || q.includes('出厂水') || q.includes('管网水') ||
@@ -449,6 +450,16 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   ) {
     matchedSkillId = 'skill_chronic_death_report';
   } else if (
+    // 慢病与死因：直报网络覆盖率与机构台账 (No. 59/64)
+    (getCurrentAgentProfile().domain === 'chronic') && (
+      q.includes('覆盖率') || q.includes('直报网络') || q.includes('医疗卫生机构') || 
+      q.includes('各级医疗') || q.includes('直报机构') || q.includes('直报覆盖')
+    )
+  ) {
+    matchedSkillId = 'skill_chronic_monitoring_table';
+    skillArgs.query = promptText;
+    skillArgs.domain = 'chronic';
+  } else if (
     // 食源性疾病：聚集性病例与暴发识别
     q.includes('食源') && (q.includes('聚集') || q.includes('暴发') || q.includes('就餐') || q.includes('雷达'))
   ) {
@@ -491,6 +502,7 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
       matchedSkillId = 'skill_vector_nlq';
     }
     skillArgs.query = promptText;
+    skillArgs.domain = currentDomain;
   }
 
   const skill = getSkillById(matchedSkillId);

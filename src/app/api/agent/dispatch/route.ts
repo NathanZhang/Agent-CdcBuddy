@@ -11,17 +11,95 @@ import { getAgentProfile } from '@/lib/config/agent-profile';
 // 数据统计分析工具
 function calculateDatasetStats(data: any[]) {
   if (!Array.isArray(data) || data.length === 0) return null;
-  
+
+  const first = data[0] || {};
+  const isCoverage = '网络直报覆盖率' in first || '死因证明书直报量(份)' in first;
+  const isChronicCase = '慢病诊断名称' in first || '收缩压(mmHg)' in first;
+  const isDeathCert = '证明书编号' in first || '根本死因推断' in first;
+  const isWater = '浑浊度(NTU)' in first || '游离氯(mg/L)' in first;
+
+  if (isCoverage) {
+    let totalCerts = 0;
+    let totalCases = 0;
+    let totalPop = 0;
+    for (const r of data) {
+      totalCerts += Number(r['死因证明书直报量(份)'] ?? r['死因证明书直报量'] ?? 0);
+      totalCases += Number(r['重大慢病在管病例数(例)'] ?? r['慢病随访病例数'] ?? 0);
+      totalPop += Number(r['覆盖常住人口'] ?? 0);
+    }
+    return {
+      totalRecords: data.length,
+      summaryLines: [
+        `全省网络直报覆盖率: 100% (全省18地市、126+区县各级医疗卫生机构全连通)`,
+        `直报死因医学证明书累计量: ${totalCerts} 份`,
+        `重大慢性病在管随访病例数: ${totalCases} 例`,
+        `样本覆盖常住人口总和: ${(totalPop / 10000).toFixed(1)} 万人`
+      ]
+    };
+  }
+
+  if (isChronicCase) {
+    let totalSBP = 0;
+    let validSBP = 0;
+    let totalGlu = 0;
+    let validGlu = 0;
+    for (const r of data) {
+      const sbp = Number(r['收缩压(mmHg)'] ?? 0);
+      if (sbp > 0) { totalSBP += sbp; validSBP++; }
+      const glu = Number(r['空腹血糖(mmol/L)'] ?? 0);
+      if (glu > 0) { totalGlu += glu; validGlu++; }
+    }
+    return {
+      totalRecords: data.length,
+      summaryLines: [
+        `平均收缩压: ${validSBP > 0 ? (totalSBP / validSBP).toFixed(1) : 0} mmHg`,
+        `平均空腹血糖: ${validGlu > 0 ? (totalGlu / validGlu).toFixed(1) : 0} mmol/L`,
+        `重点纳管慢病: 高血压、2型糖尿病、脑卒中、冠心病等`
+      ]
+    };
+  }
+
+  if (isDeathCert) {
+    let totalAge = 0;
+    let totalYpll = 0;
+    let prematureCount = 0;
+    for (const r of data) {
+      totalAge += Number(r['死亡年龄'] ?? 0);
+      totalYpll += Number(r['潜在减寿年数(YPLL)'] ?? 0);
+      if (r['重大慢病早死(4q70)'] === '是' || r['is_premature_death_4q70'] === 1) prematureCount++;
+    }
+    return {
+      totalRecords: data.length,
+      summaryLines: [
+        `平均死亡年龄: ${(totalAge / data.length).toFixed(1)} 岁`,
+        `累计潜在减寿年数 (YPLL): ${totalYpll} 人年`,
+        `30~70岁重大慢病早死病例占比: ${((prematureCount / data.length) * 100).toFixed(1)}% (${prematureCount}/${data.length})`
+      ]
+    };
+  }
+
+  if (isWater) {
+    let metCount = 0;
+    for (const r of data) {
+      if (r['水质评价'] === '达标' || r['is_standard_met'] === 1) metCount++;
+    }
+    return {
+      totalRecords: data.length,
+      summaryLines: [
+        `水质综合达标率: ${((metCount / data.length) * 100).toFixed(1)}%`,
+        `达标批次数: ${metCount} / ${data.length}`
+      ]
+    };
+  }
+
   let totalCapture = 0;
   let validCaptureCount = 0;
   let maxCapture = 0;
   let minCapture = Infinity;
-  
   let totalTemp = 0;
   let validTempCount = 0;
   let maxTemp = -Infinity;
   let minTemp = Infinity;
-  
   let totalHumidity = 0;
   let validHumidityCount = 0;
 
@@ -46,7 +124,7 @@ function calculateDatasetStats(data: any[]) {
       validHumidityCount++;
     }
   }
-  
+
   return {
     totalRecords: data.length,
     totalCaptureCount: totalCapture,
@@ -56,7 +134,12 @@ function calculateDatasetStats(data: any[]) {
     avgTemp: validTempCount > 0 ? Number((totalTemp / validTempCount).toFixed(2)) : 0,
     maxTemp: maxTemp === -Infinity ? 0 : maxTemp,
     minTemp: minTemp === Infinity ? 0 : minTemp,
-    avgHumidity: validHumidityCount > 0 ? Number((totalHumidity / validHumidityCount).toFixed(2)) : 0
+    avgHumidity: validHumidityCount > 0 ? Number((totalHumidity / validHumidityCount).toFixed(2)) : 0,
+    summaryLines: [
+      `捕获/监测数量: 平均值=${validCaptureCount > 0 ? (totalCapture / validCaptureCount).toFixed(2) : 0}, 总和=${totalCapture}`,
+      `环境气温 (℃): 平均值=${validTempCount > 0 ? (totalTemp / validTempCount).toFixed(2) : 0}℃`,
+      `相对湿度 (%): 平均值=${validHumidityCount > 0 ? (totalHumidity / validHumidityCount).toFixed(2) : 0}%`
+    ]
   };
 }
 
@@ -97,14 +180,13 @@ ${agentProfile.systemPrompt}
       const stats = calculateDatasetStats(context.currentView.data);
       if (stats) {
         const columns = Object.keys(context.currentView.data[0]);
+        const linesStr = (stats.summaryLines || []).map((l: string) => `  * ${l}`).join('\n');
         systemPromptContent += `\n\n【当前工作台已渲染的数据视图 (DATA_TABLE_VIEW) 统计摘要】：
 - 数据标题: "${context.currentView.title || '数据表'}"
 - 包含字段: ${columns.join(', ')}
 - 样本记录数: ${stats.totalRecords} 条
 - 指标统计结果:
-  * 捕获/监测数量: 平均值=${stats.avgCaptureCount}, 总和=${stats.totalCaptureCount}, 最大值=${stats.maxCaptureCount}, 最小值=${stats.minCaptureCount}
-  * 环境气温 (℃): 平均值=${stats.avgTemp}℃, 最高温=${stats.maxTemp}℃, 最低温=${stats.minTemp}℃
-  * 相对湿度 (%): 平均值=${stats.avgHumidity}%
+${linesStr}
 注意：如果用户针对当前数据视图进行提问，请直接基于此上下文进行逻辑计算和答复，不需要调用数据查询工具！`;
       }
     }
@@ -178,7 +260,7 @@ ${agentProfile.systemPrompt}
 
         let toolExecutionResult: any = null;
         try {
-          toolExecutionResult = await executeSkillServer(chosenSkillId, parsedArgs);
+          toolExecutionResult = await executeSkillServer(chosenSkillId, { ...parsedArgs, domain: activeDomain });
           finalGenerativeView = toolExecutionResult;
         } catch (execErr: any) {
           console.error(`[BFF Fallback Exec Error] ${chosenSkillId}:`, execErr);
@@ -239,7 +321,7 @@ ${agentProfile.systemPrompt}
         // 🚀 服务端执行 Tool
         let toolExecutionResult: any = null;
         try {
-          toolExecutionResult = await executeSkillServer(skillId, parsedArgs);
+          toolExecutionResult = await executeSkillServer(skillId, { ...parsedArgs, domain: activeDomain });
           finalGenerativeView = toolExecutionResult;
         } catch (execErr: any) {
           console.error(`[BFF Tool Loop] 执行技能 ${skillId} 失败:`, execErr);

@@ -21,6 +21,7 @@ import {
   VectorSummaryStats
 } from './types';
 import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
+import type { AgentDomainType } from '../config/agent-profile';
 
 export class SQLiteVectorDataProvider implements IVectorDataProvider {
   private db: Database.Database | null = null;
@@ -605,4 +606,65 @@ export function getVectorDataProvider(): IVectorDataProvider {
     globalProvider = new SQLiteVectorDataProvider();
   }
   return globalProvider;
+}
+
+// 多智能体领域数据库单例连接池
+const domainDbInstances: Partial<Record<AgentDomainType, Database.Database>> = {};
+
+export function resolveDomainDbPath(domain: AgentDomainType): string {
+  const dbFileMap: Record<AgentDomainType, { filename: string; mockSubdir?: string }> = {
+    vector: { filename: 'vector_monitoring.db' },
+    chronic: { filename: 'chronic_monitoring.db', mockSubdir: 'chronic' },
+    foodborne: { filename: 'foodborne_monitoring.db', mockSubdir: 'foodborne' },
+    env: { filename: 'env_monitoring.db', mockSubdir: 'env' }
+  };
+
+  const config = dbFileMap[domain] || dbFileMap.vector;
+  const candidates: string[] = [
+    path.resolve(process.cwd(), `./${config.filename}`),
+    path.resolve(process.cwd(), `../Agent-CdcBuddy/${config.filename}`),
+    `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/${config.filename}`
+  ];
+
+  if (config.mockSubdir) {
+    candidates.unshift(
+      path.resolve(process.cwd(), `../Agent-CdcBuddy-DataMock/data/${config.mockSubdir}/${config.filename}`),
+      `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy-DataMock/data/${config.mockSubdir}/${config.filename}`
+    );
+  } else {
+    candidates.unshift(
+      path.resolve(process.cwd(), `../Agent-CdcBuddy-DataMock/${config.filename}`),
+      `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy-DataMock/${config.filename}`
+    );
+  }
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+
+  return path.resolve(process.cwd(), `./${config.filename}`);
+}
+
+export function getDomainDb(domain: AgentDomainType): Database.Database {
+  if (!domainDbInstances[domain]) {
+    const dbPath = resolveDomainDbPath(domain);
+    try {
+      domainDbInstances[domain] = new Database(dbPath, { readonly: true, fileMustExist: true });
+    } catch (err) {
+      console.warn(`[DomainDb] 无法以 fileMustExist 打开 ${domain} 数据库 (${dbPath}), 尝试标准打开:`, err);
+      domainDbInstances[domain] = new Database(dbPath, { readonly: true });
+    }
+  }
+  return domainDbInstances[domain]!;
+}
+
+export async function queryDomainSql(domain: AgentDomainType, sql: string, params: any[] = []): Promise<any[]> {
+  const db = getDomainDb(domain);
+  const trimmed = sql.trim();
+  if (!trimmed.toLowerCase().startsWith('select')) {
+    throw new Error('仅支持 SELECT 查询操作以确保数据安全');
+  }
+  return db.prepare(trimmed).all(...params);
 }

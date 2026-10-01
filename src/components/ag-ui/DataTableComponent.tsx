@@ -30,8 +30,8 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
     return (
       <div className="p-6 bg-white/90 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 text-center space-y-2">
         <Database className="w-8 h-8 mx-auto text-slate-400 opacity-60" />
-        <p className="font-medium text-slate-700 dark:text-slate-300">未检索到符合条件的病媒监测记录</p>
-        <p className="text-[11px] text-slate-400">请尝试调整筛选年份、城市名称或病媒分类后重试</p>
+        <p className="font-medium text-slate-700 dark:text-slate-300">未检索到符合条件的数据记录</p>
+        <p className="text-[11px] text-slate-400">请尝试调整筛选条件、地市名称或业务分类后重试</p>
         {sql && (
           <div className="mt-3 text-left p-3 rounded-lg bg-slate-950 text-slate-400 font-mono text-[11px] max-w-xl mx-auto overflow-x-auto">
             <code>{sql}</code>

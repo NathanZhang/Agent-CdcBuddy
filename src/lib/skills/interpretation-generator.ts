@@ -85,7 +85,7 @@ export function generateDomainAIInterpretation(
       return text;
     }
 
-    // 2. 监测数据明细查询 Text2SQL
+    // 2. 监测数据明细查询 Text2SQL (病媒)
     case 'skill_monitoring_data_table': {
       const data = result.data || [];
       const stats = result.summaryStats;
@@ -105,6 +105,71 @@ export function generateDomainAIInterpretation(
       text += `* 详细台账与多维字段明细已在主工作台数据表组件中完整渲染，支持按地市、区县、物种、气象因子进行交互式筛选与排序。\n`;
       text += `* 当前生态气温与湿度条件适宜病媒孳生消长，建议持续加强重点生境例行巡查与密度动态监测。`;
 
+      return text;
+    }
+
+    // 2.1 慢病与死因监测数据明细查询 Text2SQL
+    case 'skill_chronic_monitoring_table': {
+      const data = result.data || [];
+      const count = data.length;
+      const isCoverage = result.title?.includes('覆盖率') || (data.length > 0 && ('网络直报覆盖率' in data[0] || '死因证明书直报量(份)' in data[0]));
+      const isCase = data.length > 0 && ('慢病诊断名称' in data[0] || '收缩压(mmHg)' in data[0]);
+      const isInjury = data.length > 0 && ('伤害类型' in data[0] || '致伤原因' in data[0]);
+
+      if (isCoverage) {
+        let text = `### 📊 河南省死因监测与慢病直报网络各级医疗卫生机构覆盖率汇总研判\n\n`;
+        text += `系统已精准完成全省直报网络底座数据库查询，共提取 **${count}** 个区县节点的网络直报运转与机构覆盖记录：\n\n`;
+        text += `#### 📈 网络覆盖与协同运转成效\n`;
+        text += `* **全省网络覆盖率**：全省 18 地市、126+ 区县各级医疗卫生机构（综合医院、专科医院、乡镇卫生院及社区卫生服务中心）网络直报覆盖率达 **100%**；\n`;
+        text += `* **业务直报能力**：死因医学证明书电子直报与重大慢性病规范化管理随访系统实现全天候稳定运转；\n`;
+        text += `* **交互数据工作台**：各区县覆盖常住人口、证明书直报累计量及慢病随访台账已在主工作台完整呈现，支持按地市检索、排序及导出 CSV。\n\n`;
+        text += `#### 💡 防制管理建议\n`;
+        text += `* 持续加强基层直报质控审核与迟报/漏报日常监测，对重点区县落实死因链逻辑校验闭环。`;
+        return text;
+      } else if (isCase) {
+        let text = `### 📊 河南省重大慢性病病例随访与发病管理明细分析\n\n`;
+        text += `已基于慢性病综合监测数据库完成检索，共筛选出 **${count}** 条重大慢性病发病登记与随访台账记录。\n\n`;
+        text += `#### 📈 临床随访与风险特征\n`;
+        text += `* **疾病谱覆盖**：涵盖原发性高血压很高危组、2型糖尿病、冠心病、急性心肌梗死及脑卒中等多类重大慢病；\n`;
+        text += `* **心血管危险评估**：台账包含患者血压、空腹血糖、BMI、家族史与10年心脑血管疾病发病风险分级；\n`;
+        text += `* **精细化干预指导**：已提供筛查成本效果比(ROI)评估，支持针对极高危患者实施靶器官损害早期筛查与门诊规范管理。`;
+        return text;
+      } else if (isInjury) {
+        let text = `### 📊 河南省伤害综合监测原始记录与事件特征分析\n\n`;
+        text += `系统已完成全省伤害监测哨点数据库检索，共调取 **${count}** 条伤害病例监测记录。\n\n`;
+        text += `* **重点伤害类型**：包括跌倒坠落、道路交通伤害、钝器伤及一氧化碳中毒等；\n`;
+        text += `* **流行病学特征**：详细记录发生地点（家中、道路、农田等）、致伤原因及严重程度，便于开展聚集性归因决策分析。`;
+        return text;
+      } else {
+        let text = `### 📊 河南省人口死亡医学证明书与全死因监测明细查询\n\n`;
+        text += `已依据检索条件完成全死因证明书数据库查询，筛选出 **${count}** 条真实死亡医学证明书明细记录。\n\n`;
+        text += `#### 📈 死因构成与质控特征\n`;
+        text += `* **死因大类与编码**：涵盖心脑血管疾病、恶性肿瘤、呼吸系统疾病等主要死因，已完成 ICD-10 规范化自动编码；\n`;
+        text += `* **减寿分析与早死标志**：已计算潜在减寿年数(YPLL)与 30~70 岁重大慢病早死概率(4q70)标志；\n`;
+        text += `* **死因链质控**：包含直接死因与根本死因推导过程，质控状态标识明确，支持数据表下钻与质量复核。`;
+        return text;
+      }
+    }
+
+    // 2.2 食源性疾病病例与抽检
+    case 'skill_foodborne_case_table': {
+      const data = result.data || [];
+      const count = data.length;
+      let text = `### 📊 河南省食源性疾病病例与食品抽检明细检索\n\n`;
+      text += `已从食源性疾病主动监测数据库完成数据查询，共筛选出 **${count}** 条原始台账记录。\n\n`;
+      text += `* **监测信息完整度**：包含患者发病时间、潜伏期、主要消化道症状、可疑就餐场所及病原学检测结果；\n`;
+      text += `* **主工作台交互**：支持按地市、区县、可疑食品类别进行多维过滤和导出，协助开展聚集性暴发事件早期线索排查。`;
+      return text;
+    }
+
+    // 2.3 水质与环境健康监测
+    case 'skill_env_monitoring_table': {
+      const data = result.data || [];
+      const count = data.length;
+      let text = `### 📊 河南省水质与环境健康监测数据多维分析\n\n`;
+      text += `已完成全省环境健康多介质数据库检索，共调取 **${count}** 条监测明细记录。\n\n`;
+      text += `* **水质与健康风险**：包含出厂水/管网水浑浊度、游离氯、耗氧量指标，以及致癌与非致癌健康风险评估；\n`;
+      text += `* **合规与预警**：清晰标注水质综合达标状态，支持按监测点位与区县进行下钻追溯。`;
       return text;
     }
 

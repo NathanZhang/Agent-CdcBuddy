@@ -1,12 +1,12 @@
 import { MetaCustomSkillData } from './types';
 import { runAnalyticsEngine } from '../analytics/engine-bridge';
 import { getAppBusinessProvider } from '../db/app-business-provider';
-import { getVectorDataProvider } from '../db/sqlite-provider';
+import { getVectorDataProvider, queryDomainSql } from '../db/sqlite-provider';
 import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
 import { EarlyWarningAlertItem } from '../db/data-provider';
 import { executeText2Sql } from './text2sql-engine';
 import { isProvinceLevel, normalizeCityName, findDistrictInfo } from '../geo/henan-geojson';
-import { AGENT_PROFILES, findAlertAcrossAllDomains } from '../config/agent-profile';
+import { AGENT_PROFILES, findAlertAcrossAllDomains, AgentDomainType } from '../config/agent-profile';
 
 export async function executeSkillServer(skillId: string, args: Record<string, any>) {
   const provider = getVectorDataProvider();
@@ -496,28 +496,29 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       if (!targetSql) {
         if (targetDomain === 'foodborne') {
           targetSql = `
-            SELECT city as 地市, sample_type as 样品类别, count(*) as 抽检批次,
-                   sum(case when is_positive = 1 then 1 else 0 end) as 阳性批次,
-                   round(sum(case when is_positive = 1 then 1 else 0 end) * 100.0 / count(*), 2) as 阳性超标率
-            FROM fact_food_surveillance
-            GROUP BY city, sample_type
-            ORDER BY 阳性超标率 DESC LIMIT 15
+            SELECT city as 地市, dining_place_type as 就餐场所类型, count(*) as 报告病例数,
+                   sum(case when is_pathogen_positive = 1 then 1 else 0 end) as 阳性检出数
+            FROM fact_foodborne_case
+            GROUP BY city, dining_place_type
+            ORDER BY 报告病例数 DESC LIMIT 15
           `;
         } else if (targetDomain === 'env') {
           targetSql = `
-            SELECT city as 地市, station_name as 监测站点, 
-                   round(avg(pm25_value), 2) as 平均PM25, round(avg(water_quality_index), 2) as 水质指数
-            FROM fact_env_surveillance
-            GROUP BY city, station_name
-            ORDER BY 水质指数 DESC LIMIT 15
+            SELECT city as 地市, sample_type as 水样类别, count(*) as 监测次数,
+                   sum(case when is_standard_met = 1 then 1 else 0 end) as 达标批次,
+                   round(sum(case when is_standard_met = 1 then 1 else 0 end) * 100.0 / count(*), 2) as 水质达标率
+            FROM fact_water_monitoring
+            GROUP BY city, sample_type
+            ORDER BY 水质达标率 ASC LIMIT 15
           `;
         } else if (targetDomain === 'chronic') {
           targetSql = `
-            SELECT city as 地市, disease_category as 慢病分类, count(*) as 登记随访病例数,
-                   round(avg(early_mortality_rate), 2) as 预估早死概率
-            FROM fact_chronic_surveillance
-            GROUP BY city, disease_category
-            ORDER BY 登记随访病例数 DESC LIMIT 15
+            SELECT city as 地市, icd10_category as 死因分类, count(*) as 死亡登记数,
+                   round(avg(ypll), 1) as 平均减寿年数,
+                   sum(case when is_premature_death_4q70 = 1 then 1 else 0 end) as 早死病例数
+            FROM fact_death_registry
+            GROUP BY city, icd10_category
+            ORDER BY 死亡登记数 DESC LIMIT 15
           `;
         } else {
           targetSql = `
@@ -548,7 +549,7 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
 
       let queryData: any[] = [];
       try {
-        queryData = await provider.queryCustomSql(newSkill.sqlQuery);
+        queryData = await queryDomainSql(targetDomain, newSkill.sqlQuery);
       } catch (e: any) {
         queryData = [
           { 区域: '郑州市', 统计指标: '综合分析值', 数值: 86.4, 判定等级: '高风险' },
@@ -586,19 +587,35 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       const isFood = skillId === 'skill_foodborne_case_table';
       const isEnv = skillId === 'skill_env_monitoring_table';
       const isChronic = skillId === 'skill_chronic_monitoring_table';
+      const targetDomain: AgentDomainType = isFood ? 'foodborne' : (isEnv ? 'env' : (isChronic ? 'chronic' : 'vector'));
 
       const timeStr = args.year && args.month 
         ? `${args.year}年${args.month}月` 
         : (args.year ? `${args.year}年` : (args.month ? `${args.month}月` : ''));
       
       let domainLabel = '病媒监测数据表';
-      if (isFood) domainLabel = '食源性病例与食品抽检明细表';
-      else if (isEnv) domainLabel = '水质与环境空气监测明细表';
-      else if (isChronic) domainLabel = '死因证明书与重大慢病监测明细表';
+      if (isFood) {
+        domainLabel = '食源性病例与食品抽检明细表';
+      } else if (isEnv) {
+        domainLabel = '水质与环境空气监测明细表';
+      } else if (isChronic) {
+        const qLower = (args.query || '').toLowerCase();
+        if (qLower.includes('覆盖') || qLower.includes('直报网络') || qLower.includes('机构') || qLower.includes('卫生')) {
+          domainLabel = '死因监测与慢病直报网络各级医疗卫生机构覆盖率汇总表';
+        } else if (qLower.includes('随访') || qLower.includes('慢病') || qLower.includes('高血压') || qLower.includes('糖尿病') || qLower.includes('并发症')) {
+          domainLabel = '重大慢性病发病随访管理明细表';
+        } else if (qLower.includes('伤害') || qLower.includes('跌倒') || qLower.includes('中毒')) {
+          domainLabel = '意外伤害综合监测明细表';
+        } else {
+          domainLabel = '死因证明书与重大慢病监测明细表';
+        }
+      }
 
       const userPrompt = args.query || `${args.city || ''} ${timeStr} ${args.district || ''} ${args.category || args.pathogen || ''} ${domainLabel}`;
-      const result = await executeText2Sql(userPrompt, args);
-      const displayTitle = `${args.city || '河南省'}${timeStr}${args.district || ''}${domainLabel}`;
+      const result = await executeText2Sql(userPrompt, { ...args, domain: targetDomain }, targetDomain);
+      const displayTitle = (isChronic && domainLabel.includes('覆盖率'))
+        ? `${args.city || '河南省'}${timeStr}${domainLabel}`
+        : `${args.city || '河南省'}${timeStr}${args.district || ''}${domainLabel}`;
       return {
         type: 'DATA_TABLE_VIEW',
         title: displayTitle,
