@@ -6,6 +6,7 @@ import { ACTIVE_ALERTS_LIST } from '../data/active-alerts';
 import { EarlyWarningAlertItem } from '../db/data-provider';
 import { executeText2Sql } from './text2sql-engine';
 import { isProvinceLevel, normalizeCityName, findDistrictInfo } from '../geo/henan-geojson';
+import { AGENT_PROFILES, findAlertAcrossAllDomains } from '../config/agent-profile';
 
 export async function executeSkillServer(skillId: string, args: Record<string, any>) {
   const provider = getVectorDataProvider();
@@ -115,7 +116,7 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       });
 
       if (args.alertId) {
-        const exactAlert = ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === args.alertId.toUpperCase());
+        const exactAlert = findAlertAcrossAllDomains(args.alertId);
         if (exactAlert && !alerts.some((a: any) => a.alertId === exactAlert.alertId)) {
           alerts = [exactAlert, ...alerts];
         }
@@ -990,6 +991,189 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       return {
         type: 'CHRONIC_DEATH_REPORT',
         ...result
+      };
+    }
+
+    // 40. 慢病突发就诊峰值预警深度研判与应急处置闭环 (No. 70/74)
+    case 'skill_chronic_early_warning_disposal': {
+      const alertId = args.alertId || 'ALERT-CHR-202608-01';
+      let matchedAlert = findAlertAcrossAllDomains(alertId, args.city, args.district);
+      if (!matchedAlert) {
+        matchedAlert = AGENT_PROFILES.chronic.alerts?.[0] || {
+          alertId: 'ALERT-CHR-202608-01',
+          title: '郑州市金水区 45-64岁急性心梗就诊峰值预警',
+          level: 'orange',
+          levelName: '较重预警 (二级)',
+          category: '急性心脑血管',
+          city: args.city || '郑州市',
+          district: args.district || '金水区',
+          street: '纬五路省医心脑血管救治中心',
+          latitude: 34.7730,
+          longitude: 113.6820,
+          triggerReason: '急诊胸痛中心 7 日急性心梗确诊例数环比激增 42%，超出常态控制线 2.8 个标准差。',
+          currentDensity: 42,
+          threshold: 20,
+          affectedPopulationEstimate: 18000,
+          recommendedAction: '向社区卫生中心下发慢病高危患者随访用药与胸痛症状即刻就医指导。',
+          disposalStatus: 'in_progress',
+          triggerTime: '2026-08-25 08:30:00'
+        };
+      }
+
+      const ticketId = `DISPATCH-${matchedAlert.alertId.replace('ALERT-', '')}`;
+      let ticket = await bizProvider.getDisposalTicketById(ticketId);
+      if (!ticket) {
+        const protocols = matchedAlert.category === '死因质控'
+          ? [
+              { step: 1, title: '根本死因知识图谱因果链自动重构', content: '调取医院直报死因证明书文本，利用 NLP 穿透临死心衰与多器官衰竭，锁定原始基础病。' },
+              { step: 2, title: '向直报医疗机构防保科推送驳回补正单', content: matchedAlert.recommendedAction },
+              { step: 3, title: '48小时更正时效复核与数据质控闭环', content: '更正后重新进行 ICD-10 逻辑质控校验，垃圾编码率降至 3% 以下方可核销。' }
+            ]
+          : [
+              { step: 1, title: '基层社区卫生服务中心慢病随访与用药干预', content: '向辖区17家社区卫生服务中心下发高危人群清单，对45-64岁合并高血压/糖尿病在管患者进行电话随访与用药指导。' },
+              { step: 2, title: '胸痛中心急救绿色通道与院前急救联动', content: '启动省医胸痛中心急救绿色通道，优化120急救调度半径，门-球(D-to-B)再灌注时间严格控制在75分钟以内。' },
+              { step: 3, title: '医防协同公众气象健康警示与闭环追踪', content: '针对近期早晚温差持续超10℃发布心脑血管防病警示，每日复核急诊就诊偏离度指标，待平稳降至基线后归档核销。' }
+            ];
+
+        ticket = await bizProvider.createDisposalTicket({
+          ticket_id: ticketId,
+          alert_id: matchedAlert.alertId,
+          target_city: matchedAlert.city,
+          target_district: matchedAlert.district,
+          target_street: matchedAlert.street || '核心监测区域',
+          vector_category: '慢病急性心脑血管事件',
+          species_name: matchedAlert.title,
+          severity_level: matchedAlert.level as any,
+          recommended_protocol: protocols,
+          assigned_team: `${matchedAlert.district}慢病综合防制指导中队 / 河南省人民医院胸痛中心急救专班`,
+          contact_phone: '0371-87160120',
+          disposal_status: (args.action === 'resolve' ? 'RESOLVED' : 'IN_PROGRESS') as any,
+          before_density: matchedAlert.currentDensity,
+          after_bi_index: args.action === 'resolve' ? 15.0 : matchedAlert.currentDensity,
+          disposal_notes: '已启动基层随访用药指导与三级医院胸痛中心急诊绿色通道协同。'
+        });
+      } else if (args.action === 'resolve') {
+        await bizProvider.updateTicketStatus(ticketId, 'RESOLVED', '急诊心梗确诊例数已回落至基线控制线以内，预警核销归档。', 15.0);
+        ticket = (await bizProvider.getDisposalTicketById(ticketId))!;
+      }
+
+      return {
+        type: 'DISPOSAL_WORKFLOW_CARD',
+        domain: 'chronic',
+        title: '重大慢病急性事件就诊峰值应急处置工单与闭环追踪',
+        ticketId: ticket.ticket_id,
+        targetArea: `${ticket.target_city}${ticket.target_district}${ticket.target_street || ''}`,
+        targetVector: matchedAlert.title,
+        targetLabel: '预警监测靶标与病种',
+        recommendedProtocol: ticket.recommended_protocol,
+        currentStatus: ticket.disposal_status.toLowerCase(),
+        assignedTeam: ticket.assigned_team,
+        afterBiIndex: ticket.after_bi_index,
+        updatedAt: ticket.updated_at,
+        alertDetails: {
+          alertId: matchedAlert.alertId,
+          title: matchedAlert.title,
+          levelName: matchedAlert.levelName,
+          triggerReason: matchedAlert.triggerReason,
+          currentMetric: `${matchedAlert.currentDensity} 例/周`,
+          threshold: `${matchedAlert.threshold} 例/周 (基线控制线)`,
+          affectedPopulation: matchedAlert.affectedPopulationEstimate,
+          recommendedAction: matchedAlert.recommendedAction,
+          latitude: matchedAlert.latitude,
+          longitude: matchedAlert.longitude
+        },
+        riskFactors: [
+          { factor: '年龄谱系特征', detail: '45-64岁青壮年与中年骨干劳动力占就诊总数的 68.4%，中青年就诊延迟明显（平均就诊延迟 3.6 小时）' },
+          { factor: '慢病共病基础', detail: '辖区在管高血压合并糖尿病并发症未规律服药率 34.2%，血管内皮损伤基底脆弱' },
+          { factor: '气温剧烈波动', detail: '近7天日均温差达 10.2℃，冷刺激诱发交感神经兴奋与冠状动脉强烈痉挛' }
+        ]
+      };
+    }
+
+    // 41. 环境健康突发超标预警空间溯源与应急处置闭环 (No. 54/55)
+    case 'skill_env_early_warning_disposal': {
+      const alertId = args.alertId || 'ALERT-ENV-202608-01';
+      let matchedAlert = findAlertAcrossAllDomains(alertId, args.city, args.district);
+      if (!matchedAlert) {
+        matchedAlert = AGENT_PROFILES.env.alerts?.[0] || {
+          alertId: 'ALERT-ENV-202608-01',
+          title: '郑州市高新区 城市供水管网末梢水游离氯与三氯甲烷异常预警',
+          level: 'orange',
+          levelName: '较重预警 (二级)',
+          category: '饮用水安全',
+          city: args.city || '郑州市',
+          district: args.district || '高新区',
+          street: '西三环与化工路交叉口地下供水管网末梢直测站',
+          latitude: 34.8020,
+          longitude: 113.5680,
+          triggerReason: '管网末梢水游离性余氯骤降至 0.02 mg/L（国标最低限值 0.05 mg/L），三氯甲烷检测值升至 0.085 mg/L（接近国标上限 0.06 mg/L）。',
+          currentDensity: 0.085,
+          threshold: 0.06,
+          affectedPopulationEstimate: 21000,
+          recommendedAction: '启用备用次氯酸钠投加管路，管网末梢全面实施冲洗消毒与加密复测。',
+          disposalStatus: 'in_progress',
+          triggerTime: '2026-08-23 09:00:00'
+        };
+      }
+
+      const ticketId = `DISPATCH-${matchedAlert.alertId.replace('ALERT-', '')}`;
+      let ticket = await bizProvider.getDisposalTicketById(ticketId);
+      if (!ticket) {
+        ticket = await bizProvider.createDisposalTicket({
+          ticket_id: ticketId,
+          alert_id: matchedAlert.alertId,
+          target_city: matchedAlert.city,
+          target_district: matchedAlert.district,
+          target_street: matchedAlert.street || '核心监测区域',
+          vector_category: '环境健康水质/空气因子',
+          species_name: matchedAlert.title,
+          severity_level: matchedAlert.level as any,
+          recommended_protocol: [
+            { step: 1, title: '备用投加管路切换与水力反冲洗', content: matchedAlert.recommendedAction },
+            { step: 2, title: '周边管网节点与易感学校水质小时级加密监测', content: '布设5个加密检测流动哨点，快速复核余氯、菌落总数与三氯甲烷浓度。' },
+            { step: 3, title: '公众安全用水警示下发与达标复测核销', content: '向受影响片区推送居民安全饮水指引，水质连续3次复检合格后核销工单。' }
+          ],
+          assigned_team: `${matchedAlert.district}环境健康监测机动队 / 供水管网水质保障专班`,
+          contact_phone: '0371-67891234',
+          disposal_status: (args.action === 'resolve' ? 'RESOLVED' : 'IN_PROGRESS') as any,
+          before_density: matchedAlert.currentDensity,
+          after_bi_index: args.action === 'resolve' ? 0.03 : matchedAlert.currentDensity,
+          disposal_notes: '已启动管网反冲洗与备用次氯酸钠加注管路切换。'
+        });
+      } else if (args.action === 'resolve') {
+        await bizProvider.updateTicketStatus(ticketId, 'RESOLVED', '管网末梢水游离氯与三氯甲烷已全部恢复达标，预警核销归档。', 0.03);
+        ticket = (await bizProvider.getDisposalTicketById(ticketId))!;
+      }
+
+      return {
+        type: 'DISPOSAL_WORKFLOW_CARD',
+        domain: 'env',
+        title: '环境健康超标异常应急排查与处置工单',
+        ticketId: ticket.ticket_id,
+        targetArea: `${ticket.target_city}${ticket.target_district}${ticket.target_street || ''}`,
+        targetVector: matchedAlert.title,
+        targetLabel: '超标异常监测指标',
+        recommendedProtocol: ticket.recommended_protocol,
+        currentStatus: ticket.disposal_status.toLowerCase(),
+        assignedTeam: ticket.assigned_team,
+        afterBiIndex: ticket.after_bi_index,
+        updatedAt: ticket.updated_at,
+        alertDetails: {
+          alertId: matchedAlert.alertId,
+          title: matchedAlert.title,
+          levelName: matchedAlert.levelName,
+          triggerReason: matchedAlert.triggerReason,
+          currentMetric: `${matchedAlert.currentDensity}`,
+          threshold: `${matchedAlert.threshold} (国标限值)`,
+          affectedPopulation: matchedAlert.affectedPopulationEstimate,
+          recommendedAction: matchedAlert.recommendedAction,
+          latitude: matchedAlert.latitude,
+          longitude: matchedAlert.longitude
+        },
+        riskFactors: [
+          { factor: '管网水力驻留时间过长', detail: '该片区处于供水管网末梢死水段，夏季水温升高加速余氯自然衰减' },
+          { factor: '消毒副产物生成潜能升高', detail: '源水有机物前体物与次氯酸钠反应生成三氯甲烷速率随温度与停留时间加剧' }
+        ]
       };
     }
 

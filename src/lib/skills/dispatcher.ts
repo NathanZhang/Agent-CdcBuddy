@@ -3,7 +3,7 @@ import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
 import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 import { normalizeReasoningToChinese } from '@/lib/skills/chinese-reasoning-normalizer';
-import { getCurrentAgentProfile, getCurrentAgentDomain } from '@/lib/config/agent-profile';
+import { getCurrentAgentProfile, getCurrentAgentDomain, findAlertAcrossAllDomains } from '@/lib/config/agent-profile';
 
 export interface DispatchResult {
   success: boolean;
@@ -48,8 +48,8 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   let matchedSkillId = 'skill_spatial_early_warning';
   const skillArgs: any = {};
 
-  // 1. 提取预警编号 (如 ALERT-202408-101, ALERT-202408-114)
-  const alertIdMatch = promptText.match(/ALERT-\d+(?:-\d+)?/i);
+  // 1. 提取预警编号 (如 ALERT-CHR-202608-01, ALERT-ENV-202608-01, OUTBREAK-202608-01, ALERT-202408-101)
+  const alertIdMatch = promptText.match(/((?:ALERT|OUTBREAK)(?:-[A-Z0-9]+)+)/i);
   if (alertIdMatch) {
     skillArgs.alertId = alertIdMatch[0].toUpperCase();
   } else if (
@@ -58,7 +58,7 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   ) {
     for (let i = context.chatHistory.length - 1; i >= 0; i--) {
       const histText = context.chatHistory[i].text || '';
-      const histMatch = histText.match(/ALERT-\d+(?:-\d+)?/i);
+      const histMatch = histText.match(/((?:ALERT|OUTBREAK)(?:-[A-Z0-9]+)+)/i);
       if (histMatch) {
         skillArgs.alertId = histMatch[0].toUpperCase();
         break;
@@ -67,7 +67,7 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   }
 
   const matchedAlertItem = skillArgs.alertId 
-    ? ACTIVE_ALERTS_LIST.find(a => a.alertId.toUpperCase() === skillArgs.alertId.toUpperCase()) 
+    ? findAlertAcrossAllDomains(skillArgs.alertId) 
     : null;
   if (matchedAlertItem) {
     skillArgs.city = matchedAlertItem.city;
@@ -283,9 +283,19 @@ export function fallbackRuleMatch(promptText: string, context?: DispatchContext)
   } else if (
     q.includes('工单') || q.includes('处置') || q.includes('消杀') || 
     q.includes('派工') || q.includes('核销') || q.includes('闭环') ||
-    q.includes('施药') || q.includes('超低容量') || q.includes('喷洒')
+    q.includes('施药') || q.includes('超低容量') || q.includes('喷洒') ||
+    (skillArgs.alertId && (q.includes('研判') || q.includes('方案') || q.includes('应对')))
   ) {
-    matchedSkillId = 'skill_disposal_workflow';
+    const currentDomain = (typeof window !== 'undefined' ? (window as any).__AGENT_DOMAIN__ : null) || getCurrentAgentProfile().domain || 'vector';
+    if (currentDomain === 'chronic' || (skillArgs.alertId && skillArgs.alertId.includes('CHR'))) {
+      matchedSkillId = 'skill_chronic_early_warning_disposal';
+    } else if (currentDomain === 'env' || (skillArgs.alertId && skillArgs.alertId.includes('ENV'))) {
+      matchedSkillId = 'skill_env_early_warning_disposal';
+    } else if (currentDomain === 'foodborne' || (skillArgs.alertId && skillArgs.alertId.includes('OUTBREAK'))) {
+      matchedSkillId = 'skill_outbreak_disposal_advice';
+    } else {
+      matchedSkillId = 'skill_disposal_workflow';
+    }
   } else if (
     q.includes('报告') || q.includes('专项') || q.includes('导出') || 
     q.includes('公报') || q.includes('简报') || q.includes('周报') || q.includes('月报')

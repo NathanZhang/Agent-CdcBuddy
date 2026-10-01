@@ -23,6 +23,7 @@ interface ActiveAlertsModalProps {
   isOpen: boolean;
   onClose: () => void;
   alerts?: EarlyWarningAlertItem[];
+  institute?: string;
   onSelectAlertForAnalysis?: (alert: EarlyWarningAlertItem) => void;
   onLocateOnMap?: (city: string, alert: EarlyWarningAlertItem) => void;
 }
@@ -34,6 +35,7 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
   isOpen,
   onClose,
   alerts,
+  institute,
   onSelectAlertForAnalysis,
   onLocateOnMap
 }) => {
@@ -388,7 +390,7 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
         {/* 弹窗底部操作条 */}
         <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
           <div className="flex items-center gap-2">
-            <span>数据源: 河南省疾病预防控制中心 · 媒介生物监测与预警平台</span>
+            <span>数据源: {institute || '河南省疾病预防控制中心 · 监测预警平台'}</span>
           </div>
 
           <button

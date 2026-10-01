@@ -525,6 +525,19 @@ ${agentProfile.systemPrompt}
                 highRiskGridPointsSample: toolExecutionResult.krigingGridPoints?.filter((p: any) => p.riskLevel !== 'safe').slice(0, 6),
                 disposalAdvice: toolExecutionResult.disposalAdvice
               });
+            } else if (toolExecutionResult && toolExecutionResult.type === 'DISPOSAL_WORKFLOW_CARD') {
+              toolSummaryContent = JSON.stringify({
+                success: isExecSuccess,
+                type: 'DISPOSAL_WORKFLOW_CARD',
+                ticketId: toolExecutionResult.ticketId,
+                title: toolExecutionResult.title,
+                targetArea: toolExecutionResult.targetArea,
+                targetVectorOrDisease: toolExecutionResult.targetVector,
+                alertDetails: toolExecutionResult.alertDetails,
+                riskFactors: toolExecutionResult.riskFactors,
+                recommendedProtocol: toolExecutionResult.recommendedProtocol,
+                currentStatus: toolExecutionResult.currentStatus
+              });
             } else {
               toolSummaryContent = JSON.stringify(toolExecutionResult).slice(0, 2000);
             }

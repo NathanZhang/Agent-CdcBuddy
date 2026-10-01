@@ -314,7 +314,8 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       'skill_outbreak_disposal_advice',
       'skill_foodborne_report_export',
       'skill_foodborne_case_table',
-      'skill_foodborne_custom_builder'
+      'skill_foodborne_custom_builder',
+      'skill_spatial_early_warning'
     ],
     metricsBar: {
       items: [
@@ -507,7 +508,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       activeAlertsCount: 3,
       alerts: [
         {
-          alertId: 'ENV-WATER-202608-01',
+          alertId: 'ALERT-ENV-202608-01',
           title: '新乡市凤泉区 某水厂出厂水总大肠菌群轻度超标',
           level: 'yellow',
           levelName: '一般预警 (三级)',
@@ -529,7 +530,10 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       'skill_river_basin_pollution_chain',
       'skill_env_scenario_simulation',
       'skill_env_monitoring_table',
-      'skill_env_custom_builder'
+      'skill_env_custom_builder',
+      'skill_env_early_warning_disposal',
+      'skill_spatial_early_warning',
+      'skill_auto_report_gen'
     ],
     metricsBar: {
       items: [
@@ -717,7 +721,9 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       'skill_chronic_screening_roi',
       'skill_chronic_death_report',
       'skill_chronic_monitoring_table',
-      'skill_chronic_custom_builder'
+      'skill_chronic_custom_builder',
+      'skill_chronic_early_warning_disposal',
+      'skill_spatial_early_warning'
     ],
     metricsBar: {
       items: [
@@ -801,6 +807,63 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
         recommendedAction: '启动死因链智能推断 NLP 复核引擎，向填报医师推送根本死因溯源修正工单。',
         disposalStatus: 'pending',
         triggerTime: '2026-08-24 10:15:00'
+      },
+      {
+        alertId: 'ALERT-CHR-202608-03',
+        title: '郑州市金水区 罕见死因散发型克雅氏病疑似聚集预警',
+        level: 'red',
+        levelName: '严重预警 (一级)',
+        category: '罕见死因',
+        city: '郑州市',
+        district: '金水区',
+        street: '文化路街道郑州大学第一附属医院直报点',
+        latitude: 34.7865,
+        longitude: 113.6730,
+        triggerReason: '金水区近两周内连续报告 3 例临床确诊散发型克雅氏病 (sCJD, A81.0)，达到罕见死因聚集触发阈值 (≥3例)。',
+        currentDensity: 3,
+        threshold: 3,
+        affectedPopulationEstimate: 5200,
+        recommendedAction: '启动神经系统罕见退行性病变专班流调，追溯医源性耗材灭菌记录，排查可疑朊病毒感染链路。',
+        disposalStatus: 'pending',
+        triggerTime: '2026-08-19 14:00:00'
+      },
+      {
+        alertId: 'ALERT-CHR-202608-04',
+        title: '平顶山市郏县 农机联合收割作业重度机械伤害聚集预警',
+        level: 'orange',
+        levelName: '较重预警 (二级)',
+        category: '伤害防制',
+        city: '平顶山市',
+        district: '郏县',
+        street: '长桥镇农机服务合作社',
+        latitude: 33.9712,
+        longitude: 113.2154,
+        triggerReason: '秋收作业期间连续发生 5 起玉米收割机摘穗辊绞碾重度创伤，超过历史同期安全控制阈值。',
+        currentDensity: 5,
+        threshold: 2,
+        affectedPopulationEstimate: 12000,
+        recommendedAction: '下发农机作业安全规程与防护指导，督导乡镇卫生院开通创伤急救绿色通道并储备充足破伤风抗毒素。',
+        disposalStatus: 'in_progress',
+        triggerTime: '2026-08-20 18:30:00'
+      },
+      {
+        alertId: 'ALERT-CHR-202608-05',
+        title: '安阳市林州市 30~70岁重大慢病早死率超标预警',
+        level: 'yellow',
+        levelName: '一般预警 (三级)',
+        category: '肿瘤防制',
+        city: '安阳市',
+        district: '林州市',
+        street: '姚村镇食管癌重点筛查示范基地',
+        latitude: 36.0780,
+        longitude: 113.8160,
+        triggerReason: '简略寿命表测算林州市 30~70 岁恶性肿瘤过早死亡概率(4q70)达 18.6%（全省基线 13.8%）。',
+        currentDensity: 18.6,
+        threshold: 13.8,
+        affectedPopulationEstimate: 26000,
+        recommendedAction: '推动高危人群食管癌早诊早治早筛专项下沉，强化基层消化内镜筛查质控与不良生活饮食习惯干预。',
+        disposalStatus: 'resolved',
+        triggerTime: '2026-08-12 10:00:00'
       }
     ]
   }
@@ -847,4 +910,22 @@ export function getCurrentAgentProfile(): AgentProfile {
  */
 export function getAgentProfile(domain: AgentDomainType): AgentProfile {
   return AGENT_PROFILES[domain] || AGENT_PROFILES.vector;
+}
+
+/**
+ * 跨全域 4 个智能体 Profile 检索预警实体
+ */
+export function findAlertAcrossAllDomains(alertId?: string, city?: string, district?: string): EarlyWarningAlertItem | null {
+  if (!alertId && !city) return null;
+  const allAlerts: EarlyWarningAlertItem[] = Object.values(AGENT_PROFILES).flatMap(p => p.alerts || []);
+  if (alertId) {
+    const cleanId = alertId.trim().toUpperCase();
+    const found = allAlerts.find(a => a.alertId.toUpperCase() === cleanId);
+    if (found) return found;
+  }
+  if (city) {
+    const found = allAlerts.find(a => a.city === city && (!district || a.district === district));
+    if (found) return found;
+  }
+  return null;
 }

@@ -337,7 +337,60 @@ export function generateDomainAIInterpretation(
       return text;
     }
 
-    // 17. 默认通用业务研判生成
+    // 17. 慢病突发预警深度研判与应急处置闭环 (No. 70/74)
+    case 'skill_chronic_early_warning_disposal': {
+      const alert = result?.alertDetails;
+      const title = alert?.title || '重大慢病急性事件就诊峰值预警';
+      const alertId = alert?.alertId || 'ALERT-CHR-202608-01';
+      const placeDesc = alert?.latitude && alert?.longitude 
+        ? `[${result?.targetArea || '纬五路省医心脑血管救治中心'}](geo:${alert.latitude},${alert.longitude}?title=${encodeURIComponent(title)}&level=orange)`
+        : `**${result?.targetArea || '郑州市金水区'}**`;
+
+      let text = `### 🚨 ${title} 专项风险深度研判与应急处置方案\n\n`;
+      text += `系统已联动全域死因监测、哨点医院胸痛就诊直报与基本公卫在管慢病随访队列，对预警编号 **\`${alertId}\`** 展开专项深度研判，研判结论与处置指引如下：\n\n`;
+      text += `#### 一、 预警触发依据与流行病学研判\n`;
+      text += `* **发生核心点位**：${placeDesc}；\n`;
+      text += `* **指标偏离程度**：急诊胸痛中心7日急性心梗确诊例数达 **${alert?.currentMetric || '42 例/周'}**（环比激增 **42%**），已超出常态控制线 **2.8 个标准差**；\n`;
+      text += `* **预估受影响高危人群**：辖区内约 **${alert?.affectedPopulation ? alert.affectedPopulation.toLocaleString() : '18,000'} 人**（45~64 岁高血压合并糖尿病慢病群体）。\n\n`;
+      text += `#### 二、 周边关联危险因素因果链分析\n`;
+      text += `* **年龄与劳动力谱系特征**：45~64 岁青壮年与中年人群占就诊总数的 **68.4%**，中青年劳动力往往由于对胸痛前驱症状警惕不足，平均就诊延迟达 **3.6 小时**（显著超出黄金 120 分钟抢救时窗）；\n`;
+      text += `* **慢病共病与服药依从性短板**：基层公卫随访数据显示，辖区在管高血压合并糖尿病患者的未规律规范服药率达 **34.2%**，血管内皮斑块极易在应激状态下破裂脱落；\n`;
+      text += `* **极端温差气象外生催化**：近 7 天日均温差达 **10.2℃**，气温骤降诱发周围小动脉持续痉挛与心肌后负荷骤增。\n\n`;
+      text += `#### 三、 应急响应处置方案与工单流转指引\n`;
+      text += `已在主工作台生成标准化处置工单 **\`${result?.ticketId || 'DISPATCH-CHR-202608-01'}\`**，并启动医防协同闭环响应：\n`;
+      text += `1. **基层社区快速随访**：向金水区 17 家社区卫生服务中心下发慢病高危患者随访用药工单，指导规范服用抗血小板与降压药物，普及胸痛早期识别；\n`;
+      text += `2. **急救绿色通道调配**：协调省医心脑血管救治中心急救绿色通道，优化 120 急救调度半径，将门-球(D-to-B)再灌注时间严格控制在 75 分钟以内；\n`;
+      text += `3. **气象健康警示与闭环核销**：向辖区公众发布防寒保暖与心脑血管防病警示，每日复核急诊确诊例数偏离度，平稳回落至基线后予以工单核销。`;
+      return text;
+    }
+
+    // 18. 环境健康超标预警空间溯源与应急处置闭环 (No. 54/55)
+    case 'skill_env_early_warning_disposal': {
+      const alert = result?.alertDetails;
+      const title = alert?.title || '环境健康超标异常预警';
+      const alertId = alert?.alertId || 'ALERT-ENV-202608-01';
+      const placeDesc = alert?.latitude && alert?.longitude 
+        ? `[${result?.targetArea || '供水管网末梢直测站'}](geo:${alert.latitude},${alert.longitude}?title=${encodeURIComponent(title)}&level=orange)`
+        : `**${result?.targetArea || '郑州市高新区'}**`;
+
+      let text = `### 🚨 ${title} 专项风险深度研判与应急处置方案\n\n`;
+      text += `系统已联动管网在线水质传感器、气象环境监测与居民健康暴露模型，对预警编号 **\`${alertId}\`** 开展反向溯源与风险研判：\n\n`;
+      text += `#### 一、 预警超标触发依据\n`;
+      text += `* **发生核心点位**：${placeDesc}；\n`;
+      text += `* **超标监测特征**：${alert?.triggerReason || '管网末梢水游离氯骤降，三氯甲烷检测值超标'}；\n`;
+      text += `* **预估受影响人群**：片区居民约 **${alert?.affectedPopulation ? alert.affectedPopulation.toLocaleString() : '21,000'} 人**。\n\n`;
+      text += `#### 二、 周边关联与致因分析\n`;
+      text += `* **水力停留时间过长**：该片区处于供水管网末梢死水段，夏季水温升高加速余氯自然衰减；\n`;
+      text += `* **消毒副产物生成潜能升高**：源水有机物前体物与次氯酸钠反应生成三氯甲烷速率随停留时间加剧。\n\n`;
+      text += `#### 三、 应急处置工单与闭环措施\n`;
+      text += `已在工作台下发应急处置工单 **\`${result?.ticketId || 'DISPATCH-ENV-202608-01'}\`**：\n`;
+      text += `1. **管网冲洗与加氯切换**：${alert?.recommendedAction || '启用备用次氯酸钠投加管路，管网末梢全面实施冲洗消毒'}；\n`;
+      text += `2. **加密抽检复测**：对周边居民小区与学校设置 5 个加密流动监测点小时级复测；\n`;
+      text += `3. **达标核销归档**：水质连续 3 次复检达标后自动核销预警。`;
+      return text;
+    }
+
+    // 19. 默认通用业务研判生成
     default: {
       const skillName = result.title || result.type || 'CDC 专家协同研判';
       let text = `### 🎯 **【${skillName}】** 研判执行完成\n\n`;

@@ -145,12 +145,12 @@ const skillPathogenRisk: VectorSkill = {
 // 5. 动态空间预警分析 (No. 27)
 const skillSpatialEarlyWarning: VectorSkill = {
   id: 'skill_spatial_early_warning',
-  name: '时空动态多维预警与地图热力分析',
+  name: '全域时空动态多维预警与地图热力分析',
   category: 'warning',
   categoryName: '动态预警响应',
   requirementNo: 'No. 27',
-  domain: 'vector',
-  description: '基于多维度阈值与极端天气触发空间预警，空间插值绘制全省风险热力图，支持下钻至地市、区县与街道级。',
+  domain: 'common',
+  description: '基于多维度阈值与极端天气触发空间预警，空间插值绘制全省风险热力图，支持病媒、食源、环境、慢病等全领域预警点位空间定位与区县街道下钻。',
   iconName: 'MapPin',
   badgeColor: 'red',
   recommendedPrompts: [
@@ -329,12 +329,12 @@ const skillVectorNlq: VectorSkill = {
 // 12. 专题监测报告一键生成 (No. 34)
 const skillAutoReportGen: VectorSkill = {
   id: 'skill_auto_report_gen',
-  name: '病媒监测与风险专题报告生成器',
+  name: '全域监测与风险专题报告生成器',
   category: 'report',
   categoryName: '专题报告',
   requirementNo: 'No. 34',
-  domain: 'vector',
-  description: '自动提取时空监测数据、生成多维图表与专家分析综述，支持一键导出 PDF / Markdown / Word 格式。',
+  domain: 'common',
+  description: '自动提取全域时空监测数据、异常预警指标、生成多维图表与专家分析综述，支持病媒生物、环境健康等领域的专题公报与月度专报导出。',
   iconName: 'FileText',
   badgeColor: 'blue',
   recommendedPrompts: [
@@ -945,6 +945,34 @@ const skillEnvCustomBuilder: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_env_custom_builder', args)
 };
 
+// 环境健康：突发超标预警空间溯源与应急处置闭环 (No. 54/55)
+const skillEnvEarlyWarningDisposal: VectorSkill = {
+  id: 'skill_env_early_warning_disposal',
+  name: '环境健康超标预警空间溯源与应急处置闭环',
+  category: 'warning',
+  categoryName: '环境处置',
+  requirementNo: 'No. 54/55',
+  domain: 'env',
+  description: '针对管网末梢水超标、空气重污染持续或流域断面污染等突发环境预警事件，进行空间溯源与危害研判，生成供水管网冲洗排查、污染源排查与易感人群防护处置工单。',
+  iconName: 'AlertTriangle',
+  badgeColor: 'amber',
+  recommendedPrompts: [
+    '请对 郑州市高新区 的预警 "郑州市高新区 城市供水管网末梢水游离氯与三氯甲烷异常预警" (编号: ALERT-ENV-202608-01) 进行专项风险深度研判，分析周边关联因素并给出详细的应急处置方案。',
+    '针对洛阳市偃师区沿黄断面重金属超标预警下发流域排查工单。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      alertId: { type: 'string', description: '预警事件编号，如 ALERT-ENV-202608-01' },
+      city: { type: 'string', description: '地级市名称，如 郑州市' },
+      district: { type: 'string', description: '区县名称，如 高新区' },
+      action: { type: 'string', enum: ['dispatch', 'resolve', 'reopen'], description: '工单操作类型' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_env_early_warning_disposal', args)
+};
+
 // ==============================================================================
 // 死因、慢病及伤害综合监测智能应用专属技能 (No. 59 ~ 73)
 // ==============================================================================
@@ -1110,6 +1138,34 @@ const skillChronicCustomBuilder: VectorSkill = {
   execute: async (args) => executeSkillRemote('skill_chronic_custom_builder', args)
 };
 
+// 慢病与死因：突发就诊峰值预警深度研判与应急处置闭环 (No. 70/74)
+const skillChronicEarlyWarningDisposal: VectorSkill = {
+  id: 'skill_chronic_early_warning_disposal',
+  name: '重大慢病峰值预警深度研判与应急处置工单闭环',
+  category: 'warning',
+  categoryName: '预警处置',
+  requirementNo: 'No. 70/74',
+  domain: 'chronic',
+  description: '针对慢病急性事件就诊峰值（如45-64岁急性心梗、脑卒中激增）、恶性肿瘤全死因链质控异常聚集等突发预警事件，提取预警依据，分析周边关联致病因素（年龄劳动力谱系、三高并发症转化规律、就诊延迟），生成针对基层卫生院与急救中心的应急处置工单并追踪核销闭环。',
+  iconName: 'ShieldAlert',
+  badgeColor: 'rose',
+  recommendedPrompts: [
+    '请对 郑州市金水区 的预警 "郑州市金水区 45-64岁急性心梗就诊峰值预警" (编号: ALERT-CHR-202608-01) 进行专项风险深度研判，分析周边关联因素并给出详细的应急处置方案。',
+    '对开封市祥符区恶性肿瘤死因链质控异常预警生成医师补正工单与核销流程。'
+  ],
+  requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
+  parametersSchema: {
+    type: 'object',
+    properties: {
+      alertId: { type: 'string', description: '预警事件编号，如 ALERT-CHR-202608-01' },
+      city: { type: 'string', description: '地级市名称，如 郑州市' },
+      district: { type: 'string', description: '区县名称，如 金水区' },
+      action: { type: 'string', enum: ['dispatch', 'resolve', 'reopen'], description: '工单操作类型' }
+    }
+  },
+  execute: async (args) => executeSkillRemote('skill_chronic_early_warning_disposal', args)
+};
+
 export const STANDARD_SKILLS: VectorSkill[] = [
   // 1. 病媒生物专属技能 (Vector)
   skillPopulationDynamics,
@@ -1150,6 +1206,7 @@ export const STANDARD_SKILLS: VectorSkill[] = [
   skillEnvScenarioSimulation,
   skillEnvMonitoringTable,
   skillEnvCustomBuilder,
+  skillEnvEarlyWarningDisposal,
   // 4. 死因、慢病及伤害专属技能 (Chronic)
   skillDeathCertQc,
   skillIcd10NlpInference,
@@ -1159,7 +1216,8 @@ export const STANDARD_SKILLS: VectorSkill[] = [
   skillChronicScreeningRoi,
   skillChronicDeathReport,
   skillChronicMonitoringTable,
-  skillChronicCustomBuilder
+  skillChronicCustomBuilder,
+  skillChronicEarlyWarningDisposal
 ];
 
 export function getSkillById(skillId: string): VectorSkill | undefined {
