@@ -4,46 +4,42 @@ set -eu
 ACTIVE_DOMAIN="${AGENT_DOMAIN:-${NEXT_PUBLIC_AGENT_DOMAIN:-vector}}"
 export AGENT_DOMAIN="$ACTIVE_DOMAIN"
 
-# 检查并初始化业务持久化数据库
-APP_BUSINESS_DB_PATH="${APP_BUSINESS_DB_PATH:-/app/data/app_business.db}"
-export APP_BUSINESS_DB_PATH
-mkdir -p "$(dirname "$APP_BUSINESS_DB_PATH")"
-
-if [ ! -s "$APP_BUSINESS_DB_PATH" ]; then
-  echo "[ENTRYPOINT INFO] 正在初始化业务持久化数据库: $APP_BUSINESS_DB_PATH"
-  python3 /app/scripts/init_business_db.py
-fi
-
-# 仅检查或初始化当前容器所属领域的事实底座，避免跨领域写入。
+# 事实数据库是只读生产数据，必须由部署系统明确挂载。
 case "$ACTIVE_DOMAIN" in
-  vector)
-    if [ ! -f /app/vector_monitoring.db ]; then
-      echo "[ENTRYPOINT WARN] /app/vector_monitoring.db 未检测到挂载。" >&2
-    fi
-    ;;
-  foodborne)
-    if [ ! -f /app/foodborne_monitoring.db ] && [ -f /app/scripts/init_foodborne_mock.py ]; then
-      echo "[ENTRYPOINT INFO] 正在初始化食源性疾病监测底座: foodborne_monitoring.db"
-      python3 /app/scripts/init_foodborne_mock.py
-    fi
-    ;;
-  env)
-    if [ ! -f /app/env_monitoring.db ] && [ -f /app/scripts/init_env_mock.py ]; then
-      echo "[ENTRYPOINT INFO] 正在初始化环境健康监测底座: env_monitoring.db"
-      python3 /app/scripts/init_env_mock.py
-    fi
-    ;;
-  chronic)
-    if [ ! -f /app/chronic_monitoring.db ] && [ -f /app/scripts/init_chronic_mock.py ]; then
-      echo "[ENTRYPOINT INFO] 正在初始化死因慢病伤害监测底座: chronic_monitoring.db"
-      python3 /app/scripts/init_chronic_mock.py
-    fi
-    ;;
+  vector) FACT_DATABASE=/app/vector_monitoring.db ;;
+  foodborne) FACT_DATABASE=/app/foodborne_monitoring.db ;;
+  env) FACT_DATABASE=/app/env_monitoring.db ;;
+  chronic) FACT_DATABASE=/app/chronic_monitoring.db ;;
   *)
     echo "[ENTRYPOINT ERROR] 不支持的 AGENT_DOMAIN: $ACTIVE_DOMAIN" >&2
     exit 1
     ;;
 esac
+
+if [ ! -s "$FACT_DATABASE" ]; then
+  echo "[ENTRYPOINT ERROR] Required fact database not mounted: $FACT_DATABASE" >&2
+  exit 1
+fi
+
+# 检查并初始化业务持久化数据库。
+APP_BUSINESS_DB_PATH="${APP_BUSINESS_DB_PATH:-/app/data/app_business.db}"
+export APP_BUSINESS_DB_PATH
+mkdir -p "$(dirname "$APP_BUSINESS_DB_PATH")"
+
+# 2.0.0 之前的向量实例共用 /app/data/app_business.db。仅当新库不存在时
+# 复制到领域目录，保留旧文件用于回滚，并用原子重命名避免半写入文件。
+LEGACY_BUSINESS_DB=/app/data/app_business.db
+if [ "$ACTIVE_DOMAIN" = vector ] && [ ! -s "$APP_BUSINESS_DB_PATH" ] && [ -s "$LEGACY_BUSINESS_DB" ] && [ "$APP_BUSINESS_DB_PATH" != "$LEGACY_BUSINESS_DB" ]; then
+  echo "[ENTRYPOINT INFO] Migrating legacy business database to: $APP_BUSINESS_DB_PATH"
+  migration_file="$APP_BUSINESS_DB_PATH.migrating.$$"
+  cp "$LEGACY_BUSINESS_DB" "$migration_file"
+  mv "$migration_file" "$APP_BUSINESS_DB_PATH"
+fi
+
+if [ ! -s "$APP_BUSINESS_DB_PATH" ]; then
+  echo "[ENTRYPOINT INFO] 正在初始化业务持久化数据库: $APP_BUSINESS_DB_PATH"
+  python3 /app/scripts/init_business_db.py
+fi
 
 echo "[ENTRYPOINT INFO] 启动 Next.js 独立运行服务..."
 exec node /app/server.js

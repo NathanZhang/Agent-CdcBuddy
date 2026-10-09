@@ -7,12 +7,20 @@ if (-not $ConfigPath) {
     $ConfigPath = Join-Path $PSScriptRoot 'deploy.config.ps1'
 }
 $config = Get-DeploymentConfig -ConfigPath $ConfigPath
+$agents = @(Get-AgentDeploymentDefinitions -Config $config)
 $remotePath = Assert-SafeRemotePath $config.RemotePath
 $quotedRemotePath = ConvertTo-RemoteShellArgument $remotePath
+$containerArguments = ($agents | ForEach-Object { ConvertTo-RemoteShellArgument $_.Container }) -join ' '
 
-Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker ps --filter name=$(ConvertTo-RemoteShellArgument $config.ContainerName) --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'; printf '\nMounts:\n'; docker inspect --format '{{range .Mounts}}{{.Source}} -> {{.Destination}} (rw={{.RW}}){{println}}{{end}}' $(ConvertTo-RemoteShellArgument $config.ContainerName); printf '\nDeployment:\n'; cat $quotedRemotePath/deploy.env" | Out-Host
+$remoteTemplate = @'
+docker ps -a --filter name=agent-cdcbuddy- --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'; printf '\nMounts:\n'; for container in __CONTAINERS__; do echo "[$container]"; docker inspect --format '{{range .Mounts}}{{.Source}} -> {{.Destination}} (rw={{.RW}}){{println}}{{end}}' "$container"; done; printf '\nDeployment:\n'; cat __REMOTE_PATH__/deploy.env
+'@
+$remoteCommand = $remoteTemplate.Replace('__CONTAINERS__', $containerArguments).Replace('__REMOTE_PATH__', $quotedRemotePath)
+Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $remoteCommand | Out-Host
 
-$portOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "sed -n 's/^APP_PORT=//p' $quotedRemotePath/deploy.env | head -n 1")
-$port = [int](([string]$portOutput[-1]).Trim())
-$response = Invoke-WebRequest -Uri "http://39.106.143.253:$port/" -UseBasicParsing -TimeoutSec 15
-Write-Host "HTTP $($response.StatusCode): http://39.106.143.253:$port/"
+$publicHost = ($config.RemoteHost -split '@')[-1]
+foreach ($agent in $agents) {
+    $url = "http://${publicHost}:$($agent.Port)/"
+    $response = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 15
+    Write-Host "$($agent.Domain): HTTP $($response.StatusCode) $url"
+}

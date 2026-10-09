@@ -1,7 +1,5 @@
 [CmdletBinding()]
-param(
-    [string]$ConfigPath
-)
+param([string]$ConfigPath)
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'remote-common.ps1')
@@ -11,38 +9,65 @@ if (-not $ConfigPath) {
 
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $config = Get-DeploymentConfig -ConfigPath $ConfigPath
+$agents = @(Get-AgentDeploymentDefinitions -Config $config)
 $remotePath = Assert-SafeRemotePath $config.RemotePath
 $quotedRemotePath = ConvertTo-RemoteShellArgument $remotePath
 $tarPath = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $config.TarPath))
-$vectorDbPath = Join-Path $projectRoot 'vector_monitoring.db'
+$composePath = Join-Path $projectRoot 'compose.production.yml'
+$envExamplePath = Join-Path $projectRoot '.env.example'
 
-foreach ($required in @($tarPath, $vectorDbPath, (Join-Path $projectRoot 'compose.production.yml'), (Join-Path $projectRoot '.env.example'))) {
+$requiredFiles = @($tarPath, $composePath, $envExamplePath)
+$requiredFiles += $agents | ForEach-Object { Join-Path $projectRoot $_.Database }
+foreach ($required in $requiredFiles) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Required deployment file is missing: $required"
     }
 }
 
-Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mkdir -p -- $quotedRemotePath" | Out-Host
+$timestamp = Get-Date -Format 'yyyyMMddHHmmss'
+$prepareCommand = "mkdir -p -- $quotedRemotePath; if [ -f $quotedRemotePath/compose.production.yml ]; then cp -- $quotedRemotePath/compose.production.yml $quotedRemotePath/compose.production.yml.pre-2.0.4-$timestamp; fi; if [ -f $quotedRemotePath/deploy.env ]; then cp -- $quotedRemotePath/deploy.env $quotedRemotePath/deploy.env.pre-2.0.4-$timestamp; fi"
+Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $prepareCommand | Out-Host
 
-Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath (Join-Path $projectRoot 'compose.production.yml') -RemotePath "$remotePath/compose.production.yml"
-Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath (Join-Path $projectRoot '.env.example') -RemotePath "$remotePath/.env.example"
+Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $composePath -RemotePath "$remotePath/compose.production.yml"
+Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $envExamplePath -RemotePath "$remotePath/.env.example"
 
-$hasVectorDb = [string](Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "test -f $quotedRemotePath/vector_monitoring.db && printf yes || printf no")
-if ($hasVectorDb.Trim() -ne 'yes') {
-    Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $vectorDbPath -RemotePath "$remotePath/vector_monitoring.db.incoming"
-    Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $quotedRemotePath/vector_monitoring.db.incoming $quotedRemotePath/vector_monitoring.db && chmod 0644 $quotedRemotePath/vector_monitoring.db" | Out-Host
+foreach ($agent in $agents) {
+    $remoteDatabase = "$remotePath/$($agent.Database)"
+    $quotedRemoteDatabase = ConvertTo-RemoteShellArgument $remoteDatabase
+    $existsOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "test -s $quotedRemoteDatabase && printf yes || printf no")
+    if (([string]$existsOutput[-1]).Trim() -ne 'yes') {
+        Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath (Join-Path $projectRoot $agent.Database) -RemotePath "$remoteDatabase.incoming"
+        Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $(ConvertTo-RemoteShellArgument "$remoteDatabase.incoming") $quotedRemoteDatabase && chmod 0644 $quotedRemoteDatabase" | Out-Host
+    }
 }
 
-Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "if [ ! -f $quotedRemotePath/.env ]; then cp -- $quotedRemotePath/.env.example $quotedRemotePath/.env; chmod 0600 $quotedRemotePath/.env; fi; mkdir -p -- $quotedRemotePath/data; if [ -f $quotedRemotePath/app_business.db ] && [ ! -f $quotedRemotePath/data/app_business.db ]; then mv -- $quotedRemotePath/app_business.db $quotedRemotePath/data/app_business.db; fi; chown -R 1000:1000 $quotedRemotePath/data; chmod 0775 $quotedRemotePath/data; if [ -f $quotedRemotePath/data/app_business.db ]; then chmod 0664 $quotedRemotePath/data/app_business.db; fi" | Out-Host
+$dataSetup = @"
+if [ ! -f $remotePath/.env ]; then
+  cp -- $remotePath/.env.example $remotePath/.env
+  chmod 0600 $remotePath/.env
+fi
+mkdir -p -- $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
+if [ -s $remotePath/data/app_business.db ] && [ ! -s $remotePath/data/vector/app_business.db ]; then
+  cp -- $remotePath/data/app_business.db $remotePath/data/vector/app_business.db.migrating
+  chown 1000:1000 $remotePath/data/vector/app_business.db.migrating
+  chmod 0664 $remotePath/data/vector/app_business.db.migrating
+  mv -- $remotePath/data/vector/app_business.db.migrating $remotePath/data/vector/app_business.db
+fi
+chown -R 1000:1000 $remotePath/data
+find $remotePath/data -type d -exec chmod 0775 {} \;
+find $remotePath/data -type f -name '*.db' -exec chmod 0664 {} \;
+"@
+Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $dataSetup | Out-Host
 
-$savedPortOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "if [ -f $quotedRemotePath/deploy.env ]; then sed -n 's/^APP_PORT=//p' $quotedRemotePath/deploy.env | head -n 1; fi")
-$savedPort = 0
-$hasSavedPort = $savedPortOutput.Count -gt 0 -and [int]::TryParse(([string]$savedPortOutput[-1]).Trim(), [ref]$savedPort) -and $savedPort -ge $config.PortStart -and $savedPort -le $config.PortEnd
-if (-not $hasSavedPort) {
-    $savedPort = Get-FirstFreeRemotePort -RemoteHost $config.RemoteHost -Start $config.PortStart -End $config.PortEnd
-}
-
-$deployEnv = "APP_IMAGE=$($config.ImageName)`nAPP_PORT=$savedPort`nDEPLOY_DIR=$remotePath`n"
+$deployEnv = @(
+    "APP_IMAGE=$($config.ImageName)"
+    "DEPLOY_DIR=$remotePath"
+    "VECTOR_PORT=$($config.VectorPort)"
+    "FOODBORNE_PORT=$($config.FoodbornePort)"
+    "ENV_PORT=$($config.EnvPort)"
+    "CHRONIC_PORT=$($config.ChronicPort)"
+) -join "`n"
+$deployEnv += "`n"
 $encodedDeployEnv = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($deployEnv))
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "printf %s $(ConvertTo-RemoteShellArgument $encodedDeployEnv) | base64 -d > $quotedRemotePath/deploy.env" | Out-Host
 
@@ -59,43 +84,51 @@ if ($artifactChanged) {
     Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $(ConvertTo-RemoteShellArgument "$remoteTarPath.incoming") $quotedRemoteTarPath" | Out-Host
 }
 
-$imagePresentOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker image inspect $(ConvertTo-RemoteShellArgument $config.ImageName) >/dev/null 2>&1 && echo yes || echo no")
+$quotedImageName = ConvertTo-RemoteShellArgument $config.ImageName
+$imagePresentOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker image inspect $quotedImageName >/dev/null 2>&1 && echo yes || echo no")
 $imagePresent = $imagePresentOutput.Count -gt 0 -and ([string]$imagePresentOutput[-1]).Trim() -eq 'yes'
 if ($artifactChanged -or -not $imagePresent) {
     Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker load --input $quotedRemoteTarPath" | Out-Host
 }
 
-$startCommand = "cd $quotedRemotePath && docker compose --env-file deploy.env -f compose.production.yml up -d --pull never --force-recreate"
+$startCommand = "if docker inspect agent-cdcbuddy >/dev/null 2>&1; then docker stop agent-cdcbuddy >/dev/null; fi; cd $quotedRemotePath && docker compose --env-file deploy.env -f compose.production.yml up -d --pull never --force-recreate"
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $startCommand | Out-Host
 
-$healthy = $false
-for ($attempt = 1; $attempt -le 30; $attempt++) {
-    $healthOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' $(ConvertTo-RemoteShellArgument $config.ContainerName)")
-    $health = ([string]$healthOutput[-1]).Trim()
-    if ($health -eq 'healthy') {
-        $healthy = $true
-        break
+foreach ($agent in $agents) {
+    $healthy = $false
+    for ($attempt = 1; $attempt -le 30; $attempt++) {
+        $healthOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' $(ConvertTo-RemoteShellArgument $agent.Container)")
+        $health = ([string]$healthOutput[-1]).Trim()
+        if ($health -eq 'healthy') {
+            $healthy = $true
+            break
+        }
+        if ($health -in @('unhealthy', 'exited', 'dead')) {
+            break
+        }
+        Start-Sleep -Seconds 3
     }
-    if ($health -eq 'unhealthy' -or $health -eq 'exited' -or $health -eq 'dead') {
-        break
+    if (-not $healthy) {
+        $logs = Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker logs --tail 100 $(ConvertTo-RemoteShellArgument $agent.Container) 2>&1"
+        throw "Remote container $($agent.Container) did not become healthy:`n$logs"
     }
-    Start-Sleep -Seconds 3
 }
 
-if (-not $healthy) {
-    $logs = Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker logs --tail 100 $(ConvertTo-RemoteShellArgument $config.ContainerName) 2>&1"
-    throw "Remote container did not become healthy:`n$logs"
+$publicHost = ($config.RemoteHost -split '@')[-1]
+$results = foreach ($agent in $agents) {
+    $url = "http://${publicHost}:$($agent.Port)"
+    foreach ($path in @('/', '/api/skills')) {
+        $response = Invoke-WebRequest -Uri "$url$path" -UseBasicParsing -TimeoutSec 15
+        if ($response.StatusCode -ne 200) {
+            throw "Remote HTTP smoke test returned $($response.StatusCode): $url$path"
+        }
+    }
+    [pscustomobject]@{
+        Domain = $agent.Domain
+        Container = $agent.Container
+        Port = $agent.Port
+        Url = "$url/"
+        Health = 'healthy'
+    }
 }
-
-$response = Invoke-WebRequest -Uri "http://39.106.143.253:$savedPort/" -UseBasicParsing -TimeoutSec 15
-if ($response.StatusCode -ne 200) {
-    throw "Remote HTTP smoke test returned $($response.StatusCode)"
-}
-
-[pscustomobject]@{
-    RemoteHost = $config.RemoteHost
-    RemotePath = $remotePath
-    Port = $savedPort
-    Url = "http://39.106.143.253:$savedPort/"
-    Health = 'healthy'
-}
+$results

@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$ImageName = 'agent-cdcbuddy:1.0.0',
-    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-1.0.0-linux-amd64.tar',
+    [string]$ImageName = 'agent-cdcbuddy:2.0.4',
+    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-2.0.4-linux-amd64.tar',
     [string]$TiandituKey = $env:NEXT_PUBLIC_TIANDITU_KEY,
     [string]$GitHash
 )
@@ -42,6 +42,11 @@ try {
     & (Join-Path $projectRoot 'tests\deployment\verify-image-entrypoint.ps1') -ImageName $ImageName
     & (Join-Path $projectRoot 'tests\deployment\verify-image-git-hash.ps1') -ImageName $ImageName -ExpectedGitHash $GitHash
     & (Join-Path $projectRoot 'tests\deployment\verify-image-tianditu-key.ps1') -ImageName $ImageName -ExpectedKey $TiandituKey
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-business-db-migration.ps1') -ImageName $ImageName
+    foreach ($domain in @('vector', 'foodborne', 'env', 'chronic')) {
+        & (Join-Path $projectRoot 'tests\deployment\verify-image-domain-entrypoint.ps1') -ImageName $ImageName -Domain $domain
+        & (Join-Path $projectRoot 'tests\deployment\verify-image-missing-fact-db.ps1') -ImageName $ImageName -Domain $domain
+    }
 
     $absoluteOutput = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputPath))
     $artifactRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.deploy-artifacts'))

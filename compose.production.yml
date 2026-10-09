@@ -1,6 +1,6 @@
 services:
   vector-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.0}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
     container_name: agent-cdcbuddy-vector
     restart: unless-stopped
     user: "1000:1000"
@@ -39,7 +39,7 @@ services:
       retries: 6
 
   foodborne-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.0}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
     container_name: agent-cdcbuddy-foodborne
     restart: unless-stopped
     user: "1000:1000"
@@ -69,7 +69,7 @@ services:
     healthcheck: *agent-healthcheck
 
   env-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.0}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
     container_name: agent-cdcbuddy-env
     restart: unless-stopped
     user: "1000:1000"
@@ -99,7 +99,7 @@ services:
     healthcheck: *agent-healthcheck
 
   chronic-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.0}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
     container_name: agent-cdcbuddy-chronic
     restart: unless-stopped
     user: "1000:1000"
