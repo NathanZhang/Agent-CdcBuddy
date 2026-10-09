@@ -23,6 +23,7 @@ if grep -R -F -q -- 'your_tianditu_key_here' /app/.next/static; then
 fi
 grep -R -F -q -- "$EXPECTED_TIANDITU_KEY" /app/.next/static
 '@
+    $checkCommand = $checkCommand.Replace("`r`n", "`n")
 
     $previousErrorAction = $ErrorActionPreference
     try {
