@@ -37,27 +37,9 @@ foreach ($agent in $agents) {
     $existsOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "test -s $quotedRemoteDatabase && printf yes || printf no")
     if (([string]$existsOutput[-1]).Trim() -ne 'yes') {
         Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath (Join-Path $projectRoot $agent.Database) -RemotePath "$remoteDatabase.incoming"
-        Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $(ConvertTo-RemoteShellArgument "$remoteDatabase.incoming") $quotedRemoteDatabase && chmod 0644 $quotedRemoteDatabase" | Out-Host
+        Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $(ConvertTo-RemoteShellArgument "$remoteDatabase.incoming") $quotedRemoteDatabase && chown root:1000 $quotedRemoteDatabase && chmod 0640 $quotedRemoteDatabase" | Out-Host
     }
 }
-
-$dataSetup = @"
-if [ ! -f $remotePath/.env ]; then
-  cp -- $remotePath/.env.example $remotePath/.env
-  chmod 0600 $remotePath/.env
-fi
-mkdir -p -- $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
-if [ -s $remotePath/data/app_business.db ] && [ ! -s $remotePath/data/vector/app_business.db ]; then
-  cp -- $remotePath/data/app_business.db $remotePath/data/vector/app_business.db.migrating
-  chown 1000:1000 $remotePath/data/vector/app_business.db.migrating
-  chmod 0664 $remotePath/data/vector/app_business.db.migrating
-  mv -- $remotePath/data/vector/app_business.db.migrating $remotePath/data/vector/app_business.db
-fi
-chown -R 1000:1000 $remotePath/data
-find $remotePath/data -type d -exec chmod 0775 {} \;
-find $remotePath/data -type f -name '*.db' -exec chmod 0664 {} \;
-"@
-Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $dataSetup | Out-Host
 
 $deployEnv = @(
     "APP_IMAGE=$($config.ImageName)"
@@ -74,14 +56,21 @@ Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "printf %s $(Conver
 $tarFileName = Split-Path $tarPath -Leaf
 $remoteTarPath = "$remotePath/$tarFileName"
 $quotedRemoteTarPath = ConvertTo-RemoteShellArgument $remoteTarPath
-$localTarSize = (Get-Item -LiteralPath $tarPath).Length
-$remoteTarSizeOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "if [ -f $quotedRemoteTarPath ]; then stat -c %s $quotedRemoteTarPath; else echo 0; fi")
-$remoteTarSizeText = if ($remoteTarSizeOutput.Count -gt 0) { ([string]$remoteTarSizeOutput[-1]).Trim() } else { '0' }
-$artifactChanged = -not (Test-ArtifactSizeMatch -LocalSize $localTarSize -RemoteSizeText $remoteTarSizeText)
+$localTarHash = Get-FileSha256 -Path $tarPath
+$remoteTarHashOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "if [ -f $quotedRemoteTarPath ]; then sha256sum $quotedRemoteTarPath | awk '{print `$1}'; fi")
+$remoteTarHashText = if ($remoteTarHashOutput.Count -gt 0) { ([string]$remoteTarHashOutput[-1]).Trim() } else { '' }
+$artifactChanged = -not (Test-ArtifactSha256Match -LocalHash $localTarHash -RemoteHashText $remoteTarHashText)
 
 if ($artifactChanged) {
-    Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $tarPath -RemotePath "$remoteTarPath.incoming"
-    Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $(ConvertTo-RemoteShellArgument "$remoteTarPath.incoming") $quotedRemoteTarPath" | Out-Host
+    $remoteIncomingTarPath = "$remoteTarPath.incoming"
+    $quotedRemoteIncomingTarPath = ConvertTo-RemoteShellArgument $remoteIncomingTarPath
+    Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $tarPath -RemotePath $remoteIncomingTarPath
+    $uploadedTarHashOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "sha256sum $quotedRemoteIncomingTarPath | awk '{print `$1}'")
+    $uploadedTarHash = ([string]$uploadedTarHashOutput[-1]).Trim()
+    if (-not (Test-ArtifactSha256Match -LocalHash $localTarHash -RemoteHashText $uploadedTarHash)) {
+        throw "Uploaded image artifact failed SHA-256 verification: $remoteIncomingTarPath"
+    }
+    Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "mv -- $quotedRemoteIncomingTarPath $quotedRemoteTarPath" | Out-Host
 }
 
 $quotedImageName = ConvertTo-RemoteShellArgument $config.ImageName
@@ -91,7 +80,62 @@ if ($artifactChanged -or -not $imagePresent) {
     Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "docker load --input $quotedRemoteTarPath" | Out-Host
 }
 
-$startCommand = "if docker inspect agent-cdcbuddy >/dev/null 2>&1; then docker stop agent-cdcbuddy >/dev/null; fi; cd $quotedRemotePath && docker compose --env-file deploy.env -f compose.production.yml up -d --pull never --force-recreate"
+$stopLegacyCommand = @'
+if docker inspect agent-cdcbuddy >/dev/null 2>&1; then
+  docker stop --time 30 agent-cdcbuddy >/dev/null
+  if [ "$(docker inspect --format '{{.State.Running}}' agent-cdcbuddy)" != "false" ]; then
+    echo 'Legacy container did not stop cleanly' >&2
+    exit 1
+  fi
+fi
+'@
+Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $stopLegacyCommand | Out-Host
+
+$dataSetup = @"
+if [ ! -f $remotePath/.env ]; then
+  cp -- $remotePath/.env.example $remotePath/.env
+  chmod 0600 $remotePath/.env
+fi
+mkdir -p -- $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
+chown 1000:1000 $remotePath/data $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
+chmod 0750 $remotePath/data $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
+chown root:1000 $remotePath/vector_monitoring.db $remotePath/foodborne_monitoring.db $remotePath/env_monitoring.db $remotePath/chronic_monitoring.db
+chmod 0640 $remotePath/vector_monitoring.db $remotePath/foodborne_monitoring.db $remotePath/env_monitoring.db $remotePath/chronic_monitoring.db
+find $remotePath/data -type f -name '*.db' -exec chown 1000:1000 {} \;
+find $remotePath/data -type f -name '*.db' -exec chmod 0660 {} \;
+"@
+Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $dataSetup | Out-Host
+
+$migrationNeededOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "test -s $quotedRemotePath/data/app_business.db && ! test -s $quotedRemotePath/data/vector/app_business.db && printf yes || printf no")
+if (([string]$migrationNeededOutput[-1]).Trim() -eq 'yes') {
+    $migrationPython = @'
+import os
+import sqlite3
+
+source_path = '/migration/app_business.db'
+target_path = '/migration/vector/app_business.db'
+temporary_path = target_path + '.migrating'
+if os.path.exists(temporary_path):
+    os.remove(temporary_path)
+source = sqlite3.connect(f'file:{source_path}?mode=ro', uri=True)
+target = sqlite3.connect(temporary_path)
+source.backup(target)
+source_check = source.execute('pragma quick_check').fetchone()[0]
+target_check = target.execute('pragma quick_check').fetchone()[0]
+target.close()
+source.close()
+if source_check != 'ok' or target_check != 'ok':
+    raise RuntimeError(f'SQLite integrity check failed: source={source_check}, target={target_check}')
+os.chown(temporary_path, 1000, 1000)
+os.chmod(temporary_path, 0o660)
+os.replace(temporary_path, target_path)
+'@
+    $encodedMigrationPython = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($migrationPython))
+    $migrationCommand = "docker run --rm --user 0:0 --mount type=bind,source=$remotePath/data,target=/migration --entrypoint python3 $quotedImageName -c $(ConvertTo-RemoteShellArgument "import base64; exec(base64.b64decode('$encodedMigrationPython'))")"
+    Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $migrationCommand | Out-Host
+}
+
+$startCommand = "cd $quotedRemotePath && docker compose --env-file deploy.env -f compose.production.yml up -d --pull never --force-recreate"
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $startCommand | Out-Host
 
 foreach ($agent in $agents) {

@@ -105,6 +105,27 @@ function Test-ArtifactSizeMatch {
     [long]::TryParse($RemoteSizeText.Trim(), [ref]$remoteSize) -and $LocalSize -gt 0 -and $remoteSize -eq $LocalSize
 }
 
+function Get-FileSha256 {
+    [CmdletBinding()]
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Test-ArtifactSha256Match {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)][string]$LocalHash,
+        [AllowEmptyString()][Parameter(Mandatory = $true)][string]$RemoteHashText
+    )
+
+    $local = $LocalHash.Trim()
+    $remote = $RemoteHashText.Trim()
+    $local -match '^[0-9a-fA-F]{64}$' -and
+        $remote -match '^[0-9a-fA-F]{64}$' -and
+        $local.Equals($remote, [StringComparison]::OrdinalIgnoreCase)
+}
+
 function Invoke-RemoteCommand {
     [CmdletBinding()]
     param(
