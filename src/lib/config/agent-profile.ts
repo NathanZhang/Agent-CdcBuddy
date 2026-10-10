@@ -980,10 +980,18 @@ export function getCurrentAgentDomain(): AgentDomainType {
     if (pathname.startsWith('/vector')) return 'vector';
 
     const port = window.location.port;
-    if (port === '3002') return 'foodborne';
-    if (port === '3003') return 'env';
-    if (port === '3004') return 'chronic';
-    if (port === '3001' || port === '3000') return 'vector';
+    const domainByPort: Record<string, AgentDomainType> = {
+      '3000': 'vector',
+      '3001': 'vector',
+      '3002': 'foodborne',
+      '3003': 'env',
+      '3004': 'chronic',
+      '32112': 'vector',
+      '32113': 'foodborne',
+      '32114': 'env',
+      '32115': 'chronic'
+    };
+    if (domainByPort[port]) return domainByPort[port];
   }
 
   return 'vector';

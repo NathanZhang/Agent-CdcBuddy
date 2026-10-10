@@ -1,7 +1,7 @@
 services:
-  app:
-    image: ${APP_IMAGE:-agent-cdcbuddy:1.0.0}
-    container_name: agent-cdcbuddy
+  vector-agent:
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
+    container_name: agent-cdcbuddy-vector
     restart: unless-stopped
     user: "1000:1000"
     env_file:
@@ -10,9 +10,11 @@ services:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       PORT: 3000
-      APP_BUSINESS_DB_PATH: /app/data/app_business.db
+      NEXT_PUBLIC_AGENT_DOMAIN: vector
+      AGENT_DOMAIN: vector
+      APP_BUSINESS_DB_PATH: /app/data/vector/app_business.db
     ports:
-      - "${APP_PORT:-32100}:3000"
+      - "${VECTOR_PORT:-32112}:3000"
     volumes:
       - type: bind
         source: ${DEPLOY_DIR}/vector_monitoring.db
@@ -25,7 +27,7 @@ services:
         target: /app/data
         bind:
           create_host_path: false
-    healthcheck:
+    healthcheck: &agent-healthcheck
       test:
         - CMD
         - node
@@ -35,3 +37,97 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 6
+
+  foodborne-agent:
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
+    container_name: agent-cdcbuddy-foodborne
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - ${DEPLOY_DIR}/.env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_AGENT_DOMAIN: foodborne
+      AGENT_DOMAIN: foodborne
+      APP_BUSINESS_DB_PATH: /app/data/foodborne/app_business.db
+    ports:
+      - "${FOODBORNE_PORT:-32113}:3000"
+    volumes:
+      - type: bind
+        source: ${DEPLOY_DIR}/foodborne_monitoring.db
+        target: /app/foodborne_monitoring.db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEPLOY_DIR}/data
+        target: /app/data
+        bind:
+          create_host_path: false
+    healthcheck: *agent-healthcheck
+
+  env-agent:
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
+    container_name: agent-cdcbuddy-env
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - ${DEPLOY_DIR}/.env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_AGENT_DOMAIN: env
+      AGENT_DOMAIN: env
+      APP_BUSINESS_DB_PATH: /app/data/env/app_business.db
+    ports:
+      - "${ENV_PORT:-32114}:3000"
+    volumes:
+      - type: bind
+        source: ${DEPLOY_DIR}/env_monitoring.db
+        target: /app/env_monitoring.db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEPLOY_DIR}/data
+        target: /app/data
+        bind:
+          create_host_path: false
+    healthcheck: *agent-healthcheck
+
+  chronic-agent:
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.0.4}
+    container_name: agent-cdcbuddy-chronic
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - ${DEPLOY_DIR}/.env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_AGENT_DOMAIN: chronic
+      AGENT_DOMAIN: chronic
+      APP_BUSINESS_DB_PATH: /app/data/chronic/app_business.db
+    ports:
+      - "${CHRONIC_PORT:-32115}:3000"
+    volumes:
+      - type: bind
+        source: ${DEPLOY_DIR}/chronic_monitoring.db
+        target: /app/chronic_monitoring.db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEPLOY_DIR}/data
+        target: /app/data
+        bind:
+          create_host_path: false
+    healthcheck: *agent-healthcheck
+
+networks:
+  default:
+    name: cdcbuddy-network
