@@ -1,13 +1,22 @@
 [CmdletBinding()]
 param(
-    [string]$ImageName = 'agent-cdcbuddy:1.0.0',
-    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-1.0.0-linux-amd64.tar',
+    [string]$ImageName = 'agent-cdcbuddy:2.0.0',
+    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-2.0.0-linux-amd64.tar',
     [string]$TiandituKey = $env:NEXT_PUBLIC_TIANDITU_KEY,
     [string]$GitHash
 )
 
 $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+
+if ([string]::IsNullOrWhiteSpace($TiandituKey)) {
+    throw 'NEXT_PUBLIC_TIANDITU_KEY is required because Next.js embeds it during the image build'
+}
+$TiandituKey = $TiandituKey.Trim()
+if ($TiandituKey -eq 'your_tianditu_key_here') {
+    throw 'NEXT_PUBLIC_TIANDITU_KEY must not use the placeholder value'
+}
+
 Push-Location $projectRoot
 try {
     & docker info --format '{{.ServerVersion}}' | Out-Host
@@ -20,9 +29,7 @@ try {
     if ($GitHash -notmatch '^[0-9a-f]{7,40}$') { throw "Invalid Git hash: $GitHash" }
 
     $buildArgs = @('buildx', 'build', '--progress', 'plain', '--platform', 'linux/amd64', '--load', '--tag', $ImageName, '--build-arg', "NEXT_PUBLIC_GIT_HASH=$GitHash")
-    if ($TiandituKey) {
-        $buildArgs += @('--build-arg', "NEXT_PUBLIC_TIANDITU_KEY=$TiandituKey")
-    }
+    $buildArgs += @('--build-arg', "NEXT_PUBLIC_TIANDITU_KEY=$TiandituKey")
     $buildArgs += '.'
     & docker @buildArgs
     if ($LASTEXITCODE -ne 0) { throw 'Docker image build failed' }
@@ -34,6 +41,12 @@ try {
 
     & (Join-Path $projectRoot 'tests\deployment\verify-image-entrypoint.ps1') -ImageName $ImageName
     & (Join-Path $projectRoot 'tests\deployment\verify-image-git-hash.ps1') -ImageName $ImageName -ExpectedGitHash $GitHash
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-tianditu-key.ps1') -ImageName $ImageName -ExpectedKey $TiandituKey
+    & (Join-Path $projectRoot 'tests\deployment\verify-image-business-db-migration.ps1') -ImageName $ImageName
+    foreach ($domain in @('vector', 'foodborne', 'env', 'chronic')) {
+        & (Join-Path $projectRoot 'tests\deployment\verify-image-domain-entrypoint.ps1') -ImageName $ImageName -Domain $domain
+        & (Join-Path $projectRoot 'tests\deployment\verify-image-missing-fact-db.ps1') -ImageName $ImageName -Domain $domain
+    }
 
     $absoluteOutput = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputPath))
     $artifactRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot '.deploy-artifacts'))

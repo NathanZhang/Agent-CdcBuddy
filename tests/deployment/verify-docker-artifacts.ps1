@@ -24,11 +24,42 @@ try {
     }
 
     $compose = Get-Content -LiteralPath 'compose.production.yml' -Raw
-    foreach ($contract in @('APP_IMAGE', 'APP_PORT', 'DEPLOY_DIR', 'vector_monitoring.db', 'read_only: true', 'APP_BUSINESS_DB_PATH')) {
+    foreach ($contract in @(
+        'vector-agent',
+        'foodborne-agent',
+        'env-agent',
+        'chronic-agent',
+        'APP_IMAGE',
+        'VECTOR_PORT',
+        'FOODBORNE_PORT',
+        'ENV_PORT',
+        'CHRONIC_PORT',
+        '32112',
+        '32113',
+        '32114',
+        '32115',
+        'vector_monitoring.db',
+        'foodborne_monitoring.db',
+        'env_monitoring.db',
+        'chronic_monitoring.db',
+        'NEXT_PUBLIC_AGENT_DOMAIN',
+        'AGENT_DOMAIN',
+        'read_only: true',
+        'APP_BUSINESS_DB_PATH'
+    )) {
         if ($compose -notmatch [regex]::Escape($contract)) {
             throw "Compose contract is missing: $contract"
         }
     }
+
+    foreach ($domain in @('vector', 'foodborne', 'env', 'chronic')) {
+        if ($compose -notmatch [regex]::Escape("${domain}/app_business.db")) {
+            throw "Compose must isolate the business database for domain: $domain"
+        }
+    }
+
+    # Runtime domain/port isolation is exercised by runtime-profile.test.ts and
+    # test_release_merge.py, rather than requiring obsolete hard-coded port maps.
 
     $entrypointBytes = [System.IO.File]::ReadAllBytes((Resolve-Path 'docker/entrypoint.sh'))
     if ($entrypointBytes.Length -ge 3 -and $entrypointBytes[0] -eq 0xEF -and $entrypointBytes[1] -eq 0xBB -and $entrypointBytes[2] -eq 0xBF) {

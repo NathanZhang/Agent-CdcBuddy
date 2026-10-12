@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
+ARG NEXT_PUBLIC_TIANDITU_KEY
+ENV NEXT_PUBLIC_TIANDITU_KEY=$NEXT_PUBLIC_TIANDITU_KEY
 ARG NEXT_PUBLIC_GIT_HASH=unknown
 ENV NEXT_PUBLIC_GIT_HASH=$NEXT_PUBLIC_GIT_HASH
 RUN npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs

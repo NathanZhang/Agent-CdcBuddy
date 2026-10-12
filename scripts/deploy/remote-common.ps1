@@ -13,11 +13,16 @@ function Get-DeploymentConfig {
     $config = [ordered]@{
         RemoteHost   = 'root@39.106.143.253'
         RemotePath   = '/data/Agent-CdcBuddy'
-        ImageName    = 'agent-cdcbuddy:1.0.0'
-        ContainerName = 'agent-cdcbuddy'
-        PortStart    = 32100
-        PortEnd      = 32199
-        TarPath      = '.deploy-artifacts/agent-cdcbuddy-1.0.0-linux-amd64.tar'
+        ImageName      = 'agent-cdcbuddy:2.0.0'
+        VectorPort     = 32112
+        FoodbornePort  = 32113
+        EnvPort        = 32114
+        ChronicPort    = 32115
+        VectorOrigin   = ''
+        FoodborneOrigin = ''
+        EnvOrigin      = ''
+        ChronicOrigin  = ''
+        TarPath        = '.deploy-artifacts/agent-cdcbuddy-2.0.0-linux-amd64.tar'
     }
 
     if (Test-Path -LiteralPath $ConfigPath -PathType Leaf) {
@@ -34,6 +39,30 @@ function Get-DeploymentConfig {
     }
 
     [pscustomobject]$config
+}
+
+function Get-AgentDeploymentDefinitions {
+    [CmdletBinding()]
+    param([Parameter(Mandatory = $true)]$Config)
+
+    $definitions = @(
+        [pscustomobject]@{ Domain = 'vector'; Service = 'vector-agent'; Container = 'agent-cdcbuddy-vector'; Database = 'vector_monitoring.db'; Port = [int]$Config.VectorPort }
+        [pscustomobject]@{ Domain = 'foodborne'; Service = 'foodborne-agent'; Container = 'agent-cdcbuddy-foodborne'; Database = 'foodborne_monitoring.db'; Port = [int]$Config.FoodbornePort }
+        [pscustomobject]@{ Domain = 'env'; Service = 'env-agent'; Container = 'agent-cdcbuddy-env'; Database = 'env_monitoring.db'; Port = [int]$Config.EnvPort }
+        [pscustomobject]@{ Domain = 'chronic'; Service = 'chronic-agent'; Container = 'agent-cdcbuddy-chronic'; Database = 'chronic_monitoring.db'; Port = [int]$Config.ChronicPort }
+    )
+
+    $ports = @($definitions | ForEach-Object Port)
+    foreach ($port in $ports) {
+        if ($port -lt 32100 -or $port -gt 32199) {
+            throw "Deployment port must stay within 32100-32199: $port"
+        }
+    }
+    if (@($ports | Select-Object -Unique).Count -ne $ports.Count) {
+        throw 'Each agent must use a unique deployment port'
+    }
+
+    $definitions
 }
 
 function Assert-SafeRemotePath {
@@ -78,6 +107,27 @@ function Test-ArtifactSizeMatch {
 
     $remoteSize = [long]0
     [long]::TryParse($RemoteSizeText.Trim(), [ref]$remoteSize) -and $LocalSize -gt 0 -and $remoteSize -eq $LocalSize
+}
+
+function Get-FileSha256 {
+    [CmdletBinding()]
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Test-ArtifactSha256Match {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)][string]$LocalHash,
+        [AllowEmptyString()][Parameter(Mandatory = $true)][string]$RemoteHashText
+    )
+
+    $local = $LocalHash.Trim()
+    $remote = $RemoteHashText.Trim()
+    $local -match '^[0-9a-fA-F]{64}$' -and
+        $remote -match '^[0-9a-fA-F]{64}$' -and
+        $local.Equals($remote, [StringComparison]::OrdinalIgnoreCase)
 }
 
 function Invoke-RemoteCommand {
