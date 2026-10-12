@@ -12,7 +12,7 @@ if (!gitHash) {
 }
 
 const domain = process.env.NEXT_PUBLIC_AGENT_DOMAIN || process.env.AGENT_DOMAIN;
-const distDir = domain ? `.next_${domain}` : ".next";
+const distDir = process.env.NEXT_BUILD_DIR ?? (domain ? `.next_${domain}` : ".next");
 
 const nextConfig: NextConfig = {
   distDir,

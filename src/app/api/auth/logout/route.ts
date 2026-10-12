@@ -1,0 +1,2 @@
+import {NextRequest,NextResponse} from 'next/server';import {logout,authStatus} from '@/infrastructure/auth/session';
+export async function POST(req:NextRequest){try{logout(req);const response=NextResponse.json({success:true});response.cookies.set('cdc_session','',{httpOnly:true,sameSite:'strict',path:'/',maxAge:0});return response;}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Logout failed'},{status:authStatus(e)});}}

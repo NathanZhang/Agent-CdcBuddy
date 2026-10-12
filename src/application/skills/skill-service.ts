@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import {authorizeSkill,AuthorizationError} from '@/infrastructure/auth/authorization';
 import {workflowSkills} from '@/domains/common/workflow-skills';
 import { interactionSkills } from '@/domains/common/interaction-skills';
 import type { SkillDefinition } from '@/contracts/skill-definition';
@@ -40,12 +41,13 @@ export function createSkillService(definitions:SkillDefinition[]){
       if(definition.domain!==ctx.domain)return fail('FORBIDDEN_DOMAIN','Skill domain mismatch');
       if(definition.availability!=='available')return fail('CAPABILITY_UNAVAILABLE','This capability has not been implemented and verified');
       stage='INVALID_INPUT';const input=ajv.compile(definition.inputSchema);if(!input(args))return fail(stage,`Skill input rejected: ${ajv.errorsText(input.errors)}`);
+      authorizeSkill(definition,args,ctx);
       stage='EXECUTION_FAILED';const execution=await definition.execute(args,ctx);
       stage='INVALID_OUTPUT';
       if(execution.payload!==null){const output=ajv.compile(definition.outputSchema);if(!output(execution.payload))return fail(stage,`Skill output rejected: ${ajv.errorsText(output.errors)}`);}
       datasets=execution.datasets ?? datasets;
       return validateSkillResult({schemaVersion:'1',runId:ctx.runId,domain:ctx.domain,status:execution.status,method:definition.method,datasets,payload:execution.payload,metrics:execution.metrics ?? {},qualityFlags:execution.qualityFlags ?? [],...(execution.error?{error:execution.error}:{})});
-    }catch(error){return fail(stage,error instanceof Error?error.message:'Execution failed');}
+    }catch(error){return fail(error instanceof AuthorizationError?error.code:stage,error instanceof Error?error.message:'Execution failed');}
   }};
 }
 export async function executeSkill(id:string,args:Record<string,any>,ctx:ExecutionContext):Promise<SkillResult>{return createSkillService(listSkillDefinitions(ctx.domain,{includeInternal:true})).executeSkill(id,args,ctx);}

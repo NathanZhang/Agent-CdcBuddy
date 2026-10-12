@@ -6,5 +6,6 @@ export interface Principal {
   organizationId: string;
   domainGrants: AgentDomain[];
   jurisdiction: { city?: string; district?: string };
+  permissions?:{manageIdentity?:boolean;professionalReview?:boolean};
   mode: 'dev' | 'authenticated';
 }

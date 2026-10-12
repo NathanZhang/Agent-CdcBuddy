@@ -28,3 +28,4 @@ describe('controlled read SQL',()=>{
 
 import { getVectorDataProvider } from '@/lib/db/sqlite-provider';
 it('legacy custom SQL also obeys the query cap',async()=>{ await expect(getVectorDataProvider().queryCustomSql('SELECT COUNT(*) AS n FROM fact_monitoring LIMIT 1000000')).rejects.toThrow(); });
+it('rejects implicit cross products and wildcard qualifiers outside the scoped tables',()=>{const schema={fact_monitoring:['capture_count','location_id'],dim_location:['location_id','city']};expect(()=>validateReadQuery('SELECT COUNT(*) FROM fact_monitoring, dim_location',schema)).toThrow();expect(()=>validateReadQuery('SELECT forbidden.* FROM fact_monitoring',schema)).toThrow();expect(()=>validateReadQuery('SELECT main.fact_monitoring.* FROM fact_monitoring',schema)).toThrow();});

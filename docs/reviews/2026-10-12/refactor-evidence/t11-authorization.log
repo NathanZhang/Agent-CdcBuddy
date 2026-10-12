@@ -1,0 +1,14 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run authorization
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/authorization.test.ts (4 tests) 468ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  16:23:08
+   Duration  1.38s (transform 195ms, setup 0ms, collect 495ms, tests 468ms, environment 0ms, prepare 257ms)
+

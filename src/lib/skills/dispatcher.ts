@@ -1,3 +1,4 @@
+import {authHeaders} from '@/infrastructure/auth/client';
 import { createSseDecoder } from '@/application/dispatch/sse';
 import type { AgentDomainType } from '@/lib/config/agent-profile';
 export interface DispatchResult {
@@ -18,7 +19,7 @@ export async function dispatchSkillPromptStream(promptText:string,context?:Dispa
  if(!promptText.trim())return failed('请输入有效指令');
  let reader:ReadableStreamDefaultReader<Uint8Array>|undefined;
  try{
-  const response=await fetch('/api/agent/stream-dispatch',{method:'POST',headers:{'Content-Type':'application/json',Accept:'text/event-stream'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});
+  const response=await fetch('/api/agent/stream-dispatch',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json',Accept:'text/event-stream'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});
   if(!response.ok||!response.body)throw new Error(`智能体服务响应异常 (${response.status})`);
   reader=response.body.getReader();const decoder=createSseDecoder();let result:DispatchResult|undefined;let content='';
   const consume=(frames:ReturnType<typeof decoder.push>)=>{for(const {event,data} of frames){
@@ -36,6 +37,6 @@ export async function dispatchSkillPromptStream(promptText:string,context?:Dispa
  finally{await reader?.cancel().catch(()=>{});reader?.releaseLock();}
 }
 export async function dispatchSkillPrompt(promptText:string,context?:DispatchContext):Promise<DispatchResult>{
- try{const response=await fetch('/api/agent/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});if(!response.ok)throw new Error(`智能体服务响应异常 (${response.status})`);return await response.json();}
+ try{const response=await fetch('/api/agent/dispatch',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});if(!response.ok)throw new Error(`智能体服务响应异常 (${response.status})`);return await response.json();}
  catch(error){if(context?.signal?.aborted)throw error;return failed(error instanceof Error?error.message:'智能体连接失败');}
 }

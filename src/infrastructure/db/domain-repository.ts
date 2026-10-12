@@ -1,3 +1,5 @@
+import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
+import type {Principal} from '@/contracts/principal';
 import Database from 'better-sqlite3';
 import type { AgentDomain } from '@/contracts/dataset';
 import { resolveDatasetLocation } from './dataset-manifest';
@@ -9,6 +11,7 @@ export interface QueryScope {
   from?: string;
   to?: string;
   maxRows?: number;
+  principal?:Principal;
   allowedColumns?: Record<string,string[]>;
 }
 const domainTables: Record<AgentDomain,readonly string[]> = {
@@ -28,6 +31,7 @@ export class DomainRepository {
     try {const schema:QuerySchema={};for(const table of domainTables[this.domain]){const columns=db.prepare(`PRAGMA main.table_info(${quoteIdentifier(table)})`).all() as {name:string}[];if(columns.length)schema[table]=columns.map(c=>c.name);}return schema;} finally {db.close();}
   }
   query(select: string, params: unknown[], scope: QueryScope): Record<string,unknown>[] {
+    if(scope.principal){authorizeScope(scope,{runId:'repository',domain:this.domain,deploymentTier:process.env.DEPLOYMENT_TIER==='pilot'?'pilot':'local',principal:scope.principal});scope={...scope,city:scope.principal.jurisdiction.city??scope.city,district:scope.principal.jurisdiction.district??scope.district,allowedColumns:restrictColumns(this.getSchema(),scope.principal)};}
     if (scope.domain !== this.domain) throw new Error('Domain scope mismatch');
     for (const key of ['from','to'] as const) if (scope[key] && !/^\d{4}-\d{2}-\d{2}$/.test(scope[key]!)) throw new Error('Invalid time scope');
     if (scope.from && scope.to && scope.from > scope.to) throw new Error('Invalid time scope order');

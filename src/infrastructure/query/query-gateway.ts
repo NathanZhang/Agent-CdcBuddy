@@ -13,8 +13,13 @@ export function validateReadQuery(sql: string, schema: QuerySchema, maxRows = 20
   const ast = statements[0] as any;
   if (ast.type !== 'select' || ast.with || ast._next || ast.set_op || ast.into || ast.for_update || !Array.isArray(ast.from) || ast.from.length === 0) throw new Error('Unsupported SELECT construction');
   const tables = new Map<string,string>();
-  for (const item of ast.from) {
+  if(ast.from.length>4)throw new Error("Join budget exceeded");
+  for (const [index,item] of ast.from.entries()) {
     if (item.db || item.expr || !item.table || !Object.hasOwn(schema,item.table)) throw new Error('Table outside allowed domain');
+    if(index>0&&!item.join)throw new Error("Implicit cross products are not supported");
+    if(tables.has(item.as??item.table))throw new Error("Duplicate table alias");
+    if(index>0&&item.table.startsWith("fact_")&&[...tables.values()].some(t=>t.startsWith("fact_")))throw new Error("Fact-to-fact joins are outside the compute budget");
+    if(item.join&&(item.on?.type!=="binary_expr"||item.on.operator!=="="||item.on.left?.type!=="column_ref"||item.on.right?.type!=="column_ref"||!item.on.left.table||!item.on.right.table||item.on.left.table===item.on.right.table))throw new Error("Join requires distinct keyed column equality");
     tables.set(item.as ?? item.table, item.table);
     if (item.join && (!item.on || /CROSS/i.test(item.join))) throw new Error('Unconstrained joins are not supported');
   }
@@ -24,6 +29,7 @@ export function validateReadQuery(sql: string, schema: QuerySchema, maxRows = 20
     if (node !== ast && node.type === 'select') throw new Error('Subqueries are not supported');
     if (node.type === 'column_ref') {
       const column = typeof node.column === 'string' ? node.column : node.column?.expr?.value;
+      if(node.db||node.schema||node.table&&!tables.has(node.table))throw new Error('Column qualifier outside scoped views');
       if (column !== '*') {
         const candidates = node.table ? [tables.get(node.table)] : [...tables.values()];
         if (!candidates.some(t => t && schema[t].includes(column)) && !(node.table === null && aliases.has(column))) throw new Error(`Column outside allowed schema: ${column}`);

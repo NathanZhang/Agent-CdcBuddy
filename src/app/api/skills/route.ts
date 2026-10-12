@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listSkillDefinitions } from '@/application/skills/skill-service';
 import { getServerDomain } from '@/application/config/runtime-profile';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
-import { createDevelopmentContext } from '@/lib/skills/server-executor';
+import {resolveContext,authStatus} from '@/infrastructure/auth/session';
 import { dispatch,collectDispatch } from '@/application/dispatch/dispatch-service';
 import { normalizeInteraction,toLegacyResult } from '@/application/dispatch/legacy-adapter';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
     const body=await req.json();
     if(typeof body.skillId!=='string'||!body.skillId) return NextResponse.json({success:false,error:'缺少 skillId'},{status:400});
     const interaction=normalizeInteraction({kind:'skill',promptText:`执行技能 ${body.skillId}，参数：${JSON.stringify(body.args ?? {})}`,resourceRef:{type:'skill',id:body.skillId,action:'execute'},attachments:[{type:'operation-input',args:body.args ?? {}}]});
-    const ctx=createDevelopmentContext();ctx.signal=req.signal;
+    const ctx=resolveContext(req);ctx.signal=req.signal;
     const turn=await collectDispatch(dispatch(interaction,ctx));const result=toLegacyResult(turn);
-    return NextResponse.json({...result,data:result.generativeView});
-  } catch (error) {return NextResponse.json({success:false,status:'FAILED',data:null,error:error instanceof Error?error.message:'执行失败'},{status:400});}
+    return NextResponse.json({...result,data:result.generativeView},{status:turn.error?.code?.startsWith('FORBIDDEN')?403:200});
+  } catch (error) {return NextResponse.json({success:false,status:'FAILED',data:null,error:error instanceof Error?error.message:'执行失败'},{status:authStatus(error,400)});}
 }
 
 export async function PUT(req:NextRequest){let body;try{body=await req.json();}catch{return NextResponse.json({success:false,error:'Invalid JSON'},{status:400});}return operationResponse(req,{type:'skill.update',id:body.skillId,args:{name:body.name,description:body.description,sqlQuery:body.sqlQuery,chartType:body.chartType,visibility:body.visibility,recommendedPrompts:body.recommendedPrompts}},'SKILL_CATALOG');}

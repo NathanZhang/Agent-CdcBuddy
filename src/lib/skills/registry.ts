@@ -1,3 +1,4 @@
+import {authHeaders} from '@/infrastructure/auth/client';
 import requirementIds from '../../../config/skill-requirements.json';
 import { VectorSkill, MetaCustomSkillData } from './types';
 
@@ -8,7 +9,7 @@ async function executeSkillRemote(skillId: string, args: Record<string, any>) {
     const url = '/api/skills';
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {...await authHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ skillId, args })
     });
     if (!res.ok) {

@@ -1,3 +1,4 @@
+import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
 import { loadDatasetManifest } from '@/infrastructure/db/dataset-manifest';
 import { randomUUID } from 'node:crypto';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
@@ -15,7 +16,9 @@ const reportIds=['skill_auto_report_gen','skill_foodborne_report_export','skill_
 const queryInput={type:'object',additionalProperties:false,required:['sql'],properties:{sql:{type:'string',minLength:1,maxLength:20000},query:{type:'string'},city:{type:'string',minLength:1},district:{type:'string',minLength:1},from:{type:'string'},to:{type:'string'}}};
 const tableOutput={type:'object',required:['type','data'],properties:{type:{const:'DATA_TABLE_VIEW'},data:{type:'array',items:{type:'object'}}}};
 export function scopeFromArgs(args:Record<string,any>,ctx:ExecutionContext) {
-  return {domain:ctx.domain,city:ctx.principal.jurisdiction.city ?? args.city,district:ctx.principal.jurisdiction.district ?? args.district,from:args.from,to:args.to};
+  authorizeScope(args,ctx);
+  const allowedColumns=ctx.principal.role==='PUBLIC_VIEWER'?restrictColumns(getDomainRepository(ctx.domain).getSchema(),ctx.principal):undefined;
+  return {principal:ctx.principal,allowedColumns,domain:ctx.domain,city:ctx.principal.jurisdiction.city ?? args.city,district:ctx.principal.jurisdiction.district ?? args.district,from:args.from,to:args.to};
 }
 async function executeQuery(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const started=Date.now();

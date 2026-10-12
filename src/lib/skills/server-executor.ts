@@ -6,7 +6,7 @@ export function createDevelopmentContext(domain=getServerDomain()):ExecutionCont
   const deploymentTier=(process.env.DEPLOYMENT_TIER ?? 'local') as DeploymentTier;
   if(!['local','demo','pilot'].includes(deploymentTier))throw new Error('Invalid deployment tier');
   if(deploymentTier==='pilot')throw new Error('Authenticated server principal required');
-  return {runId:randomUUID(),domain,deploymentTier,principal:{userId:'local-development',role:'PROVINCIAL_ADMIN',organizationId:'local-development',domainGrants:[domain],jurisdiction:{},mode:'dev'}};
+  return {runId:randomUUID(),domain,deploymentTier,principal:{userId:'local-development',role:'PROVINCIAL_ADMIN',organizationId:'local-development',domainGrants:[domain],jurisdiction:{},mode:'dev',permissions:{manageIdentity:true,professionalReview:true}}};
 }
 /** Compatibility payload adapter. HTTP business callers migrate to Agent turns in T5/T6. */
 export async function executeSkillServer(skillId:string,args:Record<string,any>,ctx:ExecutionContext=createDevelopmentContext()):Promise<Record<string,any>>{

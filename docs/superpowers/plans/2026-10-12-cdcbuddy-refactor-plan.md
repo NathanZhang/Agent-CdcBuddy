@@ -272,11 +272,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`Principal={userId,role,organizationId,domainGrants,jurisdiction,mode}`（类型T2建立，本任务完善身份来源与运行校验）；实现第四节`resolvePrincipal`与`authorize`。本期默认内置身份适配器与服务端会话，可替换SSO；账号初始化使用执行时提供的管理员信息，无默认共享生产密码。
 
-- [ ] 写测试：匿名不能写入；市专家不能跨市；区县采集/复测不能跨县；公众不能读姓名等敏感列；用户B不能读取/删除A会话或private技能；公众即使body传PROVINCIAL_ADMIN仍403；所有业务API适配器/主线Agent/tool执行同权限，旧规则兜底不可执行业务；demo角色切换不改变pilot principal。
-- [ ] 运行 `npm run test:refactor -- authorization` 和 `npm run test:integration -- auth`，确认现有前端角色示例不能满足服务端断言。
-- [ ] 建设身份/角色/资源归属/辖区校验；会话Cookie设HttpOnly/SameSite，部署TLS下Secure；有状态写请求加来源/CSRF检查，登录限流；把scope强制传到T3查询路径。
-- [ ] 重跑授权矩阵和真实HTTP集成；权限来源只来自服务端，query/body/userRole不能扩展授权；组织管理员与专业审批权限分别表达。
-- [ ] 提交：`feat: add server-side identity and role jurisdiction authorization`。
+- [x] 写测试：匿名不能写入；市专家不能跨市；区县采集/复测不能跨县；公众不能读姓名等敏感列；用户B不能读取/删除A会话或private技能；公众即使body传PROVINCIAL_ADMIN仍403；所有业务API适配器/主线Agent/tool执行同权限，旧规则兜底不可执行业务；demo角色切换不改变pilot principal。
+- [x] 运行 `npm run test:refactor -- authorization` 和 `npm run test:integration -- auth`，确认现有前端角色示例不能满足服务端断言。
+- [x] 建设身份/角色/资源归属/辖区校验；会话Cookie设HttpOnly/SameSite，部署TLS下Secure；有状态写请求加来源/CSRF检查，登录限流；把scope强制传到T3查询路径。
+- [x] 重跑授权矩阵和真实HTTP集成；权限来源只来自服务端，query/body/userRole不能扩展授权；组织管理员与专业审批权限分别表达。
+- [x] 提交：`feat: add server-side identity and role jurisdiction authorization`。
 
 **阶段边界：**可在本地完成M0—M2研发；T11通过前不能认为项目适合真实数据多人/外部试点。没有SSO信息不阻断本地内置适配器开发，但正式SSO联调单独确认。
 

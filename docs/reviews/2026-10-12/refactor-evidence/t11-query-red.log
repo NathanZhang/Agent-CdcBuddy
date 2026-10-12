@@ -1,0 +1,40 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run query-gateway
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/query-gateway.test.ts (15 tests | 1 failed) 20ms
+   ✓ controlled read SQL > accepts bounded aggregates and validates order aliases 5ms
+   ✓ controlled read SQL > adds a bounded limit when absent 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM fact_water_monitoring LIMIT 1000000 1ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT city FROM fact_water_monitoring; DELETE FROM fact_water_monitoring 1ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM fact_monitoring 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT patient_name FROM fact_water_monitoring 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM main.fact_water_monitoring 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT load_extension('x') FROM fact_water_monitoring 1ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT randomblob(10000000) FROM fact_water_monitoring 1ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM fact_water_monitoring UNION SELECT * FROM fact_water_monitoring 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT (SELECT city FROM fact_water_monitoring) FROM fact_water_monitoring 1ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM sqlite_master 0ms
+   ✓ controlled read SQL > rejects unsafe or unsupported SQL: SELECT * FROM fact_water_monitoring LIMIT -1 0ms
+   ✓ legacy custom SQL also obeys the query cap 4ms
+   × rejects implicit cross products and wildcard qualifiers outside the scoped tables 3ms
+     → expected [Function] to throw an error
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/query-gateway.test.ts > rejects implicit cross products and wildcard qualifiers outside the scoped tables
+AssertionError: expected [Function] to throw an error
+ ❯ tests/refactor/query-gateway.test.ts:31:283
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  16:23:48
+   Duration  442ms (transform 59ms, setup 0ms, collect 170ms, tests 20ms, environment 0ms, prepare 34ms)
+
