@@ -28,12 +28,14 @@ export interface LegacyEvent {event:string;data:Record<string,any>;}
 export function toLegacyEvents(event:RunEvent):LegacyEvent[]{
   const meta={runId:event.runId,seq:event.seq};
   if(event.type==='started')return [{event:'reasoning_start',data:{...meta}}];
+  if(event.type==='reasoning')return [{event:'reasoning_chunk',data:{...meta,text:event.data.text,replace:true}}];
+  if(event.type==='content')return [{event:'content_chunk',data:{...meta,text:event.data.text,replace:true}}];
   if(event.type==='tool_started')return [{event:'tool_call_start',data:{...meta,toolId:event.data.skillId,toolName:event.data.skillName,args:event.data.args}}];
   if(event.type==='tool_completed')return [{event:'tool_call_result',data:{...meta,toolId:event.data.skillId,success:!['FAILED','CANCELLED'].includes(event.data.result.status),status:event.data.result.status,summary:event.data.result.method}}];
   if(event.type==='failed')return [{event:'error',data:{...meta,...event.data}}];
   if(event.type==='result'){
     const result=toLegacyResult(event.data.result);
-    return [{event:'reasoning_end',data:{...meta,durationMs:0}},{event:'generative_view',data:{...meta,view:result.generativeView}},{event:'content_chunk',data:{...meta,text:result.replyText}},{event:'finish',data:{...meta,...result}}];
+    return [{event:'reasoning_end',data:{...meta,durationMs:result.reasoningDuration ?? 0}},{event:'generative_view',data:{...meta,view:result.generativeView}},{event:'content_chunk',data:{...meta,text:result.replyText,replace:true}},{event:'finish',data:{...meta,...result}}];
   }
   return [];
 }

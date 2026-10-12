@@ -94,3 +94,22 @@ it('asks the LLM once to correct invalid final JSON without reexecuting Skills',
 it('fails transparently when the bounded LLM format correction also fails',async()=>{
  let rounds=0,executions=0;const llm:LLMClient={complete:async()=>{rounds++;return rounds===1?{role:'assistant',content:null,tool_calls:[tool()]}:{role:'assistant',content:'not JSON'};}};const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.error?.code).toBe('INVALID_LLM_RESPONSE');expect(result.agui).toEqual([]);
 });
+
+it('publishes reasoning and decoded answer previews before the model completes, then records the exact reasoning',async()=>{
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+ const llm:LLMClient={complete:async request=>{
+  request.onDelta?.({type:'reasoning',text:'需要先确认时间范围。'});
+  request.onDelta?.({type:'content',text:'{"mode":"clarification","replyText":"请指定\\n'});
+  await gate;
+  request.onDelta?.({type:'content',text:'时间范围。"}'});
+  return {role:'assistant',content:'{"mode":"clarification","replyText":"请指定\\n时间范围。"}'};
+ }};
+ const events=dispatch(input,createDevelopmentContext('vector'),agent(llm))[Symbol.asyncIterator]();
+ expect((await events.next()).value.type).toBe('started');
+ const reasoning=(await events.next()).value;expect(reasoning).toMatchObject({type:'reasoning',data:{text:'需要先确认时间范围。'}});
+ expect(toLegacyEvents(reasoning)[0]).toMatchObject({event:'reasoning_chunk',data:{text:'需要先确认时间范围。',replace:true}});
+ expect((await events.next()).value).toMatchObject({type:'content',data:{text:'请指定\n'}});
+ release();const remaining=[];while(true){const next=await events.next();if(next.done)break;remaining.push(next.value);}
+ const result=remaining.find(e=>e.type==='result')!.data.result;
+ expect(result).toMatchObject({replyText:'请指定\n时间范围。',reasoningText:'需要先确认时间范围。',reasoningDuration:expect.any(Number)});
+});

@@ -16,6 +16,8 @@ export interface AgentTurnResult {
   interactionId:string;
   status:ResultStatus;
   replyText:string;
+  reasoningText?:string;
+  reasoningDuration?:number;
   agui:AguiResult[];
   skillRuns:SkillRun[];
   error?:{code:string;message:string};

@@ -21,13 +21,14 @@ export async function dispatchSkillPromptStream(promptText:string,context?:Dispa
  try{
   const response=await fetch('/api/agent/stream-dispatch',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json',Accept:'text/event-stream'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});
   if(!response.ok||!response.body)throw new Error(`智能体服务响应异常 (${response.status})`);
-  reader=response.body.getReader();const decoder=createSseDecoder();let result:DispatchResult|undefined;let content='';
+  reader=response.body.getReader();const decoder=createSseDecoder();let result:DispatchResult|undefined;let content='',reasoning='';
   const consume=(frames:ReturnType<typeof decoder.push>)=>{for(const {event,data} of frames){
    if(event==='reasoning_start')context?.onReasoningStart?.();
+   else if(event==='reasoning_chunk'){reasoning=(data.replace?'':reasoning)+data.text;context?.onReasoningChunk?.(data.text,reasoning);}
    else if(event==='reasoning_end')context?.onReasoningEnd?.(data.durationMs ?? 0);
    else if(event==='tool_call_start')context?.onToolCallStart?.(data);
    else if(event==='tool_call_result')context?.onToolCallResult?.(data);
-   else if(event==='content_chunk'){content+=data.text;context?.onContentChunk?.(data.text,content);}
+   else if(event==='content_chunk'){content=(data.replace?'':content)+data.text;context?.onContentChunk?.(data.text,content);}
    else if(event==='generative_view')context?.onGenerativeView?.(data.view ?? null);
    else if(event==='finish')result=data;
   }};

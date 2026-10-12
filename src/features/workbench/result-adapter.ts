@@ -6,7 +6,7 @@ export function restoreSession(session:any){
  let view=session.lastGenerativeView ?? session.last_generative_view ?? null;
  if(typeof view==='string'){try{view=JSON.parse(view);}catch{view=null;}}
  if(view && !view.runId)view={...view,datasets:[],qualityFlags:[...(view.qualityFlags ?? []),'legacy-unverified']};
- const messages=(session.messages ?? []).map((m:any,i:number)=>({id:m.id ?? m.message_id ?? `legacy-${i}`,sender:m.sender ?? (m.role==='user'?'user':'agent'),text:m.text ?? m.content ?? '',timestamp:m.timestamp ?? '',skillUsed:m.skillUsed ?? m.skill_used,runId:m.runId ?? m.generativeViewSnapshot?.runId}));
+ const messages=(session.messages ?? []).map((m:any,i:number)=>({id:m.id ?? m.message_id ?? `legacy-${i}`,sender:m.sender ?? (m.role==='user'?'user':'agent'),text:m.text ?? m.content ?? '',timestamp:m.timestamp ?? '',skillUsed:m.skillUsed ?? m.skill_used,reasoningText:m.reasoningText ?? m.reasoning_text,reasoningDuration:m.reasoningDuration ?? m.reasoning_duration,runId:m.runId ?? m.generativeViewSnapshot?.runId}));
  return {sessionId:session.sessionId ?? session.session_id,title:session.title ?? '历史会话',messages,view};
 }
 
