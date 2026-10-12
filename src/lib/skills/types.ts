@@ -36,6 +36,7 @@ export interface VectorSkill {
   category: SkillCategory;
   categoryName: string;
   requirementNo?: string;
+  requirementIds?: number[];
   description: string;
   iconName: string;
   badgeColor?: string;

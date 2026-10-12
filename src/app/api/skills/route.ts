@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { listSkillDefinitions } from '@/application/skills/skill-service';
+import { getServerDomain } from '@/application/config/runtime-profile';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import { executeSkillServer } from '@/lib/skills/server-executor';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
@@ -6,7 +8,8 @@ import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const domain = searchParams.get('domain') || undefined;
+    const domain = getServerDomain();
+    if (searchParams.get('domain') && searchParams.get('domain') !== domain) return NextResponse.json({success:false,error:'Domain mismatch'},{status:400});
     const bizProvider = getAppBusinessProvider();
     const customSkillsData = await bizProvider.getAllCustomSkills(domain);
     
@@ -29,25 +32,10 @@ export async function GET(req: NextRequest) {
       createdAt: cs.created_at
     }));
 
-    const filteredStandard = domain 
-      ? STANDARD_SKILLS.filter(s => s.domain === domain)
-      : STANDARD_SKILLS;
-
-    const standardSkills = filteredStandard.map(s => ({
-      id: s.id,
-      name: s.name,
-      category: s.category,
-      categoryName: s.categoryName,
-      requirementNo: s.requirementNo,
-      description: s.description,
-      iconName: s.iconName,
-      badgeColor: s.badgeColor,
-      domain: s.domain,
-      recommendedPrompts: s.recommendedPrompts,
-      requiredRoles: s.requiredRoles,
-      visibility: 'public' as const,
-      isCustom: false
-    }));
+    const standardSkills = listSkillDefinitions(domain).map(definition=>{
+      const original=STANDARD_SKILLS.find(s=>s.id===definition.id)!;
+      return {...original,execute:undefined,domain:definition.domain,name:definition.name,description:definition.description,requirementIds:definition.requirementIds,requirementNo:definition.requirementIds.length?`No. ${definition.requirementIds.join('/')}`:undefined,parametersSchema:definition.inputSchema,availability:definition.availability,method:definition.method,visibility:'public',isCustom:false};
+    });
 
     const total = standardSkills.length + customSkills.length;
 
@@ -63,15 +51,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err: any) {
     console.error('[Skills API GET Error]', err);
-    return NextResponse.json({
-      code: 200,
-      success: true,
-      total: STANDARD_SKILLS.length,
-      standardCount: STANDARD_SKILLS.length,
-      customCount: 0,
-      skills: STANDARD_SKILLS,
-      customSkills: []
-    });
+    return NextResponse.json({success:false,error:err.message},{status:500});
   }
 }
 
