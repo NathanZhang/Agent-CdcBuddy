@@ -24,5 +24,6 @@ export function bindOperationInput(interaction:AgentInteraction,name:string,args
  if(ref.type==='collection'&&ref.action!=='form'){if(!supplied.record)throw new IntentError('INVALID_OPERATION_INPUT','采集记录缺少原始输入');bound.record=supplied.record;}
  if(ref.type==='report'&&ref.action==='export'&&!supplied.sql){bound.reportId=ref.id;bound.format=supplied.format ?? 'markdown';}
  if(ref.type==='approval')bound.jobId=ref.id;
+ if(ref.type==='workflow'&&['read','list'].includes(ref.action ?? '')){bound.action=ref.action;if(ref.action==='read')bound.jobId=supplied.jobId ?? ref.id;}
  return bound;
 }

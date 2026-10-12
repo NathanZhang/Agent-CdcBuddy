@@ -17,6 +17,9 @@ interface AutoReportProps {
 
 export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
   const interactFunctional=useFunctionalInteraction();
+  const [exportLink,setExportLink]=useState<{downloadUrl:string;fileName:string}|null>(null);
+  const [exportError,setExportError]=useState('');
+  const exportFile=async(action:Parameters<typeof interactFunctional>[0])=>{setExportLink(null);setExportError('');try{const result=await interactFunctional(action);const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='ARTIFACT_DOWNLOAD') as any;if(payload)setExportLink(payload);else setExportError(result?.replyText||'导出失败');}catch(error){setExportError(error instanceof Error?error.message:'导出失败');}};
   const reportRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -34,7 +37,7 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
   };
 
   const handleExportPdf = () => {
-    void interactFunctional({type:'report.export',id:data.reportId,args:{format:'markdown'}});
+    void exportFile({type:'report.export',id:data.reportId,args:{format:'markdown'}});
   };
 
   return (
@@ -66,6 +69,8 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
             <Printer className="w-3.5 h-3.5" />
             <span>导出 Markdown 文件</span>
           </button>
+            {exportLink&&<a href={exportLink.downloadUrl} download className="text-xs text-sky-600 underline">下载 {exportLink.fileName}</a>}
+            {exportError&&<span role="alert" className="text-xs text-rose-600">{exportError}</span>}
         </div>
       </div>
 

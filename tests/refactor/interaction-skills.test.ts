@@ -60,7 +60,7 @@ it('LLM cannot alter supplied capture evidence or turn a list request into delet
  expect(collected.skillRuns[0].result.payload).toMatchObject({record:{capture_count:0}});
  const created=await executeSkill('skill_session_manage',{action:'create'},ctx);const sessionId=(created.payload as any).session.sessionId;
  const listed=await run('skill_session_manage',{action:'delete',sessionId},{interactionId:'list',kind:'session',userInput:'列出会话',resourceRef:{type:'session',id:'session.list',action:'list'},attachments:[{type:'operation-input',args:{}}]});
- expect(listed.status).toBe('FAILED');expect(listed.error?.code).toBe('OPERATION_INTENT_MISMATCH');expect((await executeSkill('skill_session_manage',{action:'read',sessionId},ctx)).status).toBe('SUCCESS');
+ expect(listed.status).toBe('SUCCESS');expect(listed.skillRuns[0].args.action).toBe('list');expect((await executeSkill('skill_session_manage',{action:'read',sessionId},ctx)).status).toBe('SUCCESS');
 });
 
 it('internal journaling is absent from public tools and a model cannot invoke it',async()=>{
@@ -94,4 +94,22 @@ it('exports an actual query view without copying server-only domain scope into s
  const ctx=createDevelopmentContext('foodborne');const query=await executeSkill('skill_foodborne_case_table',{sql:'SELECT COUNT(*) AS n FROM fact_foodborne_case'},ctx);
  const args=queryExportArgs(query.payload);expect(args).not.toHaveProperty('domain');
  const exported=await executeSkill('skill_artifact_export',args,ctx);expect(exported.status).toBe('SUCCESS');expect(getArtifact((exported.payload as any).artifactId,ctx).content.toString()).toContain(String((query.payload as any).data[0].n));
+});
+
+
+it('drawer, session and form operations execute their exact authorized skill without calling an LLM',async()=>{
+ const {createMainAgent}=await import('@/application/agent/main-agent');
+ const {listSkillDefinitions}=await import('@/application/skills/skill-service');
+ const {collectDispatch}=await import('@/application/dispatch/dispatch-service');
+ const {adaptFunctionalInteraction}=await import('@/application/agent/interaction-adapter');
+ const ctx=createDevelopmentContext('vector');ctx.principal.userId='ui-owner';
+ const agent=createMainAgent({executeSkill,listSkills:listSkillDefinitions,llm:{complete:async()=>{throw new Error('UI operation must not reach the LLM');}}});
+ const run=async(action:any)=>collectDispatch(agent(adaptFunctionalInteraction(action),{...ctx,runId:crypto.randomUUID()}));
+ const created=await run({type:'session.create'});expect(created.status).toBe('SUCCESS');
+ const id=(created.skillRuns[0].result.payload as any).session.sessionId;
+ for(const action of [{type:'session.list'},{type:'session.read',id},{type:'session.rename',id,args:{title:'界面重命名'}},{type:'session.update',id,args:{isPinned:true}},{type:'catalog.list'},{type:'collection.form'},{type:'workflow.list'},{type:'session.delete',id},{type:'session.clear'}]){
+  const result=await run(action);expect(result.status).toBe('SUCCESS');expect(result.skillRuns).toHaveLength(1);
+ }
+ const unavailable=await run({type:'collection.ocr-save'});expect(unavailable.error?.code).toBe('CAPABILITY_UNAVAILABLE');
+ const invalidApproval=await run({type:'approval.decide',id:'absent',args:{decision:'review-correction'}});expect(invalidApproval.status).toBe('FAILED');expect(invalidApproval.error?.message).not.toContain('LLM');
 });

@@ -23,7 +23,7 @@ describe('shared workbench controller',()=>{
    {type:'collection.submit',args:{captureCount:0,city:'郑州市'}}, {type:'report.generate',args:{city:'郑州市'}},
    {type:'report.export',id:'report-1'}, {type:'session.rename',id:'session-1',args:{title:'新标题'}},
    {type:'approval.decide',id:'approval-1',args:{decision:'approve'}}, {type:'skill.delete',id:'custom_skill_1'}
-  ]){await controller.interact(adaptFunctionalInteraction(action));expect(controller.getState().runId).toBe(`actual-${requests.length}`);expect(controller.getState().view.runId).toBe(`actual-${requests.length}`);}
+  ]){const before=controller.getState();const result=await controller.interact(adaptFunctionalInteraction(action));expect(result?.runId).toBe(`actual-${requests.length}`);if(['report.export','session.rename','skill.delete'].includes(action.type))expect(controller.getState()).toEqual(before);else expect(controller.getState().view.runId).toBe(`actual-${requests.length}`);}
   expect(requests).toHaveLength(8);expect(requests.every(r=>r.resourceRef||r.attachments)).toBe(true);
  });
  it('NO_DATA clears an old success view and cannot restore a stale snapshot',async()=>{
@@ -73,5 +73,34 @@ it('a standalone widget action uses its own injected controller rather than anot
  const requests:AgentInteraction[]=[];const own=createWorkbenchController({domain:'foodborne',client:{interact:async input=>{requests.push(input);return turn('own-widget');}}});
  let action:any;function Probe(){action=useFunctionalInteraction();return null;}
  renderToStaticMarkup(React.createElement(WorkbenchInteractionProvider,{controller:own},React.createElement(Probe)));
- await action({type:'report.export',args:{format:'csv',sql:'SELECT COUNT(*) AS n FROM fact_foodborne_case'}});expect(requests).toHaveLength(1);expect(own.getState().runId).toBe('own-widget');
+ const result=await action({type:'report.export',args:{format:'csv',sql:'SELECT COUNT(*) AS n FROM fact_foodborne_case'}});expect(requests).toHaveLength(1);expect(result.runId).toBe('own-widget');expect(own.getState().messages).toEqual([]);
+});
+
+
+it('opening and managing drawers leaves chat and analysis untouched, even during an active answer',async()=>{
+ let finish!: (value:AgentTurnResult)=>void;let pendingSignal:AbortSignal|undefined;
+ const requests:AgentInteraction[]=[];
+ const controller=createWorkbenchController({domain:'vector',client:{interact:async(input,options)=>{
+  requests.push(input);
+  if(input.kind==='conversation'){pendingSignal=options?.signal;return new Promise<AgentTurnResult>(resolve=>finish=resolve);}
+  return turn('ui-operation');
+ }}});
+ const answering=controller.send('分析监测数据');const before=controller.getState();
+ for(const action of [{type:'session.list'},{type:'catalog.list'},{type:'session.rename',id:'old',args:{title:'新标题'}},{type:'session.update',id:'old',args:{isPinned:true}},{type:'session.delete',id:'old'},{type:'session.clear'},{type:'skill.update',id:'custom_skill_1'},{type:'skill.delete',id:'custom_skill_1'},{type:'report.export',id:'report-1'}]){
+  await controller.interact(adaptFunctionalInteraction(action));
+  expect(controller.getState()).toEqual(before);expect(pendingSignal?.aborted).toBe(false);
+  expect(requests.at(-1)).not.toHaveProperty('history');expect(requests.at(-1)).not.toHaveProperty('sessionRef');
+ }
+ finish(turn('analysis-finished'));await answering;expect(controller.getState().runId).toBe('analysis-finished');
+ expect(controller.getState().messages.map(m=>m.text)).toEqual(['分析监测数据','实际结果。']);
+});
+it('opening collection UI changes the view without adding a chat instruction',async()=>{
+ const controller=createWorkbenchController({domain:'vector',client:{interact:async()=>turn('collection','SUCCESS',{type:'MOBILE_ASSISTANT_SIMULATOR'})}});
+ await controller.interact(adaptFunctionalInteraction({type:'collection.form'}));
+ expect(controller.getState().messages).toEqual([]);expect(controller.getState().view.type).toBe('MOBILE_ASSISTANT_SIMULATOR');
+});
+it('failed session switching keeps current messages and view without adding a fake answer',async()=>{
+ let calls=0;const controller=createWorkbenchController({domain:'vector',client:{interact:async()=>++calls===1?turn():turn('missing','NO_DATA',null)}});
+ await controller.send('分析');const before=controller.getState();await controller.loadSession('missing');
+ expect(controller.getState().messages).toEqual(before.messages);expect(controller.getState().view).toEqual(before.view);
 });

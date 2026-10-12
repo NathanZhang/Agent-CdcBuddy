@@ -25,6 +25,9 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
   data 
 }) => {
   const interactFunctional=useFunctionalInteraction();
+  const [exportLink,setExportLink]=useState<{downloadUrl:string;fileName:string}|null>(null);
+  const [exportError,setExportError]=useState('');
+  const exportFile=async(action:Parameters<typeof interactFunctional>[0])=>{setExportLink(null);setExportError('');try{const result=await interactFunctional(action);const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='ARTIFACT_DOWNLOAD') as any;if(payload)setExportLink(payload);else setExportError(result?.replyText||'导出失败');}catch(error){setExportError(error instanceof Error?error.message:'导出失败');}};
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showSql, setShowSql] = useState(false);
@@ -56,7 +59,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
   const totalPages = Math.ceil(filteredData.length / pageSize);
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const handleExportCsv=()=>{if(sql)void interactFunctional({type:'report.export',args:queryExportArgs({sql,title,scope})});};
+  const handleExportCsv=()=>{if(sql)void exportFile({type:'report.export',args:queryExportArgs({sql,title,scope})});};
 
   const handleCopySql = () => {
     if (sql) {
@@ -116,6 +119,8 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
             <Download className="w-3.5 h-3.5" />
             <span>导出 CSV</span>
           </button>
+            {exportLink&&<a href={exportLink.downloadUrl} download className="text-xs text-sky-600 underline">下载 {exportLink.fileName}</a>}
+            {exportError&&<span role="alert" className="text-xs text-rose-600">{exportError}</span>}
         </div>
       </div>
 

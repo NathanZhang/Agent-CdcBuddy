@@ -2,6 +2,7 @@
 import React,{useState,useEffect,useRef} from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { RecommendationPrompts } from '@/components/layout/RecommendationPrompts';
+import { CustomSkillRequestModal } from '@/components/layout/CustomSkillRequestModal';
 import { SkillsDrawer } from '@/components/layout/SkillsDrawer';
 import { SessionHistoryDrawer } from '@/components/layout/SessionHistoryDrawer';
 import { EmbeddedWidget } from '@/components/layout/EmbeddedWidget';
@@ -16,14 +17,15 @@ import { Bot,User,Send,Square,History,Plus,Sparkles } from 'lucide-react';
 export default function CdcAgentWorkspace(){
  const profile=getCurrentAgentProfile();const {currentUser}=useRbac();const workbench=useWorkbenchController({domain:profile.domain});const {state}=workbench;
  const [skillsOpen,setSkillsOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false),[widgetOpen,setWidgetOpen]=useState(false);
+ const [skillRequestOpen,setSkillRequestOpen]=useState(false),[skillsError,setSkillsError]=useState('');
  const [input,setInput]=useState(''),[customSkills,setCustomSkills]=useState<any[]>([]);const end=useRef<HTMLDivElement>(null);
  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth'});},[state.messages,state.busy]);
- const refreshSkills=async()=>{const result=await workbench.interact(adaptFunctionalInteraction({type:'catalog.list'}));const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='SKILL_CATALOG') as any;if(payload)setCustomSkills(payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? []})));};
+ const refreshSkills=async()=>{setSkillsError('');try{const result=await workbench.interact(adaptFunctionalInteraction({type:'catalog.list'}));if(result?.status==='FAILED')throw new Error(result.replyText||'读取技能列表失败');const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='SKILL_CATALOG') as any;if(payload)setCustomSkills(payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? []})));}catch(error){setSkillsError(error instanceof Error?error.message:'读取技能列表失败');}};
  const send=async(text:string)=>{if(!text.trim())return;setInput('');await workbench.send(text);};
  const [datasetLabels,setDatasetLabels]=useState<string[]>([]);
  useEffect(()=>{setDatasetLabels(sourceLabels((window as any).__CDC_RUNTIME_PROFILE__?.datasets ?? []));},[]);
  return <WorkbenchInteractionProvider controller={workbench}><div className="h-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
-  <Navbar onOpenSkills={()=>{setSkillsOpen(true);void refreshSkills();}} onSelectPrompt={send} showEmbeddedWidget={widgetOpen} onToggleEmbeddedWidget={()=>setWidgetOpen(v=>!v)}/>
+  <Navbar onOpenSkills={()=>{setSkillsOpen(true);void refreshSkills();}} showEmbeddedWidget={widgetOpen} onToggleEmbeddedWidget={()=>setWidgetOpen(v=>!v)}/>
   <div className="px-6 py-2 flex flex-wrap gap-3 text-xs border-b border-slate-200 dark:border-slate-800">{datasetLabels.map(label=><span key={label}>{label}</span>)}{profile.domain==='vector'&&<button className="text-sky-600" onClick={()=>void workbench.interact(adaptFunctionalInteraction({type:'collection.form'}))}>现场采集</button>}<span className="ml-auto">{state.busy?'执行中':state.status==='IDLE'?'等待指令':state.status}</span></div>
   <main className="flex-1 min-h-0 px-4 py-3 flex flex-col gap-3 max-w-[1920px] w-full mx-auto">
    <RecommendationPrompts onSelectPrompt={send}/>
@@ -36,7 +38,9 @@ export default function CdcAgentWorkspace(){
     </section>
    </div>
   </main>
-  <SkillsDrawer isOpen={skillsOpen} onClose={()=>setSkillsOpen(false)} customSkills={customSkills} onRefreshCustomSkills={()=>void refreshSkills()} onDeleteCustomSkill={async id=>{const result=await workbench.interact(adaptFunctionalInteraction({type:'skill.delete',id}));if(result?.status==='SUCCESS')await refreshSkills();}} onRunSkill={(skill,prompt)=>{setSkillsOpen(false);void workbench.interact(adaptFunctionalInteraction({type:'skill.execute',id:skill.id,prompt}));}} onCreateCustomSkill={()=>{setSkillsOpen(false);void send('创建一个自定义监测查询技能，请先向我确认分析需求。');}}/>
+  <SkillsDrawer isOpen={skillsOpen} onClose={()=>setSkillsOpen(false)} customSkills={customSkills} onRefreshCustomSkills={()=>void refreshSkills()} onDeleteCustomSkill={async id=>{const result=await workbench.interact(adaptFunctionalInteraction({type:'skill.delete',id}));if(result?.status==='SUCCESS')await refreshSkills();}} onRunSkill={(skill,prompt)=>{setSkillsOpen(false);void workbench.interact(adaptFunctionalInteraction({type:'skill.execute',id:skill.id,prompt}));}} onCreateCustomSkill={()=>{setSkillsOpen(false);setSkillRequestOpen(true);}}/>
+  {skillsOpen&&skillsError&&<div role="alert" className="fixed bottom-4 right-4 z-[100] bg-white dark:bg-slate-900 text-rose-600 p-3 rounded shadow">{skillsError}</div>}
+  {skillRequestOpen&&<CustomSkillRequestModal onClose={()=>setSkillRequestOpen(false)} onSubmit={request=>{setSkillRequestOpen(false);void send(request);}}/>}
   <SessionHistoryDrawer isOpen={historyOpen} onClose={()=>setHistoryOpen(false)} userId={currentUser.id} userName={currentUser.name} domain={profile.domain} currentSessionId={state.sessionId} onSelectSession={id=>{setHistoryOpen(false);void workbench.loadSession(id);}} onNewSession={()=>{setHistoryOpen(false);void workbench.startSession();}}/>
   <EmbeddedWidget isVisible={widgetOpen} onClose={()=>setWidgetOpen(false)} syncWorkspace domain={profile.domain}/>
  </div></WorkbenchInteractionProvider>;

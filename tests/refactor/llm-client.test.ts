@@ -19,7 +19,7 @@ describe('LLM boundary',()=>{
  it('caller cancellation does not trigger retry',async()=>{const fetcher=vi.fn();await expect(createLLMClient({env,fetch:fetcher}).complete({...request,signal:AbortSignal.abort()})).rejects.toBeDefined();expect(fetcher).not.toHaveBeenCalled();});
  it('times out the body read as well as the fetch',async()=>{
   const fetcher=vi.fn(async(_url,init)=>new Response(new ReadableStream({start(controller){init!.signal!.addEventListener('abort',()=>controller.error(new Error('body timeout')));}})));
-  await expect(createLLMClient({env,fetch:fetcher}).complete(request)).rejects.toMatchObject({code:'LLM_UNAVAILABLE'});expect(fetcher).toHaveBeenCalledTimes(2);
+  await expect(createLLMClient({env,fetch:fetcher}).complete(request)).rejects.toMatchObject({code:'LLM_TIMEOUT'});expect(fetcher).toHaveBeenCalledTimes(2);
  });
 });
 it('treats nullable vendor tool_calls as absent while preserving actual assistant content',async()=>{
@@ -36,4 +36,26 @@ it('uses bounded non-thinking native function calls without exposing model reaso
 
 it('requests vendor JSON mode only for the no-tools synthesis phase',async()=>{
  const bodies:any[]=[];const client=createLLMClient({env,fetch:async(_url,init)=>{bodies.push(JSON.parse(init!.body as string));return Response.json({choices:[{message:{role:'assistant',content:'{"mode":"answer","replyText":"结果"}'}}]});}});await client.complete({...request,toolChoice:'none'});await client.complete({...request,tools:[{type:'function',function:{name:'query'}}],toolChoice:'auto'});expect(bodies[0].response_format).toEqual({type:'json_object'});expect(bodies[1].response_format).toBeUndefined();
+});
+
+
+it('OpenAI-compatible gateways disable template thinking before expecting a tool response',async()=>{
+ const client=createLLMClient({env:{...env,SILICONFLOW_BASE_URL:'http://model-gateway.local/v1'},fetch:async(_url,init)=>{
+  const body=JSON.parse(init!.body as string);
+  // This gateway ignores SiliconFlow's top-level enable_thinking, exactly as the live probe did.
+  return Response.json({choices:[{message:body.chat_template_kwargs?.enable_thinking===false
+   ?{role:'assistant',content:null,tool_calls:[{id:'query',type:'function',function:{name:'query',arguments:'{}'}}]}
+   :{role:'assistant',content:null,reasoning_content:'Still thinking'}}]});
+ }});
+ const result=await client.complete({...request,tools:[{type:'function',function:{name:'query'}}]});
+ expect(result.tool_calls?.[0].function.name).toBe('query');
+});
+it('SiliconFlow keeps its own non-thinking API contract',async()=>{
+ let body:any;
+ await createLLMClient({env,fetch:async(_url,init)=>{body=JSON.parse(init!.body as string);return Response.json({choices:[{message:{role:'assistant',content:'回答'}}]});}}).complete(request);
+ expect(body.enable_thinking).toBe(false);expect(body.chat_template_kwargs).toBeUndefined();
+});
+it('deadline failure reports model, phase, timeout and attempts instead of generic unavailability',async()=>{
+ const client=createLLMClient({env,fetch:async(_url,init)=>new Promise((_resolve,reject)=>init!.signal!.addEventListener('abort',()=>reject(init!.signal!.reason),{once:true}))});
+ await expect(client.complete({...request,toolChoice:'none'})).rejects.toMatchObject({code:'LLM_TIMEOUT',message:expect.stringContaining('结果汇总')});
 });

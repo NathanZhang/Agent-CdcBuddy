@@ -27,18 +27,24 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
     const base=env.SILICONFLOW_BASE_URL ?? 'https://api.siliconflow.cn/v1';
     const primary=env.SILICONFLOW_MODEL ?? 'Qwen/Qwen3.6-27B';
     const models=[primary,env.SILICONFLOW_FALLBACK_MODEL ?? primary];
+    const templateThinking=!new URL(base).hostname.endsWith('.siliconflow.cn');
+    const timeoutMs=getRouterTimeoutMs(env);
+    const phase=request.toolChoice==='none'?'结果汇总':'技能选择';
+    const started=Date.now();
     let last:unknown;
-    for(const model of models){
+    for(const [attempt,model] of models.entries()){
       request.signal?.throwIfAborted();const controller=new AbortController();
       const abort=()=>controller.abort(request.signal?.reason);request.signal?.addEventListener('abort',abort,{once:true});
-      const timer=setTimeout(()=>controller.abort(new Error('LLM timeout')),getRouterTimeoutMs(env));
+      let timedOut=false;
+      const timer=setTimeout(()=>{timedOut=true;controller.abort(new Error('LLM timeout'));},timeoutMs);
       try{
-        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),enable_thinking:false,max_tokens:4096,temperature:0.7,top_p:0.8,top_k:20})});
+        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),enable_thinking:false,...(templateThinking?{chat_template_kwargs:{enable_thinking:false}}:{}),max_tokens:4096,temperature:0.7,top_p:0.8,top_k:20})});
         if(!response.ok){await response.body?.cancel();if(response.status!==429 && response.status<500)throw new LLMError('LLM_REJECTED',`大模型服务拒绝请求 (${response.status})`);throw new Error(`LLM HTTP ${response.status}`);}
         const data=JSON.parse(await boundedText(response));return validateLLMMessage(data.choices?.[0]?.message);
-      }catch(error){request.signal?.throwIfAborted();if(error instanceof LLMError)throw error;last=error;}
+      }catch(error){request.signal?.throwIfAborted();if(timedOut){last=new LLMError('LLM_TIMEOUT',`大模型请求超时：${phase}阶段，模型 ${model}，单次上限 ${timeoutMs} ms，已尝试 ${attempt+1} 次，累计等待 ${((Date.now()-started)/1000).toFixed(1)} 秒。请稍后重试。`);}else{if(error instanceof LLMError)throw error;last=error;}}
       finally{clearTimeout(timer);request.signal?.removeEventListener('abort',abort);}
     }
+    if(last instanceof LLMError)throw last;
     throw new LLMError('LLM_UNAVAILABLE',`大模型服务不可用：${last instanceof Error?last.message:'请求失败'}`);
   }};
 }
