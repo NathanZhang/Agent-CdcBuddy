@@ -46,7 +46,7 @@ describe('shared workbench controller',()=>{
   expect(restored.view.type).toBe('SPECIES_COMPOSITION');expect(restored.view.qualityFlags).toContain('legacy-unverified');expect(sourceLabels(restored.view.datasets)).toEqual([]);
  });
  it('renders mixed sources by each DatasetRef instead of by current app domain',()=>{
-  expect(sourceLabels([dataset('vector','observed'),dataset('env','mock'),dataset('chronic','mock')])).toEqual(['vector：实测数据 · v1','env：Mock 数据 · v1','chronic：Mock 数据 · v1']);
+  expect(sourceLabels([dataset('vector','observed'),dataset('env','mock'),dataset('chronic','mock')])).toEqual(['病媒生物：实测数据 · v1','环境健康：模拟数据（Mock） · v1','慢病与死因：模拟数据（Mock） · v1']);
  });
 });
 

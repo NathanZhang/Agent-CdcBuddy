@@ -48,7 +48,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   const sections = splitContentIntoSections(sanitized || content);
 
   return (
-    <div className={`markdown-content space-y-2.5 text-xs leading-relaxed ${className}`}>
+    <div className={`markdown-content min-w-0 max-w-full space-y-3 text-sm leading-7 break-words ${className}`}>
       {sections.map((sec, idx) => {
         if (sec.type === 'code') {
           return <CodeBlock key={idx} content={sec.content} lang={sec.lang} />;
@@ -57,9 +57,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         if (sec.type === 'heading') {
           const Tag = `h${Math.min(sec.level + 1, 6)}` as keyof React.JSX.IntrinsicElements;
           const headingStyles: Record<number, string> = {
-            1: 'text-[13px] font-bold text-sky-700 dark:text-sky-400 mt-2 mb-1 pb-1 border-b border-sky-200/60 dark:border-sky-800/60 flex items-center gap-1.5',
-            2: 'text-xs font-bold text-slate-900 dark:text-slate-100 mt-2 mb-1 flex items-center gap-1.5',
-            3: 'text-xs font-semibold text-slate-800 dark:text-slate-200 mt-1.5 mb-0.5',
+            1: 'text-base font-bold text-sky-700 dark:text-sky-400 mt-2 mb-1 pb-1 border-b border-sky-200/60 dark:border-sky-800/60 flex items-center gap-1.5',
+            2: 'text-sm font-bold text-slate-900 dark:text-slate-100 mt-2 mb-1 flex items-center gap-1.5',
+            3: 'text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1.5 mb-0.5',
             4: 'text-[11px] font-semibold text-slate-800 dark:text-slate-300 mt-1 mb-0.5',
             5: 'text-[11px] font-medium text-slate-700 dark:text-slate-300 mt-1',
             6: 'text-[10px] font-medium text-slate-600 dark:text-slate-400 mt-0.5'
@@ -79,7 +79,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <blockquote
               key={idx}
-              className="border-l-3 border-sky-500 pl-2.5 py-1 text-slate-600 dark:text-slate-400 italic bg-sky-50/50 dark:bg-sky-950/20 rounded-r text-[11px]"
+              className="border-l-2 border-sky-500 pl-3 py-2 text-slate-600 dark:text-slate-400 italic bg-sky-50/50 dark:bg-sky-950/20 rounded-r text-xs"
             >
               {renderInline(sec.content, isUser)}
             </blockquote>
@@ -129,7 +129,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return (
             <div
               key={idx}
-              className={`my-2 overflow-x-auto rounded-lg border shadow-xs ${
+              className={`my-3 max-w-full overflow-x-auto rounded-lg border shadow-xs ${
                 isUser
                   ? 'border-white/20 bg-white/10'
                   : 'border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80'
@@ -139,7 +139,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                 <thead
                   className={`${
                     isUser
-                      ? 'bg-white/15 text-white border-b border-white/20'
+                      ? 'bg-sky-100 dark:bg-sky-900 text-slate-800 dark:text-slate-100 border-b border-sky-200 dark:border-sky-800'
                       : 'bg-slate-100/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800'
                   } font-semibold`}
                 >
@@ -147,7 +147,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     {sec.headers.map((header, hIdx) => (
                       <th
                         key={hIdx}
-                        className={`px-3 py-2 text-[11px] font-bold ${getAlignClass(
+                        className={`px-3 py-2 text-xs font-bold ${getAlignClass(
                           sec.aligns[hIdx] || 'left'
                         )}`}
                       >
@@ -159,7 +159,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                 <tbody
                   className={`divide-y ${
                     isUser
-                      ? 'divide-white/10 text-white'
+                      ? 'divide-sky-200 dark:divide-sky-800 text-slate-800 dark:text-slate-100'
                       : 'divide-slate-200/80 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300'
                   }`}
                 >
@@ -175,7 +175,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                       {sec.headers.map((_, cIdx) => (
                         <td
                           key={cIdx}
-                          className={`px-3 py-2 text-[11px] leading-relaxed break-words ${getAlignClass(
+                          className={`px-3 py-2 text-xs leading-relaxed break-words ${getAlignClass(
                             sec.aligns[cIdx] || 'left'
                           )}`}
                         >
@@ -218,7 +218,7 @@ const CodeBlock: React.FC<{ content: string; lang?: string }> = ({ content, lang
   return (
     <div className="relative my-2 rounded-lg bg-slate-900 text-slate-100 p-3 font-mono text-[11px] overflow-x-auto border border-slate-800 group shadow-xs">
       <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold mb-1 uppercase tracking-wider pb-1 border-b border-slate-800/80">
-        <span>{lang || 'CODE'}</span>
+        <span>{lang || '代码'}</span>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer"
@@ -509,7 +509,7 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
             key={key}
             className={
               isUser
-                ? 'font-bold text-white'
+                ? 'font-bold text-slate-900 dark:text-slate-100'
                 : 'font-bold text-slate-900 dark:text-slate-100'
             }
           >

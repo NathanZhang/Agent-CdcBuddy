@@ -1,4 +1,5 @@
 'use client';
+import {fieldLabel,formatValue} from '@/features/workbench/result-presentation';
 import { queryExportArgs } from '@/features/workbench/result-adapter';
 
 import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
@@ -49,7 +50,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
     );
   }
 
-  const columns = Object.keys(data[0]);
+  const columns = Array.from(new Set(data.flatMap(row=>Object.keys(row))));
 
   const filteredData = data.filter(row => {
     if (!searchTerm) return true;
@@ -70,7 +71,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
   };
 
   return (
-    <div className="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-5 border border-slate-200 dark:border-slate-700/50 shadow-sm dark:shadow-xl flex flex-col gap-3 text-xs transition-colors">
+    <div className="w-full min-w-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-5 border border-slate-200 dark:border-slate-700/50 shadow-sm dark:shadow-xl flex flex-col gap-3 text-xs transition-colors">
       {/* 头部信息 */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -96,7 +97,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
               }`}
             >
               <Code2 className="w-3.5 h-3.5 text-sky-500" />
-              <span>{showSql ? '收起 SQL' : '查看 Text2SQL'}</span>
+              <span>{showSql ? '收起 SQL' : '查看查询语句'}</span>
             </button>
           )}
 
@@ -152,7 +153,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
           <thead className="bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 font-semibold sticky top-0 z-10 backdrop-blur-sm">
             <tr>
               {columns.map((col, idx) => (
-                <th key={idx} className="p-2.5 whitespace-nowrap">{col}</th>
+                <th key={idx} className="p-2.5 whitespace-nowrap" title={col}>{fieldLabel(col)}</th>
               ))}
             </tr>
           </thead>
@@ -161,7 +162,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
               <tr key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                 {columns.map((col, cIdx) => (
                   <td key={cIdx} className="p-2.5 whitespace-nowrap font-mono text-xs">
-                    {String(row[col] ?? '-')}
+                    {formatValue(row[col],col)}
                   </td>
                 ))}
               </tr>

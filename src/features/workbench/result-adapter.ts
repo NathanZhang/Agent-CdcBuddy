@@ -1,5 +1,6 @@
+import {domainLabels} from './result-presentation';
 import type { DatasetRef } from '@/contracts/dataset';
-export function sourceLabels(datasets:DatasetRef[]=[]):string[]{return datasets.map(d=>`${d.domain}：${d.origin==='observed'?'实测数据':'Mock 数据'} · ${d.version}`);}
+export function sourceLabels(datasets:DatasetRef[]=[]):string[]{return datasets.map(d=>`${domainLabels[d.domain]}：${d.origin==='observed'?'实测数据':'模拟数据（Mock）'} · ${d.version}`);}
 export {projectAguiView as viewFromTurn} from '@/contracts/agui-view';
 export function restoreSession(session:any){
  let view=session.lastGenerativeView ?? session.last_generative_view ?? null;
