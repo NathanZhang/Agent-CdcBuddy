@@ -1,3 +1,8 @@
-import { buildDomainSkills } from '../../shared/skill-factory';
-import { runAnalyticsEngine } from '@/lib/analytics/engine-bridge';
-export function envSkills(){return buildDomainSkills('env',{skill_water_safety_eval:{availability:'available',method:'observed-water-summary-v1',description:'汇总实际水质样本达标率、风险均值与最大值；随机森林和克里金尚不可用。',inputSchema:{type:'object',additionalProperties:false,properties:{city:{type:'string'},district:{type:'string'}}},outputSchema:{type:'object',required:['type','evaluationResult','totalSamples'],properties:{type:{const:'WATER_PIPELINE_GIS_MAP'},evaluationResult:{type:'object'},totalSamples:{type:'integer',minimum:1}}},allowedOperations:['read'],execute:async(args,ctx)=>{const raw=await runAnalyticsEngine('water_safety_eval',args,ctx);return {status:raw.status,payload:raw.status==='NO_DATA'?null:{type:'WATER_PIPELINE_GIS_MAP',...raw},qualityFlags:raw.qualityFlags ?? []};}}});}
+import {buildDomainSkills} from '../../shared/skill-factory';
+import {analyticsSkill} from '../../shared/analytics-skill';
+const dates={from:{type:'string'},asOf:{type:'string'}};
+export function envSkills(){return buildDomainSkills('env',{
+ skill_water_safety_eval:analyticsSkill('water_safety_eval','observed-water-summary-v1','实际水质样本统计',{},'env'),
+ skill_sewage_pathogen_trace:analyticsSkill('sewage_pathogen_trace','calendar-aligned-pearson-v1','污水日历滞后探索统计',{...dates,pathogen:{enum:['诺如病毒','新冠病毒','肠道病毒']},maxLag:{type:'integer',minimum:0,maximum:30}},'env'),
+ skill_river_basin_pollution_chain:analyticsSkill('river_basin_pollution_chain','descriptive-metals-moran-v1','河流浓度统计与可选空间自相关',{...dates,basinName:{type:'string'},weights:{type:'object',additionalProperties:false,required:['sectionNames','matrix'],properties:{sectionNames:{type:'array',minItems:3,maxItems:50,items:{type:'string'}},matrix:{type:'array',minItems:3,maxItems:50,items:{type:'array',items:{type:'number',minimum:0}}}}}},'env')
+});}

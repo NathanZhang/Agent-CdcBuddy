@@ -60,23 +60,11 @@ class ChronicSurveillanceTestSuite:
             self.results.append(result)
 
     def test_59_quality_validation(self, res: TestResult):
-        """No. 59 数据质量校验模型 (死因证明书逻辑冲突识别，错误检出率应≥98%)"""
-        res.assert_true(os.path.exists(self.db_path), f"死因慢病数据库存在: {self.db_path}")
-
-        result = validate_death_certificate_quality(db_path=self.db_path)
-        res.assert_true(result["status"] == "SUCCESS", "死因质控校验引擎执行状态为 SUCCESS")
-
-        qc_metrics = result.get("qcMetrics", {})
-        err_rate = qc_metrics.get("errorDetectionRate", 0.0)
-        res.assert_true(err_rate >= 0.98, f"逻辑错误检出率强制达标 (当前: {err_rate * 100:.1f}% >= 98.0%)")
-
-        conflicts = result.get("flaggedConflictCases", [])
-        res.assert_true(len(conflicts) >= 2, f"成功拦截典型逻辑冲突死因证明书 (拦截数: {len(conflicts)})")
-        
-        # 验证男性宫颈癌与低龄阿尔茨海默矛盾检出
-        conflict_texts = " ".join([json.dumps(c["detectedErrors"], ensure_ascii=False) for c in conflicts])
-        res.assert_true("男性" in conflict_texts and "宫颈" in conflict_texts, "成功检出并阻断【男性患者填报宫颈癌】生理性别逻辑冲突")
-        res.assert_true("阿尔茨海默" in conflict_texts and "岁" in conflict_texts, "成功检出并阻断【5岁幼童阿尔茨海默病】低龄矛盾冲突")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=validate_death_certificate_quality(db_path=self.db_path)
+        res.assert_true(r['totalCertificatesChecked']>0,'实际规则检查')
+        res.assert_true(r['qcMetrics']['errorDetectionRate'] is None,'无标签基准不声明准确率')
+        res.assert_true(all(c['detectedErrors'] for c in r['flaggedConflictCases']),'每个复核候选有实际触发规则')
 
     def test_60_61_icd10_inference(self, res: TestResult):
         """No. 60/61 数据自动解析与根本死因知识图谱推理 (编码准确率应≥95%)"""
@@ -102,61 +90,28 @@ class ChronicSurveillanceTestSuite:
         res.assert_true(len(workflow) == 3, "输出完整的死因链剔除、因果溯源与字典匹配三级推理工作流")
 
     def test_62_63_mortality_cluster(self, res: TestResult):
-        """No. 62/63 死亡图谱时序识别与罕见死因短期聚集监测 (同区域≥3例自动预警)"""
-        result = detect_mortality_patterns_and_rare_clusters(db_path=self.db_path)
-        res.assert_true(result["status"] == "SUCCESS", "死亡图谱时序与罕见聚集检测执行状态为 SUCCESS")
-
-        rare_clusters = result.get("rareMortalityClustersDetected", [])
-        res.assert_true(len(rare_clusters) >= 1, f"成功监测并捕获罕见死因短期聚集事件 (发现数: {len(rare_clusters)})")
-
-        top_cluster = rare_clusters[0]
-        res.assert_true(top_cluster.get("caseCount", 0) >= 3, "符合同区域短期内出现≥3例同类罕见死因聚集触发标准")
-        res.assert_true("克雅氏病" in top_cluster.get("pathogenOrDisease", "") or "A81" in top_cluster.get("standardIcd10", ""), "准确识别散发型克雅氏病罕见聚集")
-
-        trend = result.get("arimaMortalityTrend", [])
-        res.assert_true(len(trend) >= 6, "输出 ARIMA 全死因月度消长趋势与未来3个月前瞻预测")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=detect_mortality_patterns_and_rare_clusters(db_path=self.db_path)
+        res.assert_true(sum(m['deaths'] for m in r['observedMonthlyDeaths'])==r['totalDeaths'],'实际月计数总量一致')
+        res.assert_true(all(c['caseCount']>=3 for c in r['rareMortalityClustersDetected']),'真实短窗候选阈值')
+        res.assert_true('arimaMortalityTrend' not in r,'不伪造ARIMA预测')
 
     def test_64_65_chronic_risk_forecast(self, res: TestResult):
-        """No. 64/65 慢性病发病风险预测 (准确率≥80%) 与并发症关联规则挖掘"""
-        result = predict_chronic_risk_and_complications(db_path=self.db_path)
-        res.assert_true(result["status"] == "SUCCESS", "慢病风险预测与并发症关联挖掘执行状态为 SUCCESS")
-
-        acc = result.get("modelAccuracy", 0.0)
-        res.assert_true(acc >= 0.80, f"慢病发病预测模型准确率强制达标 (当前: {acc * 100:.1f}% >= 80.0%)")
-
-        features = result.get("featureImportances", [])
-        res.assert_true(len(features) >= 3, "输出 GBDT 多危险因素重要性权重分解")
-        res.assert_true("收缩压" in features[0]["factor"], "收缩压识别为心脑血管急性事件首要危险因素")
-
-        complications = result.get("associationMiningComplications", [])
-        res.assert_true(len(complications) >= 2, "Apriori 挖掘出高血压糖尿病共病并发症规律")
-        res.assert_true(any(c["lift"] > 2.0 for c in complications), "并发症关联规则提升度显著 (Lift > 2.0)")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=predict_chronic_risk_and_complications(db_path=self.db_path)
+        res.assert_true(r['error']['code']=='CAPABILITY_UNAVAILABLE','慢病模型缺训练不可用')
 
     def test_66_70_screening_roi(self, res: TestResult):
-        """No. 66/70 肿瘤与心脑血管筛查清单推荐与成本效益比 (ROI/CEA)"""
-        result = calculate_lifetable_4q70_and_screening_roi(db_path=self.db_path)
-        res.assert_true(result["status"] == "SUCCESS", "筛查卫生经济学评价执行状态为 SUCCESS")
-
-        portfolio = result.get("screeningRoiPortfolio", [])
-        res.assert_true(len(portfolio) >= 3, "输出覆盖豫北食管癌早筛、肺癌LDCT早筛与社区心脑血管早筛的综合清单")
-        top_roi = portfolio[0]
-        res.assert_true("4." in top_roi.get("costEffectivenessRatioROI", "") or "3." in top_roi.get("costEffectivenessRatioROI", ""), "筛查成本效益比达 3.8~4.8:1，具备极高卫生经济学价值")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=calculate_lifetable_4q70_and_screening_roi(db_path=self.db_path)
+        res.assert_true(r['error']['code']=='CAPABILITY_UNAVAILABLE','ROI未验证不可用')
 
     def test_67_68_69_injury_surveillance(self, res: TestResult):
-        """No. 67/68/69 伤害聚类、决策树诱因归因与聚集性事件识别 (≥5例)"""
-        result = analyze_injury_clusters_and_attribution(db_path=self.db_path)
-        res.assert_true(result["status"] == "SUCCESS", "伤害时空聚类与决策树归因分析执行状态为 SUCCESS")
-
-        clusters = result.get("clusterIncidentsDetected", [])
-        res.assert_true(len(clusters) >= 1, f"成功识别同一场所短期≥5例聚集性伤害事件 (发现数: {len(clusters)})")
-        top_c = clusters[0]
-        res.assert_true(top_c.get("affectedCases", 0) >= 5, "聚集事件例数达到≥5例判定阈值")
-        res.assert_true("郏县" in top_c.get("district", "") or "机械" in top_c.get("injuryType", ""), "准确捕获平顶山郏县农机作业机械绞碾聚集事件")
-
-        dt = result.get("decisionTreeAttribution", [])
-        res.assert_true(len(dt) >= 3, "决策树模型解析农机作业、老年跌倒、交通伤害首要致伤诱因")
-        machine_ratio = dt[0].get("attributionRatio", "")
-        res.assert_true("75" in machine_ratio or "68" in machine_ratio, "农机未佩戴规范防护装备归因比达 75% 显著水平")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=analyze_injury_clusters_and_attribution(db_path=self.db_path)
+        res.assert_true(sum(c['caseCount'] for c in r['injuryTypeComposition'])==r['totalInjuriesMonitored'],'实际构成总量一致')
+        res.assert_true(r['decisionTreeAttribution'] is None,'未训练因果模型保持空')
+        res.assert_true(all(c['caseCount']>=5 for c in r['clusterIncidentsDetected']),'24小时真实候选阈值')
 
     def test_71_early_warning_dispatch(self, res: TestResult):
         """No. 71 预警信号分级推送与处置协同"""
@@ -168,21 +123,14 @@ class ChronicSurveillanceTestSuite:
         conn.close()
 
     def test_72_73_reports_and_4q70(self, res: TestResult):
-        """No. 72/73 监测公报自动生成、死因顺位、YPLL 与 4q70 早死率测算"""
-        result = calculate_lifetable_4q70_and_screening_roi(db_path=self.db_path)
-        life_table = result.get("abridgedLifeTableEvaluation", {})
-        rate_4q70 = life_table.get("prematureMortalityRate4q70", 0.0)
-        res.assert_true(10.0 <= rate_4q70 <= 20.0, f"30~70岁四类重大慢病过早死亡率 (4q70) 测算合理 (当前: {rate_4q70}%)")
-
-        causes = result.get("topCausesOfDeathAndYPLL", [])
-        res.assert_true(len(causes) >= 5, "输出心脑血管、恶性肿瘤、慢性呼吸系统疾病等死因顺位与 YPLL")
-        res.assert_true(causes[0]["causeCategory"] == "心脑血管疾病", "心脑血管疾病位居河南省全死因第一顺位")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=calculate_lifetable_4q70_and_screening_roi(db_path=self.db_path)
+        res.assert_true(r['status']=='FAILED','缺少完整人口生命表条件不返回固定4q70')
 
     def test_74_76_precision_interventions(self, res: TestResult):
-        """No. 74/75/76 死因、慢病及伤害精准干预建议"""
-        res.assert_true(True, "针对不明原因聚集及罕见死因生成紧急流调防控指南")
-        res.assert_true(True, "针对心脑血管与肿瘤高发区县推送筛查一体化干预路径")
-        res.assert_true(True, "针对农机收割合作社与中小学放学时段推送靶向安全防护指南")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        from analytics_engine.mock_methods import unavailable
+        res.assert_true(unavailable('precision-intervention')['status']=='FAILED','未实现专业干预不作为完成验收')
 
     def run_all(self):
         self.start_time = datetime.now()

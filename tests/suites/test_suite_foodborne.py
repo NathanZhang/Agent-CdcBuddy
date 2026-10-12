@@ -60,49 +60,23 @@ class FoodborneSurveillanceTestSuite:
             self.results.append(result)
 
     def test_36_cluster_detection(self, res: TestResult):
-        """No. 36 聚集性病例识别模型测试 (真实 SaTScan 多维时空扫描)"""
-        res.assert_true(os.path.exists(FOODBORNE_DB_PATH), f"食源性监测数据库存在: {FOODBORNE_DB_PATH}")
-        scan_res = scan_outbreak_clusters(FOODBORNE_DB_PATH, "郑州市")
-        res.assert_true(scan_res.get("success") is True, "时空聚集性扫描成功执行")
-        clusters = scan_res.get("confirmedOutbreakEvents", [])
-        res.assert_true(len(clusters) >= 1, f"成功检出确诊聚集性暴发事件 (检出: {len(clusters)} 起)")
-        ob = clusters[0]
-        res.assert_true("副溶血" in ob["pathogen"] or "沙门氏" in ob["pathogen"], f"致病因子识别准确: {ob['pathogen']}")
-        res.assert_true(ob["caseCount"] >= 10, f"聚集事件波及病例量正常: {ob['caseCount']} 例")
-        res.metrics["detected_clusters"] = len(clusters)
-        res.metrics["total_cases"] = scan_res.get("totalCasesAnalyzed", 0)
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=scan_outbreak_clusters(FOODBORNE_DB_PATH,'郑州市')
+        res.assert_true(r['totalCases']>0,'实际范围病例计数')
+        res.assert_true(all(c['caseCount']>=3 and c['city']=='郑州市' for c in r['dynamicClusters']),'真实短窗候选范围')
 
     def test_37_risk_forecast(self, res: TestResult):
-        """No. 37 风险预测模型测试 (LSTM 时序外推与扩散评估)"""
-        conn = sqlite3.connect(FOODBORNE_DB_PATH)
-        cur = conn.cursor()
-        monthly_cases = cur.execute("""
-            SELECT SUBSTR(visit_date, 1, 7) as ym, COUNT(*) 
-            FROM fact_foodborne_case 
-            GROUP BY ym ORDER BY ym
-        """).fetchall()
-        conn.close()
-        res.assert_true(len(monthly_cases) >= 12, f"历史时序样本跨度充足 ({len(monthly_cases)} 个月)")
-        # 验证季节性消长特征 (夏秋季 6-8 月发病应显著高于冬春季)
-        summer_cases = [c[1] for c in monthly_cases if c[0].endswith(("-06", "-07", "-08"))]
-        winter_cases = [c[1] for c in monthly_cases if c[0].endswith(("-12", "-01", "-02"))]
-        avg_summer = sum(summer_cases) / max(1, len(summer_cases))
-        avg_winter = sum(winter_cases) / max(1, len(winter_cases))
-        res.assert_true(avg_summer > avg_winter, f"符合夏秋季高发流行病学规律 (夏季均值={avg_summer:.1f}, 冬季均值={avg_winter:.1f})")
-        res.metrics["summer_avg"] = round(avg_summer, 1)
-        res.metrics["winter_avg"] = round(avg_winter, 1)
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        from foodborne.risk_forecast import calculate_foodborne_risk_forecast
+        r=calculate_foodborne_risk_forecast(FOODBORNE_DB_PATH)
+        res.assert_true(r['error']['code']=='CAPABILITY_UNAVAILABLE','未训练LSTM不能宣称预测达标')
 
     def test_38_molecular_trace(self, res: TestResult):
-        """No. 38 致病菌 cgMLST 分子同源进化树与溯源测试 (真实等位基因聚类)"""
-        trace_res = calculate_cgmlst_clustering(FOODBORNE_DB_PATH, cluster_id="OUTBREAK-202608-01", threshold=5)
-        res.assert_true(trace_res.get("success") is True, "cgMLST 分子聚类分析成功执行")
-        groups = trace_res.get("homologousGroups", [])
-        res.assert_true(len(groups) >= 1, f"成功识别出同源暴发克隆群 (克隆簇数: {len(groups)})")
-        grp = groups[0]
-        res.assert_true(grp["maxInternalDistance"] <= 5, f"核心等位基因位点最大差异≤5 (实测: {grp['maxInternalDistance']})")
-        res.assert_true(grp["isolateCount"] >= 4, f"同源株聚合数目符合暴发特征 (聚合株数: {grp['isolateCount']})")
-        res.metrics["max_internal_dist"] = grp["maxInternalDistance"]
-        res.metrics["homologous_isolates"] = grp["isolateCount"]
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=calculate_cgmlst_clustering(FOODBORNE_DB_PATH,cluster_id='OUTBREAK-202608-01',threshold=5)
+        res.assert_true(r['success'] is True,'实际等位基因计算')
+        res.assert_true(all(l['isHomologous']==(l['distance']<=5) for l in r['networkGraph']['links']),'真实边距离阈值')
+        res.assert_true('single-link-not-outbreak-confirmation' in r['qualityFlags'],'候选簇不当作确诊源头')
 
     def test_39_disposal_advice(self, res: TestResult):
         """No. 39 自动生成处置建议与协同工单测试"""
@@ -115,15 +89,10 @@ class FoodborneSurveillanceTestSuite:
         res.assert_true(ob[3] is not None and ob[4] is not None, f"致病因子与嫌疑食品明确 ({ob[3]} / {ob[4]})")
 
     def test_40_dynamic_dashboard(self, res: TestResult):
-        """No. 40 动态监测大屏与高风险食品 TOP10 归因测试"""
-        attr_res = calculate_food_attribution(FOODBORNE_DB_PATH, top_n=10)
-        res.assert_true(attr_res.get("success") is True, "暴露食品比值比 (OR) 归因成功计算")
-        ranking = attr_res.get("ranking", [])
-        res.assert_true(len(ranking) >= 5, f"生成高风险食品排行榜清单完整 ({len(ranking)} 项)")
-        top1 = ranking[0]
-        res.assert_true(top1["oddsRatio"] > 0, f"比值比 (OR) 有效计算: {top1['foodName']} (OR={top1['oddsRatio']})")
-        res.metrics["top_food"] = top1["foodName"]
-        res.metrics["top_or"] = top1["oddsRatio"]
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=calculate_food_attribution(FOODBORNE_DB_PATH,top_n=10)
+        res.assert_true(r['totalCases']>0 and len(r['foodRiskRanking'])>0,'实际报告食品统计')
+        res.assert_true(r['oddsRatio'] is None,'无未暴露对照不计算因果OR')
 
     def test_41_report_export(self, res: TestResult):
         """No. 41 智能报告生成与流调简报导出测试"""

@@ -12,6 +12,7 @@
 ================================================================================
 """
 
+from repositories.datasets import connect_readonly
 import sqlite3
 import json
 import math
@@ -30,9 +31,10 @@ def calculate_cgmlst_clustering(
     pathogen_id: str = None,
     cluster_id: str = None,
     threshold: int = 5,
-    sample_limit: int = 40
+    sample_limit: int = 40, city=None, district=None, from_date=None, as_of=None
 ) -> Dict[str, Any]:
-    conn = sqlite3.connect(db_path)
+    if not 0<=threshold<=1000 or not 1<=sample_limit<=100:raise ValueError("Invalid threshold or sample limit")
+    conn = connect_readonly(db_path)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
@@ -47,11 +49,15 @@ def calculate_cgmlst_clustering(
     if cluster_id:
         query += " AND cluster_id = ?"
         params.append(cluster_id)
-    elif pathogen_id:
+    if pathogen_id:
         query += " AND pathogen_id = ?"
         params.append(pathogen_id)
 
-    query += " ORDER BY is_outbreak_isolate DESC, isolation_date DESC LIMIT ?"
+    for key,value in [("city",city),("district",district)]:
+        if value:query += f" AND {key} = ?";params.append(value)
+    if from_date:query += " AND isolation_date >= ?";params.append(from_date)
+    if as_of:query += " AND isolation_date <= ?";params.append(as_of)
+    query += " ORDER BY isolation_date DESC, isolate_id LIMIT ?"
     params.append(sample_limit)
 
     rows = cur.execute(query, params).fetchall()
@@ -59,7 +65,7 @@ def calculate_cgmlst_clustering(
 
     if not rows:
         return {
-            "success": False,
+            "status":"NO_DATA", "success": False,
             "message": "未查询到符合条件的致病菌分子图谱数据",
             "isolates": [],
             "homologous_groups": [],
@@ -81,9 +87,9 @@ def calculate_cgmlst_clustering(
             "caseId": r["case_id"],
             "pathogenId": r["pathogen_id"],
             "pathogenName": r["pathogen_name"],
-            "serotype": r["serotype"] or "未知",
-            "pfgePattern": r["pfge_pattern"] or "PFGE-Unk",
-            "st": r["mlst_st"] or "ST-Unk",
+            "serotype": r["serotype"],
+            "pfgePattern": r["pfge_pattern"],
+            "st": r["mlst_st"],
             "isolationSource": r["isolation_source"],
             "date": r["isolation_date"],
             "city": r["city"],
@@ -101,6 +107,8 @@ def calculate_cgmlst_clustering(
 
     for i in range(n):
         for j in range(i + 1, n):
+            if isolates[i]["pathogenId"]!=isolates[j]["pathogenId"]:continue
+            if len(isolates[i]["vector"])!=len(isolates[j]["vector"]):return {"status":"INSUFFICIENT_DATA","payload":None,"qualityFlags":["incompatible-allele-schema"],"homologousGroupsCount":0}
             d = calculate_cgmlst_distance(isolates[i]["vector"], isolates[j]["vector"])
             dist_matrix[i][j] = d
             dist_matrix[j][i] = d
@@ -157,7 +165,7 @@ def calculate_cgmlst_clustering(
     for root, group_isolates in groups_map.items():
         if len(group_isolates) >= 2:
             outbreak_cases = [iso["caseId"] for iso in group_isolates if iso["caseId"]]
-            cities = list(set(iso["city"] for iso in group_isolates))
+            cities = sorted(set(iso["city"] for iso in group_isolates))
             pathogen_name = group_isolates[0]["pathogenName"]
             st_type = group_isolates[0]["st"]
             homologous_groups.append({
@@ -167,7 +175,7 @@ def calculate_cgmlst_clustering(
                 "isolateCount": len(group_isolates),
                 "coverageCities": cities,
                 "maxInternalDistance": max(dist_matrix[i][j] for i in range(n) for j in range(n) if cfind(i) == root and cfind(j) == root),
-                "conclusion": f"检出 {len(group_isolates)} 株同源菌株（跨 {len(cities)} 个地市，cgMLST 最大位点差异≤{threshold}），属于同一突发污染克隆系传播链！"
+                "conclusion": "阈值边形成的单链接候选簇；内部最大距离可能大于阈值，需人工复核，不代表传播源头或暴发确诊。"
             })
             group_idx += 1
 
@@ -200,7 +208,8 @@ def calculate_cgmlst_clustering(
             "nodes": nodes,
             "links": links
         },
-        "summary": f"共分析 {n} 株致病菌全基因组 cgMLST 图谱，识别出 {len(homologous_groups)} 起跨院/跨区同源暴发克隆簇，平均同源相似度达 98.4%。"
+        "status":"SUCCESS", "method":"allele-distance-single-link-v1", "qualityFlags":["single-link-not-outbreak-confirmation","typing-schema-unvalidated","sample-limited"],
+        "summary": f"实际分析 {n} 株，发现 {len(homologous_groups)} 个单链接候选簇。"
     }
 
 if __name__ == "__main__":

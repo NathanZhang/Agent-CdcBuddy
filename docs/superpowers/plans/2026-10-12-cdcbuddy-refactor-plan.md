@@ -246,11 +246,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**已有算法仍返回T2契约，datasets.origin=mock；只标工程基准或synthetic评估，不标真实效果。固定演示分支必须替换为真实实现；尚未完成的能力标planned/unavailable，不作为可执行演示功能保留。
 
-- [ ] 测试：独立构造6天滞后序列，用实际日期对齐计算返回6；独立无相关序列不能仍返回0.912；更换空间数值/权重后Moran结果变化；移动簇坐标后DBSCAN分组变化；食源报告病例总数等于Mock库对应时窗统计；无效基因位点不判同源。
-- [ ] 运行 `npm run test:scientific -- test_mock_driven_methods`，验证固定输出不能通过。
-- [ ] 用现有NumPy/scipy/sklearn实现真实Pearson、Moran/置换与DBSCAN、动态报告统计；医院与污水按时间对齐并说明缺失/采样频率。管网无拓扑时不输出固定“已锁定源头”。
-- [ ] 重跑独立合成基准及原44项兼容回归；删除依赖固定0.912、固定热点、固定+68%等“验收”断言，保留实际合理性质断言。
-- [ ] 提交：`feat: compute supported cross-domain results from mock datasets`。
+- [x] 测试：独立构造6天滞后序列，用实际日期对齐计算返回6；独立无相关序列不能仍返回0.912；更换空间数值/权重后Moran结果变化；移动簇坐标后DBSCAN分组变化；食源报告病例总数等于Mock库对应时窗统计；无效基因位点不判同源。
+- [x] 运行 `npm run test:scientific -- test_mock_driven_methods`，验证固定输出不能通过。
+- [x] 用现有NumPy/scipy/sklearn实现真实Pearson、Moran/置换与DBSCAN、动态报告统计；医院与污水按时间对齐并说明缺失/采样频率。管网无拓扑时不输出固定“已锁定源头”。
+- [x] 重跑独立合成基准及原44项兼容回归；删除依赖固定0.912、固定热点、固定+68%等“验收”断言，保留实际合理性质断言。
+- [x] 提交：`feat: compute supported cross-domain results from mock datasets`。
 
 **限定范围：**OCR、物种图片识别、DLNM/GBDT、根本死因图谱、4q70/筛查ROI等尚缺真实实现或必要数据的能力在实现完成前标planned/unavailable，返回未实现状态而非固定成功结果；列入后续实际开发，不能以此最终签收该功能。以移除虚构指标和明确限制收尾，不用简单公式伪装完整模型；后续功能见第八节。
 
