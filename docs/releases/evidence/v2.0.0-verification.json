@@ -36,5 +36,15 @@
     "PowerShell CLI unavailable; remote deployment not executed",
     "Container readiness does not validate live LLM or map provider",
     "Detailed data insufficiency / Agent Mock generation remains review-only"
-  ]
+  ],
+  "main_reverification": {
+    "full_check": "passed",
+    "typescript_tests": 132,
+    "scientific_tests": 29,
+    "integration_tests": 24,
+    "compatibility_tests": 44,
+    "source_databases_unchanged": true,
+    "npm_run_build": "passed",
+    "post_build_typescript": "passed"
+  }
 }

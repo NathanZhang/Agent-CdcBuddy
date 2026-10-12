@@ -1,8 +1,9 @@
 {
   "sha256": {
+    "vector_surveillance.db": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "foodborne_monitoring.db": "70e9dafb28fabf6a72f0c2d38c3eb47c6d41202ec53cb3f8d8750c27f162ee4b",
     "chronic_monitoring.db": "334a428546e687ed5e030ad6b87777b84042a079af73a5ee8ef29040490d03d7",
-    "app_business.db": "c772a53bccf0b3683ca1ff1e8dfd96f4209acea95bae93ee7e7c5e16f8200be0",
+    "app_business.db": "d26814c59fd3c1a99d526086cff8cc1ac05e64067f91db1703a706aabe2ea98d",
     "env_monitoring.db": "47be80e6aeb86f1eb5b014c4d3091dc4200664c1acb0565d13a7b796e75f4467",
     "vector_monitoring.db": "ee3d8393f9bdf4d707dd51bdb95385fe6ff189c9d6ac5b30da2d9aa5467a5f82"
   },
