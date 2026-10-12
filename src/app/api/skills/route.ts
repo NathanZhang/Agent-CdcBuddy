@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listSkillDefinitions } from '@/application/skills/skill-service';
 import { getServerDomain } from '@/application/config/runtime-profile';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
-import { executeSkillServer } from '@/lib/skills/server-executor';
+import { createDevelopmentContext } from '@/lib/skills/server-executor';
+import { dispatch,collectDispatch } from '@/application/dispatch/dispatch-service';
+import { normalizeInteraction,toLegacyResult } from '@/application/dispatch/legacy-adapter';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 
 export async function GET(req: NextRequest) {
@@ -57,20 +59,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { skillId, args } = body;
-
-    const result = await executeSkillServer(skillId, args || {});
-
-    return NextResponse.json({
-      code: 200,
-      success: true,
-      data: result
-    });
-  } catch (err: any) {
-    console.error('[Skills API Error]', err);
-    return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });
-  }
+    const body=await req.json();
+    if(typeof body.skillId!=='string'||!body.skillId) return NextResponse.json({success:false,error:'缺少 skillId'},{status:400});
+    const interaction=normalizeInteraction({kind:'skill',promptText:`执行技能 ${body.skillId}，参数：${JSON.stringify(body.args ?? {})}`,resourceRef:{type:'skill',id:body.skillId,action:'execute'}});
+    const ctx=createDevelopmentContext();ctx.signal=req.signal;
+    const turn=await collectDispatch(dispatch(interaction,ctx));const result=toLegacyResult(turn);
+    return NextResponse.json({...result,data:result.generativeView});
+  } catch (error) {return NextResponse.json({success:false,status:'FAILED',data:null,error:error instanceof Error?error.message:'执行失败'},{status:400});}
 }
 
 export async function PUT(req: NextRequest) {

@@ -332,10 +332,10 @@ export const EmbeddedWidget: React.FC<EmbeddedWidgetProps> = ({
 
       const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '');
       const finalSkillName = result.skillName || latestSkillName;
-      const finalReplyText = cleanedReply || (finalSkillName ? `已成功执行 **【${finalSkillName}】** 技能，相关分析图表与态势数据已加载完毕。` : "处理请求成功。相关分析图表与态势数据已加载完毕。");
+      const finalReplyText = cleanedReply;
       const finalReasoning = result.reasoningText || latestReasoning;
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
-      const finalGenerativeView = result.generativeView || latestView;
+      const finalGenerativeView = result.generativeView ?? null;
 
       updateCurrentMessages(prev => prev.map(m => m.id === agentMsgId ? {
         ...m,

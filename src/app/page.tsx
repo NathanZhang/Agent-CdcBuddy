@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useCopilotAction, useCopilotReadable } from '@copilotkit/react-core';
 import { Navbar } from '@/components/layout/Navbar';
 import { RecommendationPrompts } from '@/components/layout/RecommendationPrompts';
 import { SkillsDrawer } from '@/components/layout/SkillsDrawer';
@@ -18,7 +17,6 @@ import { ActiveAlertsModal, ACTIVE_ALERTS_LIST } from '@/components/ag-ui/Active
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { ThinkingProcessCard } from '@/components/common/ThinkingProcessCard';
 import { cleanXmlToolCalls } from '@/lib/skills/tool-parser';
-import { generateDomainAIInterpretation } from '@/lib/skills/interpretation-generator';
 import { subscribeGeoLocate, dispatchGeoLocate } from '@/lib/geo/geo-event-bus';
 
 import { 
@@ -291,40 +289,6 @@ export default function CdcAgentWorkspace() {
     chatMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory, isThinking]);
 
-  // 同步用户上下文状态至 CopilotKit
-  useCopilotReadable({
-    description: '当前登录疾控用户的角色、所属辖区与可执行技能列表',
-    value: {
-      userId: currentUser.id,
-      userName: currentUser.name,
-      role: currentUser.role,
-      jurisdiction: {
-        province: currentUser.jurisdictionProvince,
-        city: currentUser.jurisdictionCity,
-        district: currentUser.jurisdictionDistrict
-      }
-    }
-  });
-
-  // 注册 CopilotKit Actions 以便 AI 自动调用对应业务 Skills
-  useCopilotAction({
-    name: 'renderVectorGenerativeUI',
-    description: '在主工作区渲染病媒生物生成式 UI (地图、ECharts图表、抗药性矩阵、预警工单或报告)',
-    parameters: [
-      { name: 'skillId', type: 'string', description: '触发的技能ID' },
-      { name: 'params', type: 'object', description: '技能执行参数' }
-    ],
-    handler: async ({ skillId, params }) => {
-      const skill = getSkillById(skillId);
-      if (skill) {
-        const result = await skill.execute(params || {});
-        setActiveGenerativeView(result);
-        return { success: true, message: `已成功渲染 ${skill.name}` };
-      }
-      return { success: false, message: '未找到匹配的技能' };
-    }
-  });
-
   // 智能体意图识别与 Skill 分发调度中枢 (流式执行并持久化到真实会话数据库)
   const handleExecutePrompt = async (promptText: string) => {
     if (!promptText.trim() || isThinking) return;
@@ -418,8 +382,8 @@ export default function CdcAgentWorkspace() {
           latestView = view;
           setActiveGenerativeView(view);
           if (
-            view.type === 'CUSTOM_SKILL_CREATED' ||
-            view.skillId === 'skill_meta_custom_builder'
+            view?.type === 'CUSTOM_SKILL_CREATED' ||
+            view?.skillId === 'skill_meta_custom_builder'
           ) {
             fetchCustomSkills();
           }
@@ -430,16 +394,15 @@ export default function CdcAgentWorkspace() {
         return;
       }
 
-      const finalGenerativeView = result.generativeView || latestView || activeGenerativeView;
+      const finalGenerativeView = result.generativeView ?? null;
       const cleanedReply = cleanXmlToolCalls(result.replyText || latestContent || '').trim();
       const finalSkillName = result.skillName || latestSkillName;
-      const fallbackInterpretation = generateDomainAIInterpretation(result.skillId || latestSkillName, finalGenerativeView, promptText);
-      const finalReplyText = cleanedReply || fallbackInterpretation;
+      const finalReplyText = cleanedReply;
       const finalReasoning = result.reasoningText || latestReasoning;
       const finalDuration = result.reasoningDuration || reasoningDurationMs;
 
+      setActiveGenerativeView(result.generativeView ?? null);
       if (result.generativeView) {
-        setActiveGenerativeView(result.generativeView);
         if (
           result.generativeView.type === 'CUSTOM_SKILL_CREATED' ||
           result.skillId === 'skill_meta_custom_builder'

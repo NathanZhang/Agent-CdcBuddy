@@ -23,6 +23,10 @@ export class DomainRepository {
   constructor(readonly domain: AgentDomain, private datasetId?: string) {
     if (!Object.hasOwn(domainTables,domain)) throw new Error('Unknown domain');
   }
+  getSchema(): QuerySchema {
+    const db=new Database(resolveDatasetLocation(this.domain,this.datasetId).path,{readonly:true,fileMustExist:true});
+    try {const schema:QuerySchema={};for(const table of domainTables[this.domain]){const columns=db.prepare(`PRAGMA main.table_info(${quoteIdentifier(table)})`).all() as {name:string}[];if(columns.length)schema[table]=columns.map(c=>c.name);}return schema;} finally {db.close();}
+  }
   query(select: string, params: unknown[], scope: QueryScope): Record<string,unknown>[] {
     if (scope.domain !== this.domain) throw new Error('Domain scope mismatch');
     for (const key of ['from','to'] as const) if (scope[key] && !/^\d{4}-\d{2}-\d{2}$/.test(scope[key]!)) throw new Error('Invalid time scope');
