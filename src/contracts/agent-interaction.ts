@@ -4,11 +4,12 @@ export interface AgentInteraction {
   kind:'conversation'|'skill'|'resource'|'workflow'|'collection'|'session';
   userInput:string;
   resourceRef?:{type:string;id:string;action?:string};
+  sessionRef?:{id:string};
   attachments?:unknown[];
   viewContext?:unknown;
   history?:{role:'user'|'assistant';content:string}[];
 }
-export interface SkillRun {callId:string;skillId:string;skillName:string;args:Record<string,unknown>;result:SkillResult;}
+export interface SkillRun {reusedFrom?:string;callId:string;skillId:string;skillName:string;args:Record<string,unknown>;result:SkillResult;}
 export interface AguiResult {version:'1';runId:string;component:string;result:SkillResult;}
 export interface AgentTurnResult {
   runId:string;

@@ -1,3 +1,4 @@
+import { loadDatasetManifest } from '@/infrastructure/db/dataset-manifest';
 import { randomUUID } from 'node:crypto';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import requirements from '../../../config/skill-requirements.json';
@@ -19,7 +20,7 @@ export function scopeFromArgs(args:Record<string,any>,ctx:ExecutionContext) {
 async function executeQuery(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const started=Date.now();
   const data=getDomainRepository(ctx.domain).query(args.sql,[],scopeFromArgs(args,ctx));
-  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,executionTimeMs:Date.now()-started,data}:null};
+  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,scope:scopeFromArgs(args,ctx),executionTimeMs:Date.now()-started,data}:null};
 }
 async function executeBuilder(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const data=getDomainRepository(ctx.domain).query(args.sqlQuery,[],scopeFromArgs(args,ctx));
@@ -37,7 +38,7 @@ async function executeReport(args:Record<string,any>,ctx:ExecutionContext):Promi
   const summary=`当前范围内监测记录 ${count} 条。报告仅包含已执行的统计，不包含未验证模型结论。`;
   const sections=[{heading:'监测范围与统计',content:`领域：${ctx.domain}；城市：${scope.city ?? '全域'}；区县：${scope.district ?? '全辖区'}；记录数：${count}。`},{heading:'数据与评估限制',content:'统计汇总不代表预测模型达到准确率要求。'}];
   const reportId=`report_${randomUUID()}`;
-  await getAppBusinessProvider().saveReport({report_id:reportId,title,author:ctx.principal.userId,city:scope.city,report_type:'MONITORING_SUMMARY',summary,content_markdown:sections.map(s=>`### ${s.heading}\n${s.content}`).join('\n\n')});
+  await getAppBusinessProvider().saveReport({report_id:reportId,title,author:ctx.principal.userId,city:scope.city,district:scope.district,metadata_json:JSON.stringify({domain:ctx.domain,scope,datasets:loadDatasetManifest().filter(d=>d.domain===ctx.domain),method:'persisted-descriptive-report-v1'}),report_type:'MONITORING_SUMMARY',summary,content_markdown:sections.map(s=>`### ${s.heading}\n${s.content}`).join('\n\n')});
   return {status:'SUCCESS',payload:{type:'AUTO_GENERATED_REPORT',reportId,title,date:new Date().toISOString(),author:ctx.principal.userId,summary,sections},qualityFlags:['descriptive-summary-only']};
 }
 export function buildDomainSkills(domain:AgentDomain,handlers:Record<string,Partial<SkillDefinition>>={}):SkillDefinition[] {

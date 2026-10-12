@@ -10,5 +10,5 @@ export function getRuntimeProfile(domain: AgentDomain = getServerDomain()) {
   if (!AGENT_DOMAINS.includes(domain)) throw new Error('Unknown agent domain');
   const datasets = loadDatasetManifest().filter(d=>d.domain===domain);
   if (datasets.length === 0) throw new Error('Domain has no configured dataset');
-  return {domain,datasets,capabilities:listSkillDefinitions(domain).map(s=>({id:s.id,name:s.name,availability:s.availability,method:s.method,requirementIds:s.requirementIds}))};
+  return {domain,datasets,capabilities:listSkillDefinitions(domain).map(s=>({id:s.id,name:s.name,description:s.description,availability:s.availability,method:s.method,requirementIds:s.requirementIds}))};
 }

@@ -1,12 +1,12 @@
 import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
 export interface LLMToolCall {id:string;type:'function';function:{name:string;arguments:string};}
 export interface LLMMessage {role:'system'|'user'|'assistant'|'tool';content:string|null;tool_calls?:LLMToolCall[];tool_call_id?:string;}
-export interface LLMRequest {messages:LLMMessage[];tools?:unknown[];signal?:AbortSignal;}
+export interface LLMRequest {messages:LLMMessage[];tools?:unknown[];toolChoice?:'auto'|'none';signal?:AbortSignal;}
 export interface LLMClient {complete(request:LLMRequest):Promise<LLMMessage>;}
 export class LLMError extends Error {constructor(public code:string,message:string){super(message);}}
 export function validateLLMMessage(value:any):LLMMessage{
   if(!value || value.role!=='assistant' || (value.content!==null && typeof value.content!=='string'))throw new LLMError('INVALID_LLM_RESPONSE','LLM response has invalid content');
-  if(value.tool_calls!==undefined){
+  if(value.tool_calls!==undefined && value.tool_calls!==null){
     if(!Array.isArray(value.tool_calls)||value.tool_calls.length>8)throw new LLMError('INVALID_LLM_RESPONSE','Invalid tool calls');
     const ids=new Set<string>();
     for(const call of value.tool_calls){if(!call || typeof call.id!=='string' || !call.id || ids.has(call.id) || call.type!=='function' || !call.function || typeof call.function.name!=='string' || !call.function.name || typeof call.function.arguments!=='string' || call.function.arguments.length>24000)throw new LLMError('INVALID_LLM_RESPONSE','Invalid or duplicate tool call');ids.add(call.id);}
@@ -33,7 +33,7 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
       const abort=()=>controller.abort(request.signal?.reason);request.signal?.addEventListener('abort',abort,{once:true});
       const timer=setTimeout(()=>controller.abort(new Error('LLM timeout')),getRouterTimeoutMs(env));
       try{
-        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.messages,...(request.tools?.length?{tools:request.tools,tool_choice:'auto'}:{}),temperature:0.1})});
+        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),enable_thinking:false,max_tokens:4096,temperature:0.7,top_p:0.8,top_k:20})});
         if(!response.ok){await response.body?.cancel();if(response.status!==429 && response.status<500)throw new LLMError('LLM_REJECTED',`大模型服务拒绝请求 (${response.status})`);throw new Error(`LLM HTTP ${response.status}`);}
         const data=JSON.parse(await boundedText(response));return validateLLMMessage(data.choices?.[0]?.message);
       }catch(error){request.signal?.throwIfAborted();if(error instanceof LLMError)throw error;last=error;}

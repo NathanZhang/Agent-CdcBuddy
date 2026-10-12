@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { useTheme } from '@/lib/theme/theme-context';
 import { 
@@ -24,6 +25,7 @@ interface ComposableWorkflowCardProps {
 }
 
 export const ComposableWorkflowCard: React.FC<ComposableWorkflowCardProps> = ({ data }) => {
+  const interactFunctional=useFunctionalInteraction();
   const { isDark } = useTheme();
   const [activeStepTab, setActiveStepTab] = useState<number>(1);
   const [isHilApproved, setIsHilApproved] = useState<boolean>(false);
@@ -223,7 +225,7 @@ export const ComposableWorkflowCard: React.FC<ComposableWorkflowCardProps> = ({ 
               </div>
             </div>
             <button
-              onClick={() => setIsHilApproved(true)}
+              onClick={() => void interactFunctional({type:'approval.decide',id:(data as any).approvalId ?? (data as any).jobId,args:{decision:'approve'}})}
               disabled={isHilApproved}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md ${
                 isHilApproved

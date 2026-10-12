@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import { randomUUID } from 'node:crypto';
 import {
   BizDisposalTicket,
   BizEarlyWarningEvent,
@@ -21,6 +22,8 @@ export class AppBusinessProvider {
     this.dbPath = path.resolve(process.env.APP_BUSINESS_DB_PATH ?? path.join(process.cwd(),'app_business.db'));
   }
 
+  getPath(){return this.dbPath;}
+  close(){this.db?.close();this.db=null;}
   private getDb(): Database.Database {
     if (!this.db) {
       this.db = new Database(this.dbPath);
@@ -157,7 +160,7 @@ export class AppBusinessProvider {
   async submitMobileRecord(submission: Omit<BizMobileSubmission, 'submission_id' | 'submitted_at' | 'audit_status'>): Promise<BizMobileSubmission> {
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
-    const submissionId = `SUB-${Date.now()}`;
+    const submissionId = `SUB-${randomUUID()}`;
 
     const record: BizMobileSubmission = {
       submission_id: submissionId,
@@ -196,7 +199,7 @@ export class AppBusinessProvider {
       record.submitted_at
     );
 
-    return record;
+    return db.prepare('SELECT * FROM biz_mobile_submissions WHERE submission_id=?').get(submissionId) as BizMobileSubmission;
   }
 
   async getMobileSubmissions(status?: 'SUBMITTED' | 'APPROVED' | 'REJECTED'): Promise<BizMobileSubmission[]> {
@@ -798,6 +801,8 @@ export class AppBusinessProvider {
 // 单例导出
 let globalBizProvider: AppBusinessProvider | null = null;
 export function getAppBusinessProvider(): AppBusinessProvider {
+  const configuredPath=path.resolve(process.env.APP_BUSINESS_DB_PATH ?? path.join(process.cwd(),'app_business.db'));
+  if(globalBizProvider && globalBizProvider.getPath()!==configuredPath){globalBizProvider.close();globalBizProvider=null;}
   if (!globalBizProvider) {
     globalBizProvider = new AppBusinessProvider();
   }

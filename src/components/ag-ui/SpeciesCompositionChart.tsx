@@ -83,10 +83,10 @@ export const SpeciesCompositionChart: React.FC<SpeciesCompositionProps> = ({ dat
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               {data?.city || '河南省全域'} · {data?.category || '监测物种'}类优势种群识别与构成比
               <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 font-medium">
-                Shannon 指数 H={data?.shannonWienerIndex ?? 1.85}
+                Shannon 指数 H={data?.shannonWienerIndex ?? '未计算'}
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">基于 K-Means 聚类与构成比空间分异特征分析</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">基于实际捕获计数计算构成比与 Shannon 指数</p>
           </div>
         </div>
 

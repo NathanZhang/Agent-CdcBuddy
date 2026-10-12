@@ -1,15 +1,14 @@
+import { getAgentProfile } from "@/lib/config/agent-profile";
 import { getRuntimeProfile } from "@/application/config/runtime-profile";
 import type { Metadata } from "next";
 import "./globals.css";
-import "@copilotkit/react-ui/styles.css";
 import { Providers } from "@/components/Providers";
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: "CdcBuddy - 疾控病媒生物监测预警智能体",
-  description: "基于 CopilotKit 框架与河南省 5.6 万条病媒监测治理成果数据集构建的智能研判系统",
-};
+export function generateMetadata():Metadata {
+ const profile=getRuntimeProfile();return {title:`CdcBuddy - ${getAgentProfile(profile.domain).fullName}`,description:'通过主线 Agent、大模型与真实执行技能提供疾控监测分析及 AG-UI 工作台。'};
+}
 
 export default function RootLayout({
   children,

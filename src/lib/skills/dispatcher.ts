@@ -2,11 +2,11 @@ import { createSseDecoder } from '@/application/dispatch/sse';
 import type { AgentDomainType } from '@/lib/config/agent-profile';
 export interface DispatchResult {
  success:boolean;skillId:string;skillName:string;replyText:string;reasoningText?:string;reasoningDuration?:number;generativeView?:any;error?:string;
- source?:'llm_tool_calling'|'llm_direct_answer';args?:Record<string,any>;runId?:string;status?:string;agui?:any[];skillRuns?:any[];
+ source?:'llm_tool_calling'|'llm_direct_answer';args?:Record<string,any>;runId?:string;interactionId?:string;status?:string;agui?:any[];skillRuns?:any[];
 }
 export interface DispatchContext {
  domain?:AgentDomainType;chatHistory?:Array<{sender:string;text:string;skillUsed?:string}>;currentView?:any;userRole?:string;signal?:AbortSignal;
- interaction?:{kind:string;resourceRef?:{type:string;id:string;action?:string};attachments?:unknown[]};
+ interaction?:{interactionId?:string;sessionRef?:{id:string};kind:string;resourceRef?:{type:string;id:string;action?:string};attachments?:unknown[]};
  onReasoningStart?:()=>void;onReasoningChunk?:(chunk:string,full:string)=>void;onReasoningEnd?:(ms:number)=>void;
  onContentChunk?:(chunk:string,full:string)=>void;onToolCallStart?:(info:{toolId:string;toolName:string;args:any})=>void;
  onToolCallResult?:(info:{toolId:string;success:boolean;summary:string})=>void;onGenerativeView?:(view:any)=>void;

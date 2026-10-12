@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { 
   ShieldAlert, 
@@ -19,6 +20,7 @@ interface DaemonSurveillanceCardProps {
 }
 
 export const DaemonSurveillanceCard: React.FC<DaemonSurveillanceCardProps> = ({ data }) => {
+  const interactFunctional=useFunctionalInteraction();
   const [intervalSec, setIntervalSec] = useState<number>(300);
   const [customPrompt, setCustomPrompt] = useState<string>(data?.prompt_policy || '夏秋季登革热高峰预警，重点关注信阳与南阳');
   const [isSaved, setIsSaved] = useState<boolean>(false);
@@ -26,10 +28,7 @@ export const DaemonSurveillanceCard: React.FC<DaemonSurveillanceCardProps> = ({ 
   const generatedAlerts = data?.generated_alerts || [];
   const queueStatus = data?.queue_push_status || {};
 
-  const handleSaveConfig = () => {
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2500);
-  };
+  const handleSaveConfig=()=>{void interactFunctional({type:'workflow.configure',args:{intervalSec,promptPolicy:customPrompt}});};
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-md dark:shadow-2xl p-5 space-y-5 transition-colors">

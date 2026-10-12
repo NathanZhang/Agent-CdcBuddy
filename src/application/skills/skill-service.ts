@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import { interactionSkills } from '@/domains/common/interaction-skills';
 import type { SkillDefinition } from '@/contracts/skill-definition';
 import type { AgentDomain } from '@/contracts/dataset';
 import type { ExecutionContext } from '@/contracts/execution-context';
@@ -12,10 +13,10 @@ import { envSkills } from '@/domains/env/skills';
 import { chronicSkills } from '@/domains/chronic/skills';
 import { scopeFromArgs } from '@/domains/shared/skill-factory';
 const ajv=new Ajv({allErrors:true,strict:false,strictNumbers:true});
-export function listSkillDefinitions(domain:AgentDomain):SkillDefinition[]{
+export function listSkillDefinitions(domain:AgentDomain,options:{includeInternal?:boolean}={}):SkillDefinition[]{
   const factories={vector:vectorSkills,foodborne:foodborneSkills,env:envSkills,chronic:chronicSkills};
   if(!Object.hasOwn(factories,domain))throw new Error('Unknown domain');
-  return factories[domain]();
+  return [...factories[domain](),...interactionSkills(domain)].filter(skill=>options.includeInternal || skill.visibility!=='internal');
 }
 export function createSkillService(definitions:SkillDefinition[]){
   const catalog=new Map<string,SkillDefinition>();
@@ -45,4 +46,4 @@ export function createSkillService(definitions:SkillDefinition[]){
     }catch(error){return fail(stage,error instanceof Error?error.message:'Execution failed');}
   }};
 }
-export async function executeSkill(id:string,args:Record<string,any>,ctx:ExecutionContext):Promise<SkillResult>{return createSkillService(listSkillDefinitions(ctx.domain)).executeSkill(id,args,ctx);}
+export async function executeSkill(id:string,args:Record<string,any>,ctx:ExecutionContext):Promise<SkillResult>{return createSkillService(listSkillDefinitions(ctx.domain,{includeInternal:true})).executeSkill(id,args,ctx);}

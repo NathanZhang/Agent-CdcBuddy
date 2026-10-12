@@ -1,3 +1,4 @@
+import { projectAguiView } from '@/contracts/agui-view';
 import { randomUUID } from 'node:crypto';
 import type { AgentInteraction,AgentTurnResult } from '@/contracts/agent-interaction';
 import type { RunEvent } from '@/contracts/run-event';
@@ -10,15 +11,17 @@ export function normalizeInteraction(body:any):AgentInteraction{
   const kind=source.kind ?? 'conversation';if(!kinds.includes(kind))throw new Error('Invalid interaction kind');
   const resourceRef=source.resourceRef;
   if(resourceRef && (typeof resourceRef.type!=='string'||typeof resourceRef.id!=='string'||!resourceRef.id||resourceRef.id.length>200||resourceRef.type.length>80||(resourceRef.action!==undefined&&typeof resourceRef.action!=='string')))throw new Error('Invalid resource reference');
+  if(source.sessionRef && (typeof source.sessionRef.id!=='string'||!source.sessionRef.id||source.sessionRef.id.length>200))throw new Error('Invalid session reference');
+  if(source.attachments!==undefined&&!Array.isArray(source.attachments))throw new Error('Invalid attachments');
   const history=(source.history ?? source.chatHistory ?? []).slice(-6).map((item:any)=>({role:item.role==='user'||item.sender==='user'?'user':'assistant',content:item.content ?? item.text}));
   if(history.some((item:any)=>typeof item.content!=='string'||item.content.length>12000))throw new Error('Invalid chat history');
   const viewContext=source.viewContext ?? source.context?.currentView;
   if(JSON.stringify(viewContext ?? null).length>24000 || JSON.stringify(source.attachments ?? []).length>24000)throw new Error('Context exceeds input budget');
-  return {interactionId:typeof source.interactionId==='string'&&source.interactionId.length<=200?source.interactionId:randomUUID(),kind:kind as AgentInteraction['kind'],userInput:userInput.trim(),history, ...(resourceRef?{resourceRef:{type:resourceRef.type,id:resourceRef.id,action:resourceRef.action}}:{}),...(viewContext?{viewContext}:{}),...(source.attachments?{attachments:source.attachments}:{})};
+  return {interactionId:typeof source.interactionId==='string'&&source.interactionId.length<=200?source.interactionId:randomUUID(),kind:kind as AgentInteraction['kind'],userInput:userInput.trim(),history,...(source.sessionRef?{sessionRef:{id:source.sessionRef.id}}:{}), ...(resourceRef?{resourceRef:{type:resourceRef.type,id:resourceRef.id,action:resourceRef.action}}:{}),...(viewContext?{viewContext}:{}),...(source.attachments?{attachments:source.attachments}:{})};
 }
 export function toLegacyResult(turn:AgentTurnResult){
-  const last=turn.skillRuns.at(-1);const success=!['FAILED','CANCELLED'].includes(turn.status);
-  const view=success?turn.agui.at(-1)?.result.payload ?? null:null;
+  const last=turn.skillRuns.findLast(run=>run.skillId!=='skill_session_journal');const success=!['FAILED','CANCELLED'].includes(turn.status);
+  const view=projectAguiView(turn);
   return {...turn,success,skillId:last?.skillId ?? '',skillName:last?.skillName ?? '',generativeView:view,source:'llm_tool_calling' as const,args:last?.args ?? {},error:turn.error?.message};
 }
 export interface LegacyEvent {event:string;data:Record<string,any>;}

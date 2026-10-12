@@ -1,3 +1,4 @@
+import { operationResponse } from '@/application/agent/operation-http';
 import { NextRequest, NextResponse } from 'next/server';
 import { listSkillDefinitions } from '@/application/skills/skill-service';
 import { getServerDomain } from '@/application/config/runtime-profile';
@@ -7,136 +8,24 @@ import { dispatch,collectDispatch } from '@/application/dispatch/dispatch-servic
 import { normalizeInteraction,toLegacyResult } from '@/application/dispatch/legacy-adapter';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const domain = getServerDomain();
-    if (searchParams.get('domain') && searchParams.get('domain') !== domain) return NextResponse.json({success:false,error:'Domain mismatch'},{status:400});
-    const bizProvider = getAppBusinessProvider();
-    const customSkillsData = await bizProvider.getAllCustomSkills(domain);
-    
-    const customSkills = customSkillsData.map(cs => ({
-      id: cs.skill_id,
-      name: cs.name,
-      category: cs.category || 'custom',
-      categoryName: '自定义技能',
-      description: cs.description,
-      iconName: 'Sparkles',
-      badgeColor: 'pink',
-      recommendedPrompts: cs.recommended_prompts ? cs.recommended_prompts.split(';') : [`执行 ${cs.name}`],
-      requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
-      visibility: (cs.visibility as 'private' | 'public') || 'private',
-      isCustom: true,
-      domain: cs.domain || 'vector',
-      sqlQuery: cs.sql_query,
-      chartType: cs.chart_type,
-      createdBy: cs.created_by,
-      createdAt: cs.created_at
-    }));
-
-    const standardSkills = listSkillDefinitions(domain).map(definition=>{
-      const original=STANDARD_SKILLS.find(s=>s.id===definition.id)!;
-      return {...original,execute:undefined,domain:definition.domain,name:definition.name,description:definition.description,requirementIds:definition.requirementIds,requirementNo:definition.requirementIds.length?`No. ${definition.requirementIds.join('/')}`:undefined,parametersSchema:definition.inputSchema,availability:definition.availability,method:definition.method,visibility:'public',isCustom:false};
-    });
-
-    const total = standardSkills.length + customSkills.length;
-
-    return NextResponse.json({
-      code: 200,
-      success: true,
-      total,
-      standardCount: standardSkills.length,
-      customCount: customSkills.length,
-      standardSkills,
-      customSkills,
-      skills: [...standardSkills, ...customSkills]
-    });
-  } catch (err: any) {
-    console.error('[Skills API GET Error]', err);
-    return NextResponse.json({success:false,error:err.message},{status:500});
-  }
+export async function GET(req:NextRequest){
+ return operationResponse(req,{type:'catalog.list'},'SKILL_CATALOG',payload=>{
+   const standardSkills=payload.standardSkills.map((definition:any)=>({...STANDARD_SKILLS.find(s=>s.id===definition.id),...definition,execute:undefined,parametersSchema:definition.inputSchema,category:STANDARD_SKILLS.find(s=>s.id===definition.id)?.category ?? 'common',categoryName:STANDARD_SKILLS.find(s=>s.id===definition.id)?.categoryName ?? '通用交互',iconName:STANDARD_SKILLS.find(s=>s.id===definition.id)?.iconName ?? 'Sparkles',recommendedPrompts:STANDARD_SKILLS.find(s=>s.id===definition.id)?.recommendedPrompts ?? [definition.name],visibility:'public',isCustom:false}));
+   const customSkills=payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? [],isCustom:true}));
+   return {standardSkills,customSkills,skills:[...standardSkills,...customSkills],total:standardSkills.length+customSkills.length};
+ });
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body=await req.json();
     if(typeof body.skillId!=='string'||!body.skillId) return NextResponse.json({success:false,error:'缺少 skillId'},{status:400});
-    const interaction=normalizeInteraction({kind:'skill',promptText:`执行技能 ${body.skillId}，参数：${JSON.stringify(body.args ?? {})}`,resourceRef:{type:'skill',id:body.skillId,action:'execute'}});
+    const interaction=normalizeInteraction({kind:'skill',promptText:`执行技能 ${body.skillId}，参数：${JSON.stringify(body.args ?? {})}`,resourceRef:{type:'skill',id:body.skillId,action:'execute'},attachments:[{type:'operation-input',args:body.args ?? {}}]});
     const ctx=createDevelopmentContext();ctx.signal=req.signal;
     const turn=await collectDispatch(dispatch(interaction,ctx));const result=toLegacyResult(turn);
     return NextResponse.json({...result,data:result.generativeView});
   } catch (error) {return NextResponse.json({success:false,status:'FAILED',data:null,error:error instanceof Error?error.message:'执行失败'},{status:400});}
 }
 
-export async function PUT(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { 
-      skillId, 
-      name, 
-      description, 
-      sqlQuery, 
-      chartType, 
-      visibility = 'private', 
-      recommendedPrompts 
-    } = body;
-
-    if (!skillId) {
-      return NextResponse.json({ code: 400, success: false, message: '缺少 skillId 参数' }, { status: 400 });
-    }
-
-    const bizProvider = getAppBusinessProvider();
-    const promptStr = Array.isArray(recommendedPrompts) 
-      ? recommendedPrompts.join(';') 
-      : (typeof recommendedPrompts === 'string' ? recommendedPrompts : undefined);
-
-    const success = await bizProvider.updateCustomSkill(skillId, {
-      name,
-      description,
-      sql_query: sqlQuery,
-      chart_type: chartType,
-      visibility: visibility === 'public' ? 'public' : 'private',
-      ...(promptStr !== undefined ? { recommended_prompts: promptStr } : {})
-    });
-
-    if (!success) {
-      return NextResponse.json({ code: 404, success: false, message: '未找到指定自定义技能' }, { status: 404 });
-    }
-
-    const updated = await bizProvider.getCustomSkillById(skillId);
-
-    return NextResponse.json({
-      code: 200,
-      success: true,
-      message: '自定义技能更新成功',
-      data: updated
-    });
-  } catch (err: any) {
-    console.error('[Skills API PUT Error]', err);
-    return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const skillId = searchParams.get('skillId');
-
-    if (!skillId) {
-      return NextResponse.json({ code: 400, success: false, message: '缺少 skillId 参数' }, { status: 400 });
-    }
-
-    const bizProvider = getAppBusinessProvider();
-    const success = await bizProvider.deleteCustomSkill(skillId);
-
-    return NextResponse.json({
-      code: 200,
-      success,
-      message: success ? '技能删除成功' : '未找到指定技能或已删除'
-    });
-  } catch (err: any) {
-    console.error('[Skills API DELETE Error]', err);
-    return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });
-  }
-}
-
+export async function PUT(req:NextRequest){let body;try{body=await req.json();}catch{return NextResponse.json({success:false,error:'Invalid JSON'},{status:400});}return operationResponse(req,{type:'skill.update',id:body.skillId,args:{name:body.name,description:body.description,sqlQuery:body.sqlQuery,chartType:body.chartType,visibility:body.visibility,recommendedPrompts:body.recommendedPrompts}},'SKILL_CATALOG');}
+export async function DELETE(req:NextRequest){return operationResponse(req,{type:'skill.delete',id:new URL(req.url).searchParams.get('skillId') ?? ''},'SKILL_CATALOG');}

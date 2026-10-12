@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React from 'react';
 import { 
   FileText, 
@@ -18,6 +19,7 @@ interface LifeTable4q70ReportCardProps {
 }
 
 export const LifeTable4q70ReportCard: React.FC<LifeTable4q70ReportCardProps> = ({ data = {} }) => {
+  const interactFunctional=useFunctionalInteraction();
   const city = data?.city || '河南省全域';
   const lifeTable = data?.abridgedLifeTableEvaluation || {
     prematureMortalityRate4q70: 13.8,
@@ -193,7 +195,7 @@ export const LifeTable4q70ReportCard: React.FC<LifeTable4q70ReportCardProps> = (
         </div>
 
         <button
-          onClick={() => alert('已生成完整格式化《河南省死因顺位、早死概率(4q70)与慢病防治综合公报》PDF文档！')}
+          onClick={() => void interactFunctional({type:'report.export',id:(data as any).reportId,args:{format:'markdown'}})}
           className="px-4 py-2 rounded-lg text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow flex items-center gap-2 transition-all"
         >
           <Download className="w-4 h-4" />

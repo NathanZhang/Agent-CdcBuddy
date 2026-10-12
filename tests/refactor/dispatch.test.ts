@@ -28,12 +28,12 @@ describe('single main Agent dispatch',()=>{
  });
  it('executes two tool calls in order and then asks LLM to ground final answer',async()=>{
   const order:string[]=[];let rounds=0;
-  const llm:LLMClient={complete:async(request)=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool('first'),tool('second')]};expect(request.messages.filter(m=>m.role==='tool').map(m=>m.tool_call_id)).toEqual(['first','second']);return answer;}};
+  const llm:LLMClient={complete:async(request)=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool('first'),{...tool('second'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n2 FROM fact_monitoring"}'}}]};expect(request.messages.filter(m=>m.role==='tool').map(m=>m.tool_call_id)).toEqual(['first','second']);return answer;}};
   const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),createMainAgent({llm,listSkills:listSkillDefinitions,executeSkill:async(id,args,ctx)=>{order.push(id);return executeSkill(id,args,ctx);}})));
   expect(order).toHaveLength(2);expect(rounds).toBe(2);expect(turn.skillRuns.map(r=>r.callId)).toEqual(['first','second']);expect(turn.status).toBe('SUCCESS');
  });
  it('halts before executing calls beyond a whole-batch budget',async()=>{
-  let calls=0,round=0;const looping:LLMClient={complete:async()=>({role:'assistant',content:null,tool_calls:Array.from({length:3},(_,i)=>tool(`${++round}-${i}`))})};
+  let calls=0,round=0;const looping:LLMClient={complete:async request=>request.toolChoice==='none'?{role:'assistant',content:'{"mode":"continue","reason":"还需要其他统计"}'}:({role:'assistant',content:null,tool_calls:Array.from({length:3},(_,i)=>({...tool(`${++round}-${i}`),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:`SELECT COUNT(*) AS n${round} FROM fact_monitoring`})}}))})};
   const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(looping,()=>calls++)));
   expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('TOOL_BUDGET_EXCEEDED');expect(calls).toBe(6);
  });
@@ -67,4 +67,14 @@ describe('single main Agent dispatch',()=>{
   expect(()=>createSseDecoder().push(new TextEncoder().encode('event: finish\ndata: broken\n\n'))).toThrow();
   expect(toLegacyEvents({version:'1',runId:'r',seq:1,type:'failed',data:{code:'FAIL',message:'真实失败'}})[0].event).toBe('error');
  });
+});
+
+it('reserves the last model round for an LLM-generated grounded final response',async()=>{
+ let rounds=0;let batches=0;const llm:LLMClient={complete:async(request)=>{rounds++;if(request.toolChoice==='auto')return {role:'assistant',content:null,tool_calls:[{...tool(`batch-${++batches}`),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:`SELECT COUNT(*) AS n${batches} FROM fact_monitoring`})}}]};if(batches<3)return {role:'assistant',content:'{"mode":"continue","reason":"需要不同汇总"}'};return answer;}};
+ const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));expect(rounds).toBe(6);expect(result.status).toBe('SUCCESS');expect(result.skillRuns).toHaveLength(3);expect(result.replyText).toBe(JSON.parse(answer.content).replyText);
+});
+
+it('summarizes after tools without reopening native tools unless LLM explicitly requests another step',async()=>{
+ let rounds=0;const llm:LLMClient={complete:async request=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool()]};expect(request.toolChoice).toBe('none');expect(request.tools).toBeUndefined();return answer;}};
+ const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));expect(result.status).toBe('SUCCESS');expect(rounds).toBe(2);expect(result.agui).toHaveLength(1);
 });

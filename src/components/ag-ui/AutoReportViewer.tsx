@@ -1,10 +1,12 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useRef, useState } from 'react';
 import { FileText, Printer, Copy, Check } from 'lucide-react';
 
 interface AutoReportProps {
   data: {
+    reportId?:string;
     title: string;
     date: string;
     author: string;
@@ -14,6 +16,7 @@ interface AutoReportProps {
 }
 
 export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
+  const interactFunctional=useFunctionalInteraction();
   const reportRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -31,7 +34,7 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
   };
 
   const handleExportPdf = () => {
-    window.print();
+    void interactFunctional({type:'report.export',id:data.reportId,args:{format:'markdown'}});
   };
 
   return (
@@ -61,7 +64,7 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
             className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-sky-600/30 transition-all"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>一键打印 / 导出 PDF</span>
+            <span>导出 Markdown 文件</span>
           </button>
         </div>
       </div>

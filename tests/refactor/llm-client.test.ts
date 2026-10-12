@@ -22,3 +22,14 @@ describe('LLM boundary',()=>{
   await expect(createLLMClient({env,fetch:fetcher}).complete(request)).rejects.toMatchObject({code:'LLM_UNAVAILABLE'});expect(fetcher).toHaveBeenCalledTimes(2);
  });
 });
+it('treats nullable vendor tool_calls as absent while preserving actual assistant content',async()=>{
+ const response={choices:[{message:{role:'assistant',content:'{"mode":"answer","replyText":"实际查询结果。"}',tool_calls:null}}]};
+ const message=await createLLMClient({env,fetch:async()=>Response.json(response)}).complete(request);
+ expect(message.content).toContain('实际查询结果');expect(message.tool_calls).toBeUndefined();
+});
+
+it('uses bounded non-thinking native function calls without exposing model reasoning',async()=>{
+ let sent:any;
+ await createLLMClient({env,fetch:async(_url,init)=>{sent=JSON.parse(init!.body as string);return Response.json({choices:[{message:{role:'assistant',content:'{"mode":"answer","replyText":"结果"}',reasoning_content:'private reasoning'}}]});}}).complete(request);
+ expect(sent.enable_thinking).toBe(false);expect(sent.max_tokens).toBe(4096);expect(sent.temperature).toBe(0.7);
+});

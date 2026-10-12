@@ -68,7 +68,7 @@ describe('one execution service',()=>{
         else {
           const tables={vector:'fact_monitoring',env:'fact_water_monitoring',foodborne:'fact_foodborne_case',chronic:'fact_death_registry'};
           const sql=`SELECT COUNT(*) AS n FROM ${tables[domain]}`;
-          const args=d.method==='bounded-domain-query-v1'?{sql}:d.method==='validated-custom-skill-create-v1'?{skillName:'fixture '+d.id,sqlQuery:sql}:d.id==='skill_icd10_nlp_inference'?{inputChain:{a:'呼吸衰竭',c:'脑梗死'}}:{city:'郑州市'};
+          const args=d.id==='skill_session_manage'?{action:'create',title:'registered fixture'}:d.id==='skill_catalog_manage'?{action:'list'}:d.id==='skill_collection_manage'?{action:'validate',record:{city:'郑州市',district:'金水区',category:'蚊',speciesName:'白纹伊蚊',captureCount:0}}:d.id==='skill_artifact_export'?{format:'csv',sql}:d.method==='bounded-domain-query-v1'?{sql}:d.method==='validated-custom-skill-create-v1'?{skillName:'fixture '+d.id,sqlQuery:sql}:d.id==='skill_icd10_nlp_inference'?{inputChain:{a:'呼吸衰竭',c:'脑梗死'}}:{city:'郑州市'};
           const result=await executeSkill(d.id,args,context(domain));
           expect(['SUCCESS','REVIEW_REQUIRED']).toContain(result.status);expect(result.payload).not.toBeNull();
         }

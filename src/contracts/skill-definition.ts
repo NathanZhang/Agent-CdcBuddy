@@ -17,6 +17,7 @@ export interface SkillDefinition {
   name: string;
   description?: string;
   requirementIds: number[];
+  visibility?: 'public' | 'internal';
   availability: 'available' | 'planned';
   inputSchema: JsonSchema;
   outputSchema: JsonSchema;
