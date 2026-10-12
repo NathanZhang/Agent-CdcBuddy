@@ -1,0 +1,2 @@
+command: node_modules/.bin/tsc --noEmit --incremental false
+exit_code: 0

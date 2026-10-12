@@ -128,7 +128,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     insights: string[];
   }> {
     const db = this.getDb();
-    let whereClauses: string[] = ['1=1'];
+    const whereClauses: string[] = ['1=1'];
     const params: any[] = [];
 
     if (filter.category) {
@@ -243,7 +243,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     shannonWienerIndex: number;
   }> {
     const db = this.getDb();
-    let whereClauses: string[] = ['1=1'];
+    const whereClauses: string[] = ['1=1'];
     const params: any[] = [];
 
     if (filter.category) {
@@ -332,7 +332,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     rotationSuggestions: string[];
   }> {
     const db = this.getDb();
-    let whereClauses: string[] = ['1=1'];
+    const whereClauses: string[] = ['1=1'];
     const params: any[] = [];
 
     if (filter.speciesName) {
@@ -413,7 +413,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     summaryAdvice: string;
   }> {
     const db = this.getDb();
-    let whereClauses: string[] = ['1=1'];
+    const whereClauses: string[] = ['1=1'];
     const params: any[] = [];
 
     if (filter.pathogenName) {

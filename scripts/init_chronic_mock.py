@@ -193,9 +193,10 @@ CAUSE_TEMPLATES = [
     }
 ]
 
-def init_chronic_database():
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
+def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
+    rng = random.Random(seed)
+    os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
     cur.execute("PRAGMA synchronous = OFF;")
@@ -307,8 +308,8 @@ def init_chronic_database():
         base_lat, base_lon = info["coords"]
         d_pop = int(info["population"] / len(info["districts"]))
         for dist in info["districts"]:
-            offset_lat = (random.random() - 0.5) * 0.4
-            offset_lon = (random.random() - 0.5) * 0.4
+            offset_lat = (rng.random() - 0.5) * 0.4
+            offset_lon = (rng.random() - 0.5) * 0.4
             dist_records.append((
                 city, dist, round(base_lat + offset_lat, 4), round(base_lon + offset_lon, 4), d_pop
             ))
@@ -331,7 +332,7 @@ def init_chronic_database():
         c_date = datetime(2026, 8, 15) + timedelta(days=i * 2)
         death_records.append((
             f"CERT-2026-RARE-{100 + i}",
-            f"{random.choice(SURNAMES)}{random.choice(NAMES)}",
+            f"{rng.choice(SURNAMES)}{rng.choice(NAMES)}",
             "男" if i % 2 == 0 else "女",
             58 + i * 2,
             "郑州市",
@@ -364,15 +365,15 @@ def init_chronic_database():
     ))
 
     for i in range(8500 - len(death_records)):
-        tpl = random.choices(CAUSE_TEMPLATES, weights=tpl_weights, k=1)[0]
+        tpl = rng.choices(CAUSE_TEMPLATES, weights=tpl_weights, k=1)[0]
         # 年龄分布：慢病死因多在 45~88 岁之间
-        age = int(random.gauss(71, 12))
+        age = int(rng.gauss(71, 12))
         age = max(18, min(98, age))
-        gender = "男" if random.random() < 0.54 else "女"
+        gender = "男" if rng.random() < 0.54 else "女"
         
-        city = random.choice(list(HENAN_CITIES.keys()))
-        dist = random.choice(HENAN_CITIES[city]["districts"])
-        delta_days = random.randint(0, 950)
+        city = rng.choice(list(HENAN_CITIES.keys()))
+        dist = rng.choice(HENAN_CITIES[city]["districts"])
+        delta_days = rng.randint(0, 950)
         d_date = (start_date + timedelta(days=delta_days)).strftime("%Y-%m-%d")
 
         ypll = max(0, 75 - age)
@@ -380,7 +381,7 @@ def init_chronic_database():
 
         death_records.append((
             f"CERT-2026-{10000 + i}",
-            f"{random.choice(SURNAMES)}{random.choice(NAMES)}",
+            f"{rng.choice(SURNAMES)}{rng.choice(NAMES)}",
             gender,
             age,
             city,
@@ -419,30 +420,30 @@ def init_chronic_database():
     dis_weights = [d["prob"] for d in DISEASES]
 
     for i in range(12000):
-        dis_info = random.choices(DISEASES, weights=dis_weights, k=1)[0]
-        age = int(random.gauss(62, 10))
+        dis_info = rng.choices(DISEASES, weights=dis_weights, k=1)[0]
+        age = int(rng.gauss(62, 10))
         age = max(30, min(86, age))
-        gender = "男" if random.random() < 0.52 else "女"
-        city = random.choice(list(HENAN_CITIES.keys()))
-        dist = random.choice(HENAN_CITIES[city]["districts"])
+        gender = "男" if rng.random() < 0.52 else "女"
+        city = rng.choice(list(HENAN_CITIES.keys()))
+        dist = rng.choice(HENAN_CITIES[city]["districts"])
 
-        sbp = random.randint(118, 185)
-        dbp = random.randint(72, 115)
-        glu = round(random.uniform(4.8, 14.5), 1)
-        bmi = round(random.uniform(19.5, 33.2), 1)
-        smoke = random.choice(["吸烟 (≥20支/天)", "偶有吸烟", "已戒烟", "从不吸烟"])
-        fam = random.choice(["直系亲属心梗早发史", "直系亲属高血压病史", "无明显家族遗传史", "直系亲属恶性肿瘤史"])
+        sbp = rng.randint(118, 185)
+        dbp = rng.randint(72, 115)
+        glu = round(rng.uniform(4.8, 14.5), 1)
+        bmi = round(rng.uniform(19.5, 33.2), 1)
+        smoke = rng.choice(["吸烟 (≥20支/天)", "偶有吸烟", "已戒烟", "从不吸烟"])
+        fam = rng.choice(["直系亲属心梗早发史", "直系亲属高血压病史", "无明显家族遗传史", "直系亲属恶性肿瘤史"])
         
         # 10年心脑血管发病风险 (China-PAR 风险模型模拟)
         cvd_risk = round(min(0.65, max(0.03, (sbp - 110) * 0.003 + (bmi - 22) * 0.01 + (age - 40) * 0.006 + (0.08 if "≥20支" in smoke else 0))), 3)
-        screening_roi = round(random.uniform(2.4, 6.8), 2)
-        comp = random.choice(dis_info["comp"]) if random.random() < 0.45 else "暂无严重靶器官损害"
+        screening_roi = round(rng.uniform(2.4, 6.8), 2)
+        comp = rng.choice(dis_info["comp"]) if rng.random() < 0.45 else "暂无严重靶器官损害"
 
-        diag_date = (start_date + timedelta(days=random.randint(0, 950))).strftime("%Y-%m-%d")
+        diag_date = (start_date + timedelta(days=rng.randint(0, 950))).strftime("%Y-%m-%d")
 
         chronic_records.append((
             f"CHR-2026-{100000 + i}",
-            f"{random.choice(SURNAMES)}{random.choice(NAMES)}",
+            f"{rng.choice(SURNAMES)}{rng.choice(NAMES)}",
             gender,
             age,
             city,
@@ -507,7 +508,7 @@ def init_chronic_database():
         i_time = datetime(2026, 8, 18, 9, 30) + timedelta(hours=i * 3)
         injury_records.append((
             f"INJ-2026-CLUS-{200 + i}",
-            f"{random.choice(SURNAMES)}{random.choice(NAMES)}",
+            f"{rng.choice(SURNAMES)}{rng.choice(NAMES)}",
             "男",
             46 + i,
             "平顶山市",
@@ -521,19 +522,19 @@ def init_chronic_database():
         ))
 
     for i in range(5000 - len(injury_records)):
-        prof = random.choice(INJURY_PROFILES)
-        age = random.randint(prof["age_range"][0], prof["age_range"][1])
-        gender = "男" if random.random() < 0.58 else "女"
-        city = random.choice(list(HENAN_CITIES.keys()))
-        dist = random.choice(HENAN_CITIES[city]["districts"])
-        i_place = random.choice(prof["places"])
-        i_factor = random.choice(prof["factors"])
-        i_sev = random.choice(prof["severity"])
+        prof = rng.choice(INJURY_PROFILES)
+        age = rng.randint(prof["age_range"][0], prof["age_range"][1])
+        gender = "男" if rng.random() < 0.58 else "女"
+        city = rng.choice(list(HENAN_CITIES.keys()))
+        dist = rng.choice(HENAN_CITIES[city]["districts"])
+        i_place = rng.choice(prof["places"])
+        i_factor = rng.choice(prof["factors"])
+        i_sev = rng.choice(prof["severity"])
         
-        i_time = start_date + timedelta(days=random.randint(0, 950), hours=random.randint(0, 23), minutes=random.randint(0, 59))
+        i_time = start_date + timedelta(days=rng.randint(0, 950), hours=rng.randint(0, 23), minutes=rng.randint(0, 59))
         injury_records.append((
             f"INJ-2026-{10000 + i}",
-            f"{random.choice(SURNAMES)}{random.choice(NAMES)}",
+            f"{rng.choice(SURNAMES)}{rng.choice(NAMES)}",
             gender,
             age,
             city,
@@ -606,13 +607,30 @@ def init_chronic_database():
     conn.commit()
     conn.close()
 
-    # 同步只读镜像至 DataMock
-    os.makedirs(DATAMOCK_DIR, exist_ok=True)
-    mock_target = os.path.join(DATAMOCK_DIR, "chronic_monitoring.db")
-    import shutil
-    shutil.copyfile(DB_PATH, mock_target)
-    print(f"✅ 成功初始化并写入 {DB_PATH}")
-    print(f"✅ 成功同步至只读数据底座: {mock_target}")
 
-if __name__ == "__main__":
-    init_chronic_database()
+def main():
+    import argparse
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description='Generate an isolated, seeded mock dataset; existing files are protected.')
+    parser.add_argument('--output', type=Path, default=Path(DB_PATH))
+    parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--export-dir', type=Path, help='Optional explicit mirror destination; no automatic external writes')
+    args = parser.parse_args()
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        # Reserve exclusively before opening SQLite; never delete an existing dataset.
+        with args.output.open('xb'):
+            pass
+    except FileExistsError:
+        parser.error(f'Dataset already exists: {args.output}; choose a new --output')
+    init_chronic_database(str(args.output), args.seed)
+
+    if args.export_dir:
+        import shutil
+        args.export_dir.mkdir(parents=True, exist_ok=True)
+        with args.output.open('rb') as source, (args.export_dir / args.output.name).open('xb') as target:
+            shutil.copyfileobj(source, target)
+    print(f'Mock dataset generated: {args.output} (seed={args.seed})')
+
+if __name__ == '__main__':
+    main()

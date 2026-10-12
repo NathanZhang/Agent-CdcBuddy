@@ -464,7 +464,7 @@ export default function CdcAgentWorkspace() {
 
       // ---------------- 真实落库持久化：创建会话或追加消息 ----------------
       try {
-        let activeId = currentSessionIdRef.current || currentSessionId;
+        const activeId = currentSessionIdRef.current || currentSessionId;
         const suggestedTitle = promptText.length > 25 ? `${promptText.substring(0, 24)}...` : promptText;
 
         if (!activeId) {

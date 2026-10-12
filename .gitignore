@@ -42,3 +42,8 @@ logs/
 
 # typescript
 *.tsbuildinfo
+
+# Isolated environment links and SQLite WAL artifacts
+/.venv
+*.db-wal
+*.db-shm

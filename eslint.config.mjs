@@ -1,0 +1,3 @@
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+export default tseslint.config({ ignores: ['.next*/**', 'node_modules/**'] }, js.configs.recommended, ...tseslint.configs.recommended, { files: ['**/*.{ts,tsx}'], languageOptions: { globals: { console: 'readonly', process: 'readonly', Buffer: 'readonly', fetch: 'readonly', Request: 'readonly', Response: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', AbortController: 'readonly', URL: 'readonly' } }, rules: { '@typescript-eslint/no-explicit-any': 'off', '@typescript-eslint/no-unused-vars': 'off', 'no-undef': 'off' } }, { files: ['src/lib/skills/dispatcher.ts'], rules: { 'no-dupe-else-if': 'off' } });

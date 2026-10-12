@@ -1,0 +1,21 @@
+{
+  "source": "vector-monitoring",
+  "origin": "observed",
+  "capturedAt": "2026-10-12",
+  "facts": {
+    "fact_monitoring": {
+      "count": 48530
+    },
+    "fact_pathogen_detection": {
+      "count": 7336
+    },
+    "fact_insecticide_resistance": {
+      "count": 365
+    }
+  },
+  "captureCountSum": 228492,
+  "dateIdRange": [
+    "2020-01-02",
+    "2025-11-11"
+  ]
+}

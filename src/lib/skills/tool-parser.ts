@@ -41,14 +41,14 @@ export function parseToolCallFromText(text: string): ParsedToolCall | null {
 
   // 格式 B：<tool_call> 内嵌 XML 标签
   // 例如：<function=skill_monitoring_data_table> 或 <function name="skill_monitoring_data_table">
-  const funcMatch = inner.match(/<function[=\s]+["']?([a-zA-Z0-9_\-]+)["']?>([\s\S]*?)(?:<\/function>|$)/i);
+  const funcMatch = inner.match(/<function[=\s]+["']?([a-zA-Z0-9_-]+)["']?>([\s\S]*?)(?:<\/function>|$)/i);
   if (funcMatch) {
     const funcName = funcMatch[1];
     const paramsContent = funcMatch[2];
     const args: Record<string, any> = {};
 
     // 匹配 <parameter=param_name>value</parameter> 或 <parameter name="param_name">value</parameter>
-    const paramRegex = /<parameter[=\s]+["']?([a-zA-Z0-9_\-]+)["']?>([\s\S]*?)(?:<\/parameter>|$)/gi;
+    const paramRegex = /<parameter[=\s]+["']?([a-zA-Z0-9_-]+)["']?>([\s\S]*?)(?:<\/parameter>|$)/gi;
     let pMatch: RegExpExecArray | null;
     while ((pMatch = paramRegex.exec(paramsContent)) !== null) {
       const pName = pMatch[1];

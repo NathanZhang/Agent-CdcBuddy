@@ -422,13 +422,13 @@ function splitContentIntoSections(raw: string): Section[] {
     }
 
     // 6. List items (ordered & unordered, with indentation support)
-    const listMatch = line.match(/^(\s*)([-*•+·]|\d+[\.\)])\s+(.*)$/);
+    const listMatch = line.match(/^(\s*)([-*•+·]|\d+[.)])\s+(.*)$/);
     if (listMatch) {
       flushParagraph();
       const indentSpaces = listMatch[1].length;
       const marker = listMatch[2];
       const itemContent = listMatch[3];
-      const isOrdered = /^\d+[\.\)]$/.test(marker);
+      const isOrdered = /^\d+[.)]$/.test(marker);
       const indentLevel = indentSpaces >= 4 ? 2 : indentSpaces >= 2 ? 1 : 0;
 
       listBuffer.push({
@@ -472,7 +472,7 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
   // 2. `code` or ```code```
   // 3. *italic* or _italic_
   // 4. [text](url) or 【text】(url) or with Chinese parentheses
-  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`{1,3}[^`]+?`{1,3}|\*[^*\n]+?\*|_[^_\n]+?_|[\[【][^\]】\n]+?[\]】]\s*[（\(][^）\)\n]+?[）\)])/g;
+  const regex = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|__(?:[^_]|_(?!_))+?__|`{1,3}[^`]+?`{1,3}|\*[^*\n]+?\*|_[^_\n]+?_|[[【][^\]】\n]+?[\]】]\s*[（(][^）)\n]+?[）)])/g;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -558,7 +558,7 @@ function renderInline(text: string, isUser: boolean): React.ReactNode[] {
       (token.startsWith('[') || token.startsWith('【')) &&
       (token.endsWith(')') || token.endsWith('）'))
     ) {
-      const linkMatch = token.match(/^[\[【]([^\]】]+?)[\]】]\s*[（\(]([^）\)]+?)[）\)]$/);
+      const linkMatch = token.match(/^[[【]([^\]】]+?)[\]】]\s*[（(]([^）)]+?)[）)]$/);
       if (linkMatch) {
         const linkText = linkMatch[1];
         const linkUrl = linkMatch[2].trim();

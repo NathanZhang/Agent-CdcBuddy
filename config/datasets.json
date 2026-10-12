@@ -1,0 +1,38 @@
+[
+  {
+    "id": "vector-monitoring",
+    "domain": "vector",
+    "origin": "observed",
+    "version": "existing-snapshot-2026-10-12",
+    "asOf": "2026-10-12",
+    "schemaVersion": "1",
+    "path": "vector_monitoring.db"
+  },
+  {
+    "id": "foodborne-monitoring",
+    "domain": "foodborne",
+    "origin": "mock",
+    "version": "existing-snapshot-2026-10-12",
+    "asOf": "2026-10-12",
+    "schemaVersion": "1",
+    "path": "foodborne_monitoring.db"
+  },
+  {
+    "id": "env-monitoring",
+    "domain": "env",
+    "origin": "mock",
+    "version": "existing-snapshot-2026-10-12",
+    "asOf": "2026-10-12",
+    "schemaVersion": "1",
+    "path": "env_monitoring.db"
+  },
+  {
+    "id": "chronic-monitoring",
+    "domain": "chronic",
+    "origin": "mock",
+    "version": "existing-snapshot-2026-10-12",
+    "asOf": "2026-10-12",
+    "schemaVersion": "1",
+    "path": "chronic_monitoring.db"
+  }
+]

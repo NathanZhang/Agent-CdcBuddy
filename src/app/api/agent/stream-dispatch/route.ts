@@ -728,7 +728,7 @@ ${linesStr}
                             sendEvent('content_chunk', { text: token });
                           }
                         }
-                      } catch {}
+                      } catch { /* Ignore malformed JSON frames from the existing provider stream. */ }
                     }
                   }
                 } finally {
@@ -808,7 +808,7 @@ ${linesStr}
           isClosed = true;
           try {
             controller.close();
-          } catch {}
+          } catch { /* The stream may already have been closed by cancellation. */ }
         }
       }
     });

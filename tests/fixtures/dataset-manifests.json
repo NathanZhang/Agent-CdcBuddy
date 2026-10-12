@@ -1,0 +1,43 @@
+{
+  "missingOrigin": [
+    {
+      "id": "env-v1",
+      "domain": "env",
+      "version": "legacy-2026",
+      "asOf": "2026-08-31",
+      "schemaVersion": "1",
+      "path": "env_monitoring.db"
+    }
+  ],
+  "duplicateId": [
+    {
+      "id": "env-v1",
+      "domain": "env",
+      "origin": "mock",
+      "version": "legacy-2026",
+      "asOf": "2026-08-31",
+      "schemaVersion": "1",
+      "path": "env_monitoring.db"
+    },
+    {
+      "id": "env-v1",
+      "domain": "env",
+      "origin": "mock",
+      "version": "legacy-2026",
+      "asOf": "2026-08-31",
+      "schemaVersion": "1",
+      "path": "env_monitoring.db"
+    }
+  ],
+  "unknownDomain": [
+    {
+      "id": "env-v1",
+      "domain": "unknown",
+      "origin": "mock",
+      "version": "legacy-2026",
+      "asOf": "2026-08-31",
+      "schemaVersion": "1",
+      "path": "env_monitoring.db"
+    }
+  ]
+}
