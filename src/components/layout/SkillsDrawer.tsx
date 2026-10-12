@@ -115,7 +115,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
   // 合并并根据当前智能体的专属技能进行严格隔离筛选
   const domainStandardSkills = STANDARD_SKILLS.filter(s => 
-    profile.skillIds ? profile.skillIds.includes(s.id) : (s.domain === profile.domain)
+    (s.domain === profile.domain || s.domain === 'common') && (!profile.skillIds || profile.skillIds.includes(s.id))
   );
   const capabilities=typeof window==='undefined'?[]:(window as any).__CDC_RUNTIME_PROFILE__?.capabilities ?? [];
   const rawSkills:VectorSkill[]=[...domainStandardSkills.map(s=>{const capability=capabilities.find((c:any)=>c.id===s.id);return {...s,name:capability?.name ?? s.name,description:capability?.availability==='planned'?'该能力尚未实现并验证。':capability?.description ?? s.description,availability:capability?.availability};}),...formattedCustomSkills];
@@ -188,7 +188,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
       sqlQuery: raw.sqlQuery || raw.sql_query || '',
       chartType: raw.chartType || raw.chart_type || 'bar',
       visibility: skill.visibility || 'private',
-      recommendedPrompts: skill.recommendedPrompts || []
+      recommendedPrompts: (skill.recommendedPrompts || []).map(p => typeof p === 'string' ? p : p.prompt)
     });
     setIsEditModalOpen(true);
   };
@@ -345,7 +345,8 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                         {hasPermission ? (
                           <button
                             onClick={() => {
-                              onRunSkill(skill, skill.recommendedPrompts[0]);
+                              const firstPrompt = skill.recommendedPrompts[0];
+                              onRunSkill(skill, typeof firstPrompt === 'string' ? firstPrompt : firstPrompt?.prompt);
                               onClose();
                             }}
                             title="调用此技能"
@@ -392,12 +393,12 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                     {/* 推荐 Prompts */}
                     {skill.recommendedPrompts && skill.recommendedPrompts.length > 0 && hasPermission && (
                       <div className="bg-white dark:bg-slate-950/60 p-2 rounded-lg border border-slate-200 dark:border-slate-800/80 space-y-1">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">推荐调用指令:</span>
-                        {skill.recommendedPrompts.slice(0, 2).map((rp, i) => (
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">推荐场景（点击发送完整指令）:</span>
+                        {skill.recommendedPrompts.map((rp, i) => (
                           <button
                             key={i}
                             onClick={() => {
-                              onRunSkill(skill, rp);
+                              onRunSkill(skill, typeof rp === 'string' ? rp : rp.prompt);
                               onClose();
                             }}
                             className={`text-left text-[11px] block truncate hover:underline cursor-pointer ${
@@ -406,7 +407,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                                 : 'text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300'
                             }`}
                           >
-                            ▸ {rp}
+                            ▸ {typeof rp === 'string' ? `${skill.name} · 场景 ${i + 1}` : rp.title}
                           </button>
                         ))}
                       </div>

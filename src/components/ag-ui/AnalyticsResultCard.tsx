@@ -1,5 +1,6 @@
  'use client';
 import React,{useState} from 'react';
+import {QueryResultVisualization} from './QueryResultVisualization';
 import {BarChart3,Info} from 'lucide-react';
 import {useFunctionalInteraction} from '@/features/workbench/use-workbench-controller';
 import {methodLabel,qualityLabel,statusLabel} from '@/features/workbench/result-presentation';
@@ -18,6 +19,7 @@ export function AnalyticsResultCard({data}:{data:any}) {
    <div className="flex flex-wrap items-start gap-3"><span className="p-2 rounded-xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400"><BarChart3 size={20}/></span><div className="flex-1 min-w-0"><h3 className="text-base font-semibold">{data.title||'分析结果'}</h3><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{methodLabel(data.method??payload.method??'')}</p></div>{(data.status||payload.status)&&<span className="rounded-full px-2.5 py-1 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">{statusLabel(data.status||payload.status)}</span>}</div>
   </header>
   <div className="p-4 sm:p-5 space-y-5">
+   {['autoregression-seasonal-capture-v1','gradient-boosting-capture-v1'].includes(data.method)&&payload.groups?.map((g:any,i:number)=><section key={i}><h4 className="text-sm font-semibold">{g.methodName} · 历史观测</h4><QueryResultVisualization rows={g.history??[]} spec={{kind:'line',xKey:'period',yKey:'value',unit:'只/记录'}}/><h4 className="text-sm font-semibold mt-3">预测（非观测值）</h4><QueryResultVisualization rows={g.forecasts??[]} spec={{kind:'line',xKey:'period',yKey:'value',unit:'只/记录'}}/></section>)}
    {species?<SpeciesCompositionSummary data={payload}/>:<ResultDataView value={displayed}/>}
    <WorkflowActions value={payload}/>
    {!!flags.length&&<aside className="rounded-xl border border-amber-200 dark:border-amber-900/70 bg-amber-50/80 dark:bg-amber-950/20 p-4"><h4 className="flex items-center gap-2 text-xs font-semibold text-amber-800 dark:text-amber-300"><Info size={14}/>数据口径与方法限制</h4><ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-amber-800 dark:text-amber-200/80">{flags.map(flag=><li key={flag}>{qualityLabel(flag)}</li>)}</ul></aside>}

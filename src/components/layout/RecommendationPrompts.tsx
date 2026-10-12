@@ -99,7 +99,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
               常用业务场景和推荐功能对话提示词
             </h2>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              4 大类 · 共 {totalPromptsCount} 条
+              {categories.length} 大类 · 共 {totalPromptsCount} 条
             </span>
           </div>
         </div>
@@ -140,7 +140,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
         <div className="absolute top-full left-0 right-0 mt-1.5 p-4 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-sky-500/30 shadow-2xl shadow-slate-900/20 dark:shadow-sky-950/50 animate-in fade-in slide-in-from-top-1 duration-150 z-40 max-h-[80vh] overflow-y-auto">
           <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800/80 pb-2.5 mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">💡 点击任意业务指令卡片，即时联动 Copilot 与 AG-UI 工作台</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">💡 点击场景标题，发送完整分析指令</span>
             </div>
             <button
               onClick={() => setIsExpanded(false)}
@@ -165,14 +165,15 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    {cat.prompts.map((p, pIdx) => (
+                    {cat.prompts.map((p) => (
                       <button
-                        key={pIdx}
-                        onClick={() => handleSelect(p)}
+                        key={p.title}
+                        type="button"
+                        onClick={() => handleSelect(p.prompt)}
                         className="text-left text-xs text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-white bg-white/90 dark:bg-slate-950/70 hover:bg-sky-50 dark:hover:bg-sky-950/70 p-2 rounded-lg border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-500/50 transition-all leading-snug group flex items-start gap-1.5 shadow-2xs cursor-pointer"
                       >
                         <span className="text-sky-600 dark:text-sky-400 text-[10px] mt-0.5 group-hover:translate-x-0.5 transition-transform shrink-0">▸</span>
-                        <span>{p}</span>
+                        <span>{p.title}</span>
                       </button>
                     ))}
                   </div>

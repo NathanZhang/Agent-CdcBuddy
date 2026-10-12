@@ -92,7 +92,7 @@ it('asks the LLM once to correct invalid final JSON without reexecuting Skills',
  const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(result.status).toBe('SUCCESS');expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.agui).toHaveLength(1);
 });
 it('fails transparently when the bounded LLM format correction also fails',async()=>{
- let rounds=0,executions=0;const llm:LLMClient={complete:async()=>{rounds++;return rounds===1?{role:'assistant',content:null,tool_calls:[tool()]}:{role:'assistant',content:'not JSON'};}};const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.error?.code).toBe('INVALID_LLM_RESPONSE');expect(result.agui).toEqual([]);
+ let rounds=0,executions=0;const llm:LLMClient={complete:async()=>{rounds++;return rounds===1?{role:'assistant',content:null,tool_calls:[tool()]}:{role:'assistant',content:'not JSON'};}};const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.error?.code).toBe('INVALID_LLM_RESPONSE');expect(result.status).toBe('FAILED');expect(result.agui).toHaveLength(1);expect(toLegacyResult(result).generativeView).toMatchObject({type:'DATA_TABLE_VIEW'});
 });
 
 it('publishes reasoning and decoded answer previews before the model completes, then records the exact reasoning',async()=>{
@@ -112,4 +112,21 @@ it('publishes reasoning and decoded answer previews before the model completes, 
  release();const remaining=[];while(true){const next=await events.next();if(next.done)break;remaining.push(next.value);}
  const result=remaining.find(e=>e.type==='result')!.data.result;
  expect(result).toMatchObject({replyText:'请指定\n时间范围。',reasoningText:'需要先确认时间范围。',reasoningDuration:expect.any(Number)});
+});
+
+it('publishes executed query views before LLM summary and retains them on summary timeout',async()=>{
+ let rounds=0;const events=[];const llm:LLMClient={complete:async()=>{if(++rounds===1)return {role:'assistant',content:null,tool_calls:[tool()]};throw Error('summary timeout');}};
+ for await(const event of dispatch(input,createDevelopmentContext('vector'),agent(llm)))events.push(event);
+ const completed=events.find(e=>e.type==='tool_completed')!;
+ expect(toLegacyEvents(completed).find(e=>e.event==='generative_view')?.data.view).toMatchObject({type:'DATA_TABLE_VIEW',data:[{n:expect.any(Number)}]});
+ const turn=await collectDispatch(events);expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('LLM_UNAVAILABLE');
+ expect(toLegacyResult(turn).generativeView).toMatchObject({type:'DATA_TABLE_VIEW',data:[{n:expect.any(Number)}]});
+});
+
+it('clears successful partial views when a later tool is denied by jurisdiction',async()=>{
+ const ctx=createDevelopmentContext('vector');ctx.principal={...ctx.principal,role:'CITY_EXPERT',jurisdiction:{city:'郑州市'}};
+ const denied={...tool('denied'),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:'SELECT COUNT(*) AS n FROM fact_monitoring',city:'洛阳市'})}};
+ const turn=await collectDispatch(dispatch(input,ctx,agent(stub([{role:'assistant',content:null,tool_calls:[tool(),denied]},answer]))));
+ expect(turn.skillRuns[0].result.status).toBe('SUCCESS');expect(turn.error?.code).toBe('FORBIDDEN_SCOPE');
+ expect(turn.status).toBe('FAILED');expect(turn.agui).toEqual([]);expect(toLegacyResult(turn).generativeView).toBeNull();
 });

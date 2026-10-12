@@ -147,6 +147,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
             scope={view.scope}
           explanation={view.explanation}
           data={view.data}
+          visualization={view.visualization}
         />
       )}
 

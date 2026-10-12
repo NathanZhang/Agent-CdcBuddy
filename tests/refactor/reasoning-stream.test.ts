@@ -79,3 +79,15 @@ it('resets a failed attempt before streaming the fallback response',async()=>{
  await new Promise(resolve=>setTimeout(resolve,0));expect(visible).toBe('失效片段');wire.error(Error('connection lost'));
  expect((await pending).content).toBe('完整答复');expect(visible).toBe('第二次推理');expect(attempt).toBe(2);
 });
+
+it('shows completed data while summary streams, retains it on summary failure, and ignores stale views after cancel',async()=>{
+ let callbacks:Parameters<WorkbenchClient['interact']>[1];let finish!:(r:AgentTurnResult)=>void;
+ const controller=createWorkbenchController({domain:'vector',client:{interact:async(_input,options)=>{callbacks=options;return new Promise(resolve=>{finish=resolve;});}}});
+ const payload={type:'DATA_TABLE_VIEW',data:[{n:17}]};
+ const partial:AgentTurnResult={...result,status:'FAILED',replyText:'文字总结未完成',error:{code:'INVALID_LLM_RESPONSE',message:'length'},agui:[{version:'1',runId:'r',component:payload.type,result:{schemaVersion:'1',metrics:{},runId:'r',domain:'vector',status:'SUCCESS',method:'query',datasets:[],qualityFlags:[],payload}}]};
+ const pending=controller.send('查询');callbacks?.onGenerativeView?.(payload);
+ expect(controller.getState().busy).toBe(true);expect(controller.getState().view).toMatchObject(payload);
+ finish(partial);await pending;expect(controller.getState().status).toBe('FAILED');expect(controller.getState().view).toMatchObject(payload);
+ const next=controller.send('另一次');controller.cancel();callbacks?.onGenerativeView?.(payload);finish(partial);await next;
+ expect(controller.getState().view).toBeNull();expect(controller.getState().status).toBe('CANCELLED');
+});

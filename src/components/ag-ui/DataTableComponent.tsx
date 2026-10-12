@@ -1,4 +1,6 @@
 'use client';
+import type { QueryVisualization } from '@/contracts/query-visualization';
+import { QueryResultVisualization } from './QueryResultVisualization';
 import {fieldLabel,formatValue} from '@/features/workbench/result-presentation';
 import { queryExportArgs } from '@/features/workbench/result-adapter';
 
@@ -7,6 +9,7 @@ import React, { useState } from 'react';
 import { Table, Download, Search, Code2, Copy, Check, Sparkles, Clock, Database } from 'lucide-react';
 
 interface DataTableProps {
+  visualization?: QueryVisualization;
   scope?: {city?:string;district?:string;from?:string;to?:string};
   title?: string;
   query?: string;
@@ -19,6 +22,7 @@ interface DataTableProps {
 export const DataTableComponent: React.FC<DataTableProps> = ({ 
   title = '监测明细数据表',
   scope,
+  visualization,
   query,
   sql,
   executionTimeMs,
@@ -146,6 +150,8 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
           </pre>
         </div>
       )}
+
+      <QueryResultVisualization rows={filteredData} spec={visualization}/>
 
       {/* 表格内容 */}
       <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 max-h-[460px] overflow-y-auto">

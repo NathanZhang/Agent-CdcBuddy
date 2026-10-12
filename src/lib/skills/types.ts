@@ -1,3 +1,4 @@
+import type { RecommendedPrompt } from '@/lib/config/recommended-prompts';
 import { ReactNode } from 'react';
 import { UserRole } from '../rbac/types';
 
@@ -41,7 +42,7 @@ export interface VectorSkill {
   description: string;
   iconName: string;
   badgeColor?: string;
-  recommendedPrompts: string[];
+  recommendedPrompts: (RecommendedPrompt | string)[];
   requiredRoles: UserRole[];
   parametersSchema?: SkillParameterSchema;
   domain?: 'vector' | 'foodborne' | 'env' | 'chronic' | 'common';

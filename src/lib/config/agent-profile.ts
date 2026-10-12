@@ -1,3 +1,4 @@
+import { VECTOR_PROMPTS, FOODBORNE_PROMPTS, ENV_PROMPTS, CHRONIC_PROMPTS, type RecommendedPrompt } from './recommended-prompts';
 import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 
@@ -8,7 +9,7 @@ export interface PromptCategoryItem {
   color: string;
   iconName: string;
   iconColor: string;
-  prompts: string[];
+  prompts: RecommendedPrompt[];
 }
 
 export interface MetricBarItem {
@@ -34,7 +35,7 @@ export interface FloatingWidgetConfig {
   badge: string;
   statusText: string;
   welcomeMessage: string;
-  quickPrompts: string[];
+  quickPrompts: RecommendedPrompt[];
   inputPlaceholder: string;
   gradientClass: string;
   shadowClass: string;
@@ -79,47 +80,47 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     systemPrompt: '你是河南省疾控中心消毒与媒介生物控制所的【病媒生物与宿主动物监测预警智能专家】。精通蚊、蝇、蟑螂、鼠、蜱、恙螨的种群消长预测(ARIMA/LSTM)、K-Means聚类、杀虫剂抗药性预测(Probit/ML)、Apriori病原携带风险挖掘、SaTScan时空扫描预警与应急消杀处置闭环。',
     categories: [
       {
-        title: '时空态势与预警排查',
+        title: '空间分布与区域对比',
         color: 'bg-red-500/10 dark:bg-gradient-to-b dark:from-red-500/20 dark:to-orange-500/10 border-red-200 dark:border-red-500/30',
         iconName: 'MapPin',
         iconColor: 'text-red-600 dark:text-red-400',
         prompts: [
-          '在地图上展示全省当前的病媒生物预警热力分布，标记所有严重（红色）预警区域。',
-          '下钻查看郑州市金水区和管城区的蚊媒密度空间热力与超标监测点。',
-          '针对全省当前的严重等级预警生成今日消杀调度派单清单与处置依据。'
+          VECTOR_PROMPTS.monitoringMap,
+          VECTOR_PROMPTS.cityMap,
+          VECTOR_PROMPTS.districtComparison
         ]
       },
       {
-        title: '种群消长与趋势预测',
+        title: '物种构成与历史预测',
         color: 'bg-sky-500/10 dark:bg-gradient-to-b dark:from-sky-500/20 dark:to-cyan-500/10 border-sky-200 dark:border-sky-500/30',
         iconName: 'TrendingUp',
         iconColor: 'text-sky-600 dark:text-sky-400',
         prompts: [
-          '分析近几年全省蚊类密度随气温变化的季节消长规律，并预测未来3个月密度波动。',
-          '分析郑州市蚊类优势种群构成比（白纹伊蚊与淡色库蚊比例）及多样性指数。',
-          '结合未来高温多雨气象，通过 GBDT 模型预测下月成蚊暴发峰值。'
+          VECTOR_PROMPTS.population,
+          VECTOR_PROMPTS.composition,
+          VECTOR_PROMPTS.forecast
         ]
       },
       {
-        title: '抗药性测定与科学消杀',
+        title: '生物测定与药剂记录',
         color: 'bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-500/20 dark:to-yellow-500/10 border-amber-200 dark:border-amber-500/30',
         iconName: 'ShieldAlert',
         iconColor: 'text-amber-600 dark:text-amber-400',
         prompts: [
-          '评估全省淡色库蚊对氯氰菊酯和残杀威的抗药性等级及用药调整建议。',
-          '查询德国小蠊在郑州市对各类杀虫剂的 LC50 毒力测定结果与轮换方案。',
-          '预测未来1年全省淡色库蚊对拟除虫菊酯类的 KDR 耐药基因频率演化。'
+          VECTOR_PROMPTS.resistance,
+          VECTOR_PROMPTS.cockroach,
+          VECTOR_PROMPTS.pesticides
         ]
       },
       {
-        title: '病原学筛查与专题报告',
+        title: '监测明细与专题趋势',
         color: 'bg-purple-500/10 dark:bg-gradient-to-b dark:from-purple-500/20 dark:to-pink-500/10 border-purple-200 dark:border-purple-500/30',
         iconName: 'Activity',
         iconColor: 'text-purple-600 dark:text-purple-400',
         prompts: [
-          '显示平顶山2022年6月全部病媒监测数据表',
-          '排查全省蚊媒登革病毒与乙脑病毒的 PCR 阳性检出率及高风险区县。',
-          '生成郑州市2024年夏季蚊媒监测与登革热风险评估专项报告并准备导出。'
+          VECTOR_PROMPTS.historicalTable,
+          VECTOR_PROMPTS.pcr,
+          VECTOR_PROMPTS.summerTrend
         ]
       }
     ],
@@ -241,10 +242,10 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       statusText: '● 实时推演与流式交互',
       welcomeMessage: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。\n\n我已支持在对话流中直接渲染**时空态势地图、Text2SQL 数据明细表、ECharts 消长预测图及应急处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
       quickPrompts: [
-        '显示郑州市2024年5月全部病媒监测数据表',
-        '查看河南省白纹伊蚊空间预警地图',
-        '分析郑州市淡色库蚊密度消长趋势',
-        '全省五大类卫生杀虫剂抗药性评估'
+        VECTOR_PROMPTS.monitoringMap,
+        VECTOR_PROMPTS.population,
+        VECTOR_PROMPTS.resistance,
+        VECTOR_PROMPTS.historicalTable
       ],
       inputPlaceholder: '输入病媒监测问题或指令 (如：显示郑州监测表)...',
       gradientClass: 'from-sky-600 to-cyan-500',
@@ -270,47 +271,47 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     systemPrompt: '你是河南省疾控中心食品安全与营养卫生所的【食源性疾病监测预警智能专家】。精通食源性病例聚集性识别(SaTScan/弹性时空扫描)、暴发风险时序预测(LSTM)、致病菌分子同源溯源(cgMLST/PFGE进化树)、高风险食品关联挖掘(Apriori)及突发公卫流调闭环处置。',
     categories: [
       {
-        title: '聚集性疫情探测与预警',
+        title: '病例趋势与分布',
         color: 'bg-red-500/10 dark:bg-gradient-to-b dark:from-red-500/20 dark:to-orange-500/10 border-red-200 dark:border-red-500/30',
         iconName: 'AlertTriangle',
         iconColor: 'text-red-600 dark:text-red-400',
         prompts: [
-          '排查全省近7天哨点医院食源性病例异常激增，标记所有时空聚集性暴发事件。',
-          '下钻分析郑州市某大学食堂疑似副溶血性弧菌聚集性腹泻事件的波及人数与时间曲线。',
-          '针对洛阳市聚集性疑似肉毒中毒预警生成紧急流调提纲与样品采集封存指南。'
+          FOODBORNE_PROMPTS.monthly,
+          FOODBORNE_PROMPTS.cities,
+          FOODBORNE_PROMPTS.pathogens
         ]
       },
       {
-        title: '发病风险时序预测',
+        title: '登记事件与分子分型',
         color: 'bg-orange-500/10 dark:bg-gradient-to-b dark:from-orange-500/20 dark:to-amber-500/10 border-orange-200 dark:border-orange-500/30',
         iconName: 'TrendingUp',
         iconColor: 'text-orange-600 dark:text-orange-400',
         prompts: [
-          '结合夏季气象与历史基线，利用 LSTM 模型预测未来 4 周全省沙门氏菌感染发病趋势。',
-          '评估全省 18 地市不同季节食源性疾病高风险区域分布与脆弱人群扩散风险。',
-          '预测夏秋交替期学校开学季诺如病毒聚集性暴发概率与峰值时窗。'
+          FOODBORNE_PROMPTS.events,
+          FOODBORNE_PROMPTS.campus,
+          FOODBORNE_PROMPTS.molecular
         ]
       },
       {
-        title: '分子同源溯源与链条构建',
+        title: '食品记录与抽检统计',
         color: 'bg-emerald-500/10 dark:bg-gradient-to-b dark:from-emerald-500/20 dark:to-teal-500/10 border-emerald-200 dark:border-emerald-500/30',
         iconName: 'GitBranch',
         iconColor: 'text-emerald-600 dark:text-emerald-400',
         prompts: [
-          '对比郑州与开封两起病例分离出的单增李斯特菌 cgMLST 等位基因相似度，判定是否同源。',
-          '基于知识图谱构建食源性病例、批发市场供应链与致病菌基因带型的传播链拓扑。',
-          '利用 Apriori 挖掘急性胃肠炎就诊病例进食史与抽检阳性食品的高置信度关联规则。'
+          FOODBORNE_PROMPTS.foods,
+          FOODBORNE_PROMPTS.sampling,
+          FOODBORNE_PROMPTS.foodCategories
         ]
       },
       {
-        title: '监测大屏与专题公报',
+        title: '病例特征与明细',
         color: 'bg-blue-500/10 dark:bg-gradient-to-b dark:from-blue-500/20 dark:to-indigo-500/10 border-blue-200 dark:border-blue-500/30',
         iconName: 'FileText',
         iconColor: 'text-blue-600 dark:text-blue-400',
         prompts: [
-          '展示河南省当前食源性疾病动态监测大屏与高风险食品 TOP10 归因排行榜。',
-          '自动汇总生成上月全省食源性疾病监测分析月度专题公报并准备导出。',
-          '针对近期某海鲜酒楼食源性聚集事件一键生成突发流行病学调查简报。'
+          FOODBORNE_PROMPTS.ages,
+          FOODBORNE_PROMPTS.venues,
+          FOODBORNE_PROMPTS.cases
         ]
       }
     ],
@@ -480,10 +481,10 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       statusText: '● 聚集流调与分子溯源',
       welcomeMessage: '您好！我是 **CdcBuddy 食源性疾病监测智能助手**。\n\n我已支持在对话流中直接渲染**暴发聚集雷达、cgMLST 分子同源进化树、高风险食品归因排行及流调处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
       quickPrompts: [
-        '排查全省近7天哨点医院食源性聚集暴发',
-        '下钻分析郑州市高校食堂副溶血性弧菌聚集事件',
-        '对比单增李斯特菌 cgMLST 分子同源进化树',
-        '展示河南省食源性疾病高风险食品TOP10归因'
+        FOODBORNE_PROMPTS.monthly,
+        FOODBORNE_PROMPTS.events,
+        FOODBORNE_PROMPTS.foods,
+        FOODBORNE_PROMPTS.ages
       ],
       inputPlaceholder: '输入食源疾病监测指令 (如：排查聚集性疫情)...',
       gradientClass: 'from-orange-600 to-amber-500',
@@ -509,47 +510,47 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     systemPrompt: '你是河南省疾控中心环境与健康所的【环境健康风险监测预警智能专家】。精通生活饮用水水质安全评估(GB 5749/随机森林/克里金空间插值)、污水管网病原监测与滞后关联溯源、公共场所卫生动态评级、空气质量与极端天气健康暴露模型(DLNM/GBDT热浪预警)、四河流域跨介质重金属污染链分析及政策情景推演。',
     categories: [
       {
-        title: '饮用水全流程水质安全',
+        title: '饮用水监测',
         color: 'bg-cyan-500/10 dark:bg-gradient-to-b dark:from-cyan-500/20 dark:to-blue-500/10 border-cyan-200 dark:border-cyan-500/30',
         iconName: 'Droplets',
         iconColor: 'text-cyan-600 dark:text-cyan-400',
         prompts: [
-          '基于普通克里金插值在 GIS 上展示全省生活饮用水水质超标扩散热力图。',
-          '采用随机森林模型评估郑州市管网末梢水重金属与消毒副产物的致癌与非致癌健康风险。',
-          '通过 LSTM 模型预测未来1个月黄河流域沿线水厂出厂水浊度与耗氧量波动趋势。'
+          ENV_PROMPTS.waterMap,
+          ENV_PROMPTS.waterTypes,
+          ENV_PROMPTS.waterTrend
         ]
       },
       {
-        title: '污水病原监测与管网溯源',
+        title: '污水病原监测',
         color: 'bg-teal-500/10 dark:bg-gradient-to-b dark:from-teal-500/20 dark:to-emerald-500/10 border-teal-200 dark:border-teal-500/30',
         iconName: 'Activity',
         iconColor: 'text-teal-600 dark:text-teal-400',
         prompts: [
-          '计算郑州市重点污水处理厂新冠/诺如病原浓度与哨点医院门诊量的滞后相关系数。',
-          '结合城市排水分区与污水管网 GIS 拓扑，空间聚类反推病原异常排泄来源片区。',
-          '评估汛期暴雨径流对城市排污管网溢流及病原扩散带来的次生暴露风险。'
+          ENV_PROMPTS.sewageLag,
+          ENV_PROMPTS.sewageTrend,
+          ENV_PROMPTS.sewagePlants
         ]
       },
       {
-        title: '空气质量与极端气候健康',
+        title: '空气与高温历史监测',
         color: 'bg-sky-500/10 dark:bg-gradient-to-b dark:from-sky-500/20 dark:to-indigo-500/10 border-sky-200 dark:border-sky-500/30',
         iconName: 'SunMedium',
         iconColor: 'text-sky-600 dark:text-sky-400',
         prompts: [
-          '构建 DLNM 分布滞后非线性模型，评估重污染日 PM2.5 暴露对儿童呼吸系统门诊的滞后效应。',
-          '提前 72 小时针对全省持续性高温热浪天气触发老幼与心脑血管脆弱人群分级健康防护预警。',
-          '分析冬春季沙尘与重污染过程对重点慢病患者超额死亡的急性健康影响。'
+          ENV_PROMPTS.airTrend,
+          ENV_PROMPTS.heat,
+          ENV_PROMPTS.airCities
         ]
       },
       {
-        title: '流域污染链与情景推演',
+        title: '流域与场所检查',
         color: 'bg-indigo-500/10 dark:bg-gradient-to-b dark:from-indigo-500/20 dark:to-purple-500/10 border-indigo-200 dark:border-indigo-500/30',
         iconName: 'SlidersHorizontal',
         iconColor: 'text-indigo-600 dark:text-indigo-400',
         prompts: [
-          '分析四河流域"水体铅镉-农田土壤-粮食作物"跨介质污染转移链与人群累积健康危害。',
-          '进行情景推演：若某工业聚集区削减工业排污30%，预测区域 AQI 及慢病门诊量降幅。',
-          '自动生成本月河南省环境相关风险因素综合监测预警研判专报。'
+          ENV_PROMPTS.river,
+          ENV_PROMPTS.venues,
+          ENV_PROMPTS.waterRecords
         ]
       }
     ],
@@ -698,10 +699,10 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       statusText: '● 水质环境与暴露推演',
       welcomeMessage: '您好！我是 **CdcBuddy 环境健康风险监测智能助手**。\n\n我已支持在对话流中直接渲染**生活饮用水管网 GIS 态势、污水病原拓扑溯源、极端气候健康风险及风险处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
       quickPrompts: [
-        '展示全省生活饮用水水质超标克里金空间分布',
-        '计算郑州市重点污水厂病原浓度与门诊滞后相关',
-        '评估高温热浪天气对心脑血管脆弱人群健康风险',
-        '排查新乡市凤泉区水厂出厂水总大肠菌群超标'
+        ENV_PROMPTS.waterMap,
+        ENV_PROMPTS.sewageLag,
+        ENV_PROMPTS.airTrend,
+        ENV_PROMPTS.river
       ],
       inputPlaceholder: '输入环境健康风险指令 (如：评估水质安全)...',
       gradientClass: 'from-cyan-600 to-teal-500',
@@ -727,47 +728,47 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     systemPrompt: '你是河南省疾控中心慢性非传染性疾病防制所的【死因、慢病及伤害综合监测预警智能专家】。精通人口死亡医学证明书智能逻辑质控(≥98%)、死因链NLP根本死因推断与ICD-10智能编码(≥95%)、ARIMA死亡图谱与DBSCAN高风险聚类、罕见死因短期聚集识别、重大慢病发病预测与WHO简略寿命表早死概率(4q70)测算、伤害聚类与决策树归因分析。',
     categories: [
       {
-        title: '死因证明书质控与推断',
+        title: '死因记录与质控',
         color: 'bg-rose-500/10 dark:bg-gradient-to-b dark:from-rose-500/20 dark:to-red-500/10 border-rose-200 dark:border-rose-500/30',
         iconName: 'ClipboardCheck',
         iconColor: 'text-rose-600 dark:text-rose-400',
         prompts: [
-          '校验本周全省上传的死亡医学证明书，自动筛查死因链倒置与逻辑冲突记录。',
-          '基于医学知识图谱对死因链复杂病例进行根本死因自动推导并匹配 ICD-10 编码。',
-          '监测全省低频罕见死因，排查短期内是否存在≥3例同类罕见死因聚集事件。'
+          CHRONIC_PROMPTS.qcSummary,
+          CHRONIC_PROMPTS.qc,
+          CHRONIC_PROMPTS.causes
         ]
       },
       {
-        title: '慢病发病预测与早死率',
+        title: '慢病登记特征',
         color: 'bg-pink-500/10 dark:bg-gradient-to-b dark:from-pink-500/20 dark:to-purple-500/10 border-pink-200 dark:border-pink-500/30',
         iconName: 'HeartPulse',
         iconColor: 'text-pink-600 dark:text-pink-400',
         prompts: [
-          '构建简略寿命表，测算全省 30~70 岁四类重大慢病（心脑血管/恶性肿瘤等）过早死亡概率(4q70)。',
-          '利用 GBDT 风险模型预测全省各区县未来 3 年恶性肿瘤与脑卒中发病率时空演变。',
-          '通过关联规则挖掘高血压合并糖尿病患者发生急性心梗与脑出血的高危并发症规律。'
+          CHRONIC_PROMPTS.chronicTypes,
+          CHRONIC_PROMPTS.diabetes,
+          CHRONIC_PROMPTS.complications
         ]
       },
       {
-        title: '伤害特征聚类与因果归因',
+        title: '伤害监测特征',
         color: 'bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-500/20 dark:to-orange-500/10 border-amber-200 dark:border-amber-500/30',
         iconName: 'Activity',
         iconColor: 'text-amber-600 dark:text-amber-400',
         prompts: [
-          '对全省哨点医院门诊伤害病例进行聚类分析，输出老年人居家跌倒与儿童意外伤害的时空特征。',
-          '构建决策树模型分析农村地区农机操作伤害的主要风险因素归因比。',
-          '排查某工业园区短期内出现的同类工伤与一氧化碳中毒聚集性事件并溯源。'
+          CHRONIC_PROMPTS.injuries,
+          CHRONIC_PROMPTS.falls,
+          CHRONIC_PROMPTS.injuryTrend
         ]
       },
       {
-        title: '筛查清单与综合公报',
+        title: '死亡分布与明细',
         color: 'bg-purple-500/10 dark:bg-gradient-to-b dark:from-purple-500/20 dark:to-indigo-500/10 border-purple-200 dark:border-purple-500/30',
         iconName: 'FileCheck2',
         iconColor: 'text-purple-600 dark:text-purple-400',
         prompts: [
-          '基于各区县肿瘤高发数据与人口老龄化系数，生成高危人群早癌筛查推荐清单与卫生经济学收益。',
-          '汇总全死因顺位、潜在减寿年数(YPLL)与伤害高发场所，自动生成全省综合监测年度公报。',
-          '针对心脑血管疾病极高危区县，自动生成个性化公共卫生综合干预指南。'
+          CHRONIC_PROMPTS.deathMap,
+          CHRONIC_PROMPTS.deathTrend,
+          CHRONIC_PROMPTS.deathRecords
         ]
       }
     ],
@@ -945,10 +946,10 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       statusText: '● 死亡证明质控与早死率测算',
       welcomeMessage: '您好！我是 **CdcBuddy 死因、慢病及伤害综合监测智能助手**。\n\n我已支持在对话流中直接渲染**简略寿命表早死率仪表盘、死因质控校验明细、伤害特征聚类树及慢病干预指南**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
       quickPrompts: [
-        '测算全省30~70岁重大慢病过早死亡概率(4q70)',
-        '校验本周全省死亡医学证明书死因链逻辑质控',
-        '分析全省哨点医院老年跌倒与意外伤害聚类特征',
-        '生成各区县高发恶性肿瘤早癌筛查推荐清单'
+        CHRONIC_PROMPTS.qcSummary,
+        CHRONIC_PROMPTS.chronicTypes,
+        CHRONIC_PROMPTS.injuries,
+        CHRONIC_PROMPTS.deathMap
       ],
       inputPlaceholder: '输入死因慢病监测指令 (如：测算4q70早死率)...',
       gradientClass: 'from-rose-600 to-pink-500',
