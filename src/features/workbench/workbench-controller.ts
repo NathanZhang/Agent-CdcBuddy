@@ -9,15 +9,34 @@ export interface WorkbenchState {domain:AgentDomain;busy:boolean;status:string;m
 export function createWorkbenchController(options:{domain:AgentDomain;client:WorkbenchClient}){
  let state:WorkbenchState={domain:options.domain,busy:false,status:'IDLE',messages:[],view:null,sessionId:null,title:'新研判会话',progress:'',replyText:''};
  const listeners=new Set<()=>void>();let generation=0;let abort:AbortController|undefined;
+ let clearedRevision=0;const deletedSessions=new Set<string>();
  const update=(changes:Partial<WorkbenchState>)=>{state={...state,...changes};for(const listener of listeners)listener();};
  const stopMessages=()=>state.messages.map(m=>m.streaming?{...m,streaming:false,reasoningStreaming:false,interrupted:true,text:m.text||'已停止生成。'}:m);
  const cancel=()=>{generation++;abort?.abort();abort=undefined;update({busy:false,progress:'',status:'CANCELLED',view:null,messages:stopMessages()});};
+ const startSession=()=>{
+  generation++;abort?.abort();abort=undefined;
+  update({busy:false,status:'IDLE',messages:[],view:null,sessionId:null,title:'新研判会话',runId:undefined,progress:'',replyText:''});
+ };
  const interact=async(input:AgentInteraction):Promise<AgentTurnResult|undefined>=>{
   const operation=uiOperation(input);
+  if(operation?.mode==='session'&&input.resourceRef?.action==='create'){startSession();return;}
   // Drawer reads and management have their own lifecycle; they must not cancel an answer.
-  if(operation?.mode==='background')return options.client.interact(input);
+  if(operation?.mode==='background'){
+   const result=await options.client.interact(input);
+   if(result.status==='SUCCESS'&&input.resourceRef?.type==='session'){
+    const {action,id}=input.resourceRef;
+    if(action==='clear')clearedRevision++;
+    if(action==='delete')deletedSessions.add(id);
+    if(action==='clear'||(action==='delete'&&id===state.sessionId))update({sessionId:null,title:'新研判会话'});
+    if(['rename','update'].includes(action??'')&&id===state.sessionId){
+     const payload=result.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='SESSION_RESULT') as any;
+     if(payload?.session?.title)update({title:payload.session.title});
+    }
+   }
+   return result;
+  }
   const recordChat=!operation;
-  abort?.abort();const current=++generation;abort=new AbortController();
+  abort?.abort();const current=++generation;const sessionRevision=clearedRevision;abort=new AbortController();
   const timestamp=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
   const user:WorkbenchMessage={id:crypto.randomUUID(),sender:'user',text:input.userInput,timestamp};
   const assistantId=crypto.randomUUID();
@@ -31,9 +50,10 @@ export function createWorkbenchController(options:{domain:AgentDomain;client:Wor
   try{
    const result=await options.client.interact({...input,...(recordChat?{history}:{}),...(recordChat&&state.sessionId&&input.kind!=='session'?{sessionRef:{id:state.sessionId}}:{})},{signal:abort.signal,onGenerativeView:view=>{if(current===generation)update({view});},onProgress:text=>{if(current===generation)update({progress:text});},onReasoningStart:()=>patchReply({reasoningStreaming:true}),onReasoningChunk:(_chunk,full)=>patchReply({reasoningText:full,reasoningStreaming:true}),onReasoningEnd:ms=>patchReply({reasoningDuration:ms,reasoningStreaming:false}),onContentChunk:(_chunk,full)=>patchReply({text:full,...(full?{reasoningStreaming:false}:{})})});
    if(current!==generation)return;
-   const view=viewFromTurn(result);update({replyText:result.replyText});
+   const sessionStillExists=(id:string)=>sessionRevision===clearedRevision&&!deletedSessions.has(id);
+   const view=viewFromTurn(result);update({replyText:result.replyText,...(recordChat&&result.session&&sessionStillExists(result.session.id)?{sessionId:result.session.id,title:result.session.title}:{})});
    const sessionPayload=result.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='SESSION_RESULT' && ['read','create'].includes(p.action)) as any;
-   if(sessionPayload?.session && !['FAILED','CANCELLED'].includes(result.status)){
+   if(sessionPayload?.session && sessionStillExists(sessionPayload.session.sessionId) && !['FAILED','CANCELLED'].includes(result.status)){
     const restored=restoreSession(sessionPayload.session);update({sessionId:restored.sessionId,title:restored.title,messages:restored.messages,view:restored.view,runId:result.runId,status:result.status});
    }else if(operation?.mode==='session'){
     update({status:result.status});
@@ -50,7 +70,12 @@ export function createWorkbenchController(options:{domain:AgentDomain;client:Wor
  return {getState:()=>state,subscribe:(listener:()=>void)=>{listeners.add(listener);return ()=>{listeners.delete(listener);};},interact,cancel,
   send:(text:string)=>interact({interactionId:crypto.randomUUID(),kind:'conversation',userInput:text}),
   loadSession:(id:string)=>interact(adaptFunctionalInteraction({type:'session.read',id})),
-  startSession:()=>interact(adaptFunctionalInteraction({type:'session.create'}))
+  startSession,
+  showMessageView:(messageId:string)=>{
+   const message=state.messages.find(m=>m.id===messageId);
+   if(!message?.generativeView||state.busy)return false;
+   update({view:message.generativeView});return true;
+  }
  };
 }
 export type WorkbenchController=ReturnType<typeof createWorkbenchController>;

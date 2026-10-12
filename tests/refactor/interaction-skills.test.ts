@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { executeSkill } from '@/application/skills/skill-service';
 import { createDevelopmentContext } from '@/lib/skills/server-executor';
-import { getArtifact } from '@/infrastructure/db/business-store';
+import { getArtifact,withBusinessDb } from '@/infrastructure/db/business-store';
 import { migrateDatabase } from '@/infrastructure/db/migrations';
 let dir:string;
 beforeEach(()=>{dir=mkdtempSync(join(tmpdir(),'interaction-skills-'));const file=join(dir,'business.db');migrateDatabase(file);vi.stubEnv('APP_BUSINESS_DB_PATH',file);});
@@ -73,21 +73,23 @@ it('internal journaling is absent from public tools and a model cannot invoke it
  expect(definitions.map(s=>s.id)).not.toContain('skill_session_journal');
  const execute=vi.fn(executeSkill);
  const result=await collectDispatch(createMainAgent({listSkills:listSkillDefinitions,executeSkill:execute,llm:{complete:async()=>({role:'assistant',content:null,tool_calls:[{id:'internal',type:'function',function:{name:'skill_session_journal',arguments:'{"sessionId":"made-up","sourceRunId":"made-up"}'}}]})}})({interactionId:'query',kind:'conversation',userInput:'查询监测记录'},createDevelopmentContext('vector')));
- expect(result.status).toBe('FAILED');expect(result.error?.code).toBe('UNADVERTISED_TOOL');expect(execute).not.toHaveBeenCalled();
+ expect(result.status).toBe('FAILED');expect(result.error?.code).toBe('UNADVERTISED_TOOL');expect(result.skillRuns).toEqual([]);
+ expect(withBusinessDb(db=>db.prepare('SELECT COUNT(*) n FROM biz_chat_sessions WHERE session_id=?').get('made-up'))).toEqual({n:0});
 });
 
 it('repeated LLM write calls within a run reuse evidence and create only one session',async()=>{
  const {listSkillDefinitions}=await import('@/application/skills/skill-service');const {createMainAgent}=await import('@/application/agent/main-agent');const {collectDispatch}=await import('@/application/dispatch/dispatch-service');
  const ctx=createDevelopmentContext('vector');ctx.principal.userId='repeat-owner';let round=0;
  const result=await collectDispatch(createMainAgent({executeSkill,listSkills:listSkillDefinitions,llm:{complete:async()=>{round++;if(round===2)return {role:'assistant',content:'{"mode":"continue","reason":"确认上一步"}'};if(round===4){return {role:'assistant',content:'{"mode":"answer","replyText":"会话已创建"}'};}return {role:'assistant',content:null,tool_calls:[{id:`create-${round}`,type:'function',function:{name:'skill_session_manage',arguments:'{"action":"create","title":"同一个会话"}'}}]};}}})({interactionId:'create',kind:'session',userInput:'新建会话',resourceRef:{type:'session',id:'session.create',action:'create'}},ctx));
- const list=await executeSkill('skill_session_manage',{action:'list'},ctx);expect((list.payload as any).sessions).toHaveLength(1);expect(result.status).toBe('SUCCESS');expect(result.agui).toHaveLength(1);
+ const list=await executeSkill('skill_session_manage',{action:'list'},ctx);expect((list.payload as any).sessions).toHaveLength(0);expect(withBusinessDb(db=>db.prepare('SELECT COUNT(*) n FROM biz_chat_sessions WHERE user_id=?').get('repeat-owner'))).toEqual({n:1});expect(result.status).toBe('SUCCESS');expect(result.agui).toHaveLength(1);
 });
 
 it('blocks an unrequested export selected by the model before any artifact write',async()=>{
  const {listSkillDefinitions}=await import('@/application/skills/skill-service');const {createMainAgent}=await import('@/application/agent/main-agent');const {collectDispatch}=await import('@/application/dispatch/dispatch-service');
  const execute=vi.fn(executeSkill);let rounds=0;
  const result=await collectDispatch(createMainAgent({executeSkill:execute,listSkills:listSkillDefinitions,llm:{complete:async()=>++rounds===1?{role:'assistant',content:null,tool_calls:[{id:'export',type:'function',function:{name:'skill_artifact_export',arguments:'{"format":"csv","sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]}:{role:'assistant',content:'{"authorized":false,"reason":"用户只请求统计，没有要求导出"}'}}})({interactionId:'count',kind:'conversation',userInput:'统计病媒记录总数'},createDevelopmentContext('vector')));
- expect(result.error?.code).toBe('UNREQUESTED_WRITE');expect(execute).not.toHaveBeenCalled();
+ expect(result.error?.code).toBe('UNREQUESTED_WRITE');expect(result.skillRuns).toEqual([]);
+ expect(withBusinessDb(db=>db.prepare('SELECT COUNT(*) n FROM biz_artifacts').get())).toEqual({n:0});
 });
 
 it('exports an actual query view without copying server-only domain scope into skill arguments',async()=>{

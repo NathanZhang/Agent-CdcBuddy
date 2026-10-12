@@ -18,14 +18,15 @@ const input={interactionId:'turn-fixture',kind:'conversation' as const,userInput
 const tool=(id='call-1')=>({id,type:'function' as const,function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}});
 const answer={role:'assistant' as const,content:JSON.stringify({mode:'answer',replyText:'数据库记录数见结果表，来源为病媒实测数据。'})};
 function stub(messages:LLMMessage[]):LLMClient{let n=0;return {complete:async()=>messages[n++] ?? answer};}
-function agent(llm:LLMClient,onSkill?:()=>void){return createMainAgent({llm,listSkills:listSkillDefinitions,executeSkill:async(id,args,ctx)=>{onSkill?.();return executeSkill(id,args,ctx);}});}
+function titled(llm:LLMClient):LLMClient{return {complete:request=>request.messages[0].content?.includes('你负责提炼会话标题')?Promise.resolve({role:'assistant',content:'{"title":"监测记录查询"}'}):llm.complete(request)};}
+function agent(llm:LLMClient,onSkill?:()=>void){return createMainAgent({llm:titled(llm),listSkills:listSkillDefinitions,executeSkill:async(id,args,ctx)=>{if(id!=='skill_session_journal')onSkill?.();return executeSkill(id,args,ctx);}});}
 describe('single main Agent dispatch',()=>{
  it('HTTP and stream collect identical actual skill evidence, LLM reply and AG-UI',async()=>{
   let executions=0;const response=[{role:'assistant' as const,content:null,tool_calls:[tool()]},answer];
   const ctx=createDevelopmentContext('vector');ctx.runId='same-run';
   const streamed=[];for await(const event of dispatch(input,ctx,agent(stub(response),()=>executions++)))streamed.push(event);
   const one=await collectDispatch(streamed);const two=await collectDispatch(dispatch(input,ctx,agent(stub(response),()=>executions++)));
-  expect(JSON.stringify(two, (key,value)=>key==='executionTimeMs'?undefined:value)).toEqual(JSON.stringify(one, (key,value)=>key==='executionTimeMs'?undefined:value));expect(executions).toBe(2);expect(one.status).toBe('SUCCESS');expect(one.replyText).toContain('来源');
+  const comparable=(value:unknown)=>JSON.parse(JSON.stringify(value,(key,item)=>key==='executionTimeMs'?undefined:item));expect(comparable(two)).toEqual(comparable(one));expect(executions).toBe(2);expect(one.status).toBe('SUCCESS');expect(one.replyText).toContain('来源');
   expect(one.skillRuns[0].result.payload).toMatchObject({type:'DATA_TABLE_VIEW',data:[{n:expect.any(Number)}]});
   expect(one.agui[0].result).toEqual(one.skillRuns[0].result);expect(one.agui[0].runId).toBe(ctx.runId);
   expect(toLegacyResult(one).generativeView).toMatchObject({type:'DATA_TABLE_VIEW'});
@@ -37,7 +38,7 @@ describe('single main Agent dispatch',()=>{
  it('executes two tool calls in order and then asks LLM to ground final answer',async()=>{
   const order:string[]=[];let rounds=0;
   const llm:LLMClient={complete:async(request)=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool('first'),{...tool('second'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n2 FROM fact_monitoring"}'}}]};expect(request.messages.filter(m=>m.role==='tool').map(m=>m.tool_call_id)).toEqual(['first','second']);return answer;}};
-  const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),createMainAgent({llm,listSkills:listSkillDefinitions,executeSkill:async(id,args,ctx)=>{order.push(id);return executeSkill(id,args,ctx);}})));
+  const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),createMainAgent({llm:titled(llm),listSkills:listSkillDefinitions,executeSkill:async(id,args,ctx)=>{if(id!=='skill_session_journal')order.push(id);return executeSkill(id,args,ctx);}})));
   expect(order).toHaveLength(2);expect(rounds).toBe(2);expect(turn.skillRuns.map(r=>r.callId)).toEqual(['first','second']);expect(turn.status).toBe('SUCCESS');
  });
  it('halts before executing calls beyond a whole-batch budget',async()=>{

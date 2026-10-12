@@ -2,11 +2,20 @@ import {domainLabels} from './result-presentation';
 import type { DatasetRef } from '@/contracts/dataset';
 export function sourceLabels(datasets:DatasetRef[]=[]):string[]{return datasets.map(d=>`${domainLabels[d.domain]}：${d.origin==='observed'?'实测数据':'模拟数据（Mock）'} · ${d.version}`);}
 export {projectAguiView as viewFromTurn} from '@/contracts/agui-view';
+function restoreView(value:any):any{
+ let view=value;
+ if(typeof view==='string'){try{view=JSON.parse(view);}catch{return null;}}
+ if(!view||typeof view!=='object'||Array.isArray(view)||typeof view.type!=='string')return null;
+ if(!view.runId)return {...view,datasets:[],qualityFlags:[...(Array.isArray(view.qualityFlags)?view.qualityFlags:[]),'legacy-unverified']};
+ if(view.type==='AGUI_RESULT_GROUP')return {...view,views:(Array.isArray(view.views)?view.views:[]).map(restoreView).filter(Boolean)};
+ return view;
+}
 export function restoreSession(session:any){
- let view=session.lastGenerativeView ?? session.last_generative_view ?? null;
- if(typeof view==='string'){try{view=JSON.parse(view);}catch{view=null;}}
- if(view && !view.runId)view={...view,datasets:[],qualityFlags:[...(view.qualityFlags ?? []),'legacy-unverified']};
- const messages=(session.messages ?? []).map((m:any,i:number)=>({id:m.id ?? m.message_id ?? `legacy-${i}`,sender:m.sender ?? (m.role==='user'?'user':'agent'),text:m.text ?? m.content ?? '',timestamp:m.timestamp ?? '',skillUsed:m.skillUsed ?? m.skill_used,reasoningText:m.reasoningText ?? m.reasoning_text,reasoningDuration:m.reasoningDuration ?? m.reasoning_duration,runId:m.runId ?? m.generativeViewSnapshot?.runId}));
+ const view=restoreView(session.lastGenerativeView ?? session.last_generative_view);
+ const messages=(session.messages ?? []).map((m:any,i:number)=>{
+  const generativeView=restoreView(m.generativeViewSnapshot ?? m.generative_view_snapshot);
+  return {id:m.id ?? m.message_id ?? `legacy-${i}`,sender:m.sender ?? (m.role==='user'?'user':'agent'),text:m.text ?? m.content ?? '',timestamp:m.timestamp ?? '',skillUsed:m.skillUsed ?? m.skill_used,reasoningText:m.reasoningText ?? m.reasoning_text,reasoningDuration:m.reasoningDuration ?? m.reasoning_duration,runId:m.runId ?? generativeView?.runId,generativeView};
+ });
  return {sessionId:session.sessionId ?? session.session_id,title:session.title ?? '历史会话',messages,view};
 }
 

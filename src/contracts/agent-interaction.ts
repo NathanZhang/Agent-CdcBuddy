@@ -18,6 +18,8 @@ export interface AgentTurnResult {
   replyText:string;
   reasoningText?:string;
   reasoningDuration?:number;
+  sessionTitle?:string;
+  session?:{id:string;title:string};
   agui:AguiResult[];
   skillRuns:SkillRun[];
   error?:{code:string;message:string};

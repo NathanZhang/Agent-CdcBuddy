@@ -37,13 +37,28 @@ describe('shared workbench controller',()=>{
   const pending=controller.send('旧查询');await controller.loadSession('new-session');resolve(turn('stale-run'));await pending;
   expect(controller.getState().sessionId).toBe('new-session');expect(controller.getState().messages.map(m=>m.text)).toEqual(['新会话内容']);expect(controller.getState().view).toBeNull();expect(controller.getState().runId).toBe('session-load');
  });
- it('startSession is an Agent event and cancel immediately releases busy state',async()=>{
-  const requests:AgentInteraction[]=[];const controller=createWorkbenchController({domain:'env',client:{interact:async(input)=>{requests.push(input);return turn('new','SUCCESS',{type:'SESSION_RESULT',action:'create',session:{sessionId:'actual-session',title:'新会话',messages:[],lastGenerativeView:null}});}}});
-  await controller.startSession();expect(requests[0].kind).toBe('session');expect(controller.getState().sessionId).toBe('actual-session');controller.cancel();expect(controller.getState().busy).toBe(false);
+ it('starting a draft resets locally without sending a session-create request',async()=>{
+  const requests:AgentInteraction[]=[];const controller=createWorkbenchController({domain:'env',client:{interact:async(input)=>{requests.push(input);return {...turn(),session:{id:'saved',title:'已有会话'}};}}});
+  await controller.send('已有对话');requests.length=0;
+  for(let i=0;i<3;i++)await controller.startSession();
+  await controller.interact(adaptFunctionalInteraction({type:'session.create'}));
+  expect(requests).toEqual([]);expect(controller.getState()).toMatchObject({sessionId:null,title:'新研判会话',messages:[],view:null,replyText:'',progress:'',status:'IDLE',busy:false,runId:undefined});
+ });
+ it('starting a draft ignores streamed chunks and a late completion from the previous conversation',async()=>{
+  let finish!:(r:AgentTurnResult)=>void;let onChunk:((chunk:string,full:string)=>void)|undefined;let signal:AbortSignal|undefined;
+  const controller=createWorkbenchController({domain:'vector',client:{interact:async(_input,options)=>{onChunk=options?.onContentChunk;signal=options?.signal;return new Promise(resolve=>finish=resolve);}}});
+  const pending=controller.send('正在分析');onChunk?.('部分','部分回答');await controller.startSession();
+  expect(signal?.aborted).toBe(true);onChunk?.('迟到','迟到回答');finish({...turn(),session:{id:'old',title:'旧会话'}});await pending;
+  expect(controller.getState()).toMatchObject({sessionId:null,messages:[],view:null,busy:false,status:'IDLE'});
  });
  it('restores old sessions without presenting unverified legacy snapshots as a new observed result',()=>{
   const restored=restoreSession({sessionId:'old',messages:[{sender:'agent',text:'旧答复'}],lastGenerativeView:JSON.stringify({type:'SPECIES_COMPOSITION',composition:[]})});
   expect(restored.view.type).toBe('SPECIES_COMPOSITION');expect(restored.view.qualityFlags).toContain('legacy-unverified');expect(sourceLabels(restored.view.datasets)).toEqual([]);
+ });
+ it('normalizes legacy and malformed per-message AG-UI snapshots as well as the last view',()=>{
+  const restored=restoreSession({sessionId:'old',messages:[{sender:'agent',text:'历史结果',generative_view_snapshot:JSON.stringify({type:'SPECIES_COMPOSITION',composition:[]})},{sender:'agent',text:'损坏快照',generativeViewSnapshot:'{broken'},{sender:'agent',text:'无效快照',generativeViewSnapshot:42}]});
+  expect(restored.messages[0].generativeView).toMatchObject({type:'SPECIES_COMPOSITION',datasets:[],qualityFlags:['legacy-unverified']});
+  expect(restored.messages[1].generativeView).toBeNull();expect(restored.messages[2].generativeView).toBeNull();
  });
  it('renders mixed sources by each DatasetRef instead of by current app domain',()=>{
   expect(sourceLabels([dataset('vector','observed'),dataset('env','mock'),dataset('chronic','mock')])).toEqual(['病媒生物：实测数据 · v1','环境健康：模拟数据（Mock） · v1','慢病与死因：模拟数据（Mock） · v1']);
@@ -103,4 +118,18 @@ it('failed session switching keeps current messages and view without adding a fa
  let calls=0;const controller=createWorkbenchController({domain:'vector',client:{interact:async()=>++calls===1?turn():turn('missing','NO_DATA',null)}});
  await controller.send('分析');const before=controller.getState();await controller.loadSession('missing');
  expect(controller.getState().messages).toEqual(before.messages);expect(controller.getState().view).toEqual(before.view);
+});
+
+it.each(['clear','delete'])('a delayed answer cannot restore a session removed by %s',async action=>{
+ let finish!:(result:AgentTurnResult)=>void;let calls=0;
+ const controller=createWorkbenchController({domain:'vector',client:{interact:async input=>{
+  if(input.kind!=='conversation')return turn('management');
+  if(++calls===1)return {...turn('first'),session:{id:'deleted-session',title:'已删除会话'}};
+  return new Promise(resolve=>{finish=resolve;});
+ }}});
+ await controller.send('第一轮');const pending=controller.send('第二轮');
+ await controller.interact(adaptFunctionalInteraction({type:`session.${action}`,id:'deleted-session'}));
+ finish({...turn('delayed'),session:{id:'deleted-session',title:'已删除会话'}});await pending;
+ expect(controller.getState().sessionId).toBeNull();expect(controller.getState().busy).toBe(false);
+ expect(controller.getState().messages.at(-1)?.text).toBe('实际结果。');
 });

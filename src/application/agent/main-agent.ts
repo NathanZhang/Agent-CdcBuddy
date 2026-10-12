@@ -13,6 +13,7 @@ import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 import { recordAgentTurn } from '@/infrastructure/db/business-store';
 import { getDomainRepository } from '@/infrastructure/db/domain-repository';
 import {streamCompletion,replyPreview} from './stream-completion';
+import { generateSessionTitle } from './session-title';
 interface Dependencies {llm:LLMClient;listSkills:typeof listSkillDefinitions;executeSkill:typeof executeSkill;}
 function stableInput(value:any):string{return JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);}
 class TurnError extends Error {constructor(public code:string,message:string){super(message);}}
@@ -20,13 +21,50 @@ export function createMainAgent(dependencies:Dependencies){
   return async function* run(interaction:AgentInteraction,ctx:ExecutionContext):AsyncIterable<RunEvent>{
     let seq=0;const event=(type:RunEvent['type'],data:Record<string,any>):RunEvent=>({version:'1',runId:ctx.runId,seq:++seq,type,data});
     const skillRuns:SkillRun[]=[];const agui:AguiResult[]=[];let replyText='';
-    let reasoningText='',reasoningDuration=0;
+    let reasoningText='',reasoningDuration=0,streamedReply='';
+    let journalConversation=false;
+    const targetSessionId=interaction.sessionRef?.id ?? (interaction.resourceRef?.type==='session'&&interaction.resourceRef.action==='conversation'?interaction.resourceRef.id:undefined);
+    // Persistence finishes before the final SSE/HTTP result is published, including failures.
+    const persistTurn=async(result:AgentTurnResult)=>{
+      try{
+        recordAgentTurn(interaction,result,ctx);
+        if(!journalConversation)return;
+        const provider=getAppBusinessProvider();
+        const existing=await provider.getChatSessionById(targetSessionId ?? `sess_${ctx.runId}`);
+        const completed=!['FAILED','CANCELLED'].includes(result.status);
+        if(!completed&&(!existing||!existing.message_count))return;
+        if(completed&&(!existing||existing.title==='新研判会话')){
+          const firstMessages=existing?.message_count?await provider.getChatMessages(existing.session_id):[];
+          result.sessionTitle=await generateSessionTitle(dependencies.llm,{domain:ctx.domain,userInput:firstMessages[0]?.text ?? interaction.userInput,replyText:firstMessages[1]?.text ?? result.replyText},ctx.signal);
+          recordAgentTurn(interaction,result,ctx);
+        }
+        const journal=validateSkillResult(await dependencies.executeSkill('skill_session_journal',{sourceRunId:ctx.runId},{...ctx,signal:undefined}));
+        const payload=journal.payload as any;
+        if(journal.status!=='SUCCESS'||journal.runId!==ctx.runId||journal.domain!==ctx.domain||!payload?.sessionId||!payload?.title)throw new Error(journal.error?.message ?? '会话运行记录未保存');
+        result.session={id:payload.sessionId,title:payload.title};
+        result.sessionTitle=payload.title;
+        recordAgentTurn(interaction,result,ctx);
+      }catch(error){
+        if(!journalConversation)throw error;
+        const message=`历史会话自动保存失败：${error instanceof Error?error.message:'存储不可用'}`;
+        result.replyText+=`\n\n${message}`;
+        if(result.status!=='CANCELLED')result.status='FAILED';
+        result.error ??= {code:'SESSION_JOURNAL_FAILED',message};
+        try{recordAgentTurn(interaction,result,ctx);}catch{/* The visible result still reports the storage failure. */}
+      }
+    };
     const reasoning=()=>reasoningText?{reasoningText,reasoningDuration}:{};
     yield event('started',{interactionId:interaction.interactionId,domain:ctx.domain});
     try{
-      ctx.signal?.throwIfAborted();
       if(!ctx.principal.domainGrants.includes(ctx.domain))throw new TurnError('FORBIDDEN_DOMAIN','无权访问当前领域');
       assertPrincipal(ctx);
+      if(targetSessionId){
+        const session=await getAppBusinessProvider().getChatSessionById(targetSessionId);
+        if(!session)throw new TurnError('SESSION_NOT_FOUND','历史会话已删除，请开启新会话');
+        if(session.user_id!==ctx.principal.userId||(session.domain ?? 'vector')!==ctx.domain)throw new TurnError('FORBIDDEN_RESOURCE','无权访问该历史会话');
+      }
+      journalConversation=!uiOperation(interaction)&&interaction.kind!=='session';
+      ctx.signal?.throwIfAborted();
       const definitions=dependencies.listSkills(ctx.domain);
       if(interaction.resourceRef?.type==='skill'){const requested=definitions.find(s=>s.id===interaction.resourceRef?.id||s.aliases.includes(interaction.resourceRef!.id));if(requested)authorizeSkill(requested,((interaction.attachments??[]).find((a:any)=>a?.type==='operation-input') as any)?.args??{},ctx);}
       const functionalSkill:Record<string,string>={session:'skill_session_manage',catalog:'skill_catalog_manage',collection:'skill_collection_manage',approval:'skill_approval_decision'};
@@ -74,7 +112,7 @@ export function createMainAgent(dependencies:Dependencies){
             if(next.done){choice=validateLLMMessage(next.value);break;}
             const delta=next.value;
             if(delta.type==='reset'){
-              rawContent='';preview='';roundReasoning='';reasoningText=reasoningBefore;
+              rawContent='';preview='';streamedReply='';roundReasoning='';reasoningText=reasoningBefore;
               yield event('reasoning',{text:reasoningText});yield event('content',{text:''});
             }else if(delta.type==='reasoning'&&delta.text){
               if(!reasoningStarted)reasoningStarted=Date.now();roundReasoning+=delta.text;
@@ -85,7 +123,7 @@ export function createMainAgent(dependencies:Dependencies){
               rawContent+=delta.text;
               // A business answer remains gated on actual skill evidence.
               const nextPreview=replyPreview(rawContent,skillRuns.length>0);
-              if(nextPreview!==preview){preview=nextPreview;yield event('content',{text:preview});}
+              if(nextPreview!==preview){preview=nextPreview;streamedReply=preview;yield event('content',{text:preview});}
             }
           }
         }catch(error){ctx.signal?.throwIfAborted();if(error instanceof LLMError)throw error;throw new TurnError('LLM_UNAVAILABLE',error instanceof Error?error.message:'大模型不可用');}
@@ -102,14 +140,7 @@ export function createMainAgent(dependencies:Dependencies){
           const status=final.mode==='clarification'?'REVIEW_REQUIRED':statuses.includes('FAILED')?'FAILED':statuses.includes('CANCELLED')?'CANCELLED':statuses.includes('REVIEW_REQUIRED')?'REVIEW_REQUIRED':statuses.includes('INSUFFICIENT_DATA')?'INSUFFICIENT_DATA':statuses.every(s=>s==='NO_DATA')?'NO_DATA':'SUCCESS';
           const failed=skillRuns.find(run=>run.result.status==='FAILED');
           const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status,replyText,agui:status==='FAILED'?[]:agui,skillRuns,...reasoning(),...(failed?{error:{code:failed.result.error!.code,message:failed.result.error!.message}}:{})};
-          recordAgentTurn(interaction,result,ctx);
-          if(interaction.sessionRef || (interaction.kind==='conversation' && interaction.resourceRef?.type==='session' && interaction.resourceRef.action==='conversation')){
-            const args={sessionId:interaction.sessionRef?.id ?? interaction.resourceRef!.id,sourceRunId:ctx.runId};
-            const journal=await dependencies.executeSkill('skill_session_journal',args,ctx);
-            skillRuns.push({callId:`${ctx.runId}-journal`,skillId:'skill_session_journal',skillName:'会话运行记录',args,result:journal});
-            if(journal.status!=='SUCCESS'){result.status='FAILED';result.error={code:'SESSION_JOURNAL_FAILED',message:journal.error?.message ?? '会话运行记录未保存'};result.agui=[];}
-            recordAgentTurn(interaction,result,ctx);
-          }
+          await persistTurn(result);
           yield event('result',{result});yield event('completed',{status:result.status});return;
         }
         if(toolCount+calls.length>8 || toolRounds>=3)throw new TurnError('TOOL_BUDGET_EXCEEDED','技能执行预算已耗尽');
@@ -142,8 +173,8 @@ export function createMainAgent(dependencies:Dependencies){
       const message=cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';
       // A failed language summary does not invalidate already authorized skill data.
       const retained=!cancelled && ['LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','LLM_OUTPUT_TRUNCATED','INVALID_LLM_RESPONSE'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
-      const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':''),agui:retained,skillRuns,...reasoning(),error:{code,message}};
-      try{recordAgentTurn(interaction,result,ctx);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}
+      const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:(cancelled&&streamedReply?`${streamedReply}\n\n`:'')+message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':''),agui:retained,skillRuns,...reasoning(),error:{code,message}};
+      try{await persistTurn(result);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}
       yield event('failed',{code,message});yield event('result',{result});yield event('completed',{status:result.status});
     }
   };

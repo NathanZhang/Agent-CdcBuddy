@@ -365,7 +365,7 @@ export class AppBusinessProvider {
     this.ensureChatSessionTables();
     const db = this.getDb();
 
-    let sql = 'SELECT * FROM biz_chat_sessions WHERE 1=1';
+    let sql = 'SELECT * FROM biz_chat_sessions WHERE message_count > 0';
     const params: any[] = [];
 
     if (filter?.userId) {
@@ -423,7 +423,7 @@ export class AppBusinessProvider {
     this.ensureChatSessionTables();
     const db = this.getDb();
 
-    let sql = 'SELECT COUNT(*) as cnt FROM biz_chat_sessions WHERE 1=1';
+    let sql = 'SELECT COUNT(*) as cnt FROM biz_chat_sessions WHERE message_count > 0';
     const params: any[] = [];
 
     if (filter?.userId) {
@@ -480,7 +480,7 @@ export class AppBusinessProvider {
   async getChatMessages(sessionId: string): Promise<BizChatMessage[]> {
     this.ensureChatSessionTables();
     const db = this.getDb();
-    const rows = db.prepare('SELECT * FROM biz_chat_messages WHERE session_id = ? ORDER BY created_at ASC').all(sessionId) as any[];
+    const rows = db.prepare('SELECT * FROM biz_chat_messages WHERE session_id = ? ORDER BY created_at ASC, rowid ASC').all(sessionId) as any[];
     return rows.map(r => {
       let parsedSnapshot = null;
       if (r.generative_view_snapshot) {
@@ -507,7 +507,8 @@ export class AppBusinessProvider {
   async createChatSession(
     session: Omit<BizChatSession, 'created_at' | 'updated_at' | 'message_count'> & {
       initialMessages?: Omit<BizChatMessage, 'created_at'>[];
-    }
+    },
+    options: { reuseExisting?: boolean } = {}
   ): Promise<BizChatSession> {
     this.ensureChatSessionTables();
     const db = this.getDb();
@@ -528,6 +529,15 @@ export class AppBusinessProvider {
     };
 
     const insertTx = db.transaction(() => {
+      if (options.reuseExisting) {
+        const existing = db.prepare('SELECT * FROM biz_chat_sessions WHERE session_id = ?').get(newRecord.session_id) as BizChatSession | undefined;
+        if (existing) {
+          if (existing.user_id !== newRecord.user_id || (existing.domain ?? 'vector') !== newRecord.domain) throw new Error('Session owner/domain access denied');
+          const stored = db.prepare('SELECT session_id FROM biz_chat_messages WHERE message_id = ?');
+          if (!session.initialMessages?.length || !session.initialMessages.every(msg => (stored.get(msg.message_id) as any)?.session_id === newRecord.session_id)) throw new Error('Existing session does not contain the recorded turn');
+          return existing;
+        }
+      }
       db.prepare(`
         INSERT INTO biz_chat_sessions (
           session_id, user_id, user_name, user_role, domain, title,
@@ -570,10 +580,10 @@ export class AppBusinessProvider {
           );
         }
       }
+      return newRecord;
     });
 
-    insertTx();
-    return newRecord;
+    return insertTx.immediate();
   }
 
   /**
@@ -590,6 +600,10 @@ export class AppBusinessProvider {
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
     const updateTx = db.transaction(() => {
+      const current = db.prepare('SELECT message_count, title FROM biz_chat_sessions WHERE session_id = ?').get(sessionId) as any;
+      if (!current) throw new Error('Target session no longer exists');
+      const existing = db.prepare('SELECT session_id FROM biz_chat_messages WHERE message_id = ?');
+      if (messages.length && messages.every(msg => (existing.get(msg.message_id) as any)?.session_id === sessionId)) return;
       const msgStmt = db.prepare(`
         INSERT INTO biz_chat_messages (
           message_id, session_id, sender, text, reasoning_text, reasoning_duration, skill_used,
@@ -614,12 +628,11 @@ export class AppBusinessProvider {
       }
 
       // 获取当前会话并更新
-      const current = db.prepare('SELECT message_count, title FROM biz_chat_sessions WHERE session_id = ?').get(sessionId) as any;
       if (current) {
         const newCount = (current.message_count || 0) + messages.length;
         let finalTitle = current.title;
         // 如果原标题为默认占位且有推荐标题，则更新
-        if (suggestedTitle && (current.title === '新研判会话' || current.title.startsWith('新建会话'))) {
+        if (suggestedTitle && current.title === '新研判会话') {
           finalTitle = suggestedTitle;
         }
 
