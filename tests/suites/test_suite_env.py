@@ -94,31 +94,20 @@ class EnvSurveillanceTestSuite:
         res.assert_true("maxCarcinogenicRiskCR" in eval_res, "包含最大致癌风险 CR 指标")
         res.assert_true("maxHazardQuotientHQ" in eval_res, "包含最大非致癌危害商数 HQ 指标")
 
-        # 特征重要性
         features = result.get("randomForestFeatureImportances", [])
-        res.assert_true(len(features) >= 3, f"随机森林特征重要性评估完整 (指标数: {len(features)})")
-        top_feature = features[0]["feature"]
-        res.assert_true("三氯甲烷" in top_feature or "总大肠菌群" in top_feature, f"首要致癌/健康风险因子识别准确 ({top_feature})")
-
-        # 普通克里金空间插值点
-        kriging_points = result.get("krigingGridPoints", [])
-        res.assert_true(len(kriging_points) > 10, f"普通克里金空间插值输出网格点充足 (点数: {len(kriging_points)})")
+        res.assert_true(features == [], "未执行随机森林，不输出固定特征权重")
+        res.assert_true("random-forest-unavailable" in result.get("qualityFlags", []), "未实现模型明确标注")
+        res.assert_true(result.get("krigingGridPoints", []) == [], "未执行克里金，不输出伪网格")
+        observed = result.get("observedPoints", [])
+        res.assert_true(len(observed) > 10, "真实坐标监测点保留")
+        res.assert_true(0 <= result["passRate"] <= 100, "综合达标率不超过100%")
 
     def test_46_47_sewage_lag_tracing(self, res: TestResult):
-        """No. 46/47 污水管网病原时序滞后关联分析与 GIS 拓扑反向溯源"""
-        result = analyze_sewage_lag_correlation(city="郑州市", pathogen="诺如病毒")
-        res.assert_true(result["status"] == "SUCCESS", "污水病原滞后关联分析状态为 SUCCESS")
-
-        lag_window = result.get("optimalLagWindow", {})
-        best_lag = lag_window.get("bestLagDays")
-        max_r = lag_window.get("maxPearsonR")
-        res.assert_true(best_lag == 6, f"最佳提前预警窗口期判定准确 (Lag {best_lag} 天)")
-        res.assert_true(max_r >= 0.85, f"最大 Pearson 相关系数高度显著 (r={max_r} >= 0.85)")
-
-        # 反向溯源分区
-        sources = result.get("reverseTracingSources", [])
-        res.assert_true(len(sources) >= 2, f"反向锁定上游疑似排污集水节点数充足 ({len(sources)} 处)")
-        res.assert_true(any("龙子湖" in s["subzoneName"] for s in sources), "成功锁定高危高校排污集水分区")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=analyze_sewage_lag_correlation(city="郑州市",pathogen="诺如病毒")
+        res.assert_true(r['sampleCount']>0,'实际消费Mock记录')
+        res.assert_true(not r['reverseTracingSources'],'无拓扑不能锁定源头')
+        res.assert_true(all(v['pearsonCorrelation'] is None or -1<=v['pearsonCorrelation']<=1 for g in r['groups'] for v in g['lagCorrelationTrend']),'实际相关系数范围；缺失配对保持空值')
 
     def test_48_49_public_venue_hygiene(self, res: TestResult):
         """No. 48/49 公共场所卫生健康效应映射与动态评级"""
@@ -134,37 +123,15 @@ class EnvSurveillanceTestSuite:
         conn.close()
 
     def test_50_51_air_climate_dlnm(self, res: TestResult):
-        """No. 50/51 空气与极端气候健康预警 (DLNM 与 GBDT 72h 预警)"""
-        result = evaluate_air_climate_health_risk(city="焦作市")
-        res.assert_true(result["status"] == "SUCCESS", "空气与极端气候健康评估状态为 SUCCESS")
-
-        dlnm = result.get("dlnmModelEvaluation", {})
-        peak_rr = dlnm.get("peakRelativeRiskRR")
-        res.assert_true(peak_rr >= 1.30, f"DLNM 模型峰值相对危险度显著 (RR={peak_rr} >= 1.30)")
-
-        # 72小时极端高温热浪预警
-        warning = result.get("earlyWarning72Hours", {})
-        timeline = warning.get("forecastTimeline", [])
-        res.assert_true(len(timeline) == 3, "提供未来 24h、48h、72h 三阶段连续演变推演")
-        max_surge = any("+68%" in t.get("pediatricOutpatientSurge", "") for t in timeline)
-        res.assert_true(max_surge, "准确量化儿童呼吸门诊激增预测峰值")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=evaluate_air_climate_health_risk(city='焦作市')
+        res.assert_true(r['error']['code']=='CAPABILITY_UNAVAILABLE','未训练DLNM不能伪造预测')
 
     def test_52_53_river_basin_pollution_chain(self, res: TestResult):
-        """No. 52/53 四河流域重金属迁移链条与空间自相关 Moran's I"""
-        result = analyze_river_basin_pollution_chain(basin_name="黄河流域河南段")
-        res.assert_true(result["status"] == "SUCCESS", "四河流域污染链条分析状态为 SUCCESS")
-
-        chain = result.get("transferChain", [])
-        res.assert_true(len(chain) == 3, "完整构建'地表水 ➔ 农田土壤 ➔ 粮食作物'三级跨介质污染转移链")
-
-        spatial = result.get("spatialAutocorrelation", {})
-        moran_i = spatial.get("globalMoransI")
-        z_score = spatial.get("zScore")
-        res.assert_true(moran_i > 0.35, f"空间自相关 Moran's I 呈现显著空间正相关 (I={moran_i} > 0.35)")
-        res.assert_true(z_score > 3.0, f"空间显著性检验 Z-Score 达极显著水平 (Z={z_score} > 3.0)")
-
-        hotspots = spatial.get("highHighHotspots", [])
-        res.assert_true(len(hotspots) >= 2, f"高高集聚区定位明确 ({len(hotspots)} 处高危区县)")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=analyze_river_basin_pollution_chain(basin_name='黄河流域河南段')
+        res.assert_true(r['totalSamples']>0,'实际浓度汇总')
+        res.assert_true(r['spatialAutocorrelation'] is None,'缺少拓扑不能生成Moran热点')
 
     def test_54_55_early_warning_and_clearance(self, res: TestResult):
         """No. 54/55 预警信号触发与自动核销闭环机制"""
@@ -182,25 +149,15 @@ class EnvSurveillanceTestSuite:
         res.assert_true(len(advice) > 10, "生成针对性的水厂及末梢管网消杀排污与加氯控制建议")
 
     def test_57_scenario_simulation(self, res: TestResult):
-        """No. 57 环境干预政策健康效益量化情景推演"""
-        result = simulate_environmental_scenario(
-            scenario_type="industrial_emission_cut",
-            reduction_percentage=30.0,
-            target_area="焦作市中站区工业集聚区"
-        )
-        res.assert_true(result["status"] == "SUCCESS", "情景模拟推演算法状态为 SUCCESS")
-
-        outcomes = result.get("environmentalOutcomes", {})
-        res.assert_true("predictedAqiDecrease" in outcomes, "输出 AQI 改善预测")
-
-        benefits = result.get("quantifiedHealthBenefits", {})
-        res.assert_true("avoidedPediatricRespiratoryOutpatients" in benefits, "量化避免儿童门诊人次")
-        res.assert_true("estimatedEconomicBenefitWanRMB" in benefits, "输出量化卫生经济学净收益")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        r=simulate_environmental_scenario()
+        res.assert_true(r['error']['code']=='CAPABILITY_UNAVAILABLE','未验证政策模型不可用')
 
     def test_58_report_and_mobile_assistant(self, res: TestResult):
-        """No. 58 综合报告生成与移动端助手支持"""
-        res.assert_true(True, "支持月度/专项环境健康综合报告自动生成与 PDF 导出")
-        res.assert_true(True, "支持移动端现场水质采样扫码录入与离线质控缓存")
+        """Compatibility/partial or refusal only; no full capability signoff."""
+        from analytics_engine.mock_methods import unavailable
+        r=unavailable('offline-mobile')
+        res.assert_true(r['status']=='FAILED','离线移动未实现，不作为完成验收')
 
     def run_all(self):
         self.start_time = datetime.now()

@@ -1,0 +1,33 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run vector-analytics
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/vector-analytics.test.ts (4 tests | 1 failed) 779ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  488ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > missing geographic scope cannot invent IDW points 285ms
+   × verified vector subcapabilities via actual Skills and bounded runner > rolling holdouts are reachable through the main Skill contract with real provenance 4ms
+     → expected 'FAILED' to be 'SUCCESS' // Object.is equality
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > models with missing training and genotype remain unavailable 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/vector-analytics.test.ts > verified vector subcapabilities via actual Skills and bounded runner > rolling holdouts are reachable through the main Skill contract with real provenance
+AssertionError: expected 'FAILED' to be 'SUCCESS' // Object.is equality
+
+Expected: "SUCCESS"
+Received: "FAILED"
+
+ ❯ tests/refactor/vector-analytics.test.ts:11:244
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  15:21:10
+   Duration  2.01s (transform 144ms, setup 0ms, collect 467ms, tests 779ms, environment 0ms, prepare 386ms)
+

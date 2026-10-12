@@ -1,0 +1,44 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/analytics-runner.test.ts (7 tests) 5627ms
+   ✓ timeout and cancellation terminate a running child and release the slot for a real next execution  795ms
+   ✓ the production runner computes an actual water snapshot through strict Python SkillResult  2420ms
+   ✓ timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer  1806ms
+ ✓ tests/refactor/final-workflow-review.test.ts (5 tests) 2407ms
+   ✓ rejects unrelated category or sampling method and missing original measurement policy  1223ms
+   ✓ lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence  1113ms
+ ✓ tests/refactor/workflow.test.ts (4 tests) 2454ms
+   ✓ requires actual persisted Skill evidence; waiting review never dispatches; rejection closes without ticket  1154ms
+   ✓ approves idempotently, rejects missing retest and cannot claim external delivery  1252ms
+ ✓ tests/refactor/workbench.test.tsx (11 tests) 1138ms
+   ✓ legacy snapshots render their stored values read-only without live fallback metrics or actions  1100ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 568ms
+ ✓ tests/refactor/authorization.test.ts (4 tests) 507ms
+ ✓ tests/refactor/interaction-skills.test.ts (10 tests) 182ms
+ ✓ tests/refactor/dispatch.test.ts (14 tests) 80ms
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 106ms
+ ✓ tests/refactor/dispatch-http.test.ts (4 tests) 61ms
+ ✓ tests/refactor/llm-client.test.ts (9 tests) 35ms
+ ✓ tests/refactor/deployment.test.ts (3 tests) 34ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 20ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 20ms
+ ✓ tests/refactor/query-gateway.test.ts (15 tests) 18ms
+ ✓ tests/refactor/results-ui.test.ts (4 tests) 21ms
+ ✓ tests/refactor/agui.test.ts (1 test) 4ms
+ ✓ tests/refactor/results.test.ts (6 tests) 4ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 3ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 3ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 19579ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  519ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  19009ms
+
+ Test Files  21 passed (21)
+      Tests  125 passed (125)
+   Start at  17:44:20
+   Duration  20.53s (transform 836ms, setup 0ms, collect 3.86s, tests 32.87s, environment 2ms, prepare 823ms)
+

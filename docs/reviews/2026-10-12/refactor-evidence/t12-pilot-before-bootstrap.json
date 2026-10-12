@@ -1,0 +1,49 @@
+[
+  {
+    "port": 9771,
+    "status": 503,
+    "body": {
+      "ready": false,
+      "domain": "vector",
+      "tier": "pilot",
+      "source": {
+        "id": "vector-monitoring",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "observed-method-specific-evidence",
+      "checks": {
+        "configuration": true,
+        "dataset": false,
+        "migrations": true,
+        "identity": false,
+        "origin": true,
+        "llm": true
+      }
+    }
+  },
+  {
+    "port": 9772,
+    "status": 503,
+    "body": {
+      "ready": false,
+      "domain": "vector",
+      "tier": "pilot",
+      "source": {
+        "id": "vector-monitoring",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "observed-method-specific-evidence",
+      "checks": {
+        "configuration": true,
+        "dataset": true,
+        "datasetIntegrity": true,
+        "migrations": true,
+        "identity": false,
+        "origin": true,
+        "llm": true
+      }
+    }
+  }
+]

@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@/lib/theme/theme-context';
@@ -24,6 +25,7 @@ interface SatScanLSTMPipelineCardProps {
 }
 
 export const SatScanLSTMPipelineCard: React.FC<SatScanLSTMPipelineCardProps> = ({ data }) => {
+  const interactFunctional=useFunctionalInteraction();
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'overview' | 'satscan' | 'kmeans' | 'lstm' | 'logs'>('overview');
   const [selectedCity, setSelectedCity] = useState<string>(
@@ -464,7 +466,7 @@ export const SatScanLSTMPipelineCard: React.FC<SatScanLSTMPipelineCardProps> = (
               </div>
             </div>
             <button
-              onClick={() => setIsHilApproved(true)}
+              onClick={() => void interactFunctional({type:'approval.decide',id:(data as any).approvalId ?? (data as any).jobId,args:{decision:'approve'}})}
               disabled={isHilApproved}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-md ${
                 isHilApproved

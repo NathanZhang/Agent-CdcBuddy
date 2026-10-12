@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -68,6 +69,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   onSelectDistrict,
   title
 }) => {
+  const interactFunctional=useFunctionalInteraction();
   const profile = getCurrentAgentProfile();
   const domain = profile.domain || 'vector';
 
@@ -487,6 +489,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
         el.className = 'city-map-badge cursor-pointer px-2 py-0.5 bg-slate-900/90 text-sky-300 text-[11px] font-semibold rounded border border-sky-500/30 shadow-md hover:bg-sky-600 hover:text-white transition-all flex items-center gap-1 backdrop-blur-xs';
         el.innerHTML = `<span>🏙️</span><span>${city.name}</span>`;
         el.onclick = () => {
+          void interactFunctional({type:'map.drilldown',id:city.name,args:{city:city.name}});
           map.flyTo({ center: city.center, zoom: 9.8, pitch: 0, bearing: 0, duration: 900 });
           setCurrentViewCity(city.name);
           setCurrentViewDistrict(undefined);
@@ -794,6 +797,7 @@ export const VectorMapComponent: React.FC<VectorMapProps> = ({
   };
 
   const drillDownDistrict = (distName: string, center: [number, number]) => {
+    void interactFunctional({type:'map.drilldown',id:distName,args:{city:currentViewCity,district:distName}});
     if (mapRef.current) {
       mapRef.current.flyTo({ center, zoom: 12.2, pitch: 0, bearing: 0, duration: 800 });
       setCurrentViewDistrict(distName);

@@ -1,0 +1,45 @@
+
+> agent-cdc-buddy@2.0.0 test:scientific
+> ./.venv/bin/python tests/run_scientific.py test_vector_methods
+
+test_apriori_pair_support_and_confidence_are_actual_filtered_counts (test_vector_methods.VectorMethods.test_apriori_pair_support_and_confidence_are_actual_filtered_counts) ... ok
+test_cutoff_blocks_future_records_and_keeps_real_training_window (test_vector_methods.VectorMethods.test_cutoff_blocks_future_records_and_keeps_real_training_window) ... ok
+test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older (test_vector_methods.VectorMethods.test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older) ... FAIL
+test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth (test_vector_methods.VectorMethods.test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth) ... ok
+test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district (test_vector_methods.VectorMethods.test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district) ... ok
+test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number (test_vector_methods.VectorMethods.test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number) ... ok
+test_legacy_composable_graph_cannot_complete_an_unregistered_skill (test_vector_methods.VectorMethods.test_legacy_composable_graph_cannot_complete_an_unregistered_skill) ... ok
+test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts (test_vector_methods.VectorMethods.test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts) ... ok
+test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency (test_vector_methods.VectorMethods.test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency) ... ok
+test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts (test_vector_methods.VectorMethods.test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts) ... ok
+test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles (test_vector_methods.VectorMethods.test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles) ... ok
+test_recent_daily_window_does_not_select_oldest_sixty (test_vector_methods.VectorMethods.test_recent_daily_window_does_not_select_oldest_sixty) ... ok
+test_sampling_methods_are_separate_and_missing_effort_is_explicit (test_vector_methods.VectorMethods.test_sampling_methods_are_separate_and_missing_effort_is_explicit) ... ok
+test_scan_permutation_detects_actual_hotspot_without_forced_radius (test_vector_methods.VectorMethods.test_scan_permutation_detects_actual_hotspot_without_forced_radius) ... ok
+test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters (test_vector_methods.VectorMethods.test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters) ... ok
+test_untrained_lstm_returns_unavailable_without_synthetic_forecasts (test_vector_methods.VectorMethods.test_untrained_lstm_returns_unavailable_without_synthetic_forecasts) ... ok
+
+======================================================================
+FAIL: test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older (test_vector_methods.VectorMethods.test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/scientific/test_vector_methods.py", line 100, in test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older
+    self.assertEqual([p['period'] for p in r['groups'][0]['forecasts']],['2024-01','2024-02']);self.assertIn('missing-months-recursively-extrapolated',r['groups'][0]['qualityFlags']);self.assertEqual(r['groups'][0]['trainingWindow']['end'],'2023-10')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['2023-11', '2023-12'] != ['2024-01', '2024-02']
+
+First differing element 0:
+'2023-11'
+'2024-01'
+
+- ['2023-11', '2023-12']
+?      ^ ^        ^ ^
+
++ ['2024-01', '2024-02']
+?      ^ ^        ^ ^
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 2.257s
+
+FAILED (failures=1)

@@ -1,0 +1,2 @@
+import {readFileSync} from 'node:fs';import {createUser} from '@/infrastructure/auth/session';
+const input=process.env.CDC_IDENTITY_FILE?readFileSync(process.env.CDC_IDENTITY_FILE,'utf8'):process.env.CDC_IDENTITY_JSON;if(!input)throw new Error('Explicit identity input required');const p=createUser(JSON.parse(input));console.log(JSON.stringify({userId:p.userId,role:p.role,domainGrants:p.domainGrants}));

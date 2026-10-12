@@ -1,0 +1,30 @@
+[
+  {
+    "domain": "vector",
+    "name": "cdcbuddy-refactor-vector",
+    "port": 9767,
+    "containerId": "263f75278960e3d92f535480f5340a231fcd40d59c54a5e9bfe93110390260d3",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
+  },
+  {
+    "domain": "foodborne",
+    "name": "cdcbuddy-refactor-foodborne",
+    "port": 9768,
+    "containerId": "9cc349126877d8a26218c69235d5c30c8ba13b0434e26e74c5422a29fca6b0aa",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
+  },
+  {
+    "domain": "env",
+    "name": "cdcbuddy-refactor-env",
+    "port": 9769,
+    "containerId": "3d538bf81484454774f82ad3855fbf4a4854378c361a603802e2e06c48275e38",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
+  },
+  {
+    "domain": "chronic",
+    "name": "cdcbuddy-refactor-chronic",
+    "port": 9770,
+    "containerId": "5332c370f29bebeb6df6684f86ac010f3df397f406bfc1fe167af1ceb54698da",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
+  }
+]

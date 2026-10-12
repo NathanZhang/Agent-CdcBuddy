@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -19,13 +20,13 @@ import math
 from typing import Dict, Any, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
 
-def evaluate_water_health_risk(city: str = None, district: str = None) -> Dict[str, Any]:
+
+def evaluate_water_health_risk(city: str = None, district: str = None, db_path: str = None) -> Dict[str, Any]:
     """
     基于实测水质数据执行随机森林与 US EPA 健康风险评估
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect_readonly(db_path or resolve_dataset_path('env'))
     cur = conn.cursor()
 
     query = """
@@ -55,7 +56,8 @@ def evaluate_water_health_risk(city: str = None, district: str = None) -> Dict[s
         return {
             "status": "NO_DATA",
             "message": "未查询到符合条件的生活饮用水监测记录",
-            "totalSamples": 0
+            "totalSamples": 0,
+            "payload": None
         }
 
     total_samples = len(rows)
@@ -74,41 +76,31 @@ def evaluate_water_health_risk(city: str = None, district: str = None) -> Dict[s
     avg_cr = float(np.mean([r[15] for r in rows if r[15] is not None]))
     avg_hq = float(np.mean([r[16] for r in rows if r[16] is not None]))
 
-    # 随机森林特征重要性评估 (Random Forest Feature Importance)
-    feature_importance = [
-        {"feature": "三氯甲烷 (消毒副产物)", "importance": 0.364, "riskType": "致癌健康风险首要因子"},
-        {"feature": "总大肠菌群 (微生物指标)", "importance": 0.285, "riskType": "急性肠道感染高危因子"},
-        {"feature": "重金属铅 (管网溶出)", "importance": 0.168, "riskType": "神经与肾脏蓄积毒性"},
-        {"feature": "高锰酸盐指数 (COD)", "importance": 0.112, "riskType": "有机污染综合指标"},
-        {"feature": "重金属镉", "importance": 0.071, "riskType": "骨骼与肾功能危害"}
-    ]
+    max_cr = max((float(row[15]) for row in rows if row[15] is not None), default=None)
+    max_hq = max((float(row[16]) for row in rows if row[16] is not None), default=None)
 
-    # 普通克里金空间插值网格点生成 (基于真实经纬度)
-    spatial_kriging_points = []
-    for r in rows[:60]:
-        lat = r[17] if r[17] is not None else 34.75
-        lon = r[18] if r[18] is not None else 113.66
-        hq = r[16] if r[16] is not None else 0.35
-        spatial_kriging_points.append({
-            "lat": round(lat, 4),
-            "lon": round(lon, 4),
-            "hazardIndex": round(hq, 3),
-            "riskLevel": "high" if hq >= 1.0 else ("moderate" if hq >= 0.5 else "safe"),
-            "city": r[1],
-            "district": r[2]
-        })
+    # 随机森林特征重要性评估 (Random Forest Feature Importance)
+    feature_importance = []  # No trained random-forest model has been executed.
+    spatial_kriging_points = []  # No kriging interpolation has been executed.
+    observed_points = [
+        {"lat":float(row[17]),"lon":float(row[18]),"hazardIndex":float(row[16]),"riskLevel":"high" if row[16] >= 1 else ("moderate" if row[16] >= 0.5 else "safe"),"city":row[1],"district":row[2]}
+        for row in rows if row[17] is not None and row[18] is not None and row[16] is not None
+    ]
 
     return {
         "status": "SUCCESS",
+        "method": "observed-water-summary-v1",
+        "qualityFlags": ["random-forest-unavailable", "kriging-unavailable"],
+        "observedPoints": observed_points,
         "city": city or "河南省全域",
         "district": district or "全辖区",
         "totalSamples": total_samples,
         "passRate": pass_rate,
         "evaluationResult": {
             "totalStationsSampled": total_samples,
-            "overallComplianceRate": f"{pass_rate * 100:.1f}%",
-            "maxCarcinogenicRiskCR": f"{avg_cr:.2e}",
-            "maxHazardQuotientHQ": round(avg_hq, 3)
+            "overallComplianceRate": f"{pass_rate:.1f}%",
+            "maxCarcinogenicRiskCR": f"{max_cr:.2e}" if max_cr is not None else None,
+            "maxHazardQuotientHQ": max_hq
         },
         "healthRiskSummary": {
             "carcinogenicRiskAverage": f"{avg_cr:.2e}",

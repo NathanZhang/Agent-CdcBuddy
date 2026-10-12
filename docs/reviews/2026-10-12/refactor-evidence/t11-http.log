@@ -1,0 +1,13 @@
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py auth
+
+test_anonymous_all_business_adapters_require_identity (test_auth.HttpAuth.test_anonymous_all_business_adapters_require_identity) ... ok
+test_city_and_district_conflicts_rejected_before_llm (test_auth.HttpAuth.test_city_and_district_conflicts_rejected_before_llm) ... ok
+test_logout_invalidates_cookie_and_originless_login_denied (test_auth.HttpAuth.test_logout_invalidates_cookie_and_originless_login_denied) ... ok
+test_public_body_cannot_promote_role_and_csrf_required (test_auth.HttpAuth.test_public_body_cannot_promote_role_and_csrf_required) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 11.309s
+
+OK

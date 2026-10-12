@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import {AnalyticsResultCard} from './AnalyticsResultCard';
 import { VectorMapComponent } from './VectorMapComponent';
 import { DensityTrendChart } from './DensityTrendChart';
 import { SpeciesCompositionChart } from './SpeciesCompositionChart';
@@ -37,6 +38,7 @@ import { InjuryAttributionTreeCard } from './InjuryAttributionTreeCard';
 import { LifeTable4q70ReportCard } from './LifeTable4q70ReportCard';
 import { MarkdownRenderer } from '@/components/common/MarkdownRenderer';
 import { Bot } from 'lucide-react';
+import { sourceLabels } from '@/features/workbench/result-adapter';
 
 interface GenerativeComponentRendererProps {
   view: any;
@@ -55,12 +57,22 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
     return null;
   }
 
+  if(view.qualityFlags?.includes('legacy-unverified'))return <div className="p-4 overflow-auto"><p className="text-amber-600 text-sm mb-3">历史快照：结果尚未按新执行协议验证，仅展示原始保存内容。</p><pre className="whitespace-pre-wrap text-xs">{JSON.stringify(view,null,2)}</pre></div>;
+
   const containerClasses = isCompact 
     ? "w-full my-2 rounded-xl overflow-hidden shadow-md text-left transition-all" 
     : "w-full h-full min-h-0 flex flex-col overflow-y-auto rounded-xl";
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} data-run-id={view.runId}>
+      <div className="flex flex-wrap gap-2 text-xs px-3 py-2 text-slate-500">{sourceLabels(view.datasets).map(label=><span key={label}>{label}</span>)}{view.qualityFlags?.includes('legacy-unverified')&&<span className="text-amber-600">历史快照：结果尚未按新执行协议验证</span>}{view.status&&view.status!=='SUCCESS'&&<span>{view.status}</span>}</div>
+      {view.type==='AGUI_RESULT_GROUP'&&view.views.map((child:any,index:number)=><GenerativeComponentRenderer key={index} view={child} isCompact={isCompact}/>)}
+      {view.type==='ANALYTICS_RESULT'&&<AnalyticsResultCard data={view}/>}
+      {view.type==='COLLECTION_FORM'&&<MobileSimulationModal data={view}/>}
+      {view.type==='ARTIFACT_DOWNLOAD'&&<div className="p-5"><h3 className="font-semibold">导出文件</h3><a href={view.downloadUrl} className="text-sky-600 underline" download>{view.fileName}</a><p className="text-xs text-slate-500 mt-2">{view.byteLength} 字节</p></div>}
+      {view.type==='SESSION_RESULT'&&<div className="p-5"><h3 className="font-semibold">会话管理</h3>{view.sessions?.map((session:any)=><p key={session.sessionId}>{session.title} · {session.messageCount} 条消息</p>)}{view.session&&<p>{view.session.title}</p>}</div>}
+      {view.type==='SKILL_CATALOG'&&<div className="p-5"><h3 className="font-semibold">技能列表</h3>{view.standardSkills?.map((skill:any)=><p key={skill.id} className="text-sm mt-2">{skill.name} · {skill.availability==='available'?'可执行':'尚未实现'}</p>)}{view.customSkills?.map((skill:any)=><p key={skill.skill_id}>{skill.name}</p>)}</div>}
+      {view.type==='COLLECTION_RESULT'&&<div className="p-5"><h3 className="font-semibold">现场采集结果</h3>{view.record&&<p>记录编号：{view.record.submission_id}；审核状态：{view.record.audit_status}</p>}{view.evaluation&&<p>经验质控规则：{view.evaluation.passedRulesCount}/{view.evaluation.totalRulesCount} 未触发异常；{view.evaluation.warnings.length} 项需复核。</p>}</div>}
       {view.type === 'SPATIAL_EARLY_WARNING_MAP' && (
         <div className={isCompact ? "w-full h-[380px] rounded-xl overflow-hidden relative" : "w-full h-full"}>
           <VectorMapComponent
@@ -131,6 +143,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
           query={view.query}
           sql={view.sql}
           executionTimeMs={view.executionTimeMs}
+            scope={view.scope}
           explanation={view.explanation}
           data={view.data}
         />

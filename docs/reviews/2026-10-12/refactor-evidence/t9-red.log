@@ -1,0 +1,46 @@
+
+> agent-cdc-buddy@2.0.0 test:scientific
+> ./.venv/bin/python tests/run_scientific.py test_mock_driven_methods
+
+test_calendar_lag_and_constant_undefined (test_mock_driven_methods.MockMethods.test_calendar_lag_and_constant_undefined) ... ERROR
+test_dbscan_moves_with_coordinates (test_mock_driven_methods.MockMethods.test_dbscan_moves_with_coordinates) ... ERROR
+test_invalid_or_different_species_alleles_not_joined (test_mock_driven_methods.MockMethods.test_invalid_or_different_species_alleles_not_joined) ... FAIL
+test_moran_formula_and_weight_change (test_mock_driven_methods.MockMethods.test_moran_formula_and_weight_change) ... ERROR
+
+======================================================================
+ERROR: test_calendar_lag_and_constant_undefined (test_mock_driven_methods.MockMethods.test_calendar_lag_and_constant_undefined)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/scientific/test_mock_driven_methods.py", line 8, in test_calendar_lag_and_constant_undefined
+    from mock_methods import lag_correlations
+ModuleNotFoundError: No module named 'mock_methods'
+
+======================================================================
+ERROR: test_dbscan_moves_with_coordinates (test_mock_driven_methods.MockMethods.test_dbscan_moves_with_coordinates)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/scientific/test_mock_driven_methods.py", line 23, in test_dbscan_moves_with_coordinates
+    from mock_methods import coordinate_clusters
+ModuleNotFoundError: No module named 'mock_methods'
+
+======================================================================
+ERROR: test_moran_formula_and_weight_change (test_mock_driven_methods.MockMethods.test_moran_formula_and_weight_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/scientific/test_mock_driven_methods.py", line 16, in test_moran_formula_and_weight_change
+    from mock_methods import moran_statistic
+ModuleNotFoundError: No module named 'mock_methods'
+
+======================================================================
+FAIL: test_invalid_or_different_species_alleles_not_joined (test_mock_driven_methods.MockMethods.test_invalid_or_different_species_alleles_not_joined)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/scientific/test_mock_driven_methods.py", line 32, in test_invalid_or_different_species_alleles_not_joined
+    c.commit();r=calculate_cgmlst_clustering(db);self.assertEqual(r['homologousGroupsCount'],0)
+                                                 ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.006s
+
+FAILED (failures=1, errors=3)

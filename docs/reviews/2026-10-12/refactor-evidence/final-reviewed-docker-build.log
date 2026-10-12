@@ -1,0 +1,179 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.13kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#2 DONE 0.8s
+
+#3 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#3 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e 0.0s done
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#4 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
+#5 DONE 0.0s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 276B done
+#6 DONE 0.0s
+
+#7 [runtime  1/15] FROM docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
+#7 resolve docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83 0.0s done
+#7 DONE 0.0s
+
+#8 [builder 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#8 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#8 DONE 0.0s
+
+#9 [internal] load build context
+#9 transferring context: 33.07kB 0.0s done
+#9 DONE 0.0s
+
+#10 [builder 2/6] WORKDIR /app
+#10 CACHED
+
+#11 [builder 3/6] COPY package.json package-lock.json ./
+#11 CACHED
+
+#12 [builder 4/6] RUN npm ci --no-audit --no-fund
+#12 CACHED
+
+#13 [builder 5/6] COPY . .
+#13 DONE 0.1s
+
+#14 [builder 6/6] RUN npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs
+#14 0.302 
+#14 0.302 > agent-cdc-buddy@2.0.0 build
+#14 0.302 > next build
+#14 0.302 
+#14 0.923 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#14 0.924 This information is used to shape Next.js' roadmap and prioritize features.
+#14 0.924 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#14 0.924 https://nextjs.org/telemetry
+#14 0.924 
+#14 0.982    ▲ Next.js 15.5.23
+#14 0.982 
+#14 1.027    Creating an optimized production build ...
+#14 19.41  ✓ Compiled successfully in 16.5s
+#14 19.42    Linting and checking validity of types ...
+#14 19.59 
+#14 19.59    We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+#14 19.59    The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+#14 19.59 
+#14 19.59    	- include was updated to add '.next/types/**/*.ts'
+#14 19.59 
+#14 20.21 
+#14 20.21  ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+#14 25.64    Collecting page data ...
+#14 30.19    Generating static pages (0/12) ...
+#14 30.55    Generating static pages (3/12) 
+#14 30.55    Generating static pages (6/12) 
+#14 30.57    Generating static pages (9/12) 
+#14 30.57  ✓ Generating static pages (12/12)
+#14 31.47    Finalizing page optimization ...
+#14 31.47    Collecting build traces ...
+#14 47.66 
+#14 47.67 Route (app)                                 Size  First Load JS
+#14 47.67 ┌ ƒ /                                     783 kB         886 kB
+#14 47.67 ├ ƒ /_not-found                            991 B         103 kB
+#14 47.67 ├ ƒ /api/agent/dispatch                    170 B         103 kB
+#14 47.67 ├ ƒ /api/agent/stream-dispatch             170 B         103 kB
+#14 47.67 ├ ƒ /api/artifacts/[id]                    170 B         103 kB
+#14 47.67 ├ ƒ /api/auth/login                        170 B         103 kB
+#14 47.67 ├ ƒ /api/auth/logout                       170 B         103 kB
+#14 47.67 ├ ƒ /api/auth/me                           170 B         103 kB
+#14 47.67 ├ ƒ /api/copilotkit                        170 B         103 kB
+#14 47.67 ├ ƒ /api/health/live                       170 B         103 kB
+#14 47.67 ├ ƒ /api/health/ready                      170 B         103 kB
+#14 47.67 ├ ƒ /api/jobs                              170 B         103 kB
+#14 47.67 ├ ƒ /api/jobs/[id]                         170 B         103 kB
+#14 47.67 ├ ƒ /api/jobs/[id]/review                  170 B         103 kB
+#14 47.67 ├ ƒ /api/runtime-profile                   170 B         103 kB
+#14 47.67 ├ ƒ /api/sessions                          170 B         103 kB
+#14 47.67 ├ ƒ /api/sessions/[id]                     170 B         103 kB
+#14 47.67 ├ ƒ /api/skills                            170 B         103 kB
+#14 47.67 ├ ƒ /api/tickets/[id]/retests              170 B         103 kB
+#14 47.67 ├ ƒ /api/v1/mobile/detect-species          170 B         103 kB
+#14 47.67 ├ ƒ /api/v1/mobile/record                  170 B         103 kB
+#14 47.67 └ ƒ /api/v1/mobile/validate                170 B         103 kB
+#14 47.67 + First Load JS shared by all             102 kB
+#14 47.67   ├ chunks/255-3a64e17b7499099c.js       46.3 kB
+#14 47.67   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#14 47.67   └ other shared chunks (total)          1.93 kB
+#14 47.67 
+#14 47.67 
+#14 47.67 ƒ  (Dynamic)  server-rendered on demand
+#14 47.67 
+#14 48.27 
+#14 48.27   job-worker.cjs  4.5mb ⚠️
+#14 48.27 
+#14 48.27 ⚡ Done in 233ms
+#14 48.44 
+#14 48.44   migrate.cjs  4.3kb
+#14 48.44 
+#14 48.44 ⚡ Done in 1ms
+#14 48.81 
+#14 48.81   create-user.cjs  4.3mb ⚠️
+#14 48.81 
+#14 48.81 ⚡ Done in 206ms
+#14 DONE 49.0s
+
+#15 [runtime  3/15] COPY --from=builder /usr/local/bin/node /usr/local/bin/node
+#15 CACHED
+
+#16 [runtime  4/15] COPY requirements.txt requirements.lock ./
+#16 CACHED
+
+#17 [runtime  2/15] WORKDIR /app
+#17 CACHED
+
+#18 [runtime  5/15] RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.lock && useradd -m -u 1000 app
+#18 CACHED
+
+#19 [runtime  6/15] COPY --from=builder --chown=app:app /app/.next/standalone ./
+#19 DONE 0.3s
+
+#20 [runtime  7/15] COPY --from=builder --chown=app:app /app/.next/static ./.next/static
+#20 DONE 0.0s
+
+#21 [runtime  8/15] COPY --from=builder --chown=app:app /app/public ./public
+#21 DONE 0.0s
+
+#22 [runtime  9/15] COPY --from=builder --chown=app:app /app/job-worker.cjs /app/migrate.cjs /app/create-user.cjs ./
+#22 DONE 0.0s
+
+#23 [runtime 10/15] COPY --chown=app:app analytics_engine ./analytics_engine
+#23 DONE 0.0s
+
+#24 [runtime 11/15] COPY --chown=app:app config ./config
+#24 DONE 0.0s
+
+#25 [runtime 12/15] COPY --chown=app:app migrations ./migrations
+#25 DONE 0.0s
+
+#26 [runtime 13/15] COPY --chown=app:app scripts ./scripts
+#26 DONE 0.0s
+
+#27 [runtime 14/15] COPY --chown=app:app docker/entrypoint.sh ./docker/entrypoint.sh
+#27 DONE 0.0s
+
+#28 [runtime 15/15] RUN mkdir -p /app/data && chown app:app /app/data && chmod 0755 docker/entrypoint.sh
+#28 DONE 0.1s
+
+#29 exporting to image
+#29 exporting layers
+#29 exporting layers 1.9s done
+#29 exporting manifest sha256:d591a1356fef567329af5a357b55596710f3df6dea178fcac3981a625223972c done
+#29 exporting config sha256:331b7e4fbb8cad72ac4d5dcbc4c6be7257437b4752e43ed568f5cddd54632279 done
+#29 exporting attestation manifest sha256:87132232bfca632f354ece52a1190c4d4582763ac0daa1f4f77f3052b475fdeb done
+#29 exporting manifest list sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd done
+#29 naming to docker.io/library/agent-cdcbuddy:refactor done
+#29 unpacking to docker.io/library/agent-cdcbuddy:refactor
+#29 unpacking to docker.io/library/agent-cdcbuddy:refactor 0.5s done
+#29 DONE 2.4s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/gsstp1qj7pillppg4c7qoyqsc

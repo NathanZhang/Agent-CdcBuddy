@@ -112,9 +112,12 @@ foreach ($name in $requiredScripts) {
 
 $deployScriptContent = Get-Content -LiteralPath (Join-Path $projectRoot 'scripts\deploy\deploy-remote.ps1') -Raw
 $legacyStopIndex = $deployScriptContent.IndexOf('docker stop --time 30 agent-cdcbuddy', [StringComparison]::Ordinal)
-$sqliteBackupIndex = $deployScriptContent.IndexOf('source.backup(target)', [StringComparison]::Ordinal)
-if ($legacyStopIndex -lt 0 -or $sqliteBackupIndex -lt 0 -or $legacyStopIndex -gt $sqliteBackupIndex) {
-    throw 'Legacy container must be stopped before migrating its SQLite database with the backup API'
+$composeStartIndex = $deployScriptContent.IndexOf('docker compose --env-file deploy.env', [StringComparison]::Ordinal)
+if ($legacyStopIndex -lt 0 -or $composeStartIndex -lt 0 -or $legacyStopIndex -gt $composeStartIndex) {
+    throw 'Legacy container must stop before the entrypoint performs paired SQLite migration'
+}
+if ($deployScriptContent.Contains('source.backup(target)')) {
+    throw 'Deployment must not bypass the entrypoint business/checkpoint migration'
 }
 foreach ($permissionContract in @('chmod 0640', 'chmod 0660', 'chmod 0750')) {
     if ($deployScriptContent -notmatch [regex]::Escape($permissionContract)) {

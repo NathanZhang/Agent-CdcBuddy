@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "date": "2026-10-12",
+  "checks": {
+    "command": "./scripts/check-refactor.sh",
+    "lint": "passed",
+    "typescript": "passed",
+    "typescript_tests": 132,
+    "scientific_tests": 29,
+    "integration_tests": 24,
+    "compatibility_tests": 44,
+    "source_databases_unchanged": true
+  },
+  "build": {
+    "docker_image": "agent-cdcbuddy:2.0.0",
+    "result": "passed",
+    "map_key": "verification-placeholder"
+  },
+  "container_smoke": {
+    "tier": "demo",
+    "web_domains_ready": [
+      "vector",
+      "foodborne",
+      "env",
+      "chronic"
+    ],
+    "matching_workers_running": 4,
+    "llm_request_made": false,
+    "temporary_containers_removed": true
+  },
+  "review": {
+    "critical_remaining": 0,
+    "important_remaining": 0
+  },
+  "limits": [
+    "PowerShell CLI unavailable; remote deployment not executed",
+    "Container readiness does not validate live LLM or map provider",
+    "Detailed data insufficiency / Agent Mock generation remains review-only"
+  ]
+}

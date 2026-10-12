@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import { VectorSkill } from '@/lib/skills/types';
@@ -67,6 +68,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
   onDeleteCustomSkill,
   onRefreshCustomSkills
 }) => {
+  const interactFunctional=useFunctionalInteraction();
   const { canAccessSkill } = useRbac();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -100,7 +102,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
       requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
       parametersSchema: { type: 'object', properties: {} },
       execute: async (args) => {
-        const url = typeof window !== 'undefined' ? '/api/skills' : 'http://localhost:3000/api/skills';
+        const url = '/api/skills';
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -115,7 +117,8 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
   const domainStandardSkills = STANDARD_SKILLS.filter(s => 
     profile.skillIds ? profile.skillIds.includes(s.id) : (s.domain === profile.domain)
   );
-  const rawSkills: VectorSkill[] = [...domainStandardSkills, ...formattedCustomSkills];
+  const capabilities=typeof window==='undefined'?[]:(window as any).__CDC_RUNTIME_PROFILE__?.capabilities ?? [];
+  const rawSkills:VectorSkill[]=[...domainStandardSkills.map(s=>{const capability=capabilities.find((c:any)=>c.id===s.id);return {...s,name:capability?.name ?? s.name,description:capability?.availability==='planned'?'该能力尚未实现并验证。':capability?.description ?? s.description,availability:capability?.availability};}),...formattedCustomSkills];
   const seenSkillIds = new Set<string>();
   const allSkills: VectorSkill[] = [];
   for (const s of rawSkills) {
@@ -154,30 +157,12 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
   });
 
   // 处理保存技能编辑
-  const handleSaveSkillEdit = async (updated: EditableSkillData) => {
-    try {
-      const res = await fetch('/api/skills', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          skillId: updated.id,
-          name: updated.name,
-          description: updated.description,
-          sqlQuery: updated.sqlQuery,
-          chartType: updated.chartType,
-          visibility: updated.visibility,
-          recommendedPrompts: updated.recommendedPrompts
-        })
-      });
-      if (res.ok) {
-        onRefreshCustomSkills?.();
-      }
-    } catch (e) {
-      console.error('更新技能失败:', e);
-    }
+  const handleSaveSkillEdit = async (updated:EditableSkillData)=>{
+    const {id,...args}=updated;
+    const result=await interactFunctional({type:'skill.update',id,args});
+    if(result?.status==='SUCCESS')onRefreshCustomSkills?.();
   };
 
-  // 处理确认删除技能
   const handleConfirmDelete = async () => {
     if (!deletingSkill) return;
     setIsDeleting(true);

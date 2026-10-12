@@ -1,0 +1,16 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/deployment.test.ts tests/refactor/dispatch.test.ts tests/refactor/llm-client.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/deployment.test.ts (3 tests) 40ms
+ ✓ tests/refactor/dispatch.test.ts (14 tests) 96ms
+ ✓ tests/refactor/llm-client.test.ts (9 tests) 32ms
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  16:57:39
+   Duration  890ms (transform 217ms, setup 0ms, collect 674ms, tests 168ms, environment 0ms, prepare 119ms)
+

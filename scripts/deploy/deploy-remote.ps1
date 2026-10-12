@@ -25,7 +25,7 @@ foreach ($required in $requiredFiles) {
 }
 
 $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
-$prepareCommand = "mkdir -p -- $quotedRemotePath; if [ -f $quotedRemotePath/compose.production.yml ]; then cp -- $quotedRemotePath/compose.production.yml $quotedRemotePath/compose.production.yml.pre-2.0.4-$timestamp; fi; if [ -f $quotedRemotePath/deploy.env ]; then cp -- $quotedRemotePath/deploy.env $quotedRemotePath/deploy.env.pre-2.0.4-$timestamp; fi"
+$prepareCommand = "mkdir -p -- $quotedRemotePath; if [ -f $quotedRemotePath/compose.production.yml ]; then cp -- $quotedRemotePath/compose.production.yml $quotedRemotePath/compose.production.yml.pre-2.0.0-$timestamp; fi; if [ -f $quotedRemotePath/deploy.env ]; then cp -- $quotedRemotePath/deploy.env $quotedRemotePath/deploy.env.pre-2.0.0-$timestamp; fi"
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $prepareCommand | Out-Host
 
 Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $composePath -RemotePath "$remotePath/compose.production.yml"
@@ -41,6 +41,7 @@ foreach ($agent in $agents) {
     }
 }
 
+$publicHost = ($config.RemoteHost -split '@')[-1]
 $deployEnv = @(
     "APP_IMAGE=$($config.ImageName)"
     "DEPLOY_DIR=$remotePath"
@@ -48,8 +49,22 @@ $deployEnv = @(
     "FOODBORNE_PORT=$($config.FoodbornePort)"
     "ENV_PORT=$($config.EnvPort)"
     "CHRONIC_PORT=$($config.ChronicPort)"
-) -join "`n"
-$deployEnv += "`n"
+)
+foreach ($agent in $agents) {
+    $originProperty = $agent.Domain + 'Origin'
+    $origin = [string]$config.$originProperty
+    if ([string]::IsNullOrWhiteSpace($origin)) {
+        $origin = "http://${publicHost}:$($agent.Port)"
+    }
+    $uri = $null
+    if (-not [Uri]::TryCreate($origin, [UriKind]::Absolute, [ref]$uri) -or
+        $uri.Scheme -notin @('http', 'https') -or $uri.UserInfo -or
+        $uri.AbsolutePath -ne '/' -or $uri.Query -or $uri.Fragment) {
+        throw "Invalid browser origin for $($agent.Domain)"
+    }
+    $deployEnv += "$($agent.Domain.ToUpperInvariant())_ORIGIN=$($uri.GetLeftPart([UriPartial]::Authority))"
+}
+$deployEnv = ($deployEnv -join "`n") + "`n"
 $encodedDeployEnv = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($deployEnv))
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "printf %s $(ConvertTo-RemoteShellArgument $encodedDeployEnv) | base64 -d > $quotedRemotePath/deploy.env" | Out-Host
 
@@ -101,39 +116,13 @@ chown 1000:1000 $remotePath/data $remotePath/data/vector $remotePath/data/foodbo
 chmod 0750 $remotePath/data $remotePath/data/vector $remotePath/data/foodborne $remotePath/data/env $remotePath/data/chronic
 chown root:1000 $remotePath/vector_monitoring.db $remotePath/foodborne_monitoring.db $remotePath/env_monitoring.db $remotePath/chronic_monitoring.db
 chmod 0640 $remotePath/vector_monitoring.db $remotePath/foodborne_monitoring.db $remotePath/env_monitoring.db $remotePath/chronic_monitoring.db
-find $remotePath/data -type f -name '*.db' -exec chown 1000:1000 {} \;
-find $remotePath/data -type f -name '*.db' -exec chmod 0660 {} \;
+find $remotePath/data -type f -name '*.db*' -exec chown 1000:1000 {} \;
+find $remotePath/data -type f -name '*.db*' -exec chmod 0660 {} \;
 "@
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $dataSetup | Out-Host
 
-$migrationNeededOutput = @(Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command "test -s $quotedRemotePath/data/app_business.db && ! test -s $quotedRemotePath/data/vector/app_business.db && printf yes || printf no")
-if (([string]$migrationNeededOutput[-1]).Trim() -eq 'yes') {
-    $migrationPython = @'
-import os
-import sqlite3
-
-source_path = '/migration/app_business.db'
-target_path = '/migration/vector/app_business.db'
-temporary_path = target_path + '.migrating'
-if os.path.exists(temporary_path):
-    os.remove(temporary_path)
-source = sqlite3.connect(f'file:{source_path}?mode=ro', uri=True)
-target = sqlite3.connect(temporary_path)
-source.backup(target)
-source_check = source.execute('pragma quick_check').fetchone()[0]
-target_check = target.execute('pragma quick_check').fetchone()[0]
-target.close()
-source.close()
-if source_check != 'ok' or target_check != 'ok':
-    raise RuntimeError(f'SQLite integrity check failed: source={source_check}, target={target_check}')
-os.chown(temporary_path, 1000, 1000)
-os.chmod(temporary_path, 0o660)
-os.replace(temporary_path, target_path)
-'@
-    $encodedMigrationPython = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($migrationPython))
-    $migrationCommand = "docker run --rm --user 0:0 --mount type=bind,source=$remotePath/data,target=/migration --entrypoint python3 $quotedImageName -c $(ConvertTo-RemoteShellArgument "import base64; exec(base64.b64decode('$encodedMigrationPython'))")"
-    Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $migrationCommand | Out-Host
-}
+# The entrypoint performs locked business + checkpoint backup after the legacy writer stops.
+# Do not create the target business DB here: that would suppress paired migration.
 
 $startCommand = "cd $quotedRemotePath && docker compose --env-file deploy.env -f compose.production.yml up -d --pull never --force-recreate"
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $startCommand | Out-Host
@@ -161,7 +150,7 @@ foreach ($agent in $agents) {
 $publicHost = ($config.RemoteHost -split '@')[-1]
 $results = foreach ($agent in $agents) {
     $url = "http://${publicHost}:$($agent.Port)"
-    foreach ($path in @('/', '/api/skills')) {
+    foreach ($path in @('/', '/api/health/ready')) {
         $response = Invoke-WebRequest -Uri "$url$path" -UseBasicParsing -TimeoutSec 15
         if ($response.StatusCode -ne 200) {
             throw "Remote HTTP smoke test returned $($response.StatusCode): $url$path"

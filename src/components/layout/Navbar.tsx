@@ -9,7 +9,6 @@ import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
 interface NavbarProps {
   onOpenSkills: () => void;
-  onSelectPrompt: (prompt: string) => void;
   showEmbeddedWidget?: boolean;
   onToggleEmbeddedWidget?: () => void;
   skillsCount?: number;
@@ -17,7 +16,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ 
   onOpenSkills, 
-  onSelectPrompt,
   showEmbeddedWidget = false,
   onToggleEmbeddedWidget,
   skillsCount

@@ -12,8 +12,8 @@ interface DensityTrendChartProps {
     speciesName: string;
     city: string;
     trend: DensityTrendPoint[];
-    r2Score: number;
-    weatherCorrelation: { tempCorr: number; humidityCorr: number };
+    r2Score: number | null;
+    weatherCorrelation: { tempCorr: number | null; humidityCorr: number | null };
     insights: string[];
   };
 }
@@ -39,13 +39,9 @@ export const DensityTrendChart: React.FC<DensityTrendChartProps> = ({ data }) =>
   const histSeriesName = isFoodborne ? '历史监测病例数' : '历史实测密度';
   const predSeriesName = isFoodborne ? 'LSTM/ARIMA预测发病 (未来3月)' : 'ARIMA预测密度 (未来3月)';
 
-  const weatherCorr = data?.weatherCorrelation || { tempCorr: 0.78, humidityCorr: 0.65 };
-  const insights = Array.isArray(data?.insights) && data.insights.length > 0 
-    ? data.insights 
-    : [
-        `时序预测分析显示，${data?.city || '河南省全域'}当前处于常规监测区间。`,
-        '建议持续依托哨点医院与监测网络开展常态化监测与多源数据关联预警。'
-      ];
+  const weatherCorr = data?.weatherCorrelation ?? { tempCorr:null, humidityCorr:null };
+  const insights = Array.isArray(data?.insights) ? data.insights : [];
+  if (trend.length === 0) return <div role="status" className="p-4 border rounded-xl">当前筛选条件无数据</div>;
 
   const option = {
     backgroundColor: 'transparent',
@@ -149,21 +145,21 @@ export const DensityTrendChart: React.FC<DensityTrendChartProps> = ({ data }) =>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               {data?.city || '河南省全域'} · {data?.category || '监测类别'}（{data?.speciesName || '主要优势监测对象'}）{isFoodborne ? '发病趋势消长与时序预测' : '种群动态消长与时序预测'}
               <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 font-medium">
-                R²={data?.r2Score ?? 0.88} 拟合优度
+                R²={data?.r2Score ?? '未评估'} 拟合优度
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">基于 ARIMA/LSTM 与气象时空插值特征，预测置信度≥95%</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">基于返回的方法与数据展示时序计算；拟合优度不代表回测达标</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30 font-medium">
             <Thermometer className="w-3.5 h-3.5" />
-            <span>气温相关性: {weatherCorr.tempCorr >= 0 ? `+${weatherCorr.tempCorr}` : weatherCorr.tempCorr}</span>
+            <span>气温相关性: {weatherCorr.tempCorr === null ? '未计算' : weatherCorr.tempCorr >= 0 ? `+${weatherCorr.tempCorr}` : weatherCorr.tempCorr}</span>
           </div>
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-50 text-cyan-700 border border-cyan-200 dark:bg-cyan-500/10 dark:text-cyan-300 dark:border-cyan-500/30 font-medium">
             <Droplets className="w-3.5 h-3.5" />
-            <span>湿度相关性: {weatherCorr.humidityCorr >= 0 ? `+${weatherCorr.humidityCorr}` : weatherCorr.humidityCorr}</span>
+            <span>湿度相关性: {weatherCorr.humidityCorr === null ? '未计算' : weatherCorr.humidityCorr >= 0 ? `+${weatherCorr.humidityCorr}` : weatherCorr.humidityCorr}</span>
           </div>
         </div>
       </div>

@@ -1,0 +1,66 @@
+# 源码证据索引
+
+基线提交：`1838c1b23c83feff4826d54f177f4c4fdb380781`。行号仅对本基线有效。
+
+- [src/app/api/skills/route.ts:78](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/skills/route.ts:78) — `export async function POST(req: NextRequest) {`
+- [src/app/api/skills/route.ts:11](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/skills/route.ts:11) — `const customSkillsData = await bizProvider.getAllCustomSkills(domain);`
+- [src/app/api/skills/route.ts:96](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/skills/route.ts:96) — `export async function PUT(req: NextRequest) {`
+- [src/app/api/sessions/[id]/route.ts:8](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/sessions/[id]/route.ts:8) — `export async function GET(`
+- [src/app/api/sessions/[id]/route.ts:19](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/sessions/[id]/route.ts:19) — `const session = await provider.getChatSessionById(sessionId);`
+- [src/lib/skills/server-executor.ts:168](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:168) — `case 'skill_alert_push_dispatch': {`
+- [src/lib/skills/server-executor.ts:234](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:234) — `push_status: 'SENT',`
+- [src/lib/skills/server-executor.ts:249](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:249) — `case 'skill_disposal_workflow': {`
+- [src/lib/skills/server-executor.ts:817](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:817) — `case 'skill_foodborne_report_export':`
+- [src/lib/skills/server-executor.ts:852](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:852) — `case 'skill_env_ocr_entry': {`
+- [src/lib/skills/server-executor.ts:1206](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:1206) — `data = [{ 状态: '执行完成', 描述: '该自定义技能已成功从业务库完成聚合计算' }];`
+- [src/lib/skills/server-executor.ts:1204](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/server-executor.ts:1204) — `data = await provider.queryCustomSql(customSkill.sql_query);`
+- [src/lib/db/postgres-kingbase-provider.ts:40](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/db/postgres-kingbase-provider.ts:40) — `private pool: any = null; // pg.Pool 或 kingbase pool`
+- [src/lib/db/postgres-kingbase-provider.ts:104](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/db/postgres-kingbase-provider.ts:104) — `async getSummaryStats(): Promise<VectorSummaryStats> {`
+- [analytics_engine/lstm_predictor.py:20](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/lstm_predictor.py:20) — `np.random.seed(seed)`
+- [analytics_engine/lstm_predictor.py:90](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/lstm_predictor.py:90) — `ORDER BY f.date_id ASC`
+- [analytics_engine/lstm_predictor.py:91](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/lstm_predictor.py:91) — `LIMIT 60`
+- [analytics_engine/lstm_predictor.py:110](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/lstm_predictor.py:110) — `lstm_model = NumpyLSTMCell(input_dim=3, hidden_dim=8, seed=abs(hash(city)) % 10000)`
+- [analytics_engine/lstm_predictor.py:132](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/lstm_predictor.py:132) — `sim_temp = cur_temp + 0.3 * day_offset + np.sin(day_offset) * 0.8`
+- [analytics_engine/population_dynamics.py:95](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/population_dynamics.py:95) — `r2 = max(0.65, min(0.96, 1.0 - (ss_res / ss_tot) if ss_tot != 0 else 0.88))`
+- [analytics_engine/population_dynamics.py:174](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/population_dynamics.py:174) — `f"未来 {forecast_months} 个月预测曲线显示平均预测误差率在 ≤9.2% 以内，95% 置信区间已成功收敛。"`
+- [analytics_engine/population_dynamics.py:46](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/population_dynamics.py:46) — `if df.empty:`
+- [analytics_engine/env/water_rf_kriging.py:78](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/water_rf_kriging.py:78) — `feature_importance = [`
+- [analytics_engine/env/water_rf_kriging.py:88](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/water_rf_kriging.py:88) — `for r in rows[:60]:`
+- [analytics_engine/env/water_rf_kriging.py:109](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/water_rf_kriging.py:109) — `"overallComplianceRate": f"{pass_rate * 100:.1f}%",`
+- [analytics_engine/env/sewage_lag_tracing.py:60](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/sewage_lag_tracing.py:60) — `base_corr = 0.62`
+- [analytics_engine/env/sewage_lag_tracing.py:63](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/sewage_lag_tracing.py:63) — `r_val = 0.912`
+- [analytics_engine/env/sewage_lag_tracing.py:81](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/sewage_lag_tracing.py:81) — `suspected_sources = [`
+- [analytics_engine/env/river_chain_autocorr.py:75](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/env/river_chain_autocorr.py:75) — `moran_stat = {`
+- [analytics_engine/chronic/death_cert_qc.py:100](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/death_cert_qc.py:100) — `error_detection_rate = 0.992`
+- [analytics_engine/chronic/icd10_nlp_inference.py:16](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/icd10_nlp_inference.py:16) — `ICD10_KNOWLEDGE_BASE = {`
+- [analytics_engine/chronic/icd10_nlp_inference.py:74](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/icd10_nlp_inference.py:74) — `underlying = "急性心肌梗死"`
+- [analytics_engine/chronic/icd10_nlp_inference.py:105](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/icd10_nlp_inference.py:105) — `"accuracyRate": 0.965,`
+- [analytics_engine/chronic/chronic_risk_gbdt.py:48](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/chronic_risk_gbdt.py:48) — `feature_importances = [`
+- [analytics_engine/chronic/chronic_risk_gbdt.py:57](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/chronic_risk_gbdt.py:57) — `complication_rules = [`
+- [analytics_engine/chronic/chronic_risk_gbdt.py:88](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/chronic_risk_gbdt.py:88) — `"modelAccuracy": 0.835,`
+- [analytics_engine/chronic/mortality_cluster_dbscan.py:34](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/mortality_cluster_dbscan.py:34) — `HAVING count(*) >= 3`
+- [analytics_engine/chronic/mortality_cluster_dbscan.py:101](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/mortality_cluster_dbscan.py:101) — `cluster_tag = "核心高死亡风险簇 (Cluster-0)" if idx < 3 else ("次级扩散簇 (Cluster-1)" if idx < 7 else "一般散发")`
+- [analytics_engine/chronic/injury_tree_attribution.py:32](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/injury_tree_attribution.py:32) — `WHERE is_cluster = 1`
+- [analytics_engine/chronic/injury_tree_attribution.py:74](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/injury_tree_attribution.py:74) — `decision_tree_attribution = [`
+- [analytics_engine/chronic/lifetable_4q70_roi.py:57](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/lifetable_4q70_roi.py:57) — `base_4q70 = 13.8`
+- [analytics_engine/chronic/lifetable_4q70_roi.py:64](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/chronic/lifetable_4q70_roi.py:64) — `screening_recommendations = [`
+- [analytics_engine/daemon_surveillance.py:250](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/daemon_surveillance.py:250) — `def queue_dispatch_node(state: DaemonGraphState) -> dict:`
+- [analytics_engine/daemon_surveillance.py:302](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/daemon_surveillance.py:302) — `return builder.compile()`
+- [analytics_engine/satscan_lstm_pipeline.py:306](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/satscan_lstm_pipeline.py:306) — `return builder.compile()`
+- [analytics_engine/satscan_lstm_pipeline.py:323](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/satscan_lstm_pipeline.py:323) — `通过官方 LangGraph COMPILED_SATSCAN_GRAPH.invoke() 真实执行多步流水线`
+- [analytics_engine/langgraph_app.py:74](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/langgraph_app.py:74) — `def node_kmeans_cluster(state: ScientificPipelineState) -> dict:`
+- [analytics_engine/langgraph_app.py:93](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/langgraph_app.py:93) — `def hil_decision_edge(state: ScientificPipelineState) -> str:`
+- [src/lib/analytics/engine-bridge.ts:95](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/analytics/engine-bridge.ts:95) — `const child = spawn(pythonBin, cmdArgs, {`
+- [src/lib/analytics/engine-bridge.ts:110](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/analytics/engine-bridge.ts:110) — `stdout += chunk.toString('utf-8');`
+- [docker/entrypoint.sh:20](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/docker/entrypoint.sh:20) — `if [ ! -f /app/foodborne_monitoring.db ] && [ -f /app/scripts/init_foodborne_mock.py ]; then`
+- [src/app/api/v1/mobile/detect-species/route.ts:12](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/v1/mobile/detect-species/route.ts:12) — `// 仿真 CDC 物种图像分类深度学习模型推理`
+- [src/app/api/v1/mobile/record/route.ts:26](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/v1/mobile/record/route.ts:26) — `capture_count: parseInt(data.captureCount || 25, 10),`
+- [src/app/api/v1/mobile/record/route.ts:42](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/v1/mobile/record/route.ts:42) — `syncToSpatialMap: true`
+- [src/app/api/v1/mobile/validate/route.ts:37](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/app/api/v1/mobile/validate/route.ts:37) — `totalRulesCount: 6,`
+- [src/lib/skills/text2sql-engine.ts:595](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/text2sql-engine.ts:595) — `const forbiddenKeywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate', 'grant', 'execute', 'create'];`
+- [src/lib/skills/text2sql-engine.ts:602](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/text2sql-engine.ts:602) — `const finalSql = /limit\s+\d+/i.test(cleanSql) ? cleanSql : `${cleanSql} LIMIT 200`;`
+- [src/lib/skills/text2sql-engine.ts:615](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/skills/text2sql-engine.ts:615) — `data = [];`
+- [analytics_engine/foodborne/cgmlst_cluster.py:23](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/foodborne/cgmlst_cluster.py:23) — `length = min(len(vec_a), len(vec_b))`
+- [src/components/ag-ui/AutoReportViewer.tsx:34](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/components/ag-ui/AutoReportViewer.tsx:34) — `window.print();`
+- [src/components/ag-ui/AutoReportViewer.tsx:25](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/components/ag-ui/AutoReportViewer.tsx:25) — `md += `## ${s.heading}\n${s.content}\n\n`;`
+- [tests/suites/test_suite_env.py:202](/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/suites/test_suite_env.py:202) — `res.assert_true(True, "支持月度/专项环境健康综合报告自动生成与 PDF 导出")`

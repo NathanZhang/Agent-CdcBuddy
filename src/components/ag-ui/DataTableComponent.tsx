@@ -1,9 +1,12 @@
 'use client';
+import { queryExportArgs } from '@/features/workbench/result-adapter';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { Table, Download, Search, Code2, Copy, Check, Sparkles, Clock, Database } from 'lucide-react';
 
 interface DataTableProps {
+  scope?: {city?:string;district?:string;from?:string;to?:string};
   title?: string;
   query?: string;
   sql?: string;
@@ -13,13 +16,18 @@ interface DataTableProps {
 }
 
 export const DataTableComponent: React.FC<DataTableProps> = ({ 
-  title = '监测明细数据表', 
+  title = '监测明细数据表',
+  scope,
   query,
   sql,
   executionTimeMs,
   explanation,
   data 
 }) => {
+  const interactFunctional=useFunctionalInteraction();
+  const [exportLink,setExportLink]=useState<{downloadUrl:string;fileName:string}|null>(null);
+  const [exportError,setExportError]=useState('');
+  const exportFile=async(action:Parameters<typeof interactFunctional>[0])=>{setExportLink(null);setExportError('');try{const result=await interactFunctional(action);const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='ARTIFACT_DOWNLOAD') as any;if(payload)setExportLink(payload);else setExportError(result?.replyText||'导出失败');}catch(error){setExportError(error instanceof Error?error.message:'导出失败');}};
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showSql, setShowSql] = useState(false);
@@ -51,18 +59,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
   const totalPages = Math.ceil(filteredData.length / pageSize);
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const handleExportCsv = () => {
-    const header = columns.join(',');
-    const rows = filteredData.map(r => columns.map(c => `"${String(r[c] ?? '').replace(/"/g, '""')}"`).join(','));
-    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [header, ...rows].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${title}_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const handleExportCsv=()=>{if(sql)void exportFile({type:'report.export',args:queryExportArgs({sql,title,scope})});};
 
   const handleCopySql = () => {
     if (sql) {
@@ -116,11 +113,14 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
 
           <button
             onClick={handleExportCsv}
+            disabled={!sql}
             className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1 transition-colors font-medium cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>导出 CSV</span>
           </button>
+            {exportLink&&<a href={exportLink.downloadUrl} download className="text-xs text-sky-600 underline">下载 {exportLink.fileName}</a>}
+            {exportError&&<span role="alert" className="text-xs text-rose-600">{exportError}</span>}
         </div>
       </div>
 

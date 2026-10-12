@@ -1,0 +1,38 @@
+TAP version 13
+# (node:8324) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/src/lib/config/llm-timeout.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: uses 60000ms when a timeout is missing
+ok 1 - uses 60000ms when a timeout is missing
+  ---
+  duration_ms: 0.550792
+  type: 'test'
+  ...
+# Subtest: accepts a finite positive integer timeout
+ok 2 - accepts a finite positive integer timeout
+  ---
+  duration_ms: 0.092291
+  type: 'test'
+  ...
+# Subtest: rejects invalid timeout values
+ok 3 - rejects invalid timeout values
+  ---
+  duration_ms: 0.087625
+  type: 'test'
+  ...
+# Subtest: reads separate router and Text2SQL variables
+ok 4 - reads separate router and Text2SQL variables
+  ---
+  duration_ms: 0.074333
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 81.142958

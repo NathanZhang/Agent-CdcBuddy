@@ -1,0 +1,4448 @@
+{
+  "dataset": {
+    "id": "vector-monitoring",
+    "domain": "vector",
+    "origin": "observed",
+    "version": "existing-snapshot-2026-10-12",
+    "asOf": "2026-10-12",
+    "schemaVersion": "1"
+  },
+  "factWindowEnd": "2025-11-11",
+  "sourceSha256": "ee3d8393f9bdf4d707dd51bdb95385fe6ff189c9d6ac5b30da2d9aa5467a5f82",
+  "evaluations": {
+    "ar": {
+      "status": "SUCCESS",
+      "model": "ar",
+      "datasetId": "vector-monitoring",
+      "asOf": "2025-11-11",
+      "horizon": 1,
+      "evaluatedPairs": 267,
+      "groups": [
+        {
+          "city": "三门峡市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 162,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.02615373595967605,
+          "rmse": 0.06008129854609524,
+          "r2": -0.18812752145792855,
+          "smapePercent": 100.0,
+          "baselineMae": 0.020833333333333332,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.16666666666666666,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.00662673789507516
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0036383316207278665
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.032298151494938726
+            }
+          ]
+        },
+        {
+          "city": "信阳市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 324,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 6,
+          "mae": 0.0,
+          "rmse": 0.0,
+          "r2": null,
+          "smapePercent": 0.0,
+          "baselineMae": 0.006944444444444444,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "南阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 690,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.03033176186999998,
+          "rmse": 0.04148496773607351,
+          "r2": -0.7623066092165736,
+          "smapePercent": 18.516185824792185,
+          "baselineMae": 0.025,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.15,
+              "predicted": 0.19409269851976024
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.2138543494130471
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.1869485002911002
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.10502163221832168
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.1375,
+              "predicted": 0.17288316012571195
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1875,
+              "predicted": 0.18361070860316808
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.1625,
+              "predicted": 0.19659762116652302
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1125,
+              "predicted": 0.11580710684754747
+            }
+          ]
+        },
+        {
+          "city": "南阳市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 174,
+          "window": {
+            "start": "2022-07",
+            "end": "2025-09"
+          },
+          "evaluatedPairs": 2,
+          "mae": 2.673560799034936,
+          "rmse": 2.7704560015525588,
+          "r2": -3.4694761331362844,
+          "smapePercent": 19.09108436214189,
+          "baselineMae": 2.95187165775401,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 14.944444444444445,
+              "predicted": 12.99717498530161
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 12.323529411764707,
+              "predicted": 15.723381550691744
+            }
+          ]
+        },
+        {
+          "city": "周口市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 720,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.05146793727459237,
+          "rmse": 0.061841200740360015,
+          "r2": -1.593455713659425,
+          "smapePercent": 31.947603416261178,
+          "baselineMae": 0.015625,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.1,
+              "predicted": 0.20621288254510547
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.15211786020989967
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.1887348991178291
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.10827974233606953
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.125,
+              "predicted": 0.14195723444323977
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.13659920510832696
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.1894318248764105
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.2,
+              "predicted": 0.13626308714307056
+            }
+          ]
+        },
+        {
+          "city": "商丘市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 720,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.05039621342881991,
+          "rmse": 0.055302142631697526,
+          "r2": -2.270732978765927,
+          "smapePercent": 30.785336889872283,
+          "baselineMae": 0.05156250000000001,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.15,
+              "predicted": 0.19362324336036166
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.1403895478579356
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.16337309118072765
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.11371694243413122
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.24533219725847719
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.20403587977874826
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.1125,
+              "predicted": 0.17780395941272212
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.175,
+              "predicted": 0.11264599090695547
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 738,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.08832330822856704,
+          "rmse": 0.1263825888830214,
+          "r2": 0.3360684848265154,
+          "smapePercent": 61.206129910509176,
+          "baselineMae": 0.16121031746031744,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.23809523809523808,
+              "predicted": 0.3098045798622729
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.42857142857142855,
+              "predicted": 0.3489159027111962
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2857142857142857,
+              "predicted": 0.3995314186833796
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.14285714285714285,
+              "predicted": 0.1295590174289326
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.2899627829232727
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.13814355688069235
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 657,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-09"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.3194876864006175,
+          "rmse": 0.4313868087129209,
+          "r2": 0.622564402140412,
+          "smapePercent": 26.573018444073433,
+          "baselineMae": 0.4998015873015872,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 1.4444444444444444,
+              "predicted": 1.7114781470592217
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 0.2777777777777778,
+              "predicted": 0.6080574149743292
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 1.5,
+              "predicted": 1.5355329721668802
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 2.1,
+              "predicted": 1.8394093264824682
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 2.55,
+              "predicted": 1.596476061330431
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.9444444444444444,
+              "predicted": 0.9547045625374925
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 1.0,
+              "predicted": 1.3791927625459648
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1410,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.052092575816212,
+          "rmse": 0.06972562478016368,
+          "r2": -6.18711414369431,
+          "smapePercent": 25.1739665663758,
+          "baselineMae": 0.019929653679653683,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.20885219487309656
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.18155537396612498
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.22660374482633236
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.32205925273822067
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.13818181818181818,
+              "predicted": 0.19282456282882524
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1523809523809524,
+              "predicted": 0.1209614180629786
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.18149051520295004
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.15,
+              "predicted": 0.2862090242961406
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1035,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 1.8583006724807885,
+          "rmse": 2.100358893005211,
+          "r2": 0.5568675640520653,
+          "smapePercent": 32.97813493212165,
+          "baselineMae": 2.3741315438375556,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 6.3076923076923075,
+              "predicted": 8.038447536626212
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 10.947368421052632,
+              "predicted": 7.644400111180065
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 9.720930232558139,
+              "predicted": 7.6859549187709915
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.972972972972973,
+              "predicted": 3.4444708313327816
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 6.490196078431373,
+              "predicted": 8.398389087085778
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 8.361702127659575,
+              "predicted": 7.699106698232304
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 3.86046511627907,
+              "predicted": 7.1426827528152135
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 1.2941176470588236,
+              "predicted": 2.7673202413338838
+            }
+          ]
+        },
+        {
+          "city": "平顶山市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 710,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.05125087674506772,
+          "rmse": 0.06893358590681352,
+          "r2": -2.1191560309970296,
+          "smapePercent": 31.978904425573297,
+          "baselineMae": 0.06250000000000001,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.15,
+              "predicted": 0.2852199972379896
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.1738497688172339
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.149078710367118
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.08400093973176742
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.175,
+              "predicted": 0.1692840626161756
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.175,
+              "predicted": 0.18154782137725659
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.175,
+              "predicted": 0.15624690630260935
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.075,
+              "predicted": 0.12569958318019983
+            }
+          ]
+        },
+        {
+          "city": "开封市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1715,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-08"
+          },
+          "evaluatedPairs": 8,
+          "mae": 2.8047634785985394,
+          "rmse": 3.7635994779255273,
+          "r2": 0.6935835985835795,
+          "smapePercent": 26.225246241420187,
+          "baselineMae": 2.3281022100306137,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 7.295454545454546,
+              "predicted": 7.565151506038193
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 3.533333333333333,
+              "predicted": 3.336548823773472
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 14.04,
+              "predicted": 13.720670235647844
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 19.541666666666668,
+              "predicted": 12.065479082005524
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 7.230769230769231,
+              "predicted": 10.239367740662589
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.6444444444444444,
+              "predicted": 5.285204593304126
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 18.37735849056604,
+              "predicted": 15.668431837609297
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 20.083333333333332,
+              "predicted": 14.265509635411604
+            }
+          ]
+        },
+        {
+          "city": "开封市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 480,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.0,
+          "rmse": 0.0,
+          "r2": null,
+          "smapePercent": 0.0,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "新乡市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 590,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.02529161151555747,
+          "rmse": 0.061217635007142474,
+          "r2": 0.028911300694947628,
+          "smapePercent": 25.127499294941053,
+          "baselineMae": 0.023232323232323233,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.19999999999999996
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.19999999999999987
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.19999999999999993
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.19999999999999998
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.19090909090909092,
+              "predicted": 0.18518518518518515
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.1952479338842977
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.20001967729240455
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1625,
+              "predicted": 0.19999905531896484
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.17962979918903949
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 269,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 6,
+          "mae": 2.855335624974463,
+          "rmse": 3.3054798088156416,
+          "r2": -186.93606188860477,
+          "smapePercent": 138.19796280218276,
+          "baselineMae": 0.7663454270597128,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.46153846153846156,
+              "predicted": 5.676433172332435
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.6666666666666666,
+              "predicted": 3.078886802650168
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.32653061224489793,
+              "predicted": 4.7390117613852105
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.3888888888888889,
+              "predicted": 3.1662887994510625
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 2.3150178433668165
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 495,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 2.328496779222474,
+          "rmse": 3.304300098635416,
+          "r2": -0.6577227629125437,
+          "smapePercent": 70.67915967513855,
+          "baselineMae": 2.5630489738340154,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 7.0,
+              "predicted": 1.999974885573301
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 4.25,
+              "predicted": 8.846512568292733
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0625,
+              "predicted": 5.189132126653075
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 3.85,
+              "predicted": 3.89021649411837
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.125,
+              "predicted": 3.9895879302889146
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1290,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.06340305054636665,
+          "rmse": 0.08597771713027567,
+          "r2": -0.23989272583374932,
+          "smapePercent": 51.30322027357912,
+          "baselineMae": 0.05746031746031746,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.19196166170817308
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.22857142857142856,
+              "predicted": 0.2274011626447563
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.16666666666666666,
+              "predicted": 0.22033483136894777
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.05,
+              "predicted": 0.17401128779586314
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.14,
+              "predicted": 0.22173779142973216
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1,
+              "predicted": 0.15226544693696872
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.15454545454545454,
+              "predicted": 0.09135247707117147
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.01,
+              "predicted": 0.1965431823596725
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1244,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 9,
+          "mae": 2.3283443689030316,
+          "rmse": 2.8105418215050735,
+          "r2": 0.40921722677656747,
+          "smapePercent": 45.8353301612452,
+          "baselineMae": 2.0923111161753942,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-05",
+              "target": "2024-06",
+              "actual": 11.404494382022472,
+              "predicted": 17.558047666141675
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 8.197368421052632,
+              "predicted": 10.325843163428903
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 10.028169014084508,
+              "predicted": 6.845715836547159
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 5.325,
+              "predicted": 5.517251553755335
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 1.3793103448275863,
+              "predicted": 3.814330665526386
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 10.178571428571429,
+              "predicted": 7.812401107205296
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 5.75,
+              "predicted": 7.324281053572754
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 4.947368421052632,
+              "predicted": 3.841316787361733
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.4230769230769231,
+              "predicted": 2.2399201560874653
+            }
+          ]
+        },
+        {
+          "city": "济源市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 710,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.09836511566489109,
+          "rmse": 0.12519269652103138,
+          "r2": -2.134642252441412,
+          "smapePercent": 79.26466383742297,
+          "baselineMae": 0.11249999999999999,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.2740244414611359
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.43863817198436117
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.1,
+              "predicted": 0.29175746561155047
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.1,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.20681330315876525
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.25153777866723537
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.20832628370809053
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.11582348072799004
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 795,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.06062192587187765,
+          "rmse": 0.07298763015963344,
+          "r2": -2.5530153687708332,
+          "smapePercent": 62.504491927367745,
+          "baselineMae": 0.05574887069452286,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.09523809523809523,
+              "predicted": 0.02912865518687041
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.1,
+              "predicted": 0.13484125245272394
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.1,
+              "predicted": 0.12317758035151449
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.14285714285714285,
+              "predicted": 0.013380254021893967
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.19047619047619047,
+              "predicted": 0.14093278138524082
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.09523809523809523,
+              "predicted": 0.21750887477746422
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.09523809523809523,
+              "predicted": 0.14165286731474616
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.05,
+              "predicted": 0.03685871542266053
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 556,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.30640085484662616,
+          "rmse": 0.3404105663843963,
+          "r2": -8.332116865152042,
+          "smapePercent": 128.34174458323582,
+          "baselineMae": 0.1439732142857143,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.08333333333333333,
+              "predicted": 0.40794370936148105
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.4166666666666667,
+              "predicted": 0.8777831172088213
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.08333333333333333,
+              "predicted": 0.5783824669451838
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.08333333333333333,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.08333333333333333,
+              "predicted": 0.27209775004779857
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.25,
+              "predicted": 0.7350050282535459
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.21428571428571427,
+              "predicted": 0.44011381457522614
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1875,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1735,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.02697736447036224,
+          "rmse": 0.03374000897502686,
+          "r2": -2.0253410280653945,
+          "smapePercent": 16.92651748761036,
+          "baselineMae": 0.03425925925925926,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.15,
+              "predicted": 0.09243266279328215
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.17142857142857143,
+              "predicted": 0.1684200492747283
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.15,
+              "predicted": 0.161609462038263
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.16220350640954043
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.15697295290777483
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.14823135740069368
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.19166666666666668,
+              "predicted": 0.19646560033687738
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.16666666666666666,
+              "predicted": 0.19452296359691262
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.175,
+              "predicted": 0.18036354495198842
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1254,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 16.554937921792742,
+          "rmse": 18.7683779383077,
+          "r2": -1.119213042262765,
+          "smapePercent": 53.68023446622967,
+          "baselineMae": 9.984515765285927,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 31.365853658536587,
+              "predicted": 40.57194935515997
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 55.04651162790697,
+              "predicted": 29.832993994410707
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 32.95238095238095,
+              "predicted": 46.957777167487336
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 14.5,
+              "predicted": 20.445913233771144
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 27.568181818181817,
+              "predicted": 60.121067043673044
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 13.755555555555556,
+              "predicted": 31.88213373471037
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 34.11363636363637,
+              "predicted": 13.253452760876788
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 16.170731707317074,
+              "predicted": 22.699665295256235
+            }
+          ]
+        },
+        {
+          "city": "濮阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 450,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.008082326416991314,
+          "rmse": 0.008518094737047687,
+          "r2": null,
+          "smapePercent": 3.968889691047861,
+          "baselineMae": 0.006249999999999999,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.1927831216351296
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.2104083235771964
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.2129144758036635
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.20703114635766073
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.2066669939701093
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.20871643201369136
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.20858212883084487
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.2,
+              "predicted": 0.203122232417894
+            }
+          ]
+        },
+        {
+          "city": "焦作市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 630,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.05423353749707632,
+          "rmse": 0.07206965574183638,
+          "r2": -0.4370528108355025,
+          "smapePercent": 53.621356079439764,
+          "baselineMae": 0.06875,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.19999999999999996
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.06666666666666667,
+              "predicted": 0.20000000000000007
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.1,
+              "predicted": 0.0940455735015308
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.11499495670440826
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.1625,
+              "predicted": 0.24510004486565884
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.175,
+              "predicted": 0.13012193012294576
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.125,
+              "predicted": 0.11161130562510597
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1125,
+              "predicted": 0.07378122567720746
+            }
+          ]
+        },
+        {
+          "city": "焦作市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 572,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-05"
+          },
+          "evaluatedPairs": 6,
+          "mae": 6.824044956642894,
+          "rmse": 9.84968248939477,
+          "r2": -2.050706625020677,
+          "smapePercent": 55.840428511745145,
+          "baselineMae": 11.651868695820307,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 17.96153846153846,
+              "predicted": 16.42782521413828
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 7.35,
+              "predicted": 5.821056752130107
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 7.125,
+              "predicted": 27.856702722384256
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 9.23076923076923,
+              "predicted": 17.28403788010944
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 2.8095238095238093,
+              "predicted": 11.906165682386636
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "许昌市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1200,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.0045946183631266745,
+          "rmse": 0.007982335060768715,
+          "r2": -0.5370663276782723,
+          "smapePercent": 2.3772853346643132,
+          "baselineMae": 0.004464285714285718,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.20000000000000007
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.19999999999999998
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.20000000000000004
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.19375,
+              "predicted": 0.19999999999999998
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.19375,
+              "predicted": 0.1999452698511175
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.19947417232457307
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.18125,
+              "predicted": 0.2004412310153422
+            }
+          ]
+        },
+        {
+          "city": "许昌市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 871,
+          "window": {
+            "start": "2020-07",
+            "end": "2024-10"
+          },
+          "evaluatedPairs": 7,
+          "mae": 8.015218181372555,
+          "rmse": 9.779421191153448,
+          "r2": -0.9168301178075033,
+          "smapePercent": 116.36326058040183,
+          "baselineMae": 4.6745142798138195,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-07",
+              "target": "2023-08",
+              "actual": 27.512820512820515,
+              "predicted": 7.905668097487109
+            },
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 12.35897435897436,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 6.948717948717949,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 18.612903225806452,
+              "predicted": 23.716440737427817
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 15.513513513513514,
+              "predicted": 13.86662833922409
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 9.054054054054054,
+              "predicted": 4.434222764811234
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 5.821428571428571,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 653,
+          "window": {
+            "start": "2020-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.12486412036771498,
+          "rmse": 0.1586729613206051,
+          "r2": 0.19988533133794972,
+          "smapePercent": 129.84810747161814,
+          "baselineMae": 0.14871031746031746,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.0625,
+              "predicted": 0.3634973811427121
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.35714285714285715,
+              "predicted": 0.17257287505426905
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.17544683324049734
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.025987115541755118
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.42857142857142855,
+              "predicted": 0.4771826210853654
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.3333333333333333,
+              "predicted": 0.39546474957160754
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.1976324302265916
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0035366119493645265
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 790,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 1.1429556429262062,
+          "rmse": 1.7286564823103714,
+          "r2": -41.65257424210814,
+          "smapePercent": 104.92186767076272,
+          "baselineMae": 1.1856600189933522,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.5,
+              "predicted": 4.142301942886917
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.35,
+              "predicted": 1.1301013592681048
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.3365692107877223
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.7083333333333334,
+              "predicted": 3.5449986845431125
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.6818181818181818,
+              "predicted": 0.9504508302425885
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2916666666666667,
+              "predicted": 0.09173428355110236
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.4090909090909091,
+              "predicted": 0.3650718296829041
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 2.1783788112353584
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1820,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.029663047629644397,
+          "rmse": 0.03699756074312264,
+          "r2": 0.33995584830122394,
+          "smapePercent": 25.372714926628582,
+          "baselineMae": 0.03388969055635723,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.17777777777777778,
+              "predicted": 0.15713586256260048
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.17777777777777778,
+              "predicted": 0.15552798244641775
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.15555555555555556,
+              "predicted": 0.1610108969051327
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.08,
+              "predicted": 0.14476108321792658
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.11666666666666667,
+              "predicted": 0.126340422105306
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.18333333333333332,
+              "predicted": 0.19580644982064893
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.13333333333333333,
+              "predicted": 0.15894166759576908
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.075,
+              "predicted": 0.14594742245757955
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.06,
+              "predicted": 0.09515666490678824
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1287,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 3.0123598167176966,
+          "rmse": 3.9678933990077936,
+          "r2": 0.3038010290237153,
+          "smapePercent": 32.22158262476108,
+          "baselineMae": 4.027765710045317,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 12.305555555555555,
+              "predicted": 17.48246289302034
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 17.102040816326532,
+              "predicted": 9.94205474813749
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 9.853658536585366,
+              "predicted": 8.69493947771796
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 1.9333333333333333,
+              "predicted": 7.8816963302078875
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 14.71830985915493,
+              "predicted": 12.865169309417745
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 13.686274509803921,
+              "predicted": 10.906416133441999
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 8.5,
+              "predicted": 8.48592188553846
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 5.172413793103448,
+              "predicted": 5.180239824888587
+            }
+          ]
+        },
+        {
+          "city": "驻马店市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 395,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.009603676894057802,
+          "rmse": 0.013958380066596622,
+          "r2": -16.542580031548624,
+          "smapePercent": 5.0152459256437485,
+          "baselineMae": 0.001360544217687078,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.21220084679281448
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.19797096901796885
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.16771302867157803
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.19047619047619047,
+              "predicted": 0.19614807605063256
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.20292198702508252
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.2,
+              "predicted": 0.19915465847984465
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.2,
+              "predicted": 0.18873032496454298
+            }
+          ]
+        },
+        {
+          "city": "鹤壁市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 555,
+          "window": {
+            "start": "2020-07",
+            "end": "2024-10"
+          },
+          "evaluatedPairs": 5,
+          "mae": 23.543336002752106,
+          "rmse": 36.48272807290403,
+          "r2": -13.048540580572851,
+          "smapePercent": 90.88555853021981,
+          "baselineMae": 35.271321370385884,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 19.076923076923077,
+              "predicted": 3.9208391569277956
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 29.70967741935484,
+              "predicted": 107.18601248647221
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 7.363636363636363,
+              "predicted": 27.424313538070418
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 8.083333333333334,
+              "predicted": 8.644625717252733
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.875,
+              "predicted": 7.337291468294455
+            }
+          ]
+        },
+        {
+          "city": "鹤壁市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 324,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.08273319540303019,
+          "rmse": 0.13443641493862088,
+          "r2": -0.328376500123855,
+          "smapePercent": 142.85714285714286,
+          "baselineMae": 0.09523809523809523,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.3333333333333333,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.060282881273222705
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.05551105907838044
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.07583700170223061
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.05416809243404433
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        }
+      ],
+      "baseline": {
+        "三门峡市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.020833333333333332
+        },
+        "信阳市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.006944444444444444
+        },
+        "南阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.025
+        },
+        "南阳市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.95187165775401
+        },
+        "周口市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.015625
+        },
+        "商丘市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05156250000000001
+        },
+        "安阳市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.16121031746031744
+        },
+        "安阳市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.4998015873015872
+        },
+        "安阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.019929653679653683
+        },
+        "安阳市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.3741315438375556
+        },
+        "平顶山市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.06250000000000001
+        },
+        "开封市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.3281022100306137
+        },
+        "开封市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "新乡市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.023232323232323233
+        },
+        "洛阳市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.7663454270597128
+        },
+        "洛阳市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.5630489738340154
+        },
+        "洛阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05746031746031746
+        },
+        "洛阳市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.0923111161753942
+        },
+        "济源市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.11249999999999999
+        },
+        "漯河市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05574887069452286
+        },
+        "漯河市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.1439732142857143
+        },
+        "漯河市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.03425925925925926
+        },
+        "漯河市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 9.984515765285927
+        },
+        "濮阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.006249999999999999
+        },
+        "焦作市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.06875
+        },
+        "焦作市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 11.651868695820307
+        },
+        "许昌市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.004464285714285718
+        },
+        "许昌市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 4.6745142798138195
+        },
+        "郑州市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.14871031746031746
+        },
+        "郑州市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 1.1856600189933522
+        },
+        "郑州市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.03388969055635723
+        },
+        "郑州市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 4.027765710045317
+        },
+        "驻马店市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.001360544217687078
+        },
+        "鹤壁市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 35.271321370385884
+        },
+        "鹤壁市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.09523809523809523
+        }
+      },
+      "metrics": {
+        "mae": {
+          "value": null,
+          "evaluationKind": "real-backtest",
+          "datasetIds": [
+            "vector-monitoring"
+          ],
+          "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+        }
+      },
+      "qualityFlags": [
+        "capture-count-not-standard-density",
+        "method-specific-errors-not-pooled",
+        "capture-forecast-does-not-validate-standard-density-requirement"
+      ]
+    },
+    "gbdt": {
+      "status": "SUCCESS",
+      "model": "gbdt",
+      "datasetId": "vector-monitoring",
+      "asOf": "2025-11-11",
+      "horizon": 1,
+      "evaluatedPairs": 187,
+      "groups": [
+        {
+          "city": "三门峡市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 162,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.00020530788212139048,
+          "rmse": 0.00020602009920955706,
+          "r2": null,
+          "smapePercent": 200.0,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.00022938019979185412
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.00021173556903863563
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.00019661159982158822
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.0001835041598334839
+            }
+          ]
+        },
+        {
+          "city": "信阳市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 324,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 1,
+          "mae": 0.0,
+          "rmse": 0.0,
+          "r2": null,
+          "smapePercent": 0.0,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "南阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 690,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.02837022159896817,
+          "rmse": 0.032189884937068466,
+          "r2": -0.3263215260949852,
+          "smapePercent": 17.975066054675693,
+          "baselineMae": 0.037500000000000006,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.1375,
+              "predicted": 0.1832645192733958
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1875,
+              "predicted": 0.19297111638013925
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.1625,
+              "predicted": 0.20007223040901978
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1125,
+              "predicted": 0.13717302033331788
+            }
+          ]
+        },
+        {
+          "city": "周口市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 720,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.016179521833096837,
+          "rmse": 0.02316342710447584,
+          "r2": 0.49127646319467533,
+          "smapePercent": 8.882709650521674,
+          "baselineMae": 0.006249999999999999,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.125,
+              "predicted": 0.12574820990995253
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.17723548792386998
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.19912614808417603
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.2,
+              "predicted": 0.1596684865695192
+            }
+          ]
+        },
+        {
+          "city": "商丘市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 720,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.039968356231094626,
+          "rmse": 0.04844569154228454,
+          "r2": -0.8345898242033769,
+          "smapePercent": 25.99429168829623,
+          "baselineMae": 0.04062500000000001,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.18976218079956092
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.18380382787820682
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.1125,
+              "predicted": 0.1868933718177615
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.175,
+              "predicted": 0.11595393821561525
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 738,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.09770659259394526,
+          "rmse": 0.15310186441054058,
+          "r2": 0.025661759460972267,
+          "smapePercent": 115.11212689333004,
+          "baselineMae": 0.16121031746031744,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.23809523809523808,
+              "predicted": 0.36569788363731953
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.42857142857142855,
+              "predicted": 0.2919274316621139
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2857142857142857,
+              "predicted": 0.2763318078336134
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.14285714285714285,
+              "predicted": 0.20849053064862155
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.38274466333640317
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.03783256142388994
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.008788262859063525
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.013024745008658275
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 657,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-09"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.33758915355751234,
+          "rmse": 0.4403934194466376,
+          "r2": 0.6066394716750807,
+          "smapePercent": 25.270113307091492,
+          "baselineMae": 0.4998015873015872,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 1.4444444444444444,
+              "predicted": 1.558411368641415
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 0.2777777777777778,
+              "predicted": 0.4232524685575953
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 1.5,
+              "predicted": 1.0746928934901234
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 2.1,
+              "predicted": 2.4608079115694395
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 2.55,
+              "predicted": 1.5901101576658139
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.9444444444444444,
+              "predicted": 0.8819017664276333
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 1.0,
+              "predicted": 1.2951349214954855
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1410,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.051323575169912206,
+          "rmse": 0.07568563884876271,
+          "r2": -7.468308587828526,
+          "smapePercent": 24.00482328373173,
+          "baselineMae": 0.019929653679653683,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.2,
+              "predicted": 0.20047186783957177
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.2,
+              "predicted": 0.20044040998360022
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.2,
+              "predicted": 0.20041288435962537
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.3315198804596848
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.13818181818181818,
+              "predicted": 0.2003670083196669
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1523809523809524,
+              "predicted": 0.17277408186697987
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.15341173551323511
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.15,
+              "predicted": 0.29857697460617444
+            }
+          ]
+        },
+        {
+          "city": "安阳市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1035,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 1.9280368188568349,
+          "rmse": 2.29722082707272,
+          "r2": 0.4699070718887648,
+          "smapePercent": 37.04022579696733,
+          "baselineMae": 2.3741315438375556,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 6.3076923076923075,
+              "predicted": 8.710777491016836
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 10.947368421052632,
+              "predicted": 7.399764662403886
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 9.720930232558139,
+              "predicted": 9.220079430371056
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.972972972972973,
+              "predicted": 4.272516549232124
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 6.490196078431373,
+              "predicted": 6.698514218028988
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 8.361702127659575,
+              "predicted": 9.476779205476943
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 3.86046511627907,
+              "predicted": 6.550121986268092
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 1.2941176470588236,
+              "predicted": 4.954276790089987
+            }
+          ]
+        },
+        {
+          "city": "平顶山市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 710,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.008363844821117173,
+          "rmse": 0.008884913260744002,
+          "r2": 0.9578977687194962,
+          "smapePercent": 6.377552913865629,
+          "baselineMae": 0.05000000000000001,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.175,
+              "predicted": 0.16819194603506246
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.175,
+              "predicted": 0.1798671347644792
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.175,
+              "predicted": 0.16204353293943405
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.075,
+              "predicted": 0.08382372349448602
+            }
+          ]
+        },
+        {
+          "city": "开封市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1715,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-08"
+          },
+          "evaluatedPairs": 8,
+          "mae": 4.3838855632613996,
+          "rmse": 4.789696339314481,
+          "r2": 0.5037264035513301,
+          "smapePercent": 45.1078288771195,
+          "baselineMae": 2.3281022100306137,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2023-08",
+              "target": "2023-09",
+              "actual": 7.295454545454546,
+              "predicted": 9.269324525325045
+            },
+            {
+              "origin": "2023-09",
+              "target": "2023-10",
+              "actual": 3.533333333333333,
+              "predicted": 2.24421056934211
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 14.04,
+              "predicted": 8.022718326006265
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 19.541666666666668,
+              "predicted": 12.435663516854904
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 7.230769230769231,
+              "predicted": 10.638754571014685
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.6444444444444444,
+              "predicted": 6.652026441803837
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 18.37735849056604,
+              "predicted": 12.524094755723869
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 20.083333333333332,
+              "predicted": 14.667357467356371
+            }
+          ]
+        },
+        {
+          "city": "开封市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 480,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.0,
+          "rmse": 0.0,
+          "r2": null,
+          "smapePercent": 0.0,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "新乡市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 590,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 5,
+          "mae": 0.04921252825464687,
+          "rmse": 0.08952248063741772,
+          "r2": -0.36634220194680545,
+          "smapePercent": 45.37750361657594,
+          "baselineMae": 0.041818181818181824,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.19090909090909092,
+              "predicted": 0.20000000000000004
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.1969311484988289
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.19998927573091885
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1625,
+              "predicted": 0.19998999068219095
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.196402165729882
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 269,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 1,
+          "mae": 0.0,
+          "rmse": 0.0,
+          "r2": null,
+          "smapePercent": 0.0,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.0
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 495,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 7,
+          "mae": 2.796854263626506,
+          "rmse": 3.031072406416027,
+          "r2": -1.7849378756149337,
+          "smapePercent": 151.3868629717136,
+          "baselineMae": 2.5974015922158338,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 4.25,
+              "predicted": 5.537698590140762
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0625,
+              "predicted": 5.46696012381068
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 2.3619701656679952
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 3.85,
+              "predicted": 6.723020842290285
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.125,
+              "predicted": 2.918292039934342
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 2.50613919434179
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 2.3513988891996873
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1290,
+          "window": {
+            "start": "2021-06",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 7,
+          "mae": 0.07603167893948518,
+          "rmse": 0.09251604451206377,
+          "r2": -1.0852267124321986,
+          "smapePercent": 83.86869161314878,
+          "baselineMae": 0.06979591836734693,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.16666666666666666,
+              "predicted": 0.17754449746382858
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.05,
+              "predicted": 0.20140990521921864
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.14,
+              "predicted": 0.20474410495280185
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.1,
+              "predicted": 0.164419934440254
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.15454545454545454,
+              "predicted": 0.152275755704448
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.01,
+              "predicted": 0.13569889294681764
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.11280138537913566
+            }
+          ]
+        },
+        {
+          "city": "洛阳市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1244,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 9,
+          "mae": 2.3745144086961885,
+          "rmse": 3.713798410520468,
+          "r2": -0.03153595677273735,
+          "smapePercent": 44.69330704850007,
+          "baselineMae": 2.0923111161753942,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-05",
+              "target": "2024-06",
+              "actual": 11.404494382022472,
+              "predicted": 2.039292593731992
+            },
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 8.197368421052632,
+              "predicted": 10.027459797938093
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 10.028169014084508,
+              "predicted": 6.629681185471783
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 5.325,
+              "predicted": 4.281333691202362
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 1.3793103448275863,
+              "predicted": 5.799493899273594
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 10.178571428571429,
+              "predicted": 10.037955521304356
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 5.75,
+              "predicted": 5.688502904775018
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 4.947368421052632,
+              "predicted": 5.861195764466144
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.4230769230769231,
+              "predicted": 0.620135398404742
+            }
+          ]
+        },
+        {
+          "city": "济源市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 710,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.05289306039810042,
+          "rmse": 0.07273846416199564,
+          "r2": 0.29454877751387676,
+          "smapePercent": 64.18826334337406,
+          "baselineMae": 0.05,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.20482165577453815
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.20455341965041077
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.11730939992078222
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.11950656608823501
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 795,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.045135505197254525,
+          "rmse": 0.06013553531126596,
+          "r2": -1.4119090282941356,
+          "smapePercent": 44.10421754187938,
+          "baselineMae": 0.05574887069452286,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.09523809523809523,
+              "predicted": 0.05062527862338466
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.1,
+              "predicted": 0.10289495776855417
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.1,
+              "predicted": 0.1463517768053846
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.14285714285714285,
+              "predicted": 0.10060882219478019
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.19047619047619047,
+              "predicted": 0.049959569027283324
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.09523809523809523,
+              "predicted": 0.11711772545187875
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.09523809523809523,
+              "predicted": 0.1063240117958228
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.05,
+              "predicted": 0.10149400150660591
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 556,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.19689942346372707,
+          "rmse": 0.25455577323095085,
+          "r2": -4.218431735845943,
+          "smapePercent": 75.33498281356479,
+          "baselineMae": 0.1439732142857143,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.08333333333333333,
+              "predicted": 0.4278346276720183
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.4166666666666667,
+              "predicted": 0.25475361778348593
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.08333333333333333,
+              "predicted": 0.5365274971073832
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.08333333333333333,
+              "predicted": 0.45378333956118583
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.08333333333333333,
+              "predicted": 0.25290384729221205
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.25,
+              "predicted": 0.22006392789326598
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.21428571428571427,
+              "predicted": 0.22754549715317315
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1875,
+              "predicted": 0.2198705055529769
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1735,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.03185157159140679,
+          "rmse": 0.04014231734662376,
+          "r2": -3.282415767607012,
+          "smapePercent": 20.04544171585872,
+          "baselineMae": 0.03425925925925926,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.15,
+              "predicted": 0.10294971983297901
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.17142857142857143,
+              "predicted": 0.1409057382854774
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.15,
+              "predicted": 0.15919524397237808
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.2,
+              "predicted": 0.17021312895002524
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.15107584602878912
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.11518491044446162
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.19166666666666668,
+              "predicted": 0.19807495953743232
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.16666666666666666,
+              "predicted": 0.19406483935808594
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.175,
+              "predicted": 0.17756320690125896
+            }
+          ]
+        },
+        {
+          "city": "漯河市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1254,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 16.841716578627814,
+          "rmse": 18.782207165151743,
+          "r2": -1.1223372200954742,
+          "smapePercent": 62.352619383787264,
+          "baselineMae": 9.984515765285927,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 31.365853658536587,
+              "predicted": 35.17269621942914
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 55.04651162790697,
+              "predicted": 30.110512741789208
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 32.95238095238095,
+              "predicted": 41.99402772519981
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 14.5,
+              "predicted": 23.77809235547256
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 27.568181818181817,
+              "predicted": 42.91181309179702
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 13.755555555555556,
+              "predicted": 37.887445823470685
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 34.11363636363637,
+              "predicted": 5.6081326936854206
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 16.170731707317074,
+              "predicted": 35.86085854955657
+            }
+          ]
+        },
+        {
+          "city": "濮阳市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 450,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 4,
+          "mae": 0.004159444971365417,
+          "rmse": 0.00822537629202013,
+          "r2": null,
+          "smapePercent": 1.9984919994366455,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.2,
+              "predicted": 0.20006881405993743
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.2,
+              "predicted": 0.20006352067071143
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2,
+              "predicted": 0.21645039390686296
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.2,
+              "predicted": 0.2000550512479499
+            }
+          ]
+        },
+        {
+          "city": "焦作市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 630,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 3,
+          "mae": 0.02525781475918318,
+          "rmse": 0.026179439903033182,
+          "r2": 0.06007349901276404,
+          "smapePercent": 20.943448610386188,
+          "baselineMae": 0.08194444444444443,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.175,
+              "predicted": 0.1920415907744364
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.125,
+              "predicted": 0.1498405484894303
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.1125,
+              "predicted": 0.07860869498631715
+            }
+          ]
+        },
+        {
+          "city": "焦作市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 572,
+          "window": {
+            "start": "2020-07",
+            "end": "2025-05"
+          },
+          "evaluatedPairs": 4,
+          "mae": 9.175321550295546,
+          "rmse": 11.223215681748606,
+          "r2": -8.682006556649615,
+          "smapePercent": 115.41884813316416,
+          "baselineMae": 16.178056956484376,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 7.125,
+              "predicted": 21.47716140047542
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 9.23076923076923,
+              "predicted": 8.186891217108707
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 2.8095238095238093,
+              "predicted": 19.370247255306488
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 4.744523341263566
+            }
+          ]
+        },
+        {
+          "city": "许昌市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1200,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 1,
+          "mae": 0.01908656447265053,
+          "rmse": 0.01908656447265053,
+          "r2": null,
+          "smapePercent": 10.003792716878282,
+          "baselineMae": 0.018750000000000017,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.18125,
+              "predicted": 0.20033656447265052
+            }
+          ]
+        },
+        {
+          "city": "许昌市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 871,
+          "window": {
+            "start": "2020-07",
+            "end": "2024-10"
+          },
+          "evaluatedPairs": 1,
+          "mae": 3.61227796371959,
+          "rmse": 3.61227796371959,
+          "r2": null,
+          "smapePercent": 47.35819038616419,
+          "baselineMae": 1.1272893772893777,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 5.821428571428571,
+              "predicted": 9.433706535148161
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "勺捕法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 653,
+          "window": {
+            "start": "2020-06",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 0.1818724120644505,
+          "rmse": 0.22836415138304778,
+          "r2": -0.6573042232348771,
+          "smapePercent": 134.18325427986082,
+          "baselineMae": 0.14871031746031746,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.0625,
+              "predicted": 0.5230341517938613
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.35714285714285715,
+              "predicted": 0.12930758104357826
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.2574214783826313
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.10761161587241957
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.42857142857142855,
+              "predicted": 0.4549669619164984
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.3333333333333333,
+              "predicted": 0.3933365644616321
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.26100343527786635
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.054174574616178056
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "双层叠帐法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 790,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 1.2299417375501973,
+          "rmse": 2.83475950264178,
+          "r2": -113.69917364938384,
+          "smapePercent": 106.58378098111656,
+          "baselineMae": 1.1856600189933522,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.5,
+              "predicted": 8.899075796140911
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.35,
+              "predicted": 0.4195445598193493
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.0,
+              "predicted": 0.4247710714150285
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.0,
+              "predicted": 0.36145287504511087
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.7083333333333334,
+              "predicted": 1.8395078835965661
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.6818181818181818,
+              "predicted": 0.7427543152843625
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.2916666666666667,
+              "predicted": 0.49353413287877074
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.4090909090909091,
+              "predicted": 0.35667175839017795
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.36823403488912804
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1820,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 9,
+          "mae": 0.05540026428674773,
+          "rmse": 0.06872118541498475,
+          "r2": -1.2772362485506754,
+          "smapePercent": 41.04609367504629,
+          "baselineMae": 0.03388969055635723,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 0.17777777777777778,
+              "predicted": 0.14200408562285335
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 0.17777777777777778,
+              "predicted": 0.15102836403550074
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 0.15555555555555556,
+              "predicted": 0.13772348022085393
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 0.08,
+              "predicted": 0.19099096367691276
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 0.11666666666666667,
+              "predicted": 0.16814253778766083
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 0.18333333333333332,
+              "predicted": 0.20715518393399704
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.13333333333333333,
+              "predicted": 0.14597103754410187
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.075,
+              "predicted": 0.1697711289752371
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.06,
+              "predicted": 0.18454967876425013
+            }
+          ]
+        },
+        {
+          "city": "郑州市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 1287,
+          "window": {
+            "start": "2020-05",
+            "end": "2025-10"
+          },
+          "evaluatedPairs": 8,
+          "mae": 3.6283348016034296,
+          "rmse": 4.4314290522227555,
+          "r2": 0.1316376478766893,
+          "smapePercent": 43.38813335317909,
+          "baselineMae": 4.027765710045317,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-06",
+              "target": "2024-07",
+              "actual": 12.305555555555555,
+              "predicted": 15.835033296756512
+            },
+            {
+              "origin": "2024-07",
+              "target": "2024-08",
+              "actual": 17.102040816326532,
+              "predicted": 8.133031300141882
+            },
+            {
+              "origin": "2024-08",
+              "target": "2024-09",
+              "actual": 9.853658536585366,
+              "predicted": 9.07836507775284
+            },
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 1.9333333333333333,
+              "predicted": 7.304027264952471
+            },
+            {
+              "origin": "2025-06",
+              "target": "2025-07",
+              "actual": 14.71830985915493,
+              "predicted": 9.781226033199836
+            },
+            {
+              "origin": "2025-07",
+              "target": "2025-08",
+              "actual": 13.686274509803921,
+              "predicted": 11.868948247230042
+            },
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 8.5,
+              "predicted": 9.815492108641317
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 5.172413793103448,
+              "predicted": 2.8601122252835713
+            }
+          ]
+        },
+        {
+          "city": "驻马店市",
+          "methodName": "布雷图指数法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 395,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 1,
+          "mae": 0.000162509037666958,
+          "rmse": 0.000162509037666958,
+          "r2": null,
+          "smapePercent": 0.08128754373474562,
+          "baselineMae": 0.0,
+          "meetsTenPercentSmapeCriterion": true,
+          "pairs": [
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.2,
+              "predicted": 0.19983749096233305
+            }
+          ]
+        },
+        {
+          "city": "鹤壁市",
+          "methodName": "诱蚊灯法",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 555,
+          "window": {
+            "start": "2020-07",
+            "end": "2024-10"
+          },
+          "evaluatedPairs": 1,
+          "mae": 7.125033354749405,
+          "rmse": 7.125033354749405,
+          "r2": null,
+          "smapePercent": 110.67984304865645,
+          "baselineMae": 16.201923076923077,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2024-09",
+              "target": "2024-10",
+              "actual": 2.875,
+              "predicted": 10.000033354749405
+            }
+          ]
+        },
+        {
+          "city": "鹤壁市",
+          "methodName": "诱蚊诱卵器法监测",
+          "unit": "captures/record",
+          "asOf": "2025-11-11",
+          "sampleCount": 324,
+          "window": {
+            "start": "2022-05",
+            "end": "2025-11"
+          },
+          "evaluatedPairs": 3,
+          "mae": 0.0756455305723772,
+          "rmse": 0.10145611427576905,
+          "r2": null,
+          "smapePercent": 200.0,
+          "baselineMae": 0.1111111111111111,
+          "meetsTenPercentSmapeCriterion": false,
+          "pairs": [
+            {
+              "origin": "2025-08",
+              "target": "2025-09",
+              "actual": 0.0,
+              "predicted": 0.16437286466874815
+            },
+            {
+              "origin": "2025-09",
+              "target": "2025-10",
+              "actual": 0.0,
+              "predicted": 0.000423471138077273
+            },
+            {
+              "origin": "2025-10",
+              "target": "2025-11",
+              "actual": 0.0,
+              "predicted": 0.06214025591030619
+            }
+          ]
+        }
+      ],
+      "baseline": {
+        "三门峡市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "信阳市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "南阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.037500000000000006
+        },
+        "周口市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.006249999999999999
+        },
+        "商丘市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.04062500000000001
+        },
+        "安阳市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.16121031746031744
+        },
+        "安阳市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.4998015873015872
+        },
+        "安阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.019929653679653683
+        },
+        "安阳市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.3741315438375556
+        },
+        "平顶山市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05000000000000001
+        },
+        "开封市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.3281022100306137
+        },
+        "开封市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "新乡市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.041818181818181824
+        },
+        "洛阳市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "洛阳市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.5974015922158338
+        },
+        "洛阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.06979591836734693
+        },
+        "洛阳市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 2.0923111161753942
+        },
+        "济源市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05
+        },
+        "漯河市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.05574887069452286
+        },
+        "漯河市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.1439732142857143
+        },
+        "漯河市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.03425925925925926
+        },
+        "漯河市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 9.984515765285927
+        },
+        "濮阳市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "焦作市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.08194444444444443
+        },
+        "焦作市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 16.178056956484376
+        },
+        "许昌市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.018750000000000017
+        },
+        "许昌市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 1.1272893772893777
+        },
+        "郑州市|勺捕法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.14871031746031746
+        },
+        "郑州市|双层叠帐法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 1.1856600189933522
+        },
+        "郑州市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.03388969055635723
+        },
+        "郑州市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 4.027765710045317
+        },
+        "驻马店市|布雷图指数法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.0
+        },
+        "鹤壁市|诱蚊灯法": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 16.201923076923077
+        },
+        "鹤壁市|诱蚊诱卵器法监测": {
+          "method": "previous-year-same-month-or-last-observation",
+          "mae": 0.1111111111111111
+        }
+      },
+      "metrics": {
+        "mae": {
+          "value": null,
+          "evaluationKind": "real-backtest",
+          "datasetIds": [
+            "vector-monitoring"
+          ],
+          "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+        }
+      },
+      "qualityFlags": [
+        "capture-count-not-standard-density",
+        "method-specific-errors-not-pooled",
+        "capture-forecast-does-not-validate-standard-density-requirement"
+      ]
+    }
+  }
+}

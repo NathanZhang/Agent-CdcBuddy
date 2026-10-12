@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { CheckCircle2, ClipboardCheck, ShieldAlert, AlertTriangle, Users, MapPin, Activity } from 'lucide-react';
 
@@ -33,6 +34,7 @@ interface DisposalWorkflowProps {
 }
 
 export const DisposalWorkflowCard: React.FC<DisposalWorkflowProps> = ({ data }) => {
+  const interactFunctional=useFunctionalInteraction();
   const [status, setStatus] = useState<string>(data.currentStatus);
   const [afterBi, setAfterBi] = useState<number | undefined>(data.afterBiIndex);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -46,40 +48,13 @@ export const DisposalWorkflowCard: React.FC<DisposalWorkflowProps> = ({ data }) 
       : (isEnv ? '环境健康超标异常应急排查与处置工单' : '病媒生物消杀处置工单与处置闭环管理')
   );
 
-  const handleToggleResolve = async () => {
+  const handleToggleResolve=async()=>{
     setIsUpdating(true);
-    const nextStatus = status === 'resolved' ? 'in_progress' : 'resolved';
-    try {
-      await fetch('/api/skills', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          skillId: isChronic ? 'skill_chronic_early_warning_disposal' : (isEnv ? 'skill_env_early_warning_disposal' : 'skill_disposal_workflow'),
-          args: {
-            ticketId: data.ticketId,
-            action: nextStatus === 'resolved' ? 'resolve' : 'reopen'
-          }
-        })
-      });
-      setStatus(nextStatus);
-      if (nextStatus === 'resolved') {
-        setAfterBi(3.8);
-      }
-    } catch (e) {
-      console.error(e);
-      setStatus(nextStatus);
-    } finally {
-      setIsUpdating(false);
-    }
+    try {await interactFunctional({type:'workflow.transition',id:data.ticketId,args:{action:status==='resolved'?'reopen':'resolve'}});} finally {setIsUpdating(false);}
   };
 
-  const themeBorder = isChronic 
-    ? 'border-rose-200 dark:border-rose-500/20' 
-    : (isEnv ? 'border-amber-200 dark:border-amber-500/20' : 'border-slate-200 dark:border-emerald-500/20');
-  const themeHeaderIcon = isChronic 
-    ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30' 
-    : (isEnv ? 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30');
-
+  const themeBorder = isChronic ? 'border-rose-200 dark:border-rose-500/20' : (isEnv ? 'border-amber-200 dark:border-amber-500/20' : 'border-slate-200 dark:border-emerald-500/20');
+  const themeHeaderIcon = isChronic ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30' : (isEnv ? 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30');
   return (
     <div className={`w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-5 border ${themeBorder} shadow-sm dark:shadow-xl flex flex-col gap-4 transition-colors`}>
       {/* 头部 */}

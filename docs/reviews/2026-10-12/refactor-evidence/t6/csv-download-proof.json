@@ -1,0 +1,24 @@
+{
+  "runId": "9941b4e6-e7e9-4346-8e29-7c8a2c80fff1",
+  "status": "SUCCESS",
+  "downloadedBytes": 26,
+  "sha256": "7d0316c13f14032219723dd1e61593bad0ec07220b7c1909c100f873ec95ed7f",
+  "content": "\"total_records\"\r\n\"3292\"",
+  "skills": [
+    {
+      "id": "skill_artifact_export",
+      "status": "SUCCESS",
+      "method": "skill_artifact_export-v1",
+      "datasets": [
+        {
+          "id": "foodborne-monitoring",
+          "domain": "foodborne",
+          "origin": "mock",
+          "version": "existing-snapshot-2026-10-12",
+          "asOf": "2026-10-12",
+          "schemaVersion": "1"
+        }
+      ]
+    }
+  ]
+}

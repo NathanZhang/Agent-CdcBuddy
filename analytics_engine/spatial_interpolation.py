@@ -1,252 +1,35 @@
-import sqlite3
+"""IDW interpolation of method-separated observed captures; no synthetic monitoring points."""
+import sqlite3,math
 import numpy as np
-import pandas as pd
-import math
+from analytics_engine.repositories.datasets import connect_readonly
+from analytics_engine.vector_methods import cutoff_date
 
-def calculate_spatial_idw(db_path: str, city: str = None, category: str = "蚊", district: str = None):
-    """
-    真实 GIS IDW (反距离加权插值) 算法：
-    1. 从 fact_monitoring + dim_location 读取真实监测点坐标 (lat, lon) 与密度
-    2. 生成网格 (Grid Matrix)
-    3. 利用 IDW 连续空间插值计算整个区域的连续平滑风险热力场
-    4. 返回插值热力网格与街道级高风险预警点
-    """
-    conn = sqlite3.connect(db_path)
+def idw_values(points,targets,power=2):
+ if not points:return []
+ if power<=0:raise ValueError('Power must be positive')
+ a=np.asarray(points,dtype=float);result=[]
+ for lat,lon in targets:
+  # Equirectangular distance in km, local latitude adjustment.
+  d=np.hypot((a[:,0]-lat)*111.195,(a[:,1]-lon)*111.195*np.cos(np.radians((a[:,0]+lat)/2)))
+  exact=d<1e-9
+  if np.any(exact):result.append(float(np.mean(a[exact,2])))
+  else:
+   w=1/d**power;result.append(float(np.sum(w*a[:,2])/np.sum(w)))
+ return result
 
-    where_clauses = ["l.latitude IS NOT NULL", "l.longitude IS NOT NULL", "f.capture_count > 0"]
-    params = []
-    if category:
-        where_clauses.append("s.category = ?")
-        params.append(category)
-    if city:
-        where_clauses.append("l.city = ?")
-        params.append(city)
-
-    # 灵活支持单区县或多区县模糊匹配 (如 '金水区', '管城区', '金水区,管城区')
-    district_filter_applied = False
-    if district:
-        dist_tokens = [d.strip() for d in str(district).replace("、", ",").replace("和", ",").replace("&", ",").split(",") if d.strip()]
-        if dist_tokens:
-            sub_clauses = []
-            for dt in dist_tokens:
-                clean_dt = dt.replace("回族区", "").replace("区", "").replace("县", "").replace("市", "")
-                sub_clauses.append("(l.district = ? OR l.district LIKE ?)")
-                params.append(dt)
-                params.append(f"%{clean_dt}%")
-            if sub_clauses:
-                where_clauses.append(f"({' OR '.join(sub_clauses)})")
-                district_filter_applied = True
-
-    sql = f"""
-    SELECT 
-        l.city,
-        l.district,
-        l.street,
-        l.latitude as lat,
-        l.longitude as lon,
-        f.capture_count,
-        f.weather_temp,
-        f.weather_humidity,
-        f.date_id,
-        s.species_name
-    FROM fact_monitoring f
-    JOIN dim_species s ON f.species_id = s.species_id
-    JOIN dim_location l ON f.location_id = l.location_id
-    WHERE {" AND ".join(where_clauses)}
-    ORDER BY f.capture_count DESC
-    LIMIT 300
-    """
-
-    df = pd.read_sql_query(sql, conn, params=params)
-
-    # 若区县过滤后结果较少，查询全市数据并补充下钻目标区县点位
-    if df.empty or len(df) < 5:
-        fallback_params = []
-        fb_where = ["l.latitude IS NOT NULL", "l.longitude IS NOT NULL", "f.capture_count > 0"]
-        if category:
-            fb_where.append("s.category = ?")
-            fallback_params.append(category)
-        if city:
-            fb_where.append("l.city = ?")
-            fallback_params.append(city)
-        
-        fb_sql = f"""
-        SELECT 
-            l.city,
-            l.district,
-            l.street,
-            l.latitude as lat,
-            l.longitude as lon,
-            f.capture_count,
-            f.weather_temp,
-            f.weather_humidity,
-            f.date_id,
-            s.species_name
-        FROM fact_monitoring f
-        JOIN dim_species s ON f.species_id = s.species_id
-        JOIN dim_location l ON f.location_id = l.location_id
-        WHERE {" AND ".join(fb_where)}
-        ORDER BY f.capture_count DESC
-        LIMIT 300
-        """
-        df_fb = pd.read_sql_query(fb_sql, conn, params=fallback_params)
-        
-        # 补充区县监测站点
-        district_supplements = [
-            {"city": city or "郑州市", "district": "金水区", "street": "未来路街道办事处", "lat": 34.8003, "lon": 113.6627, "capture_count": 86.0, "weather_temp": 31.5, "weather_humidity": 78.0, "date_id": "2026-08-08", "species_name": "白纹伊蚊"},
-            {"city": city or "郑州市", "district": "金水区", "street": "经八路街道监测站", "lat": 34.7865, "lon": 113.6732, "capture_count": 72.0, "weather_temp": 31.0, "weather_humidity": 75.0, "date_id": "2026-08-08", "species_name": "白纹伊蚊"},
-            {"city": city or "郑州市", "district": "金水区", "street": "花园路街道监测点", "lat": 34.8120, "lon": 113.6820, "capture_count": 64.0, "weather_temp": 30.5, "weather_humidity": 76.0, "date_id": "2026-08-08", "species_name": "淡色库蚊"},
-            {"city": city or "郑州市", "district": "管城回族区", "street": "紫荆山南路街道", "lat": 34.7538, "lon": 113.6788, "capture_count": 82.0, "weather_temp": 31.2, "weather_humidity": 77.0, "date_id": "2026-08-08", "species_name": "白纹伊蚊"},
-            {"city": city or "郑州市", "district": "管城回族区", "street": "二里岗街道监测点", "lat": 34.7380, "lon": 113.6920, "capture_count": 68.0, "weather_temp": 30.8, "weather_humidity": 76.0, "date_id": "2026-08-08", "species_name": "致倦库蚊"},
-            {"city": city or "郑州市", "district": "管城回族区", "street": "陇海马路街道监测站", "lat": 34.7450, "lon": 113.6650, "capture_count": 55.0, "weather_temp": 31.0, "weather_humidity": 74.0, "date_id": "2026-08-08", "species_name": "白纹伊蚊"},
-            {"city": city or "郑州市", "district": "二七区", "street": "大学路街道", "lat": 34.7233, "lon": 113.6396, "capture_count": 58.0, "weather_temp": 30.5, "weather_humidity": 73.0, "date_id": "2026-08-08", "species_name": "淡色库蚊"},
-            {"city": city or "郑州市", "district": "中原区", "street": "建设路街道", "lat": 34.7523, "lon": 113.6062, "capture_count": 62.0, "weather_temp": 30.7, "weather_humidity": 74.0, "date_id": "2026-08-08", "species_name": "淡色库蚊"}
-        ]
-        df_supp = pd.DataFrame(district_supplements)
-        if not df_fb.empty:
-            df = pd.concat([df_supp, df_fb], ignore_index=True)
-        else:
-            df = df_supp
-
-    conn.close()
-
-    if df.empty:
-        return {"grid": [], "alerts": [], "monitoringPoints": []}
-
-    pts_lat = df["lat"].astype(float).values
-    pts_lon = df["lon"].astype(float).values
-    pts_val = df["capture_count"].astype(float).values
-
-    min_lat, max_lat = float(np.min(pts_lat)), float(np.max(pts_lat))
-    min_lon, max_lon = float(np.min(pts_lon)), float(np.max(pts_lon))
-
-    # 若点位较为集中，适当外扩网格边界 (0.05 度 ~ 5.5公里)
-    if (max_lat - min_lat) < 0.05:
-        min_lat -= 0.03
-        max_lat += 0.03
-    if (max_lon - min_lon) < 0.05:
-        min_lon -= 0.03
-        max_lon += 0.03
-
-    # 构造 18x18 高精度 IDW 空间插值网格（增加有效影响距离截断，超出有效半径的远端区域归零）
-    grid_size = 18
-    lat_grid = np.linspace(min_lat, max_lat, grid_size)
-    lon_grid = np.linspace(min_lon, max_lon, grid_size)
-
-    grid_points = []
-    power = 2.0  # 反距离平方幂
-    max_influence_dist = 0.40  # 约 40 公里最大空间有效扩散半径
-
-    for lat_g in lat_grid:
-        for lon_g in lon_grid:
-            dists = np.sqrt((pts_lat - lat_g)**2 + (pts_lon - lon_g)**2)
-            min_dist = float(np.min(dists)) if len(dists) > 0 else 999.0
-
-            if min_dist > max_influence_dist:
-                interpolated_val = 0.0
-            else:
-                zero_mask = dists < 1e-5
-                if np.any(zero_mask):
-                    interpolated_val = float(pts_val[zero_mask][0])
-                else:
-                    weights = 1.0 / (dists ** power)
-                    interpolated_val = float(np.sum(weights * pts_val) / np.sum(weights))
-            
-            grid_points.append({
-                "lat": round(float(lat_g), 5),
-                "lon": round(float(lon_g), 5),
-                "density": round(interpolated_val, 1)
-            })
-
-    # 数据清洗：填充空值避免序列化为 NaN
-    df["street"] = df["street"].fillna("核心监测街道")
-    df["district"] = df["district"].fillna("重点区县")
-    df["weather_temp"] = df["weather_temp"].fillna(26.5)
-    df["weather_humidity"] = df["weather_humidity"].fillna(65.0)
-
-    # 提取所有监测站点数据供前端多图层交互
-    monitoring_points = []
-    for idx, r in df.head(80).iterrows():
-        monitoring_points.append({
-            "id": f"POINT-{idx+1}",
-            "city": str(r["city"]),
-            "district": str(r["district"]),
-            "street": str(r["street"]),
-            "lat": round(float(r["lat"]), 5),
-            "lon": round(float(r["lon"]), 5),
-            "density": round(float(r["capture_count"]), 1),
-            "species": str(r["species_name"]),
-            "weatherTemp": float(r["weather_temp"]),
-            "weatherHumidity": float(r["weather_humidity"]),
-            "date": str(r["date_id"])
-        })
-
-    # 提取超标预警点位
-    alerts = []
-    for idx, r in df.head(30).iterrows():
-        cnt = float(r["capture_count"])
-        if cnt >= 80:
-            lvl, lvl_name = "red", "严重预警 (一级)"
-            thresh = 80
-            act = "立即启动突发虫媒应急消杀，48小时内完成超低容量喷雾与积水封控。"
-        elif cnt >= 50:
-            lvl, lvl_name = "orange", "较重预警 (二级)"
-            thresh = 50
-            act = "下发整改督办单，对重点生境实施药物速杀与滞留喷洒。"
-        elif cnt >= 30:
-            lvl, lvl_name = "yellow", "一般预警 (三级)"
-            thresh = 30
-            act = "加强常规监测，组织社区开展积水清理与防蚊宣传。"
-        else:
-            continue
-
-        street_str = str(r["street"]).strip()
-        if not street_str or street_str.lower() == "nan":
-            street_str = "核心监测街道"
-
-        district_str = str(r["district"]).strip()
-        if not district_str or district_str.lower() == "nan":
-            district_str = "重点区县"
-
-        # 根据病媒类别动态调整监测方法与单位
-        if category == "蜱":
-            method_desc = f"布旗法/体表寄生监测蜱指数达 {cnt} 只/布旗·小时（基线 {thresh}）"
-            default_act = "对草坪与灌木实施修剪降高，树立警示牌，喷洒高效氯氰菊酯。" if lvl == 'yellow' else "划定蜱虫高危封控区，实施大面积滞留喷洒与牧畜驱蜱。"
-        elif category == "鼠":
-            method_desc = f"夹夜法/粉迹法监测捕获率达 {cnt}%（基线 {thresh}%）"
-            default_act = "全面投放抗凝血灭鼠毒饵站，完善下水道防鼠网栅。"
-        elif category == "蝇":
-            method_desc = f"诱蝇笼法单日捕获量达 {cnt} 只/笼（基线 {thresh}）"
-            default_act = "对垃圾中转站与农贸市场喷洒灭幼脲，密闭清运垃圾。"
-        elif category == "蟑螂" or category == "蟑":
-            method_desc = f"粘捕盒法捕获密度达 {cnt} 只/盒（基线 {thresh}）"
-            default_act = "投放氟蚁腙灭蟑胶饵，实施下水道热烟雾熏杀。"
-        else:
-            method_desc = f"诱蚊灯单次捕获量达 {cnt} 只/台次（基线 {thresh}）"
-            default_act = act
-
-        alerts.append({
-            "alertId": f"ALERT-{str(r['date_id']).replace('-', '')}-{idx + 101}",
-            "title": f"{r['city']}{district_str} {r['species_name']}密度超标预警",
-            "level": lvl,
-            "levelName": lvl_name,
-            "category": category,
-            "city": str(r["city"]),
-            "district": district_str,
-            "street": street_str,
-            "latitude": float(r["lat"]),
-            "longitude": float(r["lon"]),
-            "triggerReason": f"{method_desc}，气温 {r['weather_temp']}℃，相对湿度 {r['weather_humidity']}%。",
-            "currentDensity": cnt,
-            "threshold": thresh,
-            "affectedPopulationEstimate": int(cnt * 350 + 5000),
-            "recommendedAction": default_act,
-            "disposalStatus": "in_progress" if idx % 2 == 0 else "pending",
-            "triggerTime": f"{r['date_id']} 08:30:00"
-        })
-
-    return {
-        "grid": grid_points,
-        "alerts": alerts,
-        "monitoringPoints": monitoring_points
-    }
+def calculate_spatial_idw(db_path,city=None,category='蚊',district=None,method_name=None,as_of=None,from_date=None,grid_size=18):
+ if not isinstance(grid_size,int) or not 2<=grid_size<=50:raise ValueError('Invalid grid size')
+ where=['f.capture_count>=0','f.date_id<=?','l.latitude BETWEEN -90 AND 90','l.longitude BETWEEN -180 AND 180'];params=[cutoff_date(db_path,as_of)]
+ for col,val in [('l.city',city),('l.district',district),('s.category',category),('m.method_name',method_name)]:
+  if val is not None:where.append(col+'=?');params.append(val)
+ if from_date:where.append('f.date_id>=?');params.append(from_date)
+ with connect_readonly(db_path) as c:
+  c.row_factory=sqlite3.Row
+  rows=[dict(r) for r in c.execute(f"SELECT l.location_id,l.city,l.district,l.street,l.latitude AS lat,l.longitude AS lon,m.method_name,AVG(f.capture_count) AS value,COUNT(*) AS samples,MIN(f.date_id) AS start,MAX(f.date_id) AS end FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE {' AND '.join(where)} GROUP BY l.location_id,m.method_name ORDER BY l.location_id,m.method_name",params)]
+ if not rows:return {'status':'NO_DATA','grid':[],'monitoringPoints':[],'alerts':[]}
+ methods=sorted(set(r['method_name'] for r in rows))
+ if len(methods)>1:return {'status':'INSUFFICIENT_DATA','availableMethods':methods,'grid':[],'monitoringPoints':[],'alerts':[],'qualityFlags':['select-one-sampling-method']}
+ pts=[(r['lat'],r['lon'],r['value']) for r in rows]
+ targets=[(float(lat),float(lon)) for lat in np.linspace(min(p[0] for p in pts),max(p[0] for p in pts),grid_size) for lon in np.linspace(min(p[1] for p in pts),max(p[1] for p in pts),grid_size)]
+ targets=list(dict.fromkeys(targets));values=idw_values(pts,targets)
+ return {'status':'SUCCESS','method':'observed-capture-idw-v1','unit':'captures/record','methodName':methods[0],'grid':[{'lat':t[0],'lon':t[1],'value':v} for t,v in zip(targets,values)],'monitoringPoints':[{'id':r['location_id'],'city':r['city'],'district':r['district'],'street':r['street'],'lat':r['lat'],'lon':r['lon'],'value':r['value'],'sampleCount':r['samples'],'window':{'start':r['start'],'end':r['end']}} for r in rows],'alerts':[],'qualityFlags':['capture-count-not-standard-density','interpolation-not-disease-risk','no-interpolation-uncertainty-evaluation']}

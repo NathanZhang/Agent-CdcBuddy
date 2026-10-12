@@ -1,0 +1,7 @@
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.330s
+
+OK
+Initializing Application Business Database at: /var/folders/xs/1pgxn3px4371_q74b1x57h940000gn/T/tmpi22j_g7o/app_business.db
+Application Business Database successfully initialized with tables and seed data!

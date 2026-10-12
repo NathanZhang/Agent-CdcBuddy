@@ -58,17 +58,8 @@ try {
         }
     }
 
-    $profile = Get-Content -LiteralPath 'src/lib/config/agent-profile.ts' -Raw
-    foreach ($mapping in @(
-        "'32112': 'vector'",
-        "'32113': 'foodborne'",
-        "'32114': 'env'",
-        "'32115': 'chronic'"
-    )) {
-        if ($profile -notmatch [regex]::Escape($mapping)) {
-            throw "Production port mapping is missing: $mapping"
-        }
-    }
+    # Runtime domain/port isolation is exercised by runtime-profile.test.ts and
+    # test_release_merge.py, rather than requiring obsolete hard-coded port maps.
 
     $entrypointBytes = [System.IO.File]::ReadAllBytes((Resolve-Path 'docker/entrypoint.sh'))
     if ($entrypointBytes.Length -ge 3 -and $entrypointBytes[0] -eq 0xEF -and $entrypointBytes[1] -eq 0xBB -and $entrypointBytes[2] -eq 0xBF) {

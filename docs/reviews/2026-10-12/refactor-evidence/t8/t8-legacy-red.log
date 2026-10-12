@@ -1,0 +1,5 @@
+
+> agent-cdc-buddy@2.0.0 test:baseline
+> ./.venv/bin/python tests/run_isolated_legacy.py
+
+Legacy regression: 31/44; source databases unchanged=True

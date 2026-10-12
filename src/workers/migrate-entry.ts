@@ -1,0 +1,1 @@
+import {migrateDatabase} from '@/infrastructure/db/migrations';import path from 'node:path';console.log(JSON.stringify(migrateDatabase(path.resolve(process.env.APP_BUSINESS_DB_PATH??'app_business.db'))));

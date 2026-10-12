@@ -1,0 +1,100 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 463ms
+   ✓ rejects missing and malformed capture evidence without inserting a record  328ms
+ ✓ tests/refactor/dispatch.test.ts (12 tests) 522ms
+ ✓ tests/refactor/interaction-skills.test.ts (10 tests) 1288ms
+   ✓ session create/read/rename/delete actually persist and enforce owner/domain  322ms
+   ✓ conversation journal stores only actual run evidence and clears NO_DATA snapshots idempotently  362ms
+ ✓ tests/refactor/llm-client.test.ts (8 tests) 50ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 66ms
+ ✓ tests/refactor/dispatch-http.test.ts (4 tests) 227ms
+ ✓ tests/refactor/query-gateway.test.ts (14 tests) 28ms
+ ❯ tests/refactor/workbench.test.tsx (11 tests | 1 failed) 5189ms
+   ✓ shared workbench controller > web and widget follow identical state transitions for the same Agent output 58ms
+   ✓ shared workbench controller > all functional action classes use one Agent interaction client and retain server run IDs 3ms
+   ✓ shared workbench controller > NO_DATA clears an old success view and cannot restore a stale snapshot 0ms
+   ✓ shared workbench controller > ignores a cancelled completion after another session is loaded 1ms
+   ✓ shared workbench controller > startSession is an Agent event and cancel immediately releases busy state 0ms
+   ✓ shared workbench controller > restores old sessions without presenting unverified legacy snapshots as a new observed result 0ms
+   ✓ shared workbench controller > renders mixed sources by each DatasetRef instead of by current app domain 0ms
+   ✓ cancel clears previously displayed success instead of leaving a stale result 0ms
+   × legacy snapshots render their stored values read-only without live fallback metrics or actions 5023ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ retains every actual AG-UI payload when the Agent returns several tools 0ms
+   ✓ a standalone widget action uses its own injected controller rather than another workbench 100ms
+ ✓ tests/refactor/agui.test.ts (1 test) 8ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 4662ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  1783ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > missing geographic scope cannot invent IDW points  1212ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > rolling holdouts are reachable through the main Skill contract with real provenance  1644ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 24ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 73ms
+ ✓ tests/refactor/results.test.ts (6 tests) 58ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 3ms
+ ✓ tests/refactor/results-ui.test.ts (3 tests) 14ms
+ ❯ tests/refactor/analytics-runner.test.ts (7 tests | 1 failed) 9675ms
+   ✓ validates task/domain/dataset before spawning and sends explicit dataset identity 171ms
+   ✓ bounds running concurrency to two and queued cancellation never starts a child 210ms
+   ✓ timeout and cancellation terminate a running child and release the slot for a real next execution  1105ms
+   ✓ does not repair non-finite JSON, splice noisy stdout or accept another run identity  899ms
+   ✓ stdout and stderr limits terminate execution without leaking the oversized output  436ms
+   × the production runner computes an actual water snapshot through strict Python SkillResult 5018ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer  1828ms
+ ❯ tests/refactor/skill-service.test.ts (10 tests | 1 failed) 32746ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  13705ms
+   ✓ one execution service > refuses unknown IDs and invalid parameters 4ms
+   ✓ one execution service > rejects malformed execution output at the real service boundary 1ms
+   ✓ one execution service > invalid input cannot trigger an execution side effect 1ms
+   ✓ one execution service > rejects duplicate aliases rather than ambiguously choosing a handler 0ms
+   ✓ one execution service > custom skills execute the stored env domain 14ms
+   ✓ one execution service > custom skills execute the stored foodborne domain 7ms
+   ✓ one execution service > custom skills execute the stored chronic domain 9ms
+   ✓ one execution service > SQL failure never becomes execution-complete data or creates a custom skill 5ms
+   × one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state 18946ms
+     → expected [ 'SUCCESS', 'REVIEW_REQUIRED', …(2) ] to include 'FAILED'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/analytics-runner.test.ts > the production runner computes an actual water snapshot through strict Python SkillResult
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/refactor/analytics-runner.test.ts:34:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/refactor/skill-service.test.ts > one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state
+AssertionError: expected [ 'SUCCESS', 'REVIEW_REQUIRED', …(2) ] to include 'FAILED'
+ ❯ tests/refactor/skill-service.test.ts:73:149
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/refactor/workbench.test.tsx > legacy snapshots render their stored values read-only without live fallback metrics or actions
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/refactor/workbench.test.tsx:57:1
+     55|  await controller.send('查询');controller.cancel();expect(controller.get…
+     56| });
+     57| it('legacy snapshots render their stored values read-only without live…
+       | ^
+     58|  const {renderToStaticMarkup}=await import('react-dom/server');const R…
+     59|  const {GenerativeComponentRenderer}=await import('@/components/ag-ui/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 14 passed (17)
+      Tests  3 failed | 101 passed (104)
+   Start at  15:49:52
+   Duration  36.00s (transform 4.35s, setup 0ms, collect 21.43s, tests 55.10s, environment 3ms, prepare 5.14s)
+

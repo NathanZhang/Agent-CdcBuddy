@@ -1,0 +1,33 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/results-ui.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/results-ui.test.ts (4 tests | 1 failed) 84ms
+   ✓ empty death-chain results never render a diagnosis or claimed accuracy 4ms
+   ✓ empty water results never render default compliance or fake stations 0ms
+   ✓ empty time series never renders a default goodness of fit 1ms
+   × does not relabel non-vector generic values as vector capture measurements 78ms
+     → expected '<section class="p-5 space-y-4"><h3 cl…' not to contain '捕获量 / 记录'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/results-ui.test.ts > does not relabel non-vector generic values as vector capture measurements
+AssertionError: expected '<section class="p-5 space-y-4"><h3 cl…' not to contain '捕获量 / 记录'
+
+Expected: "捕获量 / 记录"
+Received: "<section class="p-5 space-y-4"><h3 class="text-lg font-semibold">cgMLST</h3><p class="text-xs text-slate-500">方法：allele-distance-single-link-v1</p><div class="text-xs text-amber-700 space-y-1"></div><div class="space-y-2"></div><details open=""><summary class="text-sm cursor-pointer">查看完整观测数据、模型信息与限制</summary><div class="mt-3"><div class="space-y-2"><div><span class="text-sm font-medium">nodes</span><div class="pl-3 mt-1"><div class="overflow-auto max-h-96"><table class="text-xs w-full"><thead><tr><th class="text-left p-2 border-b">捕获量 / 记录</th></tr></thead><tbody><tr><td class="p-2 border-b">ST3</td></tr></tbody></table></div></div></div></div></div></details></section>"
+
+ ❯ tests/refactor/results-ui.test.ts:27:373
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  17:05:43
+   Duration  949ms (transform 103ms, setup 0ms, collect 667ms, tests 84ms, environment 0ms, prepare 46ms)
+

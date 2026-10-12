@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { 
   FileText, 
@@ -17,6 +18,7 @@ interface EnvOcrEntryCardProps {
 }
 
 export const EnvOcrEntryCard: React.FC<EnvOcrEntryCardProps> = ({ data = {} }) => {
+  const interactFunctional=useFunctionalInteraction();
   const [isSaved, setIsSaved] = useState(false);
 
   const docTitle = data?.docTitle || '河南省生活饮用水水质检验报告单 (出厂水质多参数全分析)';
@@ -101,7 +103,7 @@ export const EnvOcrEntryCard: React.FC<EnvOcrEntryCardProps> = ({ data = {} }) =
         </div>
 
         <button
-          onClick={() => setIsSaved(true)}
+          onClick={() => void interactFunctional({type:'collection.ocr-save',prompt:'保存当前 OCR 报告录入；未实现真实识别或复核时请明确说明不可用。'})}
           disabled={isSaved}
           className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all ${
             isSaved

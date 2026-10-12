@@ -1,0 +1,138 @@
+{
+  "runId": "6b68f6f4-c9d7-4cb7-804b-a3e7bde751de",
+  "interactionId": "da2c7af9-66fd-47cd-a3dd-d9f3f04d5d13",
+  "status": "SUCCESS",
+  "replyText": "已执行 skill_approval_decision，仅处理当前指定审批（jobId=d6cee0b2-2b54-47cc-b420-5fef8ffcf974，decision=approve）。工具执行状态为 SUCCESS，返回的审批记录如下：ticket_id=58c6438a-8b3f-46aa-a79e-4d92e91689df，job_id=d6cee0b2-2b54-47cc-b420-5fef8ffcf974，domain=vector，city=郑州市，district=中牟县，approved_by=89d2b86e-4a7e-4207-bb8a-96e414705b24，opened_at=1791797866314。需要说明：该记录当前 status=OPEN、resolved_at=null，因此从返回数据看审批单仍处于未关闭/未最终解决状态，我无法据此断言其已完全审批完结；如需确认最终审批结果，建议以该 ticket 的后续状态为准。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "6b68f6f4-c9d7-4cb7-804b-a3e7bde751de",
+      "component": "ANALYTICS_RESULT",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "6b68f6f4-c9d7-4cb7-804b-a3e7bde751de",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "实际审批结果",
+          "data": {
+            "ticket_id": "58c6438a-8b3f-46aa-a79e-4d92e91689df",
+            "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+            "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县",
+            "status": "OPEN",
+            "approved_by": "89d2b86e-4a7e-4207-bb8a-96e414705b24",
+            "opened_at": 1791797866314,
+            "resolved_at": null
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_4f79fa38db17400d95919f38",
+      "skillId": "skill_approval_decision",
+      "skillName": "专业审批分析任务",
+      "args": {
+        "jobId": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+        "decision": "approve"
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "6b68f6f4-c9d7-4cb7-804b-a3e7bde751de",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "实际审批结果",
+          "data": {
+            "ticket_id": "58c6438a-8b3f-46aa-a79e-4d92e91689df",
+            "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+            "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县",
+            "status": "OPEN",
+            "approved_by": "89d2b86e-4a7e-4207-bb8a-96e414705b24",
+            "opened_at": 1791797866314,
+            "resolved_at": null
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "success": true,
+  "skillId": "skill_approval_decision",
+  "skillName": "专业审批分析任务",
+  "generativeView": {
+    "type": "ANALYTICS_RESULT",
+    "title": "实际审批结果",
+    "data": {
+      "ticket_id": "58c6438a-8b3f-46aa-a79e-4d92e91689df",
+      "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+      "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": "中牟县",
+      "status": "OPEN",
+      "approved_by": "89d2b86e-4a7e-4207-bb8a-96e414705b24",
+      "opened_at": 1791797866314,
+      "resolved_at": null
+    },
+    "runId": "6b68f6f4-c9d7-4cb7-804b-a3e7bde751de",
+    "status": "SUCCESS",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "qualityFlags": [
+      "engineering-workflow-not-validated-risk-policy"
+    ],
+    "method": "persistent-evidence-workflow-v1"
+  },
+  "source": "llm_tool_calling",
+  "args": {
+    "jobId": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+    "decision": "approve"
+  }
+}

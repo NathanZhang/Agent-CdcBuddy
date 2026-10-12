@@ -1,0 +1,22 @@
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @copilotkit/channels-core@0.8.0
+npm warn Found: vitest@3.2.4
+npm warn node_modules/vitest
+npm warn   dev vitest@"3.2.4" from the root project
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional vitest@"^4.0.0" from @copilotkit/channels-core@0.8.0
+npm warn node_modules/@copilotkit/channels-core
+npm warn   @copilotkit/channels-core@"^0.8.0" from @copilotkit/channels-intelligence@0.8.0
+npm warn   node_modules/@copilotkit/channels-intelligence
+npm warn   3 more (@copilotkit/channels-slack, ...)
+npm warn
+npm warn Conflicting peer dependency: vitest@4.1.11
+npm warn node_modules/vitest
+npm warn   peerOptional vitest@"^4.0.0" from @copilotkit/channels-core@0.8.0
+npm warn   node_modules/@copilotkit/channels-core
+npm warn     @copilotkit/channels-core@"^0.8.0" from @copilotkit/channels-intelligence@0.8.0
+npm warn     node_modules/@copilotkit/channels-intelligence
+npm warn     3 more (@copilotkit/channels-slack, ...)
+
+removed 853 packages in 10s

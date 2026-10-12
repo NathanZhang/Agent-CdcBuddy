@@ -1,0 +1,26 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run authorization
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/authorization.test.ts [ tests/refactor/authorization.test.ts ]
+Error: Cannot find module '@/infrastructure/auth/session' imported from '/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/refactor/authorization.test.ts'.
+
+- If you rely on tsconfig.json's "paths" to resolve modules, please install "vite-tsconfig-paths" plugin to handle module resolution.
+- Make sure you don't have relative aliases in your Vitest config. Use absolute paths instead. Read more: https://vitest.dev/guide/common-errors
+ ❯ tests/refactor/authorization.test.ts:2:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  16:12:29
+   Duration  721ms (transform 39ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 331ms)
+

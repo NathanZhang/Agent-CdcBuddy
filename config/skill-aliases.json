@@ -1,0 +1,73 @@
+{
+  "skill_population_dynamics": [
+    "population_dynamics"
+  ],
+  "skill_species_composition": [
+    "species_clustering",
+    "species_composition"
+  ],
+  "skill_resistance_evaluation": [
+    "resistance_prediction",
+    "resistance_evaluation"
+  ],
+  "skill_pathogen_risk": [
+    "pathogen_apriori",
+    "pathogen_risk"
+  ],
+  "skill_spatial_early_warning": [],
+  "skill_early_warning": [],
+  "skill_alert_push_dispatch": [],
+  "skill_disposal_workflow": [],
+  "skill_density_forecast": [],
+  "skill_transmission_risk": [],
+  "skill_resistance_evolution": [],
+  "skill_vector_nlq": [],
+  "skill_auto_report_gen": [],
+  "skill_mobile_assistant_api": [],
+  "skill_meta_custom_builder": [],
+  "skill_foodborne_custom_builder": [],
+  "skill_env_custom_builder": [],
+  "skill_chronic_custom_builder": [],
+  "skill_monitoring_data_table": [],
+  "skill_foodborne_case_table": [],
+  "skill_env_monitoring_table": [],
+  "skill_chronic_monitoring_table": [],
+  "skill_satscan_kmeans_lstm": [],
+  "skill_satscan_spatial": [],
+  "skill_lstm_predictor": [],
+  "skill_composable_workflow": [],
+  "skill_daemon_surveillance": [],
+  "skill_foodborne_cluster_detect": [
+    "foodborne_cluster_detect"
+  ],
+  "skill_foodborne_risk_forecast": [
+    "foodborne_risk_forecast"
+  ],
+  "skill_molecular_trace": [
+    "molecular_trace"
+  ],
+  "skill_food_attribution": [
+    "food_attribution"
+  ],
+  "skill_outbreak_disposal_advice": [
+    "outbreak_disposal_advice"
+  ],
+  "skill_foodborne_report_export": [
+    "foodborne_report_export"
+  ],
+  "skill_env_ocr_entry": [],
+  "skill_water_safety_eval": [],
+  "skill_sewage_pathogen_trace": [],
+  "skill_air_climate_health_risk": [],
+  "skill_river_basin_pollution_chain": [],
+  "skill_env_scenario_simulation": [],
+  "skill_death_cert_qc": [],
+  "skill_icd10_nlp_inference": [],
+  "skill_mortality_cluster_rare": [],
+  "skill_chronic_risk_forecast": [],
+  "skill_injury_attribution_tree": [],
+  "skill_chronic_screening_roi": [],
+  "skill_chronic_death_report": [],
+  "skill_chronic_early_warning_disposal": [],
+  "skill_env_early_warning_disposal": []
+}

@@ -1,61 +1,67 @@
 #!/bin/sh
 set -eu
+cd /app
+export DEPLOYMENT_TIER="${DEPLOYMENT_TIER:-pilot}"
+export AGENT_DOMAIN="${AGENT_DOMAIN:-${NEXT_PUBLIC_AGENT_DOMAIN:-vector}}"
+export APP_BUSINESS_DB_PATH="${APP_BUSINESS_DB_PATH:-/app/data/app_business.db}"
+case "$DEPLOYMENT_TIER" in local|demo|pilot) ;; *) echo 'Invalid DEPLOYMENT_TIER' >&2; exit 2;; esac
+case "$AGENT_DOMAIN" in vector|foodborne|env|chronic) ;; *) echo 'Invalid AGENT_DOMAIN' >&2; exit 2;; esac
 
-ACTIVE_DOMAIN="${AGENT_DOMAIN:-${NEXT_PUBLIC_AGENT_DOMAIN:-vector}}"
-export AGENT_DOMAIN="$ACTIVE_DOMAIN"
-
-# 事实数据库是只读生产数据，必须由部署系统明确挂载。
-case "$ACTIVE_DOMAIN" in
-  vector) FACT_DATABASE=/app/vector_monitoring.db ;;
-  foodborne) FACT_DATABASE=/app/foodborne_monitoring.db ;;
-  env) FACT_DATABASE=/app/env_monitoring.db ;;
-  chronic) FACT_DATABASE=/app/chronic_monitoring.db ;;
-  *)
-    echo "[ENTRYPOINT ERROR] 不支持的 AGENT_DOMAIN: $ACTIVE_DOMAIN" >&2
-    exit 1
-    ;;
-esac
-
+# Resolve the same active source as the application; never seed missing facts.
+FACT_DATABASE="$(node - "$AGENT_DOMAIN" <<'JS'
+const fs=require('fs'),path=require('path');
+const domain=process.argv[2];
+const manifest=process.env.DATASET_MANIFEST_PATH || path.join(process.cwd(),'config/datasets.json');
+const matches=JSON.parse(fs.readFileSync(manifest,'utf8')).filter(item=>item.domain===domain);
+if(matches.length!==1)throw new Error('Expected one configured dataset for '+domain);
+const selected=process.env['DATASET_'+domain.toUpperCase()+'_PATH'] || matches[0].path;
+console.log(path.resolve(path.dirname(manifest),selected));
+JS
+)"
 if [ ! -s "$FACT_DATABASE" ]; then
   echo "[ENTRYPOINT ERROR] Required fact database not mounted: $FACT_DATABASE" >&2
   exit 1
 fi
 
-# 检查并初始化业务持久化数据库。
-APP_BUSINESS_DB_PATH="${APP_BUSINESS_DB_PATH:-/app/data/app_business.db}"
-export APP_BUSINESS_DB_PATH
 mkdir -p "$(dirname "$APP_BUSINESS_DB_PATH")"
-
-# 2.0.0 之前的向量实例共用 /app/data/app_business.db。仅当新库不存在时
-# 通过 SQLite backup API 复制到领域目录，保留旧文件用于回滚，并用原子重命名
-# 避免半写入文件；即使旧库仍有读写连接，也能获得一致快照。
 LEGACY_BUSINESS_DB=/app/data/app_business.db
-if [ "$ACTIVE_DOMAIN" = vector ] && [ ! -s "$APP_BUSINESS_DB_PATH" ] && [ -s "$LEGACY_BUSINESS_DB" ] && [ "$APP_BUSINESS_DB_PATH" != "$LEGACY_BUSINESS_DB" ]; then
-  echo "[ENTRYPOINT INFO] Migrating legacy business database to: $APP_BUSINESS_DB_PATH"
+if [ "$AGENT_DOMAIN" = vector ] && [ -s "$LEGACY_BUSINESS_DB" ] && [ "$APP_BUSINESS_DB_PATH" != "$LEGACY_BUSINESS_DB" ]; then
+  # Stop old writers before upgrading; preserve the original pair for rollback.
   python3 - "$LEGACY_BUSINESS_DB" "$APP_BUSINESS_DB_PATH" <<'PY'
+import fcntl
 import os
 import sqlite3
 import sys
 
 source_path, target_path = sys.argv[1:]
-temporary_path = f"{target_path}.migrating.{os.getpid()}"
-source = sqlite3.connect(f"file:{source_path}?mode=ro", uri=True)
-target = sqlite3.connect(temporary_path)
-source.backup(target)
-source_check = source.execute("pragma quick_check").fetchone()[0]
-target_check = target.execute("pragma quick_check").fetchone()[0]
-target.close()
-source.close()
-if source_check != "ok" or target_check != "ok":
-    raise RuntimeError(f"SQLite integrity check failed: source={source_check}, target={target_check}")
-os.replace(temporary_path, target_path)
+with open(target_path + '.migration.lock', 'a') as lock:
+    fcntl.flock(lock, fcntl.LOCK_EX)
+    if not os.path.exists(target_path) or os.path.getsize(target_path) == 0:
+        pairs = [(source_path, target_path)]
+        if os.path.isfile(source_path + '.checkpoints'):
+            pairs.insert(0, (source_path + '.checkpoints', target_path + '.checkpoints'))
+        staged = []
+        try:
+            for source_file, target_file in pairs:
+                temporary = target_file + '.migrating.' + str(os.getpid())
+                staged.append((temporary, target_file))
+                with sqlite3.connect('file:' + source_file + '?mode=ro', uri=True) as source:
+                    with sqlite3.connect(temporary) as target:
+                        source.backup(target)
+                        if source.execute('pragma quick_check').fetchone()[0] != 'ok' or target.execute('pragma quick_check').fetchone()[0] != 'ok':
+                            raise RuntimeError('Legacy SQLite integrity check failed')
+                os.chmod(temporary, 0o600)
+            # Business file is published last, so competing starts cannot see half a pair.
+            for temporary, target_file in staged:
+                os.replace(temporary, target_file)
+        finally:
+            for temporary, _ in staged:
+                if os.path.exists(temporary):
+                    os.unlink(temporary)
 PY
 fi
 
-if [ ! -s "$APP_BUSINESS_DB_PATH" ]; then
-  echo "[ENTRYPOINT INFO] 正在初始化业务持久化数据库: $APP_BUSINESS_DB_PATH"
-  python3 /app/scripts/init_business_db.py
-fi
-
-echo "[ENTRYPOINT INFO] 启动 Next.js 独立运行服务..."
+# Use only versioned migrations; no historical business/demo initializer.
+node /app/migrate.cjs
+if [ "${CDC_PROCESS:-web}" = worker ]; then exec node /app/job-worker.cjs; fi
 exec node /app/server.js

@@ -1,6 +1,7 @@
+import {ensureBusinessInitialized} from '@/infrastructure/db/migrations';
 import Database from 'better-sqlite3';
 import path from 'path';
-import fs from 'fs';
+import { randomUUID } from 'node:crypto';
 import {
   BizDisposalTicket,
   BizEarlyWarningEvent,
@@ -19,27 +20,15 @@ export class AppBusinessProvider {
   private dbPath: string;
 
   constructor() {
-    const configuredPath = process.env.APP_BUSINESS_DB_PATH;
-    const possiblePaths = [
-      configuredPath ? path.resolve(configuredPath) : null,
-      path.resolve(process.cwd(), './app_business.db'),
-      path.resolve(process.cwd(), '../Agent-CdcBuddy/app_business.db'),
-      '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/app_business.db'
-    ].filter((candidate): candidate is string => Boolean(candidate));
-
-    let resolvedPath = possiblePaths[0];
-    for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        resolvedPath = p;
-        break;
-      }
-    }
-    this.dbPath = resolvedPath;
+    this.dbPath = path.resolve(process.env.APP_BUSINESS_DB_PATH ?? path.join(process.cwd(),'app_business.db'));
   }
 
+  getPath(){return this.dbPath;}
+  close(){this.db?.close();this.db=null;}
   private getDb(): Database.Database {
     if (!this.db) {
-      this.db = new Database(this.dbPath);
+      ensureBusinessInitialized(this.dbPath);
+      this.db = new Database(this.dbPath,{fileMustExist:true});
     }
     return this.db;
   }
@@ -173,7 +162,7 @@ export class AppBusinessProvider {
   async submitMobileRecord(submission: Omit<BizMobileSubmission, 'submission_id' | 'submitted_at' | 'audit_status'>): Promise<BizMobileSubmission> {
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
-    const submissionId = `SUB-${Date.now()}`;
+    const submissionId = `SUB-${randomUUID()}`;
 
     const record: BizMobileSubmission = {
       submission_id: submissionId,
@@ -196,23 +185,23 @@ export class AppBusinessProvider {
       record.city,
       record.district,
       record.street || null,
-      record.latitude || null,
-      record.longitude || null,
+      record.latitude ?? null,
+      record.longitude ?? null,
       record.image_url_base64 || null,
       record.recognized_species || null,
-      record.ai_confidence || null,
+      record.ai_confidence ?? null,
       record.category,
       record.species_name,
       record.capture_count,
-      record.weather_temp || null,
-      record.weather_humidity || null,
+      record.weather_temp ?? null,
+      record.weather_humidity ?? null,
       record.habitat_type || null,
       record.method_name || null,
       record.audit_status,
       record.submitted_at
     );
 
-    return record;
+    return db.prepare('SELECT * FROM biz_mobile_submissions WHERE submission_id=?').get(submissionId) as BizMobileSubmission;
   }
 
   async getMobileSubmissions(status?: 'SUBMITTED' | 'APPROVED' | 'REJECTED'): Promise<BizMobileSubmission[]> {
@@ -278,22 +267,7 @@ export class AppBusinessProvider {
   }
 
   // ---------------- 6. 自定义技能元数据 ----------------
-  private ensureCustomSkillsTableSchema() {
-    const db = this.getDb();
-    try {
-      const columns = db.prepare(`PRAGMA table_info(biz_custom_skills)`).all() as Array<{ name: string }>;
-      const hasVisibility = columns.some(c => c.name === 'visibility');
-      if (!hasVisibility) {
-        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN visibility TEXT DEFAULT 'private'`).run();
-      }
-      const hasDomain = columns.some(c => c.name === 'domain');
-      if (!hasDomain) {
-        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
-      }
-    } catch (e) {
-      // 忽略检查异常
-    }
-  }
+  private ensureCustomSkillsTableSchema(){this.getDb();}
 
   async saveCustomSkill(skill: BizCustomSkill): Promise<void> {
     this.ensureCustomSkillsTableSchema();
@@ -382,65 +356,7 @@ export class AppBusinessProvider {
   }
 
   // ---------------- 7. 历史会话与消息真实持久化管理 ----------------
-  private ensureChatSessionTables(): void {
-    const db = this.getDb();
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS biz_chat_sessions (
-        session_id VARCHAR(64) PRIMARY KEY,
-        user_id VARCHAR(64) NOT NULL,
-        user_name VARCHAR(64) NOT NULL,
-        user_role VARCHAR(64) NOT NULL,
-        domain VARCHAR(32) DEFAULT 'vector',
-        title VARCHAR(256) NOT NULL,
-        last_generative_view TEXT,
-        message_count INTEGER DEFAULT 0,
-        is_pinned INTEGER DEFAULT 0,
-        created_at DATETIME NOT NULL,
-        updated_at DATETIME NOT NULL
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_updated
-      ON biz_chat_sessions(user_id, domain, is_pinned DESC, updated_at DESC);
-
-      CREATE TABLE IF NOT EXISTS biz_chat_messages (
-        message_id VARCHAR(64) PRIMARY KEY,
-        session_id VARCHAR(64) NOT NULL,
-        sender VARCHAR(16) NOT NULL,
-        text TEXT NOT NULL,
-        reasoning_text TEXT,
-        reasoning_duration INTEGER,
-        skill_used VARCHAR(64),
-        generative_view_snapshot TEXT,
-        timestamp VARCHAR(32) NOT NULL,
-        created_at DATETIME NOT NULL,
-        FOREIGN KEY (session_id) REFERENCES biz_chat_sessions(session_id) ON DELETE CASCADE
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_chat_messages_session_time
-      ON biz_chat_messages(session_id, created_at ASC);
-    `);
-
-    // 动态平滑迁移：检查并补充列
-    try {
-      const db = this.getDb();
-      const sessionCols = db.prepare(`PRAGMA table_info(biz_chat_sessions)`).all() as Array<{ name: string }>;
-      const sessionColNames = new Set(sessionCols.map(c => c.name));
-      if (!sessionColNames.has('domain')) {
-        db.prepare(`ALTER TABLE biz_chat_sessions ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
-      }
-
-      const cols = db.prepare(`PRAGMA table_info(biz_chat_messages)`).all() as Array<{ name: string }>;
-      const colNames = new Set(cols.map(c => c.name));
-      if (!colNames.has('reasoning_text')) {
-        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_text TEXT`).run();
-      }
-      if (!colNames.has('reasoning_duration')) {
-        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_duration INTEGER`).run();
-      }
-    } catch (e) {
-      // 忽略迁移尝试异常
-    }
-  }
+  private ensureChatSessionTables(){this.getDb();}
 
   /**
    * 分页与关键词检索历史会话列表
@@ -814,6 +730,8 @@ export class AppBusinessProvider {
 // 单例导出
 let globalBizProvider: AppBusinessProvider | null = null;
 export function getAppBusinessProvider(): AppBusinessProvider {
+  const configuredPath=path.resolve(process.env.APP_BUSINESS_DB_PATH ?? path.join(process.cwd(),'app_business.db'));
+  if(globalBizProvider && globalBizProvider.getPath()!==configuredPath){globalBizProvider.close();globalBizProvider=null;}
   if (!globalBizProvider) {
     globalBizProvider = new AppBusinessProvider();
   }

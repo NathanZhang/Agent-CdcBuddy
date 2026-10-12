@@ -26,6 +26,7 @@ from datetime import datetime
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(TESTS_DIR)
+sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, "analytics_engine"))
 sys.path.insert(0, TESTS_DIR)
 sys.path.insert(0, os.path.join(TESTS_DIR, "suites"))
@@ -50,7 +51,8 @@ def main():
         "total_tests": 0,
         "total_passed": 0,
         "total_failed": 0,
-        "overall_status": "PENDING"
+        "overall_status": "PENDING",
+        "interpretation": "Compatibility/status regression only; passing unavailable/refusal cases does not mean all requirements implemented or scientific accuracy validated"
     }
 
     # 1. 执行病媒智能体测试 (已有成熟套件)
@@ -119,7 +121,7 @@ def main():
     # 保存 Markdown 汇报文档
     md_path = os.path.join(reports_dir, "all_agents_test_report.md")
     with open(md_path, "w", encoding="utf-8") as f:
-        f.write("# CDC 全域四智能体平台自动化测试综合回归报告\n\n")
+        f.write("# CDC 全域四智能体平台兼容与状态回归报告\n\n> 本报告含部分能力及不可用/拒判测试。通过不等于原始需求完成或科学效果达标；功能覆盖须结合能力清单与独立验收证据。\n\n")
         f.write(f"- **生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"- **综合判定**: {'🟢 全部通过 (PASSED)' if summary['overall_status'] == 'PASSED' else '🔴 存在失败 (FAILED)'}\n")
         f.write(f"- **测试用例总计**: {summary['total_tests']} 项\n")

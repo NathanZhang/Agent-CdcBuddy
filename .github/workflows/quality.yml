@@ -1,0 +1,26 @@
+name: Refactor quality
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  engineering:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.14'}
+      - run: npm ci --no-audit --no-fund
+      - run: python -m venv .venv && .venv/bin/pip install -r requirements.lock
+      - run: .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci
+      - run: npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false
+      - run: npm run test:refactor && npm run test:scientific && npm run test:integration
+        env:
+          DATASET_MANIFEST_PATH: /tmp/cdc-ci/manifest.json
+      - run: npm run build
+      - run: docker build -t cdcbuddy-ci .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: engineering-logs, path: docs/reviews/2026-10-12/refactor-evidence/current}
+# Real snapshot backtests, compatibility 44-case baseline and real LLM live runs
+# require controlled source snapshots/credentials; run scripts/check-refactor.sh
+# in the isolated accepted environment. Synthetic CI never claims real efficacy.

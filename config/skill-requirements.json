@@ -1,0 +1,142 @@
+{
+  "skill_population_dynamics": [
+    23
+  ],
+  "skill_species_composition": [
+    24
+  ],
+  "skill_resistance_evaluation": [
+    25
+  ],
+  "skill_pathogen_risk": [
+    26
+  ],
+  "skill_spatial_early_warning": [
+    27
+  ],
+  "skill_alert_push_dispatch": [
+    28
+  ],
+  "skill_disposal_workflow": [
+    29
+  ],
+  "skill_density_forecast": [
+    30
+  ],
+  "skill_transmission_risk": [
+    31
+  ],
+  "skill_resistance_evolution": [
+    32
+  ],
+  "skill_vector_nlq": [
+    33
+  ],
+  "skill_auto_report_gen": [
+    34
+  ],
+  "skill_mobile_assistant_api": [
+    35
+  ],
+  "skill_meta_custom_builder": [],
+  "skill_monitoring_data_table": [],
+  "skill_satscan_spatial": [],
+  "skill_lstm_predictor": [],
+  "skill_satscan_kmeans_lstm": [],
+  "skill_composable_workflow": [],
+  "skill_daemon_surveillance": [],
+  "skill_foodborne_cluster_detect": [
+    36
+  ],
+  "skill_foodborne_risk_forecast": [
+    37
+  ],
+  "skill_molecular_trace": [
+    38
+  ],
+  "skill_food_attribution": [
+    38,
+    40
+  ],
+  "skill_outbreak_disposal_advice": [
+    39
+  ],
+  "skill_foodborne_report_export": [
+    41
+  ],
+  "skill_foodborne_case_table": [
+    36,
+    40
+  ],
+  "skill_foodborne_custom_builder": [],
+  "skill_env_ocr_entry": [
+    42
+  ],
+  "skill_water_safety_eval": [
+    44,
+    45
+  ],
+  "skill_sewage_pathogen_trace": [
+    46,
+    47
+  ],
+  "skill_air_climate_health_risk": [
+    50,
+    51
+  ],
+  "skill_river_basin_pollution_chain": [
+    52,
+    53
+  ],
+  "skill_env_scenario_simulation": [
+    57
+  ],
+  "skill_env_monitoring_table": [
+    44,
+    50
+  ],
+  "skill_env_custom_builder": [],
+  "skill_env_early_warning_disposal": [
+    54,
+    55
+  ],
+  "skill_death_cert_qc": [
+    59
+  ],
+  "skill_icd10_nlp_inference": [
+    60,
+    61
+  ],
+  "skill_mortality_cluster_rare": [
+    62,
+    63
+  ],
+  "skill_chronic_risk_forecast": [
+    64,
+    65
+  ],
+  "skill_injury_attribution_tree": [
+    67,
+    68,
+    69
+  ],
+  "skill_chronic_screening_roi": [
+    66
+  ],
+  "skill_chronic_death_report": [
+    72,
+    73
+  ],
+  "skill_chronic_monitoring_table": [
+    59,
+    64
+  ],
+  "skill_chronic_custom_builder": [],
+  "skill_chronic_early_warning_disposal": [
+    70,
+    71,
+    74,
+    75,
+    76
+  ]
+}

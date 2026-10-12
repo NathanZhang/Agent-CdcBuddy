@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "port": 9771,
+      "route": "health/ready",
+      "status": 503,
+      "body": {
+        "ready": false,
+        "domain": "vector",
+        "tier": "pilot",
+        "source": {
+          "id": "vector-monitoring",
+          "origin": "observed",
+          "version": "existing-snapshot-2026-10-12"
+        },
+        "dataEffectStatus": "observed-method-specific-evidence",
+        "checks": {
+          "configuration": true,
+          "dataset": false,
+          "migrations": true,
+          "identity": true,
+          "origin": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "port": 9771,
+      "route": "auth/me",
+      "status": 401,
+      "body": {
+        "error": "Authentication required"
+      }
+    },
+    {
+      "port": 9772,
+      "route": "health/ready",
+      "status": 200,
+      "body": {
+        "ready": true,
+        "domain": "vector",
+        "tier": "pilot",
+        "source": {
+          "id": "vector-monitoring",
+          "origin": "observed",
+          "version": "existing-snapshot-2026-10-12"
+        },
+        "dataEffectStatus": "observed-method-specific-evidence",
+        "checks": {
+          "configuration": true,
+          "dataset": true,
+          "datasetIntegrity": true,
+          "migrations": true,
+          "identity": true,
+          "origin": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "port": 9772,
+      "route": "auth/me",
+      "status": 401,
+      "body": {
+        "error": "Authentication required"
+      }
+    }
+  ],
+  "missingSourceNotCreated": true
+}

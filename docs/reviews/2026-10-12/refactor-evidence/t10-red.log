@@ -1,0 +1,49 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run workflow
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/workflow.test.ts [ tests/refactor/workflow.test.ts ]
+Error: Cannot find module '@/application/jobs/job-service' imported from '/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/refactor/workflow.test.ts'.
+
+- If you rely on tsconfig.json's "paths" to resolve modules, please install "vite-tsconfig-paths" plugin to handle module resolution.
+- Make sure you don't have relative aliases in your Vitest config. Use absolute paths instead. Read more: https://vitest.dev/guide/common-errors
+ ❯ tests/refactor/workflow.test.ts:3:1
+      1| import {it,expect,beforeAll,afterAll} from 'vitest';
+      2| import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:…
+      3| import {submitJob,claimJob,completeAnalysis,reviewJob,getJob,heartbeat…
+       | ^
+      4| import {submitRetest} from '@/application/tickets/ticket-service';
+      5| import {deliverInApp} from '@/infrastructure/events/outbox';
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  15:57:52
+   Duration  404ms (transform 25ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 44ms)
+
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py jobs
+
+test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches (test_jobs.Jobs.test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches) ... ERROR
+
+======================================================================
+ERROR: test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches (test_jobs.Jobs.test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy/tests/integration/test_jobs.py", line 6, in test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches
+    from analytics_engine.jobs.worker import advance
+ModuleNotFoundError: No module named 'analytics_engine.jobs.worker'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

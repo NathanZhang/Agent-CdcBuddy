@@ -1,0 +1,140 @@
+{
+  "vector_monitoring.db": {
+    "dim_date": 1319,
+    "dim_location": 2037,
+    "dim_species": 109,
+    "dim_method": 23,
+    "dim_environment": 967,
+    "dim_audit": 1057,
+    "dim_pathogen": 133,
+    "dim_pesticide": 31,
+    "fact_monitoring": 48530,
+    "fact_pathogen_detection": 7336,
+    "fact_insecticide_resistance": 365
+  },
+  "foodborne_monitoring.db": {
+    "dim_food_category": 9,
+    "dim_pathogen_type": 7,
+    "dim_hospital": 13,
+    "dim_location": 155,
+    "fact_foodborne_case": 3292,
+    "fact_pathogen_molecular": 432,
+    "fact_food_sampling": 1200,
+    "fact_outbreak_event": 4
+  },
+  "env_monitoring.db": {
+    "dim_env_stations": 465,
+    "fact_water_monitoring": 4662,
+    "fact_sewage_monitoring": 9300,
+    "fact_air_climate_monitoring": 3600,
+    "fact_river_basin_monitoring": 96,
+    "fact_public_venue_inspection": 80,
+    "fact_env_alerts": 0
+  },
+  "chronic_monitoring.db": {
+    "dim_districts": 155,
+    "fact_death_registry": 8500,
+    "fact_chronic_cases": 12000,
+    "fact_injury_surveillance": 5000,
+    "fact_chronic_alerts": 3
+  },
+  "no_data_population": {
+    "trend": [],
+    "r2Score": 0.85,
+    "weatherCorrelation": {
+      "tempCorr": 0.75,
+      "humidityCorr": 0.6
+    },
+    "insights": [
+      "当前筛选条件下无充足历史时序数据。"
+    ]
+  },
+  "no_data_transmission": {
+    "city": "不存在市",
+    "diseaseName": "登革热 (Dengue Fever)",
+    "riskScore": 73.0,
+    "riskLevel": "较高传播风险 (Orange)",
+    "breakdown": {
+      "vectorDensityIndex": 55.0,
+      "pathogenPrevalenceIndex": 95.0,
+      "populationExposureIndex": 65.0,
+      "climateSuitabilityIndex": 82.0
+    },
+    "assessmentSummary": "多因子量化模型评估：不存在市 登革热 (Dengue Fever) 综合传播风险评分为 73.0 分，处于【较高传播风险 (Orange)】区间。核心驱动因子为病媒密度指数 (55.0分) 与人口暴露系数 (65.0分)。"
+  },
+  "water_summary": {
+    "totalStationsSampled": 337,
+    "overallComplianceRate": "9496.0%",
+    "maxCarcinogenicRiskCR": "4.58e-06",
+    "maxHazardQuotientHQ": 0.447
+  },
+  "no_data_sewage": {
+    "status": "SUCCESS",
+    "sampleCount": 4,
+    "optimalLagWindow": {
+      "bestLagDays": 6,
+      "maxPearsonR": 0.912,
+      "conclusion": "污水中【诺如病毒】浓度异常提前哨点医院门诊量峰值 6 天显现，具备极高的流行病学早期预警窗口期。"
+    },
+    "sources": [
+      {
+        "subzoneName": "金水区龙子湖大学园区汇水支网",
+        "detectedConcentration": "2.45×10⁴ copies/L",
+        "flowContributionRate": "28.5%",
+        "suspectedFacility": "高密度高校学生宿舍及集中餐饮集水管段",
+        "upstreamRiskLevel": "高危 (一级预警)",
+        "tracingStatus": "已锁定异常排泄管段并实施消杀"
+      },
+      {
+        "subzoneName": "金水区未来路农贸商圈集水分区",
+        "detectedConcentration": "1.28×10⁴ copies/L",
+        "flowContributionRate": "19.2%",
+        "suspectedFacility": "海鲜水产批发交易区化粪池溢流口",
+        "upstreamRiskLevel": "较重 (二级预警)",
+        "tracingStatus": "已下发管网复测工单"
+      }
+    ]
+  },
+  "city_filter_ignored_mortality": {
+    "same_clusters": true,
+    "same_trend": true
+  },
+  "unknown_death_chain": {
+    "status": "SUCCESS",
+    "accuracyRate": 0.965,
+    "accuracyCompliance": "达标 (96.5% >= 95.0% 国家标准)",
+    "inputDeathChain": {
+      "part1_a": "未知原因甲",
+      "part1_b": "未知原因乙",
+      "part1_c": "未知原因丙",
+      "part1_d": "未知原因丁"
+    },
+    "inferredUnderlyingCause": {
+      "diseaseName": "急性心肌梗死",
+      "standardIcd10": "I21.9",
+      "icd10ExpandedCode": "I21.900",
+      "chapter": "第九章 循环系统疾病",
+      "block": "缺血性心脏病 (I20-I25)",
+      "confidenceScore": 0.982
+    },
+    "reasoningWorkflow": [
+      {
+        "step": 1,
+        "title": "直接死因逻辑过滤 (消除终末状态)",
+        "content": "识别并剥离终末症状【未知原因甲】，根据国家规范，呼吸心跳骤停/衰竭不得作为根本死因。"
+      },
+      {
+        "step": 2,
+        "title": "死因链因果顺应性溯源",
+        "content": "由中间状态【未知原因乙】回溯至最早引发一系列病理级联反应的原发疾病【未知原因丙】。"
+      },
+      {
+        "step": 3,
+        "title": "ICD-10 知识图谱编码锁定",
+        "content": "匹配至国家标准 ICD-10 字典，映射为【I21.9 急性心肌梗死】(缺血性心脏病 (I20-I25))。"
+      }
+    ],
+    "replacementBenefit": "已完全替代人工初审初编，单份证明书解析平均耗时由 8 分钟降至 0.04 秒。"
+  },
+  "cgmlst_invalid_empty_distance": 0
+}

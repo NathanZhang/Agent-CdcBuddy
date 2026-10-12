@@ -1,0 +1,16 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/final-workflow-review.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/final-workflow-review.test.ts (4 tests) 2315ms
+   ✓ rejects unrelated category or sampling method and missing original measurement policy  1286ms
+   ✓ lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence  996ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  17:25:18
+   Duration  3.02s (transform 153ms, setup 0ms, collect 353ms, tests 2.32s, environment 0ms, prepare 47ms)
+

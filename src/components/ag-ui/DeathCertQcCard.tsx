@@ -1,5 +1,6 @@
 'use client';
 
+import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import { 
   ClipboardCheck, 
@@ -19,6 +20,7 @@ interface DeathCertQcCardProps {
 }
 
 export const DeathCertQcCard: React.FC<DeathCertQcCardProps> = ({ data = {} }) => {
+  const interactFunctional=useFunctionalInteraction();
   const [fixedMap, setFixedMap] = useState<Record<string, boolean>>({});
 
   const totalChecked = data?.totalCertificatesChecked || 500;
@@ -70,9 +72,7 @@ export const DeathCertQcCard: React.FC<DeathCertQcCardProps> = ({ data = {} }) =
     }
   ];
 
-  const handleFix = (certId: string) => {
-    setFixedMap(prev => ({ ...prev, [certId]: true }));
-  };
+  const handleFix=(certId:string)=>{void interactFunctional({type:'approval.decide',id:certId,args:{decision:'review-correction'}});};
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 rounded-xl p-5 border border-rose-200 dark:border-rose-500/30 shadow-md space-y-5">

@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS biz_agent_runs(run_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,domain TEXT NOT NULL,interaction_json TEXT NOT NULL,result_json TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS biz_artifacts(artifact_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,domain TEXT NOT NULL,city TEXT,district TEXT,file_name TEXT NOT NULL,mime_type TEXT NOT NULL,content BLOB NOT NULL,sha256 TEXT NOT NULL,source_json TEXT NOT NULL,created_at TEXT NOT NULL);

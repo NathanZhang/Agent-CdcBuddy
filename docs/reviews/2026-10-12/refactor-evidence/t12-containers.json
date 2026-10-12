@@ -1,0 +1,26 @@
+[
+  {
+    "domain": "vector",
+    "port": 9767,
+    "name": "cdcbuddy-refactor-vector",
+    "containerId": "79368a8b479905fec0bad50d95e7bab071b1365c4b3f740adb6f7bf031c5667f"
+  },
+  {
+    "domain": "foodborne",
+    "port": 9768,
+    "name": "cdcbuddy-refactor-foodborne",
+    "containerId": "e48dd448fb7deea7519bb952d3d817a9ce8899541e9354dcb92363d2aff4097e"
+  },
+  {
+    "domain": "env",
+    "port": 9769,
+    "name": "cdcbuddy-refactor-env",
+    "containerId": "f518f83df7ded6d7484d2f986ff613946838ba05ee521e3122d87a46a5ed8012"
+  },
+  {
+    "domain": "chronic",
+    "port": 9770,
+    "name": "cdcbuddy-refactor-chronic",
+    "containerId": "8eff04b851a6250e9cfc535ef88ab5396ad2d5ee8f33d9e47b6a50620d53ee2f"
+  }
+]

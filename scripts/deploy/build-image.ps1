@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$ImageName = 'agent-cdcbuddy:2.0.4',
-    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-2.0.4-linux-amd64.tar',
+    [string]$ImageName = 'agent-cdcbuddy:2.0.0',
+    [string]$OutputPath = '.deploy-artifacts/agent-cdcbuddy-2.0.0-linux-amd64.tar',
     [string]$TiandituKey = $env:NEXT_PUBLIC_TIANDITU_KEY,
     [string]$GitHash
 )

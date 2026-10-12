@@ -1,0 +1,2 @@
+import {NextRequest} from 'next/server';import {currentIdentity,authStatus} from '@/infrastructure/auth/session';
+export async function GET(req:NextRequest){try{const identity=currentIdentity(req);return Response.json(identity??{error:'Authentication required'},{status:identity?200:401,headers:{'Cache-Control':'no-store'}});}catch(e){return Response.json({error:e instanceof Error?e.message:'Identity failed'},{status:authStatus(e)});}}
