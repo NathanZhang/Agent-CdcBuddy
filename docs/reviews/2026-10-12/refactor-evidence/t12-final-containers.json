@@ -1,26 +1,30 @@
 [
   {
+    "domain": "vector",
     "name": "cdcbuddy-refactor-vector",
     "port": 9767,
-    "containerId": "3d8d518e93727bea6298eb5d991b4fa51279ead60b37bb339263320216fff653",
-    "imageId": "sha256:cbe6a85a80b2dae83fb6ea041389e22a759d621f468dd3b0cb2e8aec6c6670ab"
+    "containerId": "263f75278960e3d92f535480f5340a231fcd40d59c54a5e9bfe93110390260d3",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
   },
   {
+    "domain": "foodborne",
     "name": "cdcbuddy-refactor-foodborne",
     "port": 9768,
-    "containerId": "fad460874c5aac5cb78b807dcd9bfddb751462c0f46d6d181f80b7fb1616ffd7",
-    "imageId": "sha256:cbe6a85a80b2dae83fb6ea041389e22a759d621f468dd3b0cb2e8aec6c6670ab"
+    "containerId": "9cc349126877d8a26218c69235d5c30c8ba13b0434e26e74c5422a29fca6b0aa",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
   },
   {
+    "domain": "env",
     "name": "cdcbuddy-refactor-env",
     "port": 9769,
-    "containerId": "efde0b94954d6cec944e802932b524da226087264f76b3f080622c983fe1eed2",
-    "imageId": "sha256:cbe6a85a80b2dae83fb6ea041389e22a759d621f468dd3b0cb2e8aec6c6670ab"
+    "containerId": "3d538bf81484454774f82ad3855fbf4a4854378c361a603802e2e06c48275e38",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
   },
   {
+    "domain": "chronic",
     "name": "cdcbuddy-refactor-chronic",
     "port": 9770,
-    "containerId": "410a291c606608fdbbb8e50e27c7c47e6cc69b4b72dfd7075669aaa4bd8ed838",
-    "imageId": "sha256:cbe6a85a80b2dae83fb6ea041389e22a759d621f468dd3b0cb2e8aec6c6670ab"
+    "containerId": "5332c370f29bebeb6df6684f86ac010f3df397f406bfc1fe167af1ceb54698da",
+    "imageId": "sha256:63999a3dfc862d2ccaae60d7a59beba5f6f72abc47b04c35fc9e8e0d51b7a40a"
   }
 ]

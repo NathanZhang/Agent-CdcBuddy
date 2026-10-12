@@ -1,0 +1,228 @@
+{
+  "runId": "3143f829-e098-42dd-ac16-bb5841dd9b61",
+  "interactionId": "61e81fb2-a344-4200-a872-c288cdde24a7",
+  "status": "SUCCESS",
+  "replyText": "实际分析任务已提交成功，当前状态为 QUEUED，等待 Worker 执行；任务编号：d6cee0b2-2b54-47cc-b420-5fef8ffcf974。本次仅提交，未代替 Worker 进行分析。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "3143f829-e098-42dd-ac16-bb5841dd9b61",
+      "component": "ANALYTICS_RESULT",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "3143f829-e098-42dd-ac16-bb5841dd9b61",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "持久任务状态",
+          "data": {
+            "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+            "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县",
+            "idempotency_key": "final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4",
+            "input_json": "{\"idempotencyKey\":\"final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4\",\"interaction\":{\"interactionId\":\"79f1a4d3-2c3a-4ee3-930f-8b98feb664f2\",\"kind\":\"skill\",\"userInput\":\"执行已明确采样方法和辖区的实际监测均值查询。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(f.capture_count) AS \\\"value\\\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'\",\"city\":\"郑州市\",\"district\":\"中牟县\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":0,\"clearBelow\":0,\"minRetestHours\":24,\"unit\":\"captures/record\"},\"retestMeasurement\":{\"category\":\"蚊\",\"methodName\":\"诱蚊灯法\"},\"city\":\"郑州市\",\"district\":\"中牟县\"}",
+            "principal_json": "{\"userId\":\"dbfc7cae-cfe6-4b09-b406-a32c1c2397eb\",\"role\":\"DISTRICT_SURVEILLANCE\",\"organizationId\":\"final-isolated-verification\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{\"city\":\"郑州市\",\"district\":\"中牟县\"},\"mode\":\"authenticated\",\"permissions\":{\"manageIdentity\":false,\"professionalReview\":false}}",
+            "status": "QUEUED",
+            "attempts": 0,
+            "lease_owner": null,
+            "lease_until": null,
+            "available_at": 0,
+            "analysis_run_id": null,
+            "metric_value": null,
+            "result_json": null,
+            "error": null,
+            "created_at": 1791797838555
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_f8448ab257814195ae4c94fa",
+      "skillId": "skill_job_manage",
+      "skillName": "提交、读取持久分析任务",
+      "args": {
+        "action": "submit",
+        "input": {
+          "idempotencyKey": "final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4",
+          "interaction": {
+            "interactionId": "79f1a4d3-2c3a-4ee3-930f-8b98feb664f2",
+            "kind": "skill",
+            "userInput": "执行已明确采样方法和辖区的实际监测均值查询。",
+            "resourceRef": {
+              "type": "skill",
+              "id": "skill_monitoring_data_table",
+              "action": "execute"
+            },
+            "attachments": [
+              {
+                "type": "operation-input",
+                "args": {
+                  "sql": "SELECT AVG(f.capture_count) AS \"value\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'",
+                  "city": "郑州市",
+                  "district": "中牟县"
+                }
+              }
+            ]
+          },
+          "rule": {
+            "field": "value",
+            "threshold": 0,
+            "clearBelow": 0,
+            "minRetestHours": 24,
+            "unit": "captures/record"
+          },
+          "retestMeasurement": {
+            "category": "蚊",
+            "methodName": "诱蚊灯法"
+          }
+        }
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "3143f829-e098-42dd-ac16-bb5841dd9b61",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "持久任务状态",
+          "data": {
+            "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+            "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县",
+            "idempotency_key": "final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4",
+            "input_json": "{\"idempotencyKey\":\"final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4\",\"interaction\":{\"interactionId\":\"79f1a4d3-2c3a-4ee3-930f-8b98feb664f2\",\"kind\":\"skill\",\"userInput\":\"执行已明确采样方法和辖区的实际监测均值查询。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(f.capture_count) AS \\\"value\\\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'\",\"city\":\"郑州市\",\"district\":\"中牟县\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":0,\"clearBelow\":0,\"minRetestHours\":24,\"unit\":\"captures/record\"},\"retestMeasurement\":{\"category\":\"蚊\",\"methodName\":\"诱蚊灯法\"},\"city\":\"郑州市\",\"district\":\"中牟县\"}",
+            "principal_json": "{\"userId\":\"dbfc7cae-cfe6-4b09-b406-a32c1c2397eb\",\"role\":\"DISTRICT_SURVEILLANCE\",\"organizationId\":\"final-isolated-verification\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{\"city\":\"郑州市\",\"district\":\"中牟县\"},\"mode\":\"authenticated\",\"permissions\":{\"manageIdentity\":false,\"professionalReview\":false}}",
+            "status": "QUEUED",
+            "attempts": 0,
+            "lease_owner": null,
+            "lease_until": null,
+            "available_at": 0,
+            "analysis_run_id": null,
+            "metric_value": null,
+            "result_json": null,
+            "error": null,
+            "created_at": 1791797838555
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "success": true,
+  "skillId": "skill_job_manage",
+  "skillName": "提交、读取持久分析任务",
+  "generativeView": {
+    "type": "ANALYTICS_RESULT",
+    "title": "持久任务状态",
+    "data": {
+      "job_id": "d6cee0b2-2b54-47cc-b420-5fef8ffcf974",
+      "user_id": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": "中牟县",
+      "idempotency_key": "final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4",
+      "input_json": "{\"idempotencyKey\":\"final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4\",\"interaction\":{\"interactionId\":\"79f1a4d3-2c3a-4ee3-930f-8b98feb664f2\",\"kind\":\"skill\",\"userInput\":\"执行已明确采样方法和辖区的实际监测均值查询。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(f.capture_count) AS \\\"value\\\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'\",\"city\":\"郑州市\",\"district\":\"中牟县\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":0,\"clearBelow\":0,\"minRetestHours\":24,\"unit\":\"captures/record\"},\"retestMeasurement\":{\"category\":\"蚊\",\"methodName\":\"诱蚊灯法\"},\"city\":\"郑州市\",\"district\":\"中牟县\"}",
+      "principal_json": "{\"userId\":\"dbfc7cae-cfe6-4b09-b406-a32c1c2397eb\",\"role\":\"DISTRICT_SURVEILLANCE\",\"organizationId\":\"final-isolated-verification\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{\"city\":\"郑州市\",\"district\":\"中牟县\"},\"mode\":\"authenticated\",\"permissions\":{\"manageIdentity\":false,\"professionalReview\":false}}",
+      "status": "QUEUED",
+      "attempts": 0,
+      "lease_owner": null,
+      "lease_until": null,
+      "available_at": 0,
+      "analysis_run_id": null,
+      "metric_value": null,
+      "result_json": null,
+      "error": null,
+      "created_at": 1791797838555
+    },
+    "runId": "3143f829-e098-42dd-ac16-bb5841dd9b61",
+    "status": "SUCCESS",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "qualityFlags": [
+      "engineering-workflow-not-validated-risk-policy"
+    ],
+    "method": "persistent-evidence-workflow-v1"
+  },
+  "source": "llm_tool_calling",
+  "args": {
+    "action": "submit",
+    "input": {
+      "idempotencyKey": "final-verified-7d065a58-f5fe-4a68-af9a-c76fe1618be4",
+      "interaction": {
+        "interactionId": "79f1a4d3-2c3a-4ee3-930f-8b98feb664f2",
+        "kind": "skill",
+        "userInput": "执行已明确采样方法和辖区的实际监测均值查询。",
+        "resourceRef": {
+          "type": "skill",
+          "id": "skill_monitoring_data_table",
+          "action": "execute"
+        },
+        "attachments": [
+          {
+            "type": "operation-input",
+            "args": {
+              "sql": "SELECT AVG(f.capture_count) AS \"value\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'",
+              "city": "郑州市",
+              "district": "中牟县"
+            }
+          }
+        ]
+      },
+      "rule": {
+        "field": "value",
+        "threshold": 0,
+        "clearBelow": 0,
+        "minRetestHours": 24,
+        "unit": "captures/record"
+      },
+      "retestMeasurement": {
+        "category": "蚊",
+        "methodName": "诱蚊灯法"
+      }
+    }
+  }
+}

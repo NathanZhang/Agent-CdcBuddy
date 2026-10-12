@@ -1,0 +1,115 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.13kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#2 ...
+
+#3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#2 DONE 1.6s
+
+#4 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#4 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
+#5 ...
+
+#6 [auth] library/node:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [auth] library/python:pull token for registry-1.docker.io
+#7 DONE 0.0s
+
+#8 [internal] load metadata for docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#8 DONE 1.6s
+
+#5 [internal] load metadata for docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
+#5 DONE 1.6s
+
+#9 [internal] load .dockerignore
+#9 transferring context: 254B done
+#9 DONE 0.0s
+
+#10 [builder 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#10 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.0s done
+#10 DONE 0.0s
+
+#11 [runtime  1/15] FROM docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
+#11 resolve docker.io/library/python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83 0.0s done
+#11 DONE 0.0s
+
+#12 [internal] load build context
+#12 transferring context: 43.38kB 0.0s done
+#12 DONE 0.0s
+
+#13 [builder 3/6] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [builder 2/6] WORKDIR /app
+#14 CACHED
+
+#15 [builder 4/6] RUN npm ci --no-audit --no-fund
+#15 CACHED
+
+#16 [builder 5/6] COPY . .
+#16 DONE 0.1s
+
+#17 [builder 6/6] RUN npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs
+#17 0.162 
+#17 0.162 > agent-cdc-buddy@2.0.0 build
+#17 0.162 > next build
+#17 0.162 
+#17 0.698 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#17 0.698 This information is used to shape Next.js' roadmap and prioritize features.
+#17 0.698 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#17 0.698 https://nextjs.org/telemetry
+#17 0.698 
+#17 0.756    ▲ Next.js 15.5.23
+#17 0.756 
+#17 0.799    Creating an optimized production build ...
+#17 18.69  ✓ Compiled successfully in 16.2s
+#17 18.70    Linting and checking validity of types ...
+#17 18.87 
+#17 18.87    We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+#17 18.87    The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+#17 18.87 
+#17 18.87    	- include was updated to add '.next/types/**/*.ts'
+#17 18.87 
+#17 19.48 
+#17 19.48  ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+#17 25.66 Failed to compile.
+#17 25.66 
+#17 25.66 ./src/application/jobs/job-service.ts:21:165
+#17 25.66 Type error: Spread types may only be created from object types.
+#17 25.66 
+#17 25.66 [0m [90m 19 |[39m  [36mconst[39m scope[33m:[39m[33mRecord[39m[33m<[39m[33mstring[39m[33m,[39mstring[33m|[39mundefined[33m>=[39m{}[33m;[39m[36mfor[39m([36mconst[39m key [36mof[39m [[32m'city'[39m[33m,[39m[32m'district'[39m] [36mas[39m [36mconst[39m){[36mconst[39m candidates[33m=[39m[ctx[33m.[39mprincipal[33m.[39mjurisdiction[key][33m,[39minput[key][33m,[39msource[33m.[39margs[key]][33m.[39mfilter(v[33m=>[39mv[33m!==[39mundefined)[33m;[39m[36mif[39m(candidates[33m.[39msome(v[33m=>[39m[36mtypeof[39m v[33m!==[39m[32m'string'[39m[33m||[39m[33m![39mv[33m.[39mtrim())[33m||[39m[36mnew[39m [33mSet[39m(candidates)[33m.[39msize[33m>[39m[35m1[39m)[36mthrow[39m [36mnew[39m [33mError[39m([32m'Job geography disagreement'[39m)[33m;[39mscope[key][33m=[39mcandidates[[35m0[39m][33m;[39m}[36mconst[39m {city[33m,[39mdistrict}[33m=[39mscope[33m;[39m
+#17 25.66  [90m 20 |[39m  [36mif[39m(input[33m.[39mretestMeasurement){[36mif[39m(ctx[33m.[39mdomain[33m!==[39m[32m'vector'[39m[33m||[39mr[33m.[39munit[33m!==[39m[32m'captures/record'[39m)[36mthrow[39m [36mnew[39m [33mError[39m([32m'Unsupported retest measurement'[39m)[33m;[39m[36mconst[39m parser[33m=[39m[36mnew[39m [33mParser[39m()[33m;[39m[36mif[39m([33mJSON[39m[33m.[39mstringify(parser[33m.[39mastify(source[33m.[39margs[33m.[39msql[33m,[39m{database[33m:[39m[32m'SQLite'[39m}))[33m!==[39m[33mJSON[39m[33m.[39mstringify(parser[33m.[39mastify(captureRetestQuery(input[33m.[39mretestMeasurement[33m,[39mr[33m.[39mfield)[33m,[39m{database[33m:[39m[32m'SQLite'[39m})))[36mthrow[39m [36mnew[39m [33mError[39m([32m'Retest measurement requires the constrained capture query'[39m)[33m;[39m}
+#17 25.66 [31m[1m>[22m[39m[90m 21 |[39m  [36mconst[39m normalized[33m=[39m{[33m...[39minput[33m,[39mcity[33m,[39mdistrict[33m,[39minteraction[33m:[39m{[33m...[39minput[33m.[39minteraction[33m,[39mattachments[33m:[39minput[33m.[39minteraction[33m.[39mattachments[33m?[39m[33m.[39mmap(a[33m=>[39m(a [36mas[39m any)[33m?[39m[33m.[39mtype[33m===[39m[32m'operation-input'[39m[33m?[39m{[33m...[39ma[33m,[39margs[33m:[39m{[33m...[39m(a [36mas[39m any)[33m.[39margs[33m,[39m[33m...[39m(city[33m?[39m{city}[33m:[39m{})[33m,[39m[33m...[39m(district[33m?[39m{district}[33m:[39m{})}}[33m:[39ma)}}[33m;[39m
+#17 25.66  [90m    |[39m                                                                                                                                                                     [31m[1m^[22m[39m
+#17 25.66  [90m 22 |[39m  getDomainRepository(ctx[33m.[39mdomain)[33m.[39mquery(source[33m.[39margs[33m.[39msql[33m,[39m[][33m,[39m{domain[33m:[39mctx[33m.[39mdomain[33m,[39mcity[33m,[39mdistrict[33m,[39m[36mfrom[39m[33m:[39msource[33m.[39margs[33m.[39m[36mfrom[39m[33m,[39mto[33m:[39msource[33m.[39margs[33m.[39mto})[33m;[39m
+#17 25.66  [90m 23 |[39m
+#17 25.66  [90m 24 |[39m  [36mconst[39m persist[33m=[39m(db[33m:[39m[33mDatabase[39m[33m.[39m[33mDatabase[39m)[33m=>[39m{[36mconst[39m existing[33m=[39mdb[33m.[39mprepare([32m'SELECT * FROM biz_jobs WHERE user_id=? AND domain=? AND idempotency_key=?'[39m)[33m.[39m[36mget[39m(ctx[33m.[39mprincipal[33m.[39muserId[33m,[39mctx[33m.[39mdomain[33m,[39minput[33m.[39midempotencyKey) [36mas[39m any[33m;[39m[36mif[39m(existing){[36mif[39m(existing[33m.[39minput_json[33m!==[39m[33mJSON[39m[33m.[39mstringify(normalized))[36mthrow[39m [36mnew[39m [33mError[39m([32m'Idempotency key reused with different input'[39m)[33m;[39m[36mreturn[39m existing[33m;[39m}[36mconst[39m id[33m=[39mrandomUUID()[33m;[39mdb[33m.[39mprepare([32m'INSERT INTO biz_jobs(job_id,user_id,domain,city,district,idempotency_key,input_json,principal_json,status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)'[39m)[33m.[39mrun(id[33m,[39mctx[33m.[39mprincipal[33m.[39muserId[33m,[39mctx[33m.[39mdomain[33m,[39mcity[33m?[39m[33m?[39m[36mnull[39m[33m,[39mdistrict[33m?[39m[33m?[39m[36mnull[39m[33m,[39minput[33m.[39midempotencyKey[33m,[39m[33mJSON[39m[33m.[39mstringify(normalized)[33m,[39m[33mJSON[39m[33m.[39mstringify(ctx[33m.[39mprincipal)[33m,[39m[32m'QUEUED'[39m[33m,[39m[33mDate[39m[33m.[39mnow())[33m;[39m[36mreturn[39m db[33m.[39mprepare([32m'SELECT * FROM biz_jobs WHERE job_id=?'[39m)[33m.[39m[36mget[39m(id) [36mas[39m any[33m;[39m}[33m;[39m[36mreturn[39m connection[33m?[39mpersist(connection)[33m:[39mwithBusinessDb(persist)[33m;[39m}[0m
+#17 25.71 Next.js build worker exited with code: 1 and signal: null
+#17 ERROR: process "/bin/sh -c npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs" did not complete successfully: exit code: 1
+------
+ > [builder 6/6] RUN npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs:
+25.66 Type error: Spread types may only be created from object types.
+25.66 
+25.66 [0m [90m 19 |[39m  [36mconst[39m scope[33m:[39m[33mRecord[39m[33m<[39m[33mstring[39m[33m,[39mstring[33m|[39mundefined[33m>=[39m{}[33m;[39m[36mfor[39m([36mconst[39m key [36mof[39m [[32m'city'[39m[33m,[39m[32m'district'[39m] [36mas[39m [36mconst[39m){[36mconst[39m candidates[33m=[39m[ctx[33m.[39mprincipal[33m.[39mjurisdiction[key][33m,[39minput[key][33m,[39msource[33m.[39margs[key]][33m.[39mfilter(v[33m=>[39mv[33m!==[39mundefined)[33m;[39m[36mif[39m(candidates[33m.[39msome(v[33m=>[39m[36mtypeof[39m v[33m!==[39m[32m'string'[39m[33m||[39m[33m![39mv[33m.[39mtrim())[33m||[39m[36mnew[39m [33mSet[39m(candidates)[33m.[39msize[33m>[39m[35m1[39m)[36mthrow[39m [36mnew[39m [33mError[39m([32m'Job geography disagreement'[39m)[33m;[39mscope[key][33m=[39mcandidates[[35m0[39m][33m;[39m}[36mconst[39m {city[33m,[39mdistrict}[33m=[39mscope[33m;[39m
+25.66  [90m 20 |[39m  [36mif[39m(input[33m.[39mretestMeasurement){[36mif[39m(ctx[33m.[39mdomain[33m!==[39m[32m'vector'[39m[33m||[39mr[33m.[39munit[33m!==[39m[32m'captures/record'[39m)[36mthrow[39m [36mnew[39m [33mError[39m([32m'Unsupported retest measurement'[39m)[33m;[39m[36mconst[39m parser[33m=[39m[36mnew[39m [33mParser[39m()[33m;[39m[36mif[39m([33mJSON[39m[33m.[39mstringify(parser[33m.[39mastify(source[33m.[39margs[33m.[39msql[33m,[39m{database[33m:[39m[32m'SQLite'[39m}))[33m!==[39m[33mJSON[39m[33m.[39mstringify(parser[33m.[39mastify(captureRetestQuery(input[33m.[39mretestMeasurement[33m,[39mr[33m.[39mfield)[33m,[39m{database[33m:[39m[32m'SQLite'[39m})))[36mthrow[39m [36mnew[39m [33mError[39m([32m'Retest measurement requires the constrained capture query'[39m)[33m;[39m}
+25.66 [31m[1m>[22m[39m[90m 21 |[39m  [36mconst[39m normalized[33m=[39m{[33m...[39minput[33m,[39mcity[33m,[39mdistrict[33m,[39minteraction[33m:[39m{[33m...[39minput[33m.[39minteraction[33m,[39mattachments[33m:[39minput[33m.[39minteraction[33m.[39mattachments[33m?[39m[33m.[39mmap(a[33m=>[39m(a [36mas[39m any)[33m?[39m[33m.[39mtype[33m===[39m[32m'operation-input'[39m[33m?[39m{[33m...[39ma[33m,[39margs[33m:[39m{[33m...[39m(a [36mas[39m any)[33m.[39margs[33m,[39m[33m...[39m(city[33m?[39m{city}[33m:[39m{})[33m,[39m[33m...[39m(district[33m?[39m{district}[33m:[39m{})}}[33m:[39ma)}}[33m;[39m
+25.66  [90m    |[39m                                                                                                                                                                     [31m[1m^[22m[39m
+25.66  [90m 22 |[39m  getDomainRepository(ctx[33m.[39mdomain)[33m.[39mquery(source[33m.[39margs[33m.[39msql[33m,[39m[][33m,[39m{domain[33m:[39mctx[33m.[39mdomain[33m,[39mcity[33m,[39mdistrict[33m,[39m[36mfrom[39m[33m:[39msource[33m.[39margs[33m.[39m[36mfrom[39m[33m,[39mto[33m:[39msource[33m.[39margs[33m.[39mto})[33m;[39m
+25.66  [90m 23 |[39m
+25.66  [90m 24 |[39m  [36mconst[39m persist[33m=[39m(db[33m:[39m[33mDatabase[39m[33m.[39m[33mDatabase[39m)[33m=>[39m{[36mconst[39m existing[33m=[39mdb[33m.[39mprepare([32m'SELECT * FROM biz_jobs WHERE user_id=? AND domain=? AND idempotency_key=?'[39m)[33m.[39m[36mget[39m(ctx[33m.[39mprincipal[33m.[39muserId[33m,[39mctx[33m.[39mdomain[33m,[39minput[33m.[39midempotencyKey) [36mas[39m any[33m;[39m[36mif[39m(existing){[36mif[39m(existing[33m.[39minput_json[33m!==[39m[33mJSON[39m[33m.[39mstringify(normalized))[36mthrow[39m [36mnew[39m [33mError[39m([32m'Idempotency key reused with different input'[39m)[33m;[39m[36mreturn[39m existing[33m;[39m}[36mconst[39m id[33m=[39mrandomUUID()[33m;[39mdb[33m.[39mprepare([32m'INSERT INTO biz_jobs(job_id,user_id,domain,city,district,idempotency_key,input_json,principal_json,status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)'[39m)[33m.[39mrun(id[33m,[39mctx[33m.[39mprincipal[33m.[39muserId[33m,[39mctx[33m.[39mdomain[33m,[39mcity[33m?[39m[33m?[39m[36mnull[39m[33m,[39mdistrict[33m?[39m[33m?[39m[36mnull[39m[33m,[39minput[33m.[39midempotencyKey[33m,[39m[33mJSON[39m[33m.[39mstringify(normalized)[33m,[39m[33mJSON[39m[33m.[39mstringify(ctx[33m.[39mprincipal)[33m,[39m[32m'QUEUED'[39m[33m,[39m[33mDate[39m[33m.[39mnow())[33m;[39m[36mreturn[39m db[33m.[39mprepare([32m'SELECT * FROM biz_jobs WHERE job_id=?'[39m)[33m.[39m[36mget[39m(id) [36mas[39m any[33m;[39m}[33m;[39m[36mreturn[39m connection[33m?[39mpersist(connection)[33m:[39mwithBusinessDb(persist)[33m;[39m}[0m
+25.71 Next.js build worker exited with code: 1 and signal: null
+------
+ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build && npm exec esbuild -- src/workers/entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=job-worker.cjs && npm exec esbuild -- src/workers/migrate-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=migrate.cjs && npm exec esbuild -- src/workers/create-user-entry.ts --bundle --platform=node --external:better-sqlite3 --outfile=create-user.cjs" did not complete successfully: exit code: 1
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/it261n0u9kbjt8iuabnk4r1r0

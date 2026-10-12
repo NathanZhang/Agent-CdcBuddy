@@ -1,0 +1,132 @@
+{
+  "runId": "49eb8447-f2c7-4b42-a550-92688aeedd0e",
+  "interactionId": "f921332d-52bd-4363-b5f9-655edbdeeb3e",
+  "status": "SUCCESS",
+  "replyText": "已完成郑州市中牟县蚊类“诱蚊灯法”监测捕获量均值查询：基于 fact_monitoring 表按蚊类（category='蚊'）与诱蚊灯法（method_name='诱蚊灯法'）筛选，捕获量（capture_count）均值约为 19.68（精确值 19.683098591549296）。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "49eb8447-f2c7-4b42-a550-92688aeedd0e",
+      "component": "DATA_TABLE_VIEW",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "49eb8447-f2c7-4b42-a550-92688aeedd0e",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "bounded-domain-query-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "DATA_TABLE_VIEW",
+          "title": "监测数据查询",
+          "query": "郑州市中牟县蚊类诱蚊灯法监测捕获量均值",
+          "sql": "SELECT AVG(f.capture_count) AS \"value\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'",
+          "scope": {
+            "principal": {
+              "userId": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+              "role": "DISTRICT_SURVEILLANCE",
+              "organizationId": "final-isolated-verification",
+              "domainGrants": [
+                "vector"
+              ],
+              "jurisdiction": {
+                "city": "郑州市",
+                "district": "中牟县"
+              },
+              "mode": "authenticated",
+              "permissions": {
+                "manageIdentity": false,
+                "professionalReview": false
+              }
+            },
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县"
+          },
+          "executionTimeMs": 27,
+          "data": [
+            {
+              "value": 19.683098591549296
+            }
+          ]
+        },
+        "metrics": {},
+        "qualityFlags": []
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_f36e679933f048b3b5688b3b",
+      "skillId": "skill_monitoring_data_table",
+      "skillName": "病媒监测明细数据表查询 (Text2SQL)",
+      "args": {
+        "sql": "SELECT AVG(f.capture_count) AS \"value\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'",
+        "city": "郑州市",
+        "district": "中牟县",
+        "query": "郑州市中牟县蚊类诱蚊灯法监测捕获量均值"
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "49eb8447-f2c7-4b42-a550-92688aeedd0e",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "bounded-domain-query-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "DATA_TABLE_VIEW",
+          "title": "监测数据查询",
+          "query": "郑州市中牟县蚊类诱蚊灯法监测捕获量均值",
+          "sql": "SELECT AVG(f.capture_count) AS \"value\" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'",
+          "scope": {
+            "principal": {
+              "userId": "dbfc7cae-cfe6-4b09-b406-a32c1c2397eb",
+              "role": "DISTRICT_SURVEILLANCE",
+              "organizationId": "final-isolated-verification",
+              "domainGrants": [
+                "vector"
+              ],
+              "jurisdiction": {
+                "city": "郑州市",
+                "district": "中牟县"
+              },
+              "mode": "authenticated",
+              "permissions": {
+                "manageIdentity": false,
+                "professionalReview": false
+              }
+            },
+            "domain": "vector",
+            "city": "郑州市",
+            "district": "中牟县"
+          },
+          "executionTimeMs": 27,
+          "data": [
+            {
+              "value": 19.683098591549296
+            }
+          ]
+        },
+        "metrics": {},
+        "qualityFlags": []
+      }
+    }
+  ]
+}

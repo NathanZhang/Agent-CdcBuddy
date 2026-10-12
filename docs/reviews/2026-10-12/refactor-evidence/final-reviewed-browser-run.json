@@ -1,0 +1,299 @@
+{
+  "runId": "646ca59d-e3ba-467e-9480-3259d975dbac",
+  "interactionId": "70cb9aef-9ee9-4a03-8c23-703610b8435e",
+  "status": "SUCCESS",
+  "replyText": "已执行 skill_vector_backtest，参数为 city=郑州市、methodName=诱蚊灯法、asOf=2025-11-11、horizon=1、model=ar，未传 category。实际回测结果：样本 1287 条，窗口 2020-05 至 2025-10，评估 8 对滚动预测；MAE=3.0123598167177 captures/record，RMSE=3.9678933990077954，R²=0.30380102902371453，sMAPE=32.221582624761105%，基线 MAE=4.027765710045317。限制：捕获量不是标准密度；不同采样方法误差未合并；捕获量预测不能验证标准密度要求。未生成报告。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "646ca59d-e3ba-467e-9480-3259d975dbac",
+      "component": "ANALYTICS_RESULT",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "646ca59d-e3ba-467e-9480-3259d975dbac",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "rolling-past-origin-capture-backtest-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "病媒捕获量滚动回测与季节基线对照",
+          "data": {
+            "method": "rolling-past-origin-capture-backtest-v1",
+            "status": "SUCCESS",
+            "model": "ar",
+            "datasetId": "vector-monitoring",
+            "asOf": "2025-11-11",
+            "horizon": 1,
+            "evaluatedPairs": 8,
+            "groups": [
+              {
+                "city": "郑州市",
+                "methodName": "诱蚊灯法",
+                "unit": "captures/record",
+                "asOf": "2025-11-11",
+                "sampleCount": 1287,
+                "window": {
+                  "start": "2020-05",
+                  "end": "2025-10"
+                },
+                "evaluatedPairs": 8,
+                "mae": 3.0123598167177,
+                "rmse": 3.9678933990077954,
+                "r2": 0.30380102902371453,
+                "smapePercent": 32.221582624761105,
+                "baselineMae": 4.027765710045317,
+                "meetsTenPercentSmapeCriterion": false,
+                "pairs": [
+                  {
+                    "origin": "2024-06",
+                    "target": "2024-07",
+                    "actual": 12.305555555555555,
+                    "predicted": 17.482462893020333
+                  },
+                  {
+                    "origin": "2024-07",
+                    "target": "2024-08",
+                    "actual": 17.102040816326532,
+                    "predicted": 9.942054748137497
+                  },
+                  {
+                    "origin": "2024-08",
+                    "target": "2024-09",
+                    "actual": 9.853658536585366,
+                    "predicted": 8.694939477717963
+                  },
+                  {
+                    "origin": "2024-09",
+                    "target": "2024-10",
+                    "actual": 1.9333333333333333,
+                    "predicted": 7.881696330207907
+                  },
+                  {
+                    "origin": "2025-06",
+                    "target": "2025-07",
+                    "actual": 14.71830985915493,
+                    "predicted": 12.86516930941774
+                  },
+                  {
+                    "origin": "2025-07",
+                    "target": "2025-08",
+                    "actual": 13.686274509803921,
+                    "predicted": 10.906416133441988
+                  },
+                  {
+                    "origin": "2025-08",
+                    "target": "2025-09",
+                    "actual": 8.5,
+                    "predicted": 8.485921885538438
+                  },
+                  {
+                    "origin": "2025-09",
+                    "target": "2025-10",
+                    "actual": 5.172413793103448,
+                    "predicted": 5.180239824888576
+                  }
+                ]
+              }
+            ],
+            "baseline": {
+              "郑州市|诱蚊灯法": {
+                "method": "previous-year-same-month-or-last-observation",
+                "mae": 4.027765710045317
+              }
+            },
+            "metrics": {
+              "mae": {
+                "value": 3.0123598167177,
+                "evaluationKind": "real-backtest",
+                "datasetIds": [
+                  "vector-monitoring"
+                ],
+                "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+              }
+            },
+            "qualityFlags": [
+              "capture-count-not-standard-density",
+              "method-specific-errors-not-pooled",
+              "capture-forecast-does-not-validate-standard-density-requirement"
+            ]
+          }
+        },
+        "metrics": {
+          "mae": {
+            "value": 3.0123598167177,
+            "evaluationKind": "real-backtest",
+            "datasetIds": [
+              "vector-monitoring"
+            ],
+            "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+          }
+        },
+        "qualityFlags": [
+          "capture-count-not-standard-density",
+          "method-specific-errors-not-pooled",
+          "capture-forecast-does-not-validate-standard-density-requirement"
+        ]
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_13b814ee63984aca9f056e79",
+      "skillId": "skill_vector_backtest",
+      "skillName": "病媒捕获量滚动回测与季节基线对照",
+      "args": {
+        "city": "郑州市",
+        "methodName": "诱蚊灯法",
+        "asOf": "2025-11-11",
+        "horizon": 1,
+        "model": "ar"
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "646ca59d-e3ba-467e-9480-3259d975dbac",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "rolling-past-origin-capture-backtest-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "病媒捕获量滚动回测与季节基线对照",
+          "data": {
+            "method": "rolling-past-origin-capture-backtest-v1",
+            "status": "SUCCESS",
+            "model": "ar",
+            "datasetId": "vector-monitoring",
+            "asOf": "2025-11-11",
+            "horizon": 1,
+            "evaluatedPairs": 8,
+            "groups": [
+              {
+                "city": "郑州市",
+                "methodName": "诱蚊灯法",
+                "unit": "captures/record",
+                "asOf": "2025-11-11",
+                "sampleCount": 1287,
+                "window": {
+                  "start": "2020-05",
+                  "end": "2025-10"
+                },
+                "evaluatedPairs": 8,
+                "mae": 3.0123598167177,
+                "rmse": 3.9678933990077954,
+                "r2": 0.30380102902371453,
+                "smapePercent": 32.221582624761105,
+                "baselineMae": 4.027765710045317,
+                "meetsTenPercentSmapeCriterion": false,
+                "pairs": [
+                  {
+                    "origin": "2024-06",
+                    "target": "2024-07",
+                    "actual": 12.305555555555555,
+                    "predicted": 17.482462893020333
+                  },
+                  {
+                    "origin": "2024-07",
+                    "target": "2024-08",
+                    "actual": 17.102040816326532,
+                    "predicted": 9.942054748137497
+                  },
+                  {
+                    "origin": "2024-08",
+                    "target": "2024-09",
+                    "actual": 9.853658536585366,
+                    "predicted": 8.694939477717963
+                  },
+                  {
+                    "origin": "2024-09",
+                    "target": "2024-10",
+                    "actual": 1.9333333333333333,
+                    "predicted": 7.881696330207907
+                  },
+                  {
+                    "origin": "2025-06",
+                    "target": "2025-07",
+                    "actual": 14.71830985915493,
+                    "predicted": 12.86516930941774
+                  },
+                  {
+                    "origin": "2025-07",
+                    "target": "2025-08",
+                    "actual": 13.686274509803921,
+                    "predicted": 10.906416133441988
+                  },
+                  {
+                    "origin": "2025-08",
+                    "target": "2025-09",
+                    "actual": 8.5,
+                    "predicted": 8.485921885538438
+                  },
+                  {
+                    "origin": "2025-09",
+                    "target": "2025-10",
+                    "actual": 5.172413793103448,
+                    "predicted": 5.180239824888576
+                  }
+                ]
+              }
+            ],
+            "baseline": {
+              "郑州市|诱蚊灯法": {
+                "method": "previous-year-same-month-or-last-observation",
+                "mae": 4.027765710045317
+              }
+            },
+            "metrics": {
+              "mae": {
+                "value": 3.0123598167177,
+                "evaluationKind": "real-backtest",
+                "datasetIds": [
+                  "vector-monitoring"
+                ],
+                "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+              }
+            },
+            "qualityFlags": [
+              "capture-count-not-standard-density",
+              "method-specific-errors-not-pooled",
+              "capture-forecast-does-not-validate-standard-density-requirement"
+            ]
+          }
+        },
+        "metrics": {
+          "mae": {
+            "value": 3.0123598167177,
+            "evaluationKind": "real-backtest",
+            "datasetIds": [
+              "vector-monitoring"
+            ],
+            "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+          }
+        },
+        "qualityFlags": [
+          "capture-count-not-standard-density",
+          "method-specific-errors-not-pooled",
+          "capture-forecast-does-not-validate-standard-density-requirement"
+        ]
+      }
+    }
+  ]
+}

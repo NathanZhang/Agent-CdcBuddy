@@ -1,0 +1,41 @@
+
+> agent-cdc-buddy@2.0.0 lint
+> eslint src tests/refactor --max-warnings 0
+
+
+> agent-cdc-buddy@2.0.0 test
+> npm run test:refactor && npm run test:integration && npm run test:baseline
+
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/datasets.test.ts (3 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  11:47:56
+   Duration  264ms (transform 23ms, setup 0ms, collect 25ms, tests 2ms, environment 0ms, prepare 33ms)
+
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py
+
+test_explicit_output_isolated_and_seeded (test_fixture_isolation.FixtureIsolationTests.test_explicit_output_isolated_and_seeded) ... ok
+test_import_has_no_filesystem_side_effects (test_fixture_isolation.FixtureIsolationTests.test_import_has_no_filesystem_side_effects) ... ok
+test_snapshot_writes_never_reach_source (test_legacy_isolation.LegacyIsolationTests.test_snapshot_writes_never_reach_source) ... ok
+test_empty_selected_suite_fails (test_test_runners.RunnerTests.test_empty_selected_suite_fails) ... ok
+test_unknown_selection_is_not_a_success (test_test_runners.RunnerTests.test_unknown_selection_is_not_a_success) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.124s
+
+OK
+
+> agent-cdc-buddy@2.0.0 test:baseline
+> ./.venv/bin/python tests/run_isolated_legacy.py
+
+Legacy regression: 44/44; source databases unchanged=True

@@ -1,0 +1,62 @@
+[
+  {
+    "name": "cdcbuddy-refactor-vector",
+    "domain": "vector",
+    "tier": "demo",
+    "port": 9767,
+    "bind": "127.0.0.1",
+    "containerId": "c875179bc91c4e943692460d7db0f6647948fea5289f31acb8b623a3f69c7d00",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  },
+  {
+    "name": "cdcbuddy-refactor-foodborne",
+    "domain": "foodborne",
+    "tier": "demo",
+    "port": 9768,
+    "bind": "127.0.0.1",
+    "containerId": "a12f4d87947c1656c263d3b063b47e9e3895b708f73a2c3af2c6ea058ad4a400",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  },
+  {
+    "name": "cdcbuddy-refactor-env",
+    "domain": "env",
+    "tier": "demo",
+    "port": 9769,
+    "bind": "127.0.0.1",
+    "containerId": "5f650dd8510b1d4c1c96b947f306bab59da859d11e6dc2f95b79f00b27b236aa",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  },
+  {
+    "name": "cdcbuddy-refactor-chronic",
+    "domain": "chronic",
+    "tier": "demo",
+    "port": 9770,
+    "bind": "127.0.0.1",
+    "containerId": "b609ce73438bbe47aaeba58f239280a8b7c85ee1b38025f8610c68d0b0474d8b",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  },
+  {
+    "name": "cdcbuddy-refactor-pilot-missing",
+    "domain": "vector",
+    "tier": "pilot",
+    "port": 9771,
+    "bind": "127.0.0.1",
+    "containerId": "4fdd8672c1a1d892979cc7f0f7384a852696407bdc1fbc17da77f69c5fd778f7",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  },
+  {
+    "name": "cdcbuddy-refactor-pilot",
+    "domain": "vector",
+    "tier": "pilot",
+    "port": 9772,
+    "bind": "127.0.0.1",
+    "containerId": "dd396e2d77f13ea4b74a30abb788a134e0405a71be63bd1b105fd34752b8661f",
+    "imageId": "sha256:549aa0a330181da16cc54537edd20e2f307a9020a9360ee0fcd96bc74f5f63bd",
+    "factMountsReadonly": true
+  }
+]

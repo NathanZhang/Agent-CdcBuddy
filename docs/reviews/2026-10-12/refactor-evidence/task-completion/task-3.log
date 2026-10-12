@@ -1,0 +1,70 @@
+
+> agent-cdc-buddy@2.0.0 lint
+> eslint src tests/refactor --max-warnings 0
+
+
+> agent-cdc-buddy@2.0.0 test
+> npm run test:refactor && npm run test:scientific && npm run test:integration && npm run test:baseline
+
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/results.test.ts (6 tests) 4ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 2ms
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 19ms
+ ✓ tests/refactor/query-gateway.test.ts (14 tests) 22ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 29ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 3ms
+ ✓ tests/refactor/results-ui.test.ts (3 tests) 6ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 1392ms
+   ✓ does not generate or archive a successful report for a nonexistent city  1385ms
+
+ Test Files  8 passed (8)
+      Tests  37 passed (37)
+   Start at  12:17:29
+   Duration  2.19s (transform 506ms, setup 0ms, collect 2.08s, tests 1.48s, environment 1ms, prepare 578ms)
+
+
+> agent-cdc-buddy@2.0.0 test:scientific
+> ./.venv/bin/python tests/run_scientific.py
+
+test_actual_payload_and_origin_retained (test_result_contract.ResultContractTests.test_actual_payload_and_origin_retained) ... ok
+test_invalid_success_and_unvalidated_metrics_rejected (test_result_contract.ResultContractTests.test_invalid_success_and_unvalidated_metrics_rejected) ... ok
+test_nonfinite_payload_rejected (test_result_contract.ResultContractTests.test_nonfinite_payload_rejected) ... ok
+test_empty_or_mismatched_genes_rejected (test_result_semantics.ResultSemanticsTests.test_empty_or_mismatched_genes_rejected) ... ok
+test_known_dictionary_candidate_does_not_claim_validated_accuracy (test_result_semantics.ResultSemanticsTests.test_known_dictionary_candidate_does_not_claim_validated_accuracy) ... ok
+test_unknown_city_is_no_data (test_result_semantics.ResultSemanticsTests.test_unknown_city_is_no_data) ... ok
+test_unknown_death_chain_has_no_default_diagnosis (test_result_semantics.ResultSemanticsTests.test_unknown_death_chain_has_no_default_diagnosis) ... ok
+test_water_rate_and_max_derive_from_samples (test_result_semantics.ResultSemanticsTests.test_water_rate_and_max_derive_from_samples) ... ok
+test_zero_positive_remains_zero (test_result_semantics.ResultSemanticsTests.test_zero_positive_remains_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.040s
+
+OK
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py
+
+test_manifest_change_takes_effect_without_reimport (test_domain_paths.DomainPathTests.test_manifest_change_takes_effect_without_reimport) ... ok
+test_missing_dataset_is_not_created (test_domain_paths.DomainPathTests.test_missing_dataset_is_not_created) ... ok
+test_foodborne_alias_uses_foodborne_domain (test_domain_paths.TaskRoutingTests.test_foodborne_alias_uses_foodborne_domain) ... ok
+test_explicit_output_isolated_and_seeded (test_fixture_isolation.FixtureIsolationTests.test_explicit_output_isolated_and_seeded) ... ok
+test_import_has_no_filesystem_side_effects (test_fixture_isolation.FixtureIsolationTests.test_import_has_no_filesystem_side_effects) ... ok
+test_snapshot_writes_never_reach_source (test_legacy_isolation.LegacyIsolationTests.test_snapshot_writes_never_reach_source) ... ok
+test_empty_selected_suite_fails (test_test_runners.RunnerTests.test_empty_selected_suite_fails) ... ok
+test_unknown_selection_is_not_a_success (test_test_runners.RunnerTests.test_unknown_selection_is_not_a_success) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 4.034s
+
+OK
+
+> agent-cdc-buddy@2.0.0 test:baseline
+> ./.venv/bin/python tests/run_isolated_legacy.py
+
+Legacy regression: 44/44; source databases unchanged=True

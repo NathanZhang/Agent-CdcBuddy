@@ -1,0 +1,75 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/final-workflow-review.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/final-workflow-review.test.ts (4 tests | 4 failed) 2060ms
+   × rejects unrelated category or sampling method and missing original measurement policy 1498ms
+     → expected [Function] to throw an error
+   × lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence 529ms
+     → Job owner/domain/jurisdiction denied
+   × deduplicates recurring configuration and rolls back initial work when schedule insertion fails 14ms
+     → expected '59268bdd-7bd5-47bc-9c1f-0482c70d9dec' to be 'e2295db4-ee27-42bb-bfd0-4aea6b256a36' // Object.is equality
+   × preserves nested query geography and rejects nested/outer/identity disagreement 19ms
+     → expected null to be '郑州市' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > rejects unrelated category or sampling method and missing original measurement policy
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/final-workflow-review.test.ts:16:497
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence
+Error: Job owner/domain/jurisdiction denied
+ ❯ src/application/jobs/job-service.ts:19:425
+
+ ❯ withBusinessDb src/infrastructure/db/business-store.ts:9:13
+ ❯ getJob src/application/jobs/job-service.ts:19:97
+ ❯ reviewJob src/application/jobs/job-service.ts:23:95
+ ❯ tests/refactor/final-workflow-review.test.ts:17:936
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > deduplicates recurring configuration and rolls back initial work when schedule insertion fails
+AssertionError: expected '59268bdd-7bd5-47bc-9c1f-0482c70d9dec' to be 'e2295db4-ee27-42bb-bfd0-4aea6b256a36' // Object.is equality
+
+Expected: "e2295db4-ee27-42bb-bfd0-4aea6b256a36"
+Received: "59268bdd-7bd5-47bc-9c1f-0482c70d9dec"
+
+ ❯ tests/refactor/final-workflow-review.test.ts:18:254
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > preserves nested query geography and rejects nested/outer/identity disagreement
+AssertionError: expected null to be '郑州市' // Object.is equality
+
+- Expected: 
+"郑州市"
+
++ Received: 
+null
+
+ ❯ tests/refactor/final-workflow-review.test.ts:19:251
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  17:23:03
+   Duration  2.67s (transform 147ms, setup 0ms, collect 354ms, tests 2.06s, environment 0ms, prepare 138ms)
+
