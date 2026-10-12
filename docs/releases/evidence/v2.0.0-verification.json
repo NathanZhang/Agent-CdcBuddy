@@ -46,5 +46,19 @@
     "source_databases_unchanged": true,
     "npm_run_build": "passed",
     "post_build_typescript": "passed"
+  },
+  "post_release_ci_fixture_correction": {
+    "initial_run": "https://github.com/NathanZhang/Agent-CdcBuddy/actions/runs/38242837541",
+    "cause": "Two tests referenced ignored local SQLite files",
+    "changes": [
+      "Interaction tests initialize a temporary business DB through real migrations",
+      "NO_DATA semantics test creates an explicit Mock snapshot in a temporary DB"
+    ],
+    "production_code_changed": false,
+    "published_tag_rewritten": false,
+    "clean_archive_typescript_tests": 132,
+    "clean_archive_scientific_tests": 29,
+    "clean_archive_integration_tests": 24,
+    "lint_and_typescript": "passed"
   }
 }

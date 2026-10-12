@@ -31,14 +31,24 @@ class ResultSemanticsTests(unittest.TestCase):
             self.assertEqual(output['krigingGridPoints'],[], 'measured points are not a kriging grid')
 
     def test_unknown_city_is_no_data(self):
-        result=calculate_population_dynamics(str(ROOT / 'vector_monitoring.db'),city='不存在市')
-        self.assertEqual(result.get('status'),'NO_DATA')
-        self.assertIsNone(result.get('payload'))
-        self.assertIsNone(result['r2Score'])
-        risk=calculate_transmission_risk(str(ROOT / 'vector_monitoring.db'),city='不存在市')
-        self.assertEqual(risk.get('status'),'NO_DATA')
-        self.assertIsNone(risk.get('payload'))
-        self.assertIsNone(risk['riskScore'])
+        with tempfile.TemporaryDirectory() as temp:
+            db = Path(temp) / 'vector.db'
+            with closing(sqlite3.connect(db)) as conn, conn:
+                conn.executescript((ROOT / 'tests/fixtures/vector-schema.sql').read_text())
+                conn.execute("INSERT INTO dim_location(location_id,city) VALUES('one','Mock城市')")
+                conn.execute("INSERT INTO dim_species(species_id,category) VALUES('species','蚊')")
+                conn.execute("INSERT INTO dim_method VALUES('method','Mock方法')")
+                conn.execute("INSERT INTO fact_monitoring(monitoring_id,date_id,location_id,species_id,method_id,capture_count,sampling_unit) VALUES('record','2025-01-15','one','species','method',12,1)")
+            self.assertEqual(calculate_population_dynamics(str(db),city='Mock城市')['status'],'INSUFFICIENT_DATA')
+            self.assertEqual(calculate_transmission_risk(str(db),city='Mock城市')['status'],'INSUFFICIENT_DATA')
+            result=calculate_population_dynamics(str(db),city='不存在市')
+            self.assertEqual(result.get('status'),'NO_DATA')
+            self.assertIsNone(result.get('payload'))
+            self.assertIsNone(result['r2Score'])
+            risk=calculate_transmission_risk(str(db),city='不存在市')
+            self.assertEqual(risk.get('status'),'NO_DATA')
+            self.assertIsNone(risk.get('payload'))
+            self.assertIsNone(risk['riskScore'])
 
     def test_zero_positive_remains_zero(self):
         with tempfile.TemporaryDirectory() as temp:

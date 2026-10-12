@@ -1,12 +1,13 @@
 import { beforeEach,afterEach,it,expect,vi } from 'vitest';
-import { mkdtempSync,copyFileSync,rmSync } from 'node:fs';
+import { mkdtempSync,rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { executeSkill } from '@/application/skills/skill-service';
 import { createDevelopmentContext } from '@/lib/skills/server-executor';
 import { getArtifact } from '@/infrastructure/db/business-store';
+import { migrateDatabase } from '@/infrastructure/db/migrations';
 let dir:string;
-beforeEach(()=>{dir=mkdtempSync(join(tmpdir(),'interaction-skills-'));copyFileSync(join(process.cwd(),'app_business.db'),join(dir,'business.db'));vi.stubEnv('APP_BUSINESS_DB_PATH',join(dir,'business.db'));});
+beforeEach(()=>{dir=mkdtempSync(join(tmpdir(),'interaction-skills-'));const file=join(dir,'business.db');migrateDatabase(file);vi.stubEnv('APP_BUSINESS_DB_PATH',file);});
 afterEach(()=>{vi.unstubAllEnvs();rmSync(dir,{recursive:true,force:true});});
 it('session create/read/rename/delete actually persist and enforce owner/domain',async()=>{
  const ctx=createDevelopmentContext('vector');ctx.principal.userId='fixture-owner';
