@@ -1,5 +1,5 @@
 import {createSseDecoder} from '@/application/dispatch/sse';
-import {LLMError,validateLLMMessage,type LLMMessage,type LLMRequest,type LLMToolCall} from './client';
+import {LLMError,validateLLMMessage,validateLLMFinishReason,type LLMMessage,type LLMRequest,type LLMToolCall} from './client';
 
 /** Assemble native deltas before validating or executing any tool call. */
 export async function readLLMStream(response:Response,request:LLMRequest,onActivity?:()=>void):Promise<LLMMessage>{
@@ -26,7 +26,7 @@ export async function readLLMStream(response:Response,request:LLMRequest,onActiv
    calls.set(part.index,call);
   }
   if(choice.finish_reason){
-   if(!['stop','tool_calls'].includes(choice.finish_reason))throw new LLMError('INVALID_LLM_RESPONSE',`模型输出未完整结束 (${choice.finish_reason})`);
+   validateLLMFinishReason(choice.finish_reason);
    finished=true;
    active=true;
   }

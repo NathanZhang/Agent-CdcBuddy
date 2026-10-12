@@ -44,3 +44,23 @@ it('aborted request closes SSE without dispatching an LLM or a skill',async()=>{
  const text=await Promise.race([completion,new Promise<string>(resolve=>setTimeout(()=>resolve('STREAM_NOT_CLOSED'),50))]);
  expect(text).not.toBe('STREAM_NOT_CLOSED');expect(calls()).toBe(0);
 });
+
+it.each([false,true])('keeps one real query result when length recovery fails=%s',async(recoveryFails)=>{
+ vi.stubEnv('SILICONFLOW_API_KEY','test-only');vi.stubEnv('AGENT_DOMAIN','vector');
+ let calls=0;const frame=(delta:unknown,finish_reason:string)=>`data: ${JSON.stringify({choices:[{delta,finish_reason}]})}\n\n`;
+ vi.stubGlobal('fetch',async()=>{
+  calls++;
+  const wire=calls===1?frame({tool_calls:[{index:0,id:'query',type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]},'tool_calls')
+   :calls===2||recoveryFails?frame({reasoning_content:'长篇总结未结束'},'length')
+   :frame({content:'{"mode":"answer","replyText":"实测记录已查询，完整结果见工作台。"}'},'stop');
+  return new Response(wire+'data: [DONE]\n\n',{headers:{'Content-Type':'text/event-stream'}});
+ });
+ const frames=createSseDecoder().push(new Uint8Array(await (await sse(request('/api/agent/stream-dispatch',{promptText:'查询监测记录'}))).arrayBuffer()));
+ const result=frames.find(f=>f.event==='finish')!.data;
+ expect(calls).toBe(3);expect(result.skillRuns).toHaveLength(1);
+ expect(result.agui).toHaveLength(1);expect(result.generativeView).toMatchObject({type:'DATA_TABLE_VIEW',data:[{n:expect.any(Number)}]});
+ expect(frames.filter(f=>f.event==='tool_call_start')).toHaveLength(1);
+ expect(result.status).toBe(recoveryFails?'FAILED':'SUCCESS');
+ if(recoveryFails)expect(frames.find(f=>f.event==='error')!.data.code).toBe('LLM_OUTPUT_TRUNCATED');
+ else expect(result.replyText).toBe('实测记录已查询，完整结果见工作台。');
+});

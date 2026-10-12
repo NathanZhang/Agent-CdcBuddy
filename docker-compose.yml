@@ -9,6 +9,7 @@ x-runtime: &runtime
     SILICONFLOW_API_KEY: ${SILICONFLOW_API_KEY:?Explicit LLM credential required}
     SILICONFLOW_BASE_URL: ${SILICONFLOW_BASE_URL:-https://api.siliconflow.cn/v1}
     SILICONFLOW_MODEL: ${SILICONFLOW_MODEL:-Qwen/Qwen3.6-27B}
+    SILICONFLOW_REASONING_EFFORT: ${SILICONFLOW_REASONING_EFFORT:-medium}
   volumes: &volumes
     - ${BUSINESS_DATA_DIR:-./data}:/app/data
     - ${VECTOR_DATASET_PATH:-./vector_monitoring.db}:/app/vector_monitoring.db:ro

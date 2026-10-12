@@ -141,7 +141,7 @@ export function createMainAgent(dependencies:Dependencies){
       const cancelled=ctx.signal?.aborted;const code=cancelled?'CANCELLED':error instanceof LLMError||error instanceof TurnError||error instanceof IntentError||error instanceof AuthorizationError?error.code:'AGENT_FAILED';
       const message=cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';
       // A failed language summary does not invalidate already authorized skill data.
-      const retained=!cancelled && ['LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','INVALID_LLM_RESPONSE'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
+      const retained=!cancelled && ['LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','LLM_OUTPUT_TRUNCATED','INVALID_LLM_RESPONSE'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
       const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':''),agui:retained,skillRuns,...reasoning(),error:{code,message}};
       try{recordAgentTurn(interaction,result,ctx);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}
       yield event('failed',{code,message});yield event('result',{result});yield event('completed',{status:result.status});
