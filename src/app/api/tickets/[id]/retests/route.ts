@@ -1,0 +1,2 @@
+import {NextRequest} from 'next/server';import {operationResponse} from '@/application/agent/operation-http';
+export async function POST(req:NextRequest,{params}:{params:Promise<{id:string}>}){const body=await req.json();return operationResponse(req,{type:'workflow.retest',args:{ticketId:(await params).id,sourceRecordId:body.sourceRecordId},prompt:'调用 skill_retest_submit 提交所附实际采集复测记录。'},'ANALYTICS_RESULT');}

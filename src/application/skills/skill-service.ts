@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import {workflowSkills} from '@/domains/common/workflow-skills';
 import { interactionSkills } from '@/domains/common/interaction-skills';
 import type { SkillDefinition } from '@/contracts/skill-definition';
 import type { AgentDomain } from '@/contracts/dataset';
@@ -16,7 +17,8 @@ const ajv=new Ajv({allErrors:true,strict:false,strictNumbers:true});
 export function listSkillDefinitions(domain:AgentDomain,options:{includeInternal?:boolean}={}):SkillDefinition[]{
   const factories={vector:vectorSkills,foodborne:foodborneSkills,env:envSkills,chronic:chronicSkills};
   if(!Object.hasOwn(factories,domain))throw new Error('Unknown domain');
-  return [...factories[domain](),...interactionSkills(domain)].filter(skill=>options.includeInternal || skill.visibility!=='internal');
+  const workflows=workflowSkills(domain);
+  return [...factories[domain]().filter(s=>!workflows.some(w=>w.id===s.id)),...interactionSkills(domain),...workflows].filter(skill=>options.includeInternal || skill.visibility!=='internal');
 }
 export function createSkillService(definitions:SkillDefinition[]){
   const catalog=new Map<string,SkillDefinition>();

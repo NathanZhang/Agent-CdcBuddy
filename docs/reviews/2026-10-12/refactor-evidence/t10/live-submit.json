@@ -1,0 +1,246 @@
+{
+  "runId": "487c9552-3668-41dd-bcb8-6913af0eaba3",
+  "interactionId": "32273ae9-c345-4534-86b6-d1533d5d8fc3",
+  "status": "SUCCESS",
+  "replyText": "已提交实际分析任务，本次未执行分析。任务状态：QUEUED；任务ID：8cbab814-2029-40b5-ba8f-4f6d8fe38e27；城市：郑州市；幂等键：live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "487c9552-3668-41dd-bcb8-6913af0eaba3",
+      "component": "ANALYTICS_RESULT",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "487c9552-3668-41dd-bcb8-6913af0eaba3",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "持久任务状态",
+          "data": {
+            "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+            "user_id": "local-development",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": null,
+            "idempotency_key": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+            "input_json": "{\"idempotencyKey\":\"live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a\",\"city\":\"郑州市\",\"interaction\":{\"interactionId\":\"3759efac-5ee9-42d9-ac6c-46dadc01fb25\",\"kind\":\"skill\",\"userInput\":\"查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(capture_count) AS value FROM fact_monitoring\",\"city\":\"郑州市\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":1,\"clearBelow\":0.5,\"minRetestHours\":24,\"unit\":\"captures/record\"}}",
+            "principal_json": "{\"userId\":\"local-development\",\"role\":\"PROVINCIAL_ADMIN\",\"organizationId\":\"local-development\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{},\"mode\":\"dev\"}",
+            "status": "QUEUED",
+            "attempts": 0,
+            "lease_owner": null,
+            "lease_until": null,
+            "available_at": 0,
+            "analysis_run_id": null,
+            "metric_value": null,
+            "result_json": null,
+            "error": null,
+            "created_at": 1791792351930
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_eef7e424aa3645da9d13e9bf",
+      "skillId": "skill_job_manage",
+      "skillName": "提交、读取持久分析任务",
+      "args": {
+        "action": "submit",
+        "input": {
+          "idempotencyKey": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+          "city": "郑州市",
+          "interaction": {
+            "interactionId": "3759efac-5ee9-42d9-ac6c-46dadc01fb25",
+            "kind": "skill",
+            "userInput": "查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。",
+            "resourceRef": {
+              "type": "skill",
+              "id": "skill_monitoring_data_table",
+              "action": "execute"
+            },
+            "attachments": [
+              {
+                "type": "operation-input",
+                "args": {
+                  "sql": "SELECT AVG(capture_count) AS value FROM fact_monitoring",
+                  "city": "郑州市"
+                }
+              }
+            ]
+          },
+          "rule": {
+            "field": "value",
+            "threshold": 1,
+            "clearBelow": 0.5,
+            "minRetestHours": 24,
+            "unit": "captures/record"
+          }
+        }
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "487c9552-3668-41dd-bcb8-6913af0eaba3",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "持久任务状态",
+          "data": {
+            "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+            "user_id": "local-development",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": null,
+            "idempotency_key": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+            "input_json": "{\"idempotencyKey\":\"live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a\",\"city\":\"郑州市\",\"interaction\":{\"interactionId\":\"3759efac-5ee9-42d9-ac6c-46dadc01fb25\",\"kind\":\"skill\",\"userInput\":\"查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(capture_count) AS value FROM fact_monitoring\",\"city\":\"郑州市\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":1,\"clearBelow\":0.5,\"minRetestHours\":24,\"unit\":\"captures/record\"}}",
+            "principal_json": "{\"userId\":\"local-development\",\"role\":\"PROVINCIAL_ADMIN\",\"organizationId\":\"local-development\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{},\"mode\":\"dev\"}",
+            "status": "QUEUED",
+            "attempts": 0,
+            "lease_owner": null,
+            "lease_until": null,
+            "available_at": 0,
+            "analysis_run_id": null,
+            "metric_value": null,
+            "result_json": null,
+            "error": null,
+            "created_at": 1791792351930
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "success": true,
+  "skillId": "skill_job_manage",
+  "skillName": "提交、读取持久分析任务",
+  "generativeView": {
+    "type": "ANALYTICS_RESULT",
+    "title": "持久任务状态",
+    "data": {
+      "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "user_id": "local-development",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": null,
+      "idempotency_key": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+      "input_json": "{\"idempotencyKey\":\"live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a\",\"city\":\"郑州市\",\"interaction\":{\"interactionId\":\"3759efac-5ee9-42d9-ac6c-46dadc01fb25\",\"kind\":\"skill\",\"userInput\":\"查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(capture_count) AS value FROM fact_monitoring\",\"city\":\"郑州市\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":1,\"clearBelow\":0.5,\"minRetestHours\":24,\"unit\":\"captures/record\"}}",
+      "principal_json": "{\"userId\":\"local-development\",\"role\":\"PROVINCIAL_ADMIN\",\"organizationId\":\"local-development\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{},\"mode\":\"dev\"}",
+      "status": "QUEUED",
+      "attempts": 0,
+      "lease_owner": null,
+      "lease_until": null,
+      "available_at": 0,
+      "analysis_run_id": null,
+      "metric_value": null,
+      "result_json": null,
+      "error": null,
+      "created_at": 1791792351930
+    },
+    "runId": "487c9552-3668-41dd-bcb8-6913af0eaba3",
+    "status": "SUCCESS",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "qualityFlags": [
+      "engineering-workflow-not-validated-risk-policy"
+    ],
+    "method": "persistent-evidence-workflow-v1"
+  },
+  "source": "llm_tool_calling",
+  "args": {
+    "action": "submit",
+    "input": {
+      "idempotencyKey": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+      "city": "郑州市",
+      "interaction": {
+        "interactionId": "3759efac-5ee9-42d9-ac6c-46dadc01fb25",
+        "kind": "skill",
+        "userInput": "查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。",
+        "resourceRef": {
+          "type": "skill",
+          "id": "skill_monitoring_data_table",
+          "action": "execute"
+        },
+        "attachments": [
+          {
+            "type": "operation-input",
+            "args": {
+              "sql": "SELECT AVG(capture_count) AS value FROM fact_monitoring",
+              "city": "郑州市"
+            }
+          }
+        ]
+      },
+      "rule": {
+        "field": "value",
+        "threshold": 1,
+        "clearBelow": 0.5,
+        "minRetestHours": 24,
+        "unit": "captures/record"
+      }
+    }
+  },
+  "code": 0,
+  "message": "已提交实际分析任务，本次未执行分析。任务状态：QUEUED；任务ID：8cbab814-2029-40b5-ba8f-4f6d8fe38e27；城市：郑州市；幂等键：live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a。",
+  "data": {
+    "type": "ANALYTICS_RESULT",
+    "title": "持久任务状态",
+    "data": {
+      "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "user_id": "local-development",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": null,
+      "idempotency_key": "live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a",
+      "input_json": "{\"idempotencyKey\":\"live-t10-7bc553d2-cd76-4475-b066-6234b7c23c0a\",\"city\":\"郑州市\",\"interaction\":{\"interactionId\":\"3759efac-5ee9-42d9-ac6c-46dadc01fb25\",\"kind\":\"skill\",\"userInput\":\"查询郑州市病媒捕获量每条记录均值，仅执行只读SQL。\",\"resourceRef\":{\"type\":\"skill\",\"id\":\"skill_monitoring_data_table\",\"action\":\"execute\"},\"attachments\":[{\"type\":\"operation-input\",\"args\":{\"sql\":\"SELECT AVG(capture_count) AS value FROM fact_monitoring\",\"city\":\"郑州市\"}}]},\"rule\":{\"field\":\"value\",\"threshold\":1,\"clearBelow\":0.5,\"minRetestHours\":24,\"unit\":\"captures/record\"}}",
+      "principal_json": "{\"userId\":\"local-development\",\"role\":\"PROVINCIAL_ADMIN\",\"organizationId\":\"local-development\",\"domainGrants\":[\"vector\"],\"jurisdiction\":{},\"mode\":\"dev\"}",
+      "status": "QUEUED",
+      "attempts": 0,
+      "lease_owner": null,
+      "lease_until": null,
+      "available_at": 0,
+      "analysis_run_id": null,
+      "metric_value": null,
+      "result_json": null,
+      "error": null,
+      "created_at": 1791792351930
+    }
+  }
+}

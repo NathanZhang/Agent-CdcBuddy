@@ -200,77 +200,12 @@ class VectorSurveillanceTestSuite:
     # 序号 29: 处置闭环信息
     # --------------------------------------------------------------------------
     def test_req_29_disposal_workflow(self, r: TestResult):
-        r.scenario = "智能生成消杀处置工单、关联三步消杀规程、流转跟踪并通过 BI 复测闭环核销"
-        conn = sqlite3.connect(APP_BUSINESS_DB_PATH)
-        cur = conn.cursor()
-        
-        test_ticket_id = f"TICKET-TEST-{int(time.time())}"
-        protocol_json = json.dumps([
-            {"step": 1, "title": "物理环境治理", "content": "翻盆倒罐清除绿化带与散在积水容器，投放Bti灭幼粒剂。"},
-            {"step": 2, "title": "化学速杀喷雾", "content": "使用 2.5% 高效氯氟氰菊酯超低容量空间喷雾 (ULV)，清晨作业。"},
-            {"step": 3, "title": "效果后评估", "content": "施药后 48 小时复测布雷图指数 (BI)，若 BI < 5 即自动核销闭环。"}
-        ], ensure_ascii=False)
-        
-        # 1. 派发工单
-        cur.execute("""
-            INSERT INTO biz_disposal_tickets (
-                ticket_id, alert_id, target_city, target_district, target_street,
-                vector_category, species_name, severity_level, recommended_protocol,
-                assigned_team, contact_phone, disposal_status, before_density,
-                disposal_notes, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            test_ticket_id, "ALERT-TEST-101", "郑州市", "金水区", "未来路街道",
-            "蚊", "白纹伊蚊", "red", protocol_json,
-            "金水区疾控中心消杀突击队", "0371-68991234", "IN_PROGRESS", 86.0,
-            "消杀突击队已进驻现场开展环境清积水与空间喷雾",
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ))
-        conn.commit()
-        
-        # 2. 验证工单状态为处理中
-        ticket_before = cur.execute("SELECT disposal_status, assigned_team FROM biz_disposal_tickets WHERE ticket_id = ?", (test_ticket_id,)).fetchone()
-        r.assert_true(ticket_before[0] == "IN_PROGRESS", "工单创建并处于处理中状态 (IN_PROGRESS)")
-        r.assert_true("消杀突击队" in ticket_before[1], "指派专业消杀队伍")
-        
-        # 3. 复测核销闭环 (BI 指数降至 3.8 < 5.0)
-        cur.execute("""
-            UPDATE biz_disposal_tickets 
-            SET disposal_status = 'RESOLVED',
-                after_bi_index = 3.8,
-                resolved_at = ?,
-                updated_at = ?,
-                disposal_notes = '48小时后复测布雷图指数 BI=3.8 (<5.0)，达到国家控制标准，预警核销闭环。'
-            WHERE ticket_id = ?
-        """, (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            test_ticket_id
-        ))
-        conn.commit()
-        
-        # 4. 验证核销状态
-        ticket_after = cur.execute("SELECT disposal_status, after_bi_index, resolved_at FROM biz_disposal_tickets WHERE ticket_id = ?", (test_ticket_id,)).fetchone()
-        cur.execute("DELETE FROM biz_disposal_tickets WHERE ticket_id = ? OR ticket_id LIKE 'TICKET-TEST-%'", (test_ticket_id,))
-        conn.commit()
+        r.scenario='旧数据库工单字段兼容；不能通过直接UPDATE证明复测闭环'
+        conn=sqlite3.connect(APP_BUSINESS_DB_PATH)
+        cols=[v[1] for v in conn.execute('PRAGMA table_info(biz_disposal_tickets)')]
         conn.close()
-        
-        r.assert_true(ticket_after[0] == "RESOLVED", "工单已成功核销闭环 (RESOLVED)")
-        r.assert_true(ticket_after[1] == 3.8 and ticket_after[1] < 5.0, "复测布雷图指数 BI=3.8 达标 (< 5.0)")
-        r.assert_true(ticket_after[2] is not None, "记录精确核销归档时间戳")
+        r.assert_true('disposal_status' in cols,'保留旧工单字段用于迁移')
 
-        r.metrics = {
-            "ticketId": test_ticket_id,
-            "statusTransition": "IN_PROGRESS -> RESOLVED",
-            "beforeDensity": 86.0,
-            "afterBiIndex": 3.8,
-            "isBiCompliant": True
-        }
-
-    # --------------------------------------------------------------------------
-    # 序号 30: 密度预测模型 (GBDT)
-    # --------------------------------------------------------------------------
     def test_req_30_density_gbdt(self, r: TestResult):
         r.scenario='子能力回归：实际训练 GBDT 捕获量预测，不声称气象密度模型'
         res=calculate_gbdt_density_forecast(VECTOR_DB_PATH,city='郑州市',method_name='诱蚊灯法',as_of='2023-12-31')
@@ -521,47 +456,10 @@ class VectorSurveillanceTestSuite:
     # EXT-03: 后台常驻数据分析智能体 (Surveillance Daemon Agent)
     # --------------------------------------------------------------------------
     def test_ext_daemon_surveillance(self, r: TestResult):
-        test_policy = "专家提示词策略：重点巡检信阳与南阳登革热高危区，自发生成预警并推送到队列"
-        res = run_daemon_surveillance_cycle(
-            monitoring_db_path=VECTOR_DB_PATH,
-            business_db_path=APP_BUSINESS_DB_PATH,
-            prompt_policy=test_policy,
-            trigger_source="timer_scheduled"
-        )
+        r.scenario='旧Python巡检拒绝；实际主线Agent持久任务另有独立状态机和HTTP验收'
+        res=run_daemon_surveillance_cycle()
+        r.assert_true(res['error']['code']=='CAPABILITY_UNAVAILABLE','旧规则巡检不能绕过主线LLM')
 
-        r.assert_true(res.get("success") is True, "后台常驻智能体巡检周期成功执行")
-        
-        anom_count = res.get("detected_anomalies_count", 0)
-        r.assert_true(anom_count > 0, f"成功检测到 {anom_count} 处异常密度突增点")
-
-        alerts = res.get("generated_alerts", [])
-        r.assert_true(len(alerts) > 0, f"自发研判生成并持久化 {len(alerts)} 起分级预警事件")
-        
-        sample_alert = alerts[0]
-        r.assert_true(sample_alert.get("alert_id", "").startswith("ALERT-"), f"自动生成合规预警编码: {sample_alert.get('alert_id')}")
-        r.assert_true(sample_alert.get("level") in ["red", "orange", "yellow"], f"正确量化预警等级: {sample_alert.get('level')}")
-
-        conn_b = sqlite3.connect(APP_BUSINESS_DB_PATH)
-        cur_b = conn_b.cursor()
-        saved_row = cur_b.execute("SELECT event_id, title, level, city FROM biz_early_warning_events WHERE event_id = ?", (sample_alert["event_id"],)).fetchone()
-        conn_b.close()
-        
-        r.assert_true(saved_row is not None, "预警事件已真实写入业务持久化数据库 biz_early_warning_events")
-
-        q_status = res.get("queue_push_status", {})
-        r.assert_true(q_status.get("channel") == "cdc_alert_stream", "成功将预警事件推送到 cdc_alert_stream 异步消息通道")
-
-        r.metrics = {
-            "cycleTime": res.get("cycle_timestamp"),
-            "detectedAnomalies": anom_count,
-            "generatedAlerts": len(alerts),
-            "sampleAlertId": sample_alert.get("alert_id"),
-            "pushedChannel": q_status.get("channel")
-        }
-
-    # --------------------------------------------------------------------------
-    # EXT-04: 独立原子技能 · SaTScan 空间泊松扫描 (独立使用场景)
-    # --------------------------------------------------------------------------
     def test_ext_satscan_spatial_standalone(self, r: TestResult):
         r.scenario='近似圆形条件泊松扫描的性质回归，非完整 SaTScan'
         args=dict(db_path=VECTOR_DB_PATH,year=2022,month=6,method_name='诱蚊灯法',seed=7,num_simulations=19)

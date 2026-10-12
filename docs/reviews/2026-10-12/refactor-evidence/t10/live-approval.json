@@ -1,0 +1,156 @@
+{
+  "runId": "b7bfe171-0a9e-41cc-8229-3ad3017fe646",
+  "interactionId": "d1331b1e-3011-4e20-bad1-abd3274ab59c",
+  "status": "SUCCESS",
+  "replyText": "已按“approve”提交任务 8cbab814-2029-40b5-ba8f-4f6d8fe38e27 的专业审批决定。工具返回执行成功，审批人为 local-development，城市为郑州市；但返回的工单状态仍为 OPEN，resolved_at 为空，因此不能确认审批流程已完成或已生效。质量标记提示：engineering-workflow-not-validated-risk-policy。",
+  "agui": [
+    {
+      "version": "1",
+      "runId": "b7bfe171-0a9e-41cc-8229-3ad3017fe646",
+      "component": "ANALYTICS_RESULT",
+      "result": {
+        "schemaVersion": "1",
+        "runId": "b7bfe171-0a9e-41cc-8229-3ad3017fe646",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "实际审批结果",
+          "data": {
+            "ticket_id": "390f1ed6-3980-4253-83ad-4243834d3b3a",
+            "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+            "user_id": "local-development",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": null,
+            "status": "OPEN",
+            "approved_by": "local-development",
+            "opened_at": 1791792457370,
+            "resolved_at": null
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "skillRuns": [
+    {
+      "callId": "call_4764d98cde204bcba3ce02bb",
+      "skillId": "skill_approval_decision",
+      "skillName": "专业审批分析任务",
+      "args": {
+        "jobId": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+        "decision": "approve"
+      },
+      "result": {
+        "schemaVersion": "1",
+        "runId": "b7bfe171-0a9e-41cc-8229-3ad3017fe646",
+        "domain": "vector",
+        "status": "SUCCESS",
+        "method": "persistent-evidence-workflow-v1",
+        "datasets": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ],
+        "payload": {
+          "type": "ANALYTICS_RESULT",
+          "title": "实际审批结果",
+          "data": {
+            "ticket_id": "390f1ed6-3980-4253-83ad-4243834d3b3a",
+            "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+            "user_id": "local-development",
+            "domain": "vector",
+            "city": "郑州市",
+            "district": null,
+            "status": "OPEN",
+            "approved_by": "local-development",
+            "opened_at": 1791792457370,
+            "resolved_at": null
+          }
+        },
+        "metrics": {},
+        "qualityFlags": [
+          "engineering-workflow-not-validated-risk-policy"
+        ]
+      }
+    }
+  ],
+  "success": true,
+  "skillId": "skill_approval_decision",
+  "skillName": "专业审批分析任务",
+  "generativeView": {
+    "type": "ANALYTICS_RESULT",
+    "title": "实际审批结果",
+    "data": {
+      "ticket_id": "390f1ed6-3980-4253-83ad-4243834d3b3a",
+      "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "user_id": "local-development",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": null,
+      "status": "OPEN",
+      "approved_by": "local-development",
+      "opened_at": 1791792457370,
+      "resolved_at": null
+    },
+    "runId": "b7bfe171-0a9e-41cc-8229-3ad3017fe646",
+    "status": "SUCCESS",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "qualityFlags": [
+      "engineering-workflow-not-validated-risk-policy"
+    ],
+    "method": "persistent-evidence-workflow-v1"
+  },
+  "source": "llm_tool_calling",
+  "args": {
+    "jobId": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+    "decision": "approve"
+  },
+  "code": 0,
+  "message": "已按“approve”提交任务 8cbab814-2029-40b5-ba8f-4f6d8fe38e27 的专业审批决定。工具返回执行成功，审批人为 local-development，城市为郑州市；但返回的工单状态仍为 OPEN，resolved_at 为空，因此不能确认审批流程已完成或已生效。质量标记提示：engineering-workflow-not-validated-risk-policy。",
+  "data": {
+    "type": "ANALYTICS_RESULT",
+    "title": "实际审批结果",
+    "data": {
+      "ticket_id": "390f1ed6-3980-4253-83ad-4243834d3b3a",
+      "job_id": "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "user_id": "local-development",
+      "domain": "vector",
+      "city": "郑州市",
+      "district": null,
+      "status": "OPEN",
+      "approved_by": "local-development",
+      "opened_at": 1791792457370,
+      "resolved_at": null
+    }
+  }
+}

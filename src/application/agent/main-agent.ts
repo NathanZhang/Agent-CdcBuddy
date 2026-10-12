@@ -86,6 +86,7 @@ export function createMainAgent(dependencies:Dependencies){
       const cancelled=ctx.signal?.aborted;const code=cancelled?'CANCELLED':error instanceof LLMError||error instanceof TurnError||error instanceof IntentError?error.code:'AGENT_FAILED';
       const message=cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';
       const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:message,agui:[],skillRuns,error:{code,message}};
+      try{recordAgentTurn(interaction,result,ctx);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}
       yield event('failed',{code,message});yield event('result',{result});yield event('completed',{status:result.status});
     }
   };

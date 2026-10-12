@@ -260,11 +260,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`submitJob`、`reviewJob(jobId,decision,ctx)`、`submitRetest(ticketId,measurement,ctx)`；使用SQLite持久任务表与单Worker起步，暂不引入Redis；LangGraph检查点落独立存储并绑定runId。
 
-- [ ] 测试：相同幂等键不重复Job/工单；Worker重启继续待处理任务；WAITING_REVIEW不派工；拒绝审批不继续图；无复测证据/未到规则时窗/不达标不能RESOLVED；通知未实际投递不能DELIVERED。
-- [ ] 运行 `npm run test:refactor -- workflow` 与 `npm run test:integration -- jobs`，确认当前单次巡检与固定核销未满足。
-- [ ] 调度器将事件/定时触发转换AgentInteraction，经T5主线Agent调用巡检/复测/审批Skills；实现任务租约、心跳、重试、图中断恢复、复测证据与预警状态联动、outbox；通知先实现站内消息，短信/APP适配槽留后续接入；不称已完成外部送达。
-- [ ] 执行停启/重复事件/审批/复测集成；真实库只读，业务测试写临时业务库；记录病媒纵向演示和失败恢复证据。
-- [ ] 提交：`feat: persist analytics jobs and evidence-based vector workflows`。
+- [x] 测试：相同幂等键不重复Job/工单；Worker重启继续待处理任务；WAITING_REVIEW不派工；拒绝审批不继续图；无复测证据/未到规则时窗/不达标不能RESOLVED；通知未实际投递不能DELIVERED。
+- [x] 运行 `npm run test:refactor -- workflow` 与 `npm run test:integration -- jobs`，确认当前单次巡检与固定核销未满足。
+- [x] 调度器将事件/定时触发转换AgentInteraction，经T5主线Agent调用巡检/复测/审批Skills；实现任务租约、心跳、重试、图中断恢复、复测证据与预警状态联动、outbox；通知先实现站内消息，短信/APP适配槽留后续接入；不称已完成外部送达。
+- [x] 执行停启/重复事件/审批/复测集成；真实库只读，业务测试写临时业务库；记录病媒纵向演示和失败恢复证据。
+- [x] 提交：`feat: persist analytics jobs and evidence-based vector workflows`。
 
 ### Task 11：RBAC独立建设（新增功能）
 

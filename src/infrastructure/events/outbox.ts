@@ -1,0 +1,2 @@
+import {withBusinessDb} from '@/infrastructure/db/business-store';
+export function deliverInApp(){return withBusinessDb(db=>db.transaction(()=>{const events=db.prepare("SELECT * FROM biz_outbox WHERE channel='in_app' AND status='PENDING' LIMIT 100").all() as any[];for(const e of events){db.prepare('INSERT OR IGNORE INTO biz_inbox VALUES(?,?,?,?,?)').run(e.event_id,e.user_id,e.domain,e.payload_json,Date.now());db.prepare("UPDATE biz_outbox SET status='DELIVERED',delivered_at=? WHERE event_id=?").run(Date.now(),e.event_id);}return events.length;}).immediate());}
