@@ -16,36 +16,22 @@ from transmission_risk import calculate_transmission_risk
 from resistance_evolution import calculate_resistance_evolution
 from satscan_cluster import calculate_satscan_spatial_clusters
 from lstm_predictor import calculate_lstm_short_term_forecast
-from satscan_lstm_pipeline import run_satscan_kmeans_lstm_pipeline
-from daemon_surveillance import run_daemon_surveillance_cycle
 
 from repositories.datasets import resolve_dataset_path
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0,ROOT)
 with open(os.path.join(ROOT,'config/analytics-tasks.json')) as definition_file:
     TASK_DOMAINS = json.load(definition_file)
 
-def main():
-    parser = argparse.ArgumentParser(description="CDC Vector Monitoring Scientific Analytics Engine")
-    parser.add_argument("--task", required=True, help="Task name")
-    parser.add_argument("--args", default="{}", help="JSON string arguments")
-    parser.add_argument("--db", help="Explicit read-only fixture path (optional)")
-    parser.add_argument("--domain", choices=["vector","foodborne","env","chronic"])
-    parser.add_argument("--dataset-id")
+from analytics_engine.contracts.task import parse_task_args,json_value,task_result,DatasetRef
+from analytics_engine.repositories.datasets import resolve_dataset_ref
+from analytics_engine.graphs.registry import GRAPH_TASKS,invoke_graph
+import contextlib
 
-    parsed = parser.parse_args()
-    task = parsed.task
-    try:
-        args = json.loads(parsed.args)
-    except Exception:
-        args = {}
-    if task not in TASK_DOMAINS:
-        parser.error(f'Unknown task: {task}')
-    domain = TASK_DOMAINS[task]
-    if parsed.domain and parsed.domain != domain:
-        parser.error('Task domain mismatch')
-    db_path = parsed.db or str(resolve_dataset_path(domain,parsed.dataset_id))
-
+def execute_task(task,args,db_path):
     result = {}
+    if task in GRAPH_TASKS:
+        return invoke_graph(task,db_path,args,os.environ.get("APP_BUSINESS_DB_PATH") or os.path.join(ROOT,"app_business.db"))
     if task == "population_dynamics":
         result = calculate_population_dynamics(
             db_path=db_path,
@@ -138,33 +124,6 @@ def main():
             forecast_days=int(args.get("forecastDays", 7)),
             start_date_str=args.get("startDateStr", "2022-06-01")
         )
-    elif task == "satscan_kmeans_lstm_pipeline":
-        result = run_satscan_kmeans_lstm_pipeline(
-            db_path=db_path,
-            year=int(args.get("year", 2022)),
-            month=int(args.get("month", 3)),
-            category=args.get("category", "蚊"),
-            forecast_days=int(args.get("forecastDays", 7)),
-            p_threshold=float(args.get("pThreshold", 0.05))
-        )
-    elif task in ["composable_workflow", "dynamic_workflow"]:
-        from composable_workflow import run_dynamic_composable_workflow
-        result = run_dynamic_composable_workflow(
-            db_path=db_path,
-            workflow_name=args.get("workflowName", "多技能动态协同工作流"),
-            steps=args.get("steps", []),
-            initial_context=args.get("initialContext", {})
-        )
-    elif task in ["daemon_surveillance", "daemon_surveillance_cycle"]:
-        biz_db = os.environ.get("APP_BUSINESS_DB_PATH") or os.path.abspath(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "../app_business.db")
-        )
-        result = run_daemon_surveillance_cycle(
-            monitoring_db_path=db_path,
-            business_db_path=args.get("businessDbPath", biz_db),
-            prompt_policy=args.get("promptPolicy") or args.get("prompt_policy"),
-            trigger_source=args.get("triggerSource") or args.get("trigger_source", "timer_scheduled")
-        )
     elif task in ["foodborne_cluster_detect", "foodborne_clusters"]:
         from foodborne.outbreak_scanner import scan_outbreak_clusters
         fb_db = db_path
@@ -245,34 +204,33 @@ def main():
     else:
         result = {"error": f"Unknown task: {task}"}
 
-    def sanitize_for_json(obj):
-        import math
+    return result
+
+def main():
+    parser=argparse.ArgumentParser(description="CdcBuddy Scientific Analytics")
+    parser.add_argument('--task',required=True);parser.add_argument('--args',default='{}');parser.add_argument('--db');parser.add_argument('--domain',choices=['vector','foodborne','env','chronic']);parser.add_argument('--dataset-id');parser.add_argument('--dataset-ref');parser.add_argument('--protocol',choices=['skill-result-v1']);parser.add_argument('--run-id')
+    parsed=parser.parse_args()
+    if parsed.task not in TASK_DOMAINS:parser.error('Unknown task')
+    domain=TASK_DOMAINS[parsed.task]
+    if parsed.domain and parsed.domain!=domain:parser.error('Task domain mismatch')
+    try:args=parse_task_args(parsed.args)
+    except ValueError as error:parser.error(str(error))
+    db_path=parsed.db or str(resolve_dataset_path(domain,parsed.dataset_id))
+    if parsed.protocol:
+        if not parsed.run_id:parser.error('Protocol requires run ID')
         try:
-            import pandas as pd
-            if pd.isna(obj):
-                return None
-        except Exception:
-            pass
-        if isinstance(obj, dict):
-            return {str(k): sanitize_for_json(v) for k, v in obj.items()}
-        elif isinstance(obj, (list, tuple)):
-            return [sanitize_for_json(v) for v in obj]
-        elif isinstance(obj, (float, int)):
-            if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
-                return None
-            return obj
-        elif hasattr(obj, "item"): # numpy types
-            val = obj.item()
-            return sanitize_for_json(val)
-        return obj
+            ref=DatasetRef.model_validate(json.loads(parsed.dataset_ref)) if parsed.dataset_ref else resolve_dataset_ref(domain,parsed.dataset_id)
+            if ref.domain!=domain or parsed.dataset_id and ref.id!=parsed.dataset_id:raise ValueError('Dataset identity mismatch')
+            if ref.model_dump()!=resolve_dataset_ref(domain,parsed.dataset_id).model_dump():raise ValueError('Dataset metadata mismatch')
+        except Exception as error:parser.error(str(error))
+        try:
+            with contextlib.redirect_stdout(sys.stderr):payload=execute_task(parsed.task,args,db_path)
+            result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),payload)
+        except Exception as error:
+            result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),error=str(error))
+        print(json.dumps(result,ensure_ascii=False,allow_nan=False))
+    else:
+        with contextlib.redirect_stdout(sys.stderr):result=execute_task(parsed.task,args,db_path)
+        print(json.dumps(json_value(result),ensure_ascii=False,allow_nan=False))
 
-    clean_result = sanitize_for_json(result)
-    import re
-    s = json.dumps(clean_result, ensure_ascii=False, default=str)
-    s = re.sub(r':\s*NaN\b', ': null', s)
-    s = re.sub(r':\s*Infinity\b', ': null', s)
-    s = re.sub(r':\s*-Infinity\b', ': null', s)
-    print(s)
-
-if __name__ == "__main__":
-    main()
+if __name__=='__main__':main()

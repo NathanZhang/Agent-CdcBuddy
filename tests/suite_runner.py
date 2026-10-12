@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 def run_suites(kind, selectors):
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
     directory = Path(__file__).resolve().parent / kind
     suite = unittest.TestSuite()
     if selectors:

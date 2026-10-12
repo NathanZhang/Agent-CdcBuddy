@@ -29,3 +29,10 @@ def connect_readonly(path):
 
 def connect_dataset(domain,dataset_id=None):
     return connect_readonly(resolve_dataset_path(domain,dataset_id))
+
+def resolve_dataset_ref(domain,dataset_id=None):
+    from analytics_engine.contracts.result import DatasetRef
+    resolve_dataset_path(domain,dataset_id)
+    manifest=Path(os.environ.get('DATASET_MANIFEST_PATH',ROOT/'config/datasets.json')).resolve()
+    matches=[row for row in json.loads(manifest.read_text()) if row['domain']==domain and (dataset_id is None or row['id']==dataset_id)]
+    return DatasetRef.model_validate({k:v for k,v in matches[0].items() if k!='path'})
