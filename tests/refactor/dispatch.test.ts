@@ -131,3 +131,47 @@ it('clears successful partial views when a later tool is denied by jurisdiction'
  expect(turn.skillRuns[0].result.status).toBe('SUCCESS');expect(turn.error?.code).toBe('FORBIDDEN_SCOPE');
  expect(turn.status).toBe('FAILED');expect(turn.agui).toEqual([]);expect(toLegacyResult(turn).generativeView).toBeNull();
 });
+
+it('finishes with the real map after a failed query is corrected and tool rounds are exhausted',async()=>{
+ const visualization={kind:'map',latKey:'lat',lonKey:'lon',labelKey:'label',valueKey:'value',unit:'只/记录'};
+ const query=(id:string,sql:string,city?:string)=>({...tool(id),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql,city,visualization})}});
+ const llm=stub([
+  {role:'assistant',content:null,tool_calls:[query('bad',"SELECT printf('%d',f.capture_count) AS value FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id WHERE f.date_id BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY l.location_id",'河南省')]},
+  {role:'assistant',content:'{"mode":"continue","reason":"修正不支持的日期函数"}'},
+  {role:'assistant',content:null,tool_calls:[query('map',"SELECT l.street AS label,l.latitude AS lat,l.longitude AS lon,AVG(f.capture_count) AS value FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id WHERE f.date_id BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY l.location_id")]},
+  {role:'assistant',content:'{"mode":"continue","reason":"确认监测日期范围"}'},
+  {role:'assistant',content:null,tool_calls:[{...tool('dates'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT MIN(date_id) AS start,MAX(date_id) AS endDate FROM fact_monitoring"}'}}]},
+  {role:'assistant',content:'{"mode":"continue","reason":"再确认点位"}'},
+  answer,
+ ]);
+ const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));
+ expect(turn.error,JSON.stringify(turn.skillRuns.map(run=>({status:run.result.status,error:run.result.error})))).toBeUndefined();
+ expect(turn.status).toBe('SUCCESS');expect(turn.skillRuns).toHaveLength(3);
+ expect(turn.skillRuns[0].result.status).toBe('FAILED');
+ expect(turn.agui.some(a=>(a.result.payload as any)?.visualization?.kind==='map')).toBe(true);
+});
+
+it('retains an already executed map when the model refuses the final synthesis after budget exhaustion',async()=>{
+ let n=0;const llm:LLMClient={complete:async request=>request.toolChoice==='none'?{role:'assistant',content:'{"mode":"continue","reason":"更多统计"}'}:({role:'assistant',content:null,tool_calls:[{...tool(`map-${++n}`),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:`SELECT ${n} AS value,34.75 AS lat,113.62 AS lon,street AS label FROM dim_location LIMIT 1`,visualization:{kind:'map',latKey:'lat',lonKey:'lon',valueKey:'value',labelKey:'label',unit:'条'}})}}]})};
+ const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));
+ expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('TOOL_BUDGET_EXCEEDED');expect(turn.skillRuns).toHaveLength(3);expect(turn.agui).toHaveLength(3);
+});
+
+it('keeps views cleared after a jurisdiction denial even if synthesis later exceeds the budget',async()=>{
+ const ctx=createDevelopmentContext('vector');ctx.principal={...ctx.principal,role:'CITY_EXPERT',jurisdiction:{city:'郑州市'}};
+ const denied={...tool('denied'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring","city":"洛阳市"}'}};
+ const continuation={role:'assistant' as const,content:'{"mode":"continue","reason":"再查其他统计"}'};
+ const llm=stub([{role:'assistant',content:null,tool_calls:[tool('first'),denied]},continuation,{role:'assistant',content:null,tool_calls:[{...tool('second'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n2 FROM fact_monitoring"}'}}]},continuation,{role:'assistant',content:null,tool_calls:[{...tool('third'),function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n3 FROM fact_monitoring"}'}}]},continuation,continuation]);
+ const turn=await collectDispatch(dispatch(input,ctx,agent(llm)));
+ expect(turn.error?.code).toBe('TOOL_BUDGET_EXCEEDED');expect(turn.agui).toEqual([]);expect(turn.skillRuns.some(r=>r.result.error?.code==='FORBIDDEN_SCOPE')).toBe(true);
+});
+
+it.each(['diagnostic','different-year'])('does not mistake a %s query carrying map metadata for a corrected map',async mode=>{
+ const visualization={kind:'map',latKey:'lat',lonKey:'lon',valueKey:'value',labelKey:'label',unit:'条'};
+ const call=(id:string,sql:string)=>({...tool(id),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql,visualization})}});
+ const bad="SELECT printf('%d',f.capture_count) AS value FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id WHERE f.date_id BETWEEN '2024-01-01' AND '2024-12-31'";
+ const other=mode==='diagnostic'?'SELECT COUNT(*) AS n FROM fact_monitoring':"SELECT l.street AS label,l.latitude AS lat,l.longitude AS lon,AVG(f.capture_count) AS value FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id WHERE f.date_id BETWEEN '2023-01-01' AND '2023-12-31' GROUP BY l.location_id";
+ const llm=stub([{role:'assistant',content:null,tool_calls:[call('bad',bad)]},{role:'assistant',content:'{"mode":"continue","reason":"检查数据"}'},{role:'assistant',content:null,tool_calls:[call('other',other)]},answer]);
+ const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));
+ expect(turn.skillRuns[1].result.status).toBe('SUCCESS');expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('EXECUTION_FAILED');
+});

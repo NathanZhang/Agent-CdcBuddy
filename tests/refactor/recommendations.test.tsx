@@ -1,5 +1,7 @@
 import React from 'react';
-import {renderToStaticMarkup} from 'react-dom/server';
+import {renderToStaticMarkup as render} from 'react-dom/server';
+import {ThemeProvider} from '@/lib/theme/theme-context';
+const renderToStaticMarkup=(element:React.ReactNode)=>render(<ThemeProvider>{element}</ThemeProvider>);
 import {describe,it,expect} from 'vitest';
 import {AGENT_PROFILES} from '@/lib/config/agent-profile';
 import {STANDARD_SKILLS} from '@/lib/skills/registry';
@@ -53,7 +55,7 @@ it('query charts render actual zeros, preserve gaps, and never coerce missing va
  expect(html).not.toContain('data-series="line"');
 });
 
-it('query maps use actual coordinates and retain a table without remote map services',()=>{
+it('query maps use actual coordinates and retain a table alongside the interactive basemap',()=>{
  const html=renderToStaticMarkup(<DataTableComponent {...{data:[{name:'监测点A',lat:34.75,lon:113.6,n:0},{name:'缺坐标',lat:null,lon:113.5,n:8}],visualization:{kind:'map',latKey:'lat',lonKey:'lon',labelKey:'name',valueKey:'n',unit:'条'}}}/>);
  expect(html).toContain('data-visualization="map"');expect(html).toContain('监测点A：0 条');expect(html).toContain('<table');expect(html).not.toContain('缺坐标：8 条');
 });

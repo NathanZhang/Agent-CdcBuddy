@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import type { QueryVisualization } from '@/contracts/query-visualization';
-import border from '@/lib/geo/henan-province-border.json';
+import { QueryResultMap } from './QueryResultMap';
+import { mapPoints } from '@/lib/geo/result-map';
 import { fieldLabel } from '@/features/workbench/result-presentation';
 
 type Row = Record<string, unknown>;
@@ -25,24 +26,9 @@ export function QueryResultVisualization({ rows, spec }: { rows: Row[]; spec?: Q
   const title = spec.kind === 'map' ? '监测空间分布' : spec.kind === 'line' ? '时间趋势' : '分组对比';
   let graphic: React.ReactNode;
   if (spec.kind === 'map') {
-    const points = rows.filter(r => finite(r[spec.latKey]) && finite(r[spec.lonKey]) && Math.abs(r[spec.latKey] as number) <= 90 && Math.abs(r[spec.lonKey] as number) <= 180 && finite(r[spec.valueKey]));
+    const points = mapPoints(rows, spec);
     if (!points.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的坐标与数值，请查看明细。</p>;
-    const rings = border.features.flatMap(f => f.geometry.coordinates.flat()) as number[][][];
-    const all = [...rings.flat(), ...points.map(r => [r[spec.lonKey] as number, r[spec.latKey] as number])];
-    const minLon = Math.min(...all.map(p => p[0])), maxLon = Math.max(...all.map(p => p[0]));
-    const minLat = Math.min(...all.map(p => p[1])), maxLat = Math.max(...all.map(p => p[1]));
-    const lonScale = Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
-    const scale = Math.min(690 / ((maxLon - minLon) * lonScale || 1), 310 / (maxLat - minLat || 1));
-    const x = (lon: number) => 380 + (lon - (minLon + maxLon) / 2) * lonScale * scale;
-    const y = (lat: number) => 175 - (lat - (minLat + maxLat) / 2) * scale;
-    const maxValue = Math.max(1, ...points.map(r => Math.abs(r[spec.valueKey] as number)));
-    graphic = <>
-      {rings.map((ring, i) => <path key={i} d={ring.map((p, j) => `${j ? 'L' : 'M'}${x(p[0])},${y(p[1])}`).join(' ') + 'Z'} fill="currentColor" fillOpacity="0.07" stroke="currentColor" strokeOpacity="0.35" strokeWidth="0.8" />)}
-      {points.map((r, i) => <circle key={i} cx={x(r[spec.lonKey] as number)} cy={y(r[spec.latKey] as number)} r={3 + 7 * Math.sqrt(Math.abs(r[spec.valueKey] as number) / maxValue)} fill="#0ea5e9" fillOpacity="0.65" stroke="#0369a1" tabIndex={0}>
-        <title>{`${String(r[spec.labelKey] ?? '')}：${number(r[spec.valueKey] as number)} ${spec.unit}；经度 ${r[spec.lonKey]}，纬度 ${r[spec.latKey]}`}</title>
-      </circle>)}
-      <text x="24" y="354" fill="currentColor" fontSize="12">{`河南省边界 · ${points.length} 个有效点位 · 圆点大小表示 ${spec.unit}`}</text>
-    </>;
+    return <QueryResultMap points={points} unit={spec.unit}/>;
   } else {
     const valid = rows.filter(r => finite(r[spec.yKey]));
     if (!valid.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的数值，请查看明细。</p>;
