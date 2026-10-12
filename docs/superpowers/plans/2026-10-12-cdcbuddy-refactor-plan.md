@@ -286,11 +286,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`DEPLOYMENT_TIER`独立于NODE_ENV；dataset manifest逐域配置；liveness/readiness分别返回进程与依赖状态。demo允许显式Mock初始化，pilot禁止启动时自动造数据；混合来源部署对Mock域继续标未真实验收。
 
-- [ ] 测试：demo可显式创建Mock库且标签正确；pilot缺源库不造数并readiness失败；相同镜像不同自定义端口仍四域正确；同业务库单次迁移；无RBAC或迁移失败不可声明pilot ready；DB备份恢复后的会话/Job/工单一致。
-- [ ] 运行 `npm run test:integration -- deployment`，确认旧启动/领域配置缺陷可检出。
-- [ ] 实现版本迁移Job、运行配置、分级初始化、健康检查与CI；锁定Python可复现依赖，保证安装命令不依赖开发机路径。
-- [ ] 在隔离环境完整执行lint、TS、契约/集成、Python基准、兼容回归、Next生产build、四域容器与恢复演练；增加真实LLM端到端运行并检查Skills执行/数据库证据/AG-UI实际渲染，不可只用LLM stub签收主线。实际输出逐项归档，未运行项不得标passed。
-- [ ] 提交：`build: enforce reproducible deployment and refactor quality gates`。
+- [x] 测试：demo可显式创建Mock库且标签正确；pilot缺源库不造数并readiness失败；相同镜像不同自定义端口仍四域正确；同业务库单次迁移；无RBAC或迁移失败不可声明pilot ready；DB备份恢复后的会话/Job/工单一致。
+- [x] 运行 `npm run test:integration -- deployment`，确认旧启动/领域配置缺陷可检出。
+- [x] 实现版本迁移Job、运行配置、分级初始化、健康检查与CI；锁定Python可复现依赖，保证安装命令不依赖开发机路径。
+- [x] 在隔离环境完整执行lint、TS、契约/集成、Python基准、兼容回归、Next生产build、四域容器与恢复演练；增加真实LLM端到端运行并检查Skills执行/数据库证据/AG-UI实际渲染，不可只用LLM stub签收主线。实际输出逐项归档，未运行项不得标passed。
+- [x] 提交：`build: enforce reproducible deployment and refactor quality gates`。
 
 ## 七、验收口径和工作边界
 
