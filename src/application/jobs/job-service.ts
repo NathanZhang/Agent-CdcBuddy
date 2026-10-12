@@ -1,11 +1,11 @@
 import {assertPrincipal} from '@/infrastructure/auth/authorization';
 import {getDomainRepository} from '@/infrastructure/db/domain-repository';
-import {randomUUID} from 'node:crypto';import {readFileSync} from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+import {randomUUID} from 'node:crypto';import path from 'node:path';import {spawnSync} from 'node:child_process';
 import type {ExecutionContext} from '@/contracts/execution-context';import type {AgentInteraction} from '@/contracts/agent-interaction';
 import {withBusinessDb,getRecordedTurn} from '@/infrastructure/db/business-store';
 export interface JobRule{field:string;threshold:number;clearBelow:number;minRetestHours:number;unit:string;}
 export interface JobInput{idempotencyKey:string;interaction:AgentInteraction;city?:string;district?:string;rule:JobRule;}
-export function ensureJobs(){withBusinessDb(db=>{db.pragma('busy_timeout = 5000');db.exec(readFileSync(path.join(process.cwd(),'migrations/sqlite/001_jobs_and_workflow.sql'),'utf8'));});}
+export function ensureJobs(){withBusinessDb(db=>db.pragma("busy_timeout = 5000"));}
 export function graphBarrier(job:any,decision?:string){const file=path.resolve(process.env.APP_BUSINESS_DB_PATH ?? 'app_business.db')+'.checkpoints';const run=job.analysis_run_id;const child=spawnSync(process.env.ANALYTICS_PYTHON ?? path.join(process.cwd(),'.venv/bin/python'),[path.join(process.cwd(),'analytics_engine/jobs/worker.py'),JSON.stringify({path:file,run_id:run,...(decision?{decision}:{input_state:{jobId:job.job_id,runId:run}})})],{encoding:'utf8',timeout:10000,maxBuffer:65536});if(child.status!==0)throw new Error('Checkpoint barrier failed: '+(child.stderr||child.error?.message||'unknown'));return JSON.parse(child.stdout).status;}
 export function submitJob(input:JobInput,ctx:ExecutionContext){assertPrincipal(ctx);ensureJobs();const r=input.rule;if(!input.idempotencyKey?.trim()||input.idempotencyKey.length>200||!r||![r.threshold,r.clearBelow,r.minRetestHours].every(Number.isFinite)||r.clearBelow>r.threshold||r.minRetestHours<1||r.minRetestHours>720||!r.field||!r.unit||JSON.stringify(input).length>32000)throw new Error('Invalid job/rule');
  const city=ctx.principal.jurisdiction.city??input.city;const district=ctx.principal.jurisdiction.district??input.district;if(input.city&&ctx.principal.jurisdiction.city&&input.city!==ctx.principal.jurisdiction.city||input.district&&ctx.principal.jurisdiction.district&&input.district!==ctx.principal.jurisdiction.district)throw new Error('Job jurisdiction denied');

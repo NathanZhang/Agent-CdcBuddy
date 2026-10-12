@@ -1,0 +1,64 @@
+[
+  {
+    "runId": "46fd2bab-509e-4ae7-9101-dc4d1da0235b",
+    "domain": "vector",
+    "status": "FAILED",
+    "replyText": "大模型答复未满足 JSON 格式",
+    "skills": [
+      {
+        "id": "skill_vector_backtest",
+        "status": "FAILED",
+        "method": "rolling-past-origin-capture-backtest-v1"
+      }
+    ],
+    "error": {
+      "code": "INVALID_LLM_RESPONSE",
+      "message": "大模型答复未满足 JSON 格式"
+    }
+  },
+  {
+    "runId": "325c33de-7588-4d3b-976b-3c8fb26940a4",
+    "domain": "foodborne",
+    "status": "FAILED",
+    "replyText": "大模型答复未满足 JSON 格式",
+    "skills": [
+      {
+        "id": "skill_foodborne_case_table",
+        "status": "SUCCESS",
+        "method": "bounded-domain-query-v1"
+      }
+    ],
+    "error": {
+      "code": "INVALID_LLM_RESPONSE",
+      "message": "大模型答复未满足 JSON 格式"
+    }
+  },
+  {
+    "runId": "71a8ce4a-6313-4b3c-bc44-020b2a901f97",
+    "domain": "chronic",
+    "status": "SUCCESS",
+    "replyText": "已调用 skill_mortality_cluster_rare，基于郑州市 Mock 监测数据完成统计与区县中心 DBSCAN（epsKm=5、minSamples=2）。数据快照登记日期为 2026-10-12，结果中数据截至 2026-08-19；总死亡记录 509 条。\n\n实际死亡月计数如下：\n2024-01：16；2024-02：15；2024-03：20；2024-04：19；2024-05：15；2024-06：14；2024-07：16；2024-08：10；2024-09：9；2024-10：15；2024-11：13；2024-12：21；2025-01：19；2025-02：11；2025-03：13；2025-04：15；2025-05：18；2025-06：8；2025-07：17；2025-08：26；2025-09：21；2025-10：12；2025-11：21；2025-12：19；2026-01：20；2026-02：14；2026-03：15；2026-04：24；2026-05：15；2026-06：15；2026-07：15；2026-08：8。\n\nDBSCAN 区县中心聚类结果：\n- 簇 0：中原区（40 例）、新密市（47 例）\n- 簇 1：二七区（42 例）、巩义市（44 例）\n- 噪声点（clusterId=-1）：中牟县（59 例）、惠济区（48 例）、新郑市（44 例）、登封市（42 例）、管城回族区（41 例）、荥阳市（52 例）、金水区（50 例）\n\n说明：以上数据为 Mock 输入，仅反映当前快照中的统计与空间聚类结果；区县中心不代表个体死亡地点，簇编号仅表示 DBSCAN 空间分组，不代表死亡风险、因果关系或异常程度。本次未生成 ARIMA 预测，也未计算年死亡率或人口标准化死亡率。另发现 1 个需人工复核的罕见病候选信号：金水区 ICD-10 A81.0，3 例，时间范围 2026-08-15 至 2026-08-19，状态为 REVIEW_REQUIRED，不能直接判定为真实异常。",
+    "skills": [
+      {
+        "id": "skill_mortality_cluster_rare",
+        "status": "SUCCESS",
+        "method": "district-centroid-dbscan-v1"
+      }
+    ],
+    "error": null
+  },
+  {
+    "runId": "913650ab-4829-4a6f-97f1-41c73cc8be22",
+    "domain": "env",
+    "status": "SUCCESS",
+    "replyText": "已调用 skill_sewage_pathogen_trace，对郑州市诺如病毒污水浓度与记录门诊病例按 maxLag=14 做日历滞后相关分析。结果状态为 SUCCESS，方法为 calendar-aligned-pearson-v1，样本量 660，数据快照 asOf=2026-08-31，来源为 Mock 数据。\n\n主要结果：共 11 个污水处理厂，每个厂有 60 个观测日期。各厂最优滞后窗口均为 lag=0 天，Pearson 相关系数约 0.9283～0.9515，p 值均远小于 0.001；其中荥阳市厂最高，约 0.9515。lag=7 天相关系数约 0.4250～0.7145，lag=14 天相关系数约 0.3792～0.6352，均达到统计显著。但 lag=1～6 与 lag=8～13 的配对日期为 0，因此当前结果不能完整评估 0～14 天全部日历滞后曲线。\n\n限制说明：1）数据为 Mock 输入，不代表真实污水监测或门诊病例；2）方法为探索性日历对齐 Pearson 相关，未做多重滞后选择校正；3）医院病例关联未经验证；4）缺失日期未插补；5）当前无管网拓扑，因此不能宣称已锁定源头，只能作为相关性探索，不构成因果或溯源结论。未执行导出。",
+    "skills": [
+      {
+        "id": "skill_sewage_pathogen_trace",
+        "status": "SUCCESS",
+        "method": "calendar-aligned-pearson-v1"
+      }
+    ],
+    "error": null
+  }
+]

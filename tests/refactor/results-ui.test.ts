@@ -23,3 +23,5 @@ it('empty time series never renders a default goodness of fit', () => {
   expect(html).toContain('无数据');
   expect(html).not.toContain('0.88');
 });
+
+it('does not relabel non-vector generic values as vector capture measurements',async()=>{const {AnalyticsResultCard}=await import('@/components/ag-ui/AnalyticsResultCard');const html=render(React.createElement(AnalyticsResultCard,{data:{title:'cgMLST',method:'allele-distance-single-link-v1',data:{nodes:[{value:'ST3'}]}}}));expect(html).toContain('ST3');expect(html).not.toContain('捕获量 / 记录');});

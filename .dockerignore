@@ -18,3 +18,7 @@ tests
 docs
 plan
 npm-debug.log*
+
+.next*
+.superpowers
+*.checkpoints*

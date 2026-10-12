@@ -28,9 +28,7 @@
     "test:baseline": "./.venv/bin/python tests/run_isolated_legacy.py"
   },
   "dependencies": {
-    "@copilotkit/react-core": "^1.4.0",
-    "@copilotkit/react-ui": "^1.4.0",
-    "@copilotkit/runtime": "^1.4.0",
+    "@ag-ui/core": "0.0.57",
     "ajv": "8.20.0",
     "better-sqlite3": "^11.8.1",
     "clsx": "^2.1.1",
@@ -44,8 +42,7 @@
     "node-sql-parser": "5.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1",
-    "@ag-ui/core": "0.0.57"
+    "tailwind-merge": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

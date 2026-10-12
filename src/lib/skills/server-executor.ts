@@ -1,9 +1,10 @@
+import {getDeploymentTier} from '@/application/config/deployment-tier';
 import { randomUUID } from 'node:crypto';
 import { executeSkill } from '@/application/skills/skill-service';
 import { getServerDomain } from '@/application/config/runtime-profile';
-import type { ExecutionContext,DeploymentTier } from '@/contracts/execution-context';
+import type { ExecutionContext } from '@/contracts/execution-context';
 export function createDevelopmentContext(domain=getServerDomain()):ExecutionContext{
-  const deploymentTier=(process.env.DEPLOYMENT_TIER ?? 'local') as DeploymentTier;
+  const deploymentTier=getDeploymentTier();
   if(!['local','demo','pilot'].includes(deploymentTier))throw new Error('Invalid deployment tier');
   if(deploymentTier==='pilot')throw new Error('Authenticated server principal required');
   return {runId:randomUUID(),domain,deploymentTier,principal:{userId:'local-development',role:'PROVINCIAL_ADMIN',organizationId:'local-development',domainGrants:[domain],jurisdiction:{},mode:'dev',permissions:{manageIdentity:true,professionalReview:true}}};

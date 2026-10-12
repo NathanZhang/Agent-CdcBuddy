@@ -209,6 +209,9 @@ start_single_agent() {
     export NEXT_PUBLIC_AGENT_DOMAIN="${domain}"
     export AGENT_DOMAIN="${domain}"
     export PORT="${port}"
+    export DEPLOYMENT_TIER="${DEPLOYMENT_TIER:-local}"
+    node scripts/migrate.cjs
+    if [ "${mode}" = "dev" ]; then export NEXT_BUILD_DIR=".next_${domain}"; else unset NEXT_BUILD_DIR; fi
 
     echo "=================================================================="
     echo -e "${GREEN} 🚀 正在启动 【${name}】 (${domain})...${NC}"
@@ -225,7 +228,7 @@ start_single_agent() {
 
     if [ "${mode}" = "prod" ]; then
         log_step "执行生产环境打包编译 (Next.js build - distDir: .next_${domain})..."
-        "${NODE_BIN}" "${NEXT_CLI}" build >> "${log_file}" 2>&1 || true
+        "${NODE_BIN}" "${NEXT_CLI}" build >> "${log_file}" 2>&1
         CMD="export NEXT_PUBLIC_AGENT_DOMAIN='${domain}' AGENT_DOMAIN='${domain}' PORT='${port}'; exec '${NODE_BIN}' '${NEXT_CLI}' start -p '${port}'"
     else
         CMD="export NEXT_PUBLIC_AGENT_DOMAIN='${domain}' AGENT_DOMAIN='${domain}' PORT='${port}'; exec '${NODE_BIN}' '${NEXT_CLI}' dev -p '${port}'"

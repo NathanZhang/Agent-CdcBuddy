@@ -47,3 +47,5 @@ logs/
 /.venv
 *.db-wal
 *.db-shm
+
+*.checkpoints*

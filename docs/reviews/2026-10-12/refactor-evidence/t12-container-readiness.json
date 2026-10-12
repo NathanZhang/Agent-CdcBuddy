@@ -1,0 +1,130 @@
+[
+  {
+    "domain": "vector",
+    "port": 9767,
+    "readiness": {
+      "ready": true,
+      "domain": "vector",
+      "tier": "demo",
+      "source": {
+        "id": "vector-monitoring",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "observed-method-specific-evidence",
+      "checks": {
+        "configuration": true,
+        "dataset": true,
+        "datasetIntegrity": true,
+        "migrations": true,
+        "llm": true
+      }
+    },
+    "profileDatasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ]
+  },
+  {
+    "domain": "foodborne",
+    "port": 9768,
+    "readiness": {
+      "ready": true,
+      "domain": "foodborne",
+      "tier": "demo",
+      "source": {
+        "id": "foodborne-monitoring",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "mock-engineering-only",
+      "checks": {
+        "configuration": true,
+        "dataset": true,
+        "datasetIntegrity": true,
+        "migrations": true,
+        "llm": true
+      }
+    },
+    "profileDatasets": [
+      {
+        "id": "foodborne-monitoring",
+        "domain": "foodborne",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ]
+  },
+  {
+    "domain": "env",
+    "port": 9769,
+    "readiness": {
+      "ready": true,
+      "domain": "env",
+      "tier": "demo",
+      "source": {
+        "id": "env-monitoring",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "mock-engineering-only",
+      "checks": {
+        "configuration": true,
+        "dataset": true,
+        "datasetIntegrity": true,
+        "migrations": true,
+        "llm": true
+      }
+    },
+    "profileDatasets": [
+      {
+        "id": "env-monitoring",
+        "domain": "env",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ]
+  },
+  {
+    "domain": "chronic",
+    "port": 9770,
+    "readiness": {
+      "ready": true,
+      "domain": "chronic",
+      "tier": "demo",
+      "source": {
+        "id": "chronic-monitoring",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12"
+      },
+      "dataEffectStatus": "mock-engineering-only",
+      "checks": {
+        "configuration": true,
+        "dataset": true,
+        "datasetIntegrity": true,
+        "migrations": true,
+        "llm": true
+      }
+    },
+    "profileDatasets": [
+      {
+        "id": "chronic-monitoring",
+        "domain": "chronic",
+        "origin": "mock",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ]
+  }
+]

@@ -1,0 +1,3759 @@
+[
+  {
+    "domain": "vector",
+    "runId": "97789dbb-c3e5-4982-9d07-9dc8668b846f",
+    "result": {
+      "runId": "97789dbb-c3e5-4982-9d07-9dc8668b846f",
+      "interactionId": "2f7bf2d7-e52c-483a-925a-1018e80f8408",
+      "status": "SUCCESS",
+      "replyText": "已按严格参数（city=郑州市、methodName=诱蚊灯法、asOf=2025-11-11、horizon=1、model=ar）重新执行 skill_vector_backtest，结果如下：\n\n【实际回测误差】\n- 状态：SUCCESS，方法 rolling-past-origin-capture-backtest-v1\n- 数据快照：vector-monitoring，登记日期 2026-10-12\n- 回测窗口：2020-05 至 2025-10，总样本 1287 条\n- 滚动评估对：8 对（2024-07~2024-10、2025-07~2025-10）\n- MAE = 3.01 captures/record\n- RMSE = 3.97 captures/record\n- R² = 0.304\n- sMAPE = 32.22%（未达 10% 标准）\n- 基线（前一年同月或最近观测）MAE = 4.03，AR 模型 MAE 低约 1.02 captures/record\n\n【主要限制】\n1. 滚动评估仅 8 对，样本对数偏少，指标对个别月份波动敏感，统计稳健性有限。\n2. 单位为 captures/record（每条记录捕获量），非标准化密度，不能直接解释为标准密度预测误差。\n3. 不同采样方法的误差未合并（method-specific-errors-not-pooled），结果仅适用于诱蚊灯法。\n4. 捕获量预测不验证标准密度要求（capture-forecast-does-not-validate-standard-density-requirement），不能替代密度达标判断。\n5. sMAPE 32.22% 远超 10% 阈值，R² 仅 0.304，说明 AR 模型对该序列的解释力中等偏弱，预测精度有限。",
+      "agui": [
+        {
+          "version": "1",
+          "runId": "97789dbb-c3e5-4982-9d07-9dc8668b846f",
+          "component": "ANALYTICS_RESULT",
+          "result": {
+            "schemaVersion": "1",
+            "runId": "97789dbb-c3e5-4982-9d07-9dc8668b846f",
+            "domain": "vector",
+            "status": "SUCCESS",
+            "method": "rolling-past-origin-capture-backtest-v1",
+            "datasets": [
+              {
+                "id": "vector-monitoring",
+                "domain": "vector",
+                "origin": "observed",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "病媒捕获量滚动回测与季节基线对照",
+              "data": {
+                "method": "rolling-past-origin-capture-backtest-v1",
+                "status": "SUCCESS",
+                "model": "ar",
+                "datasetId": "vector-monitoring",
+                "asOf": "2025-11-11",
+                "horizon": 1,
+                "evaluatedPairs": 8,
+                "groups": [
+                  {
+                    "city": "郑州市",
+                    "methodName": "诱蚊灯法",
+                    "unit": "captures/record",
+                    "asOf": "2025-11-11",
+                    "sampleCount": 1287,
+                    "window": {
+                      "start": "2020-05",
+                      "end": "2025-10"
+                    },
+                    "evaluatedPairs": 8,
+                    "mae": 3.0123598167177,
+                    "rmse": 3.9678933990077954,
+                    "r2": 0.30380102902371453,
+                    "smapePercent": 32.221582624761105,
+                    "baselineMae": 4.027765710045317,
+                    "meetsTenPercentSmapeCriterion": false,
+                    "pairs": [
+                      {
+                        "origin": "2024-06",
+                        "target": "2024-07",
+                        "actual": 12.305555555555555,
+                        "predicted": 17.482462893020333
+                      },
+                      {
+                        "origin": "2024-07",
+                        "target": "2024-08",
+                        "actual": 17.102040816326532,
+                        "predicted": 9.942054748137497
+                      },
+                      {
+                        "origin": "2024-08",
+                        "target": "2024-09",
+                        "actual": 9.853658536585366,
+                        "predicted": 8.694939477717963
+                      },
+                      {
+                        "origin": "2024-09",
+                        "target": "2024-10",
+                        "actual": 1.9333333333333333,
+                        "predicted": 7.881696330207907
+                      },
+                      {
+                        "origin": "2025-06",
+                        "target": "2025-07",
+                        "actual": 14.71830985915493,
+                        "predicted": 12.86516930941774
+                      },
+                      {
+                        "origin": "2025-07",
+                        "target": "2025-08",
+                        "actual": 13.686274509803921,
+                        "predicted": 10.906416133441988
+                      },
+                      {
+                        "origin": "2025-08",
+                        "target": "2025-09",
+                        "actual": 8.5,
+                        "predicted": 8.485921885538438
+                      },
+                      {
+                        "origin": "2025-09",
+                        "target": "2025-10",
+                        "actual": 5.172413793103448,
+                        "predicted": 5.180239824888576
+                      }
+                    ]
+                  }
+                ],
+                "baseline": {
+                  "郑州市|诱蚊灯法": {
+                    "method": "previous-year-same-month-or-last-observation",
+                    "mae": 4.027765710045317
+                  }
+                },
+                "metrics": {
+                  "mae": {
+                    "value": 3.0123598167177,
+                    "evaluationKind": "real-backtest",
+                    "datasetIds": [
+                      "vector-monitoring"
+                    ],
+                    "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+                  }
+                },
+                "qualityFlags": [
+                  "capture-count-not-standard-density",
+                  "method-specific-errors-not-pooled",
+                  "capture-forecast-does-not-validate-standard-density-requirement"
+                ]
+              }
+            },
+            "metrics": {
+              "mae": {
+                "value": 3.0123598167177,
+                "evaluationKind": "real-backtest",
+                "datasetIds": [
+                  "vector-monitoring"
+                ],
+                "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+              }
+            },
+            "qualityFlags": [
+              "capture-count-not-standard-density",
+              "method-specific-errors-not-pooled",
+              "capture-forecast-does-not-validate-standard-density-requirement"
+            ]
+          }
+        }
+      ],
+      "skillRuns": [
+        {
+          "callId": "call_01204109197345a191af8dfd",
+          "skillId": "skill_vector_backtest",
+          "skillName": "病媒捕获量滚动回测与季节基线对照",
+          "args": {
+            "city": "郑州市",
+            "methodName": "诱蚊灯法",
+            "asOf": "2025-11-11",
+            "horizon": 1,
+            "model": "ar"
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "97789dbb-c3e5-4982-9d07-9dc8668b846f",
+            "domain": "vector",
+            "status": "SUCCESS",
+            "method": "rolling-past-origin-capture-backtest-v1",
+            "datasets": [
+              {
+                "id": "vector-monitoring",
+                "domain": "vector",
+                "origin": "observed",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "病媒捕获量滚动回测与季节基线对照",
+              "data": {
+                "method": "rolling-past-origin-capture-backtest-v1",
+                "status": "SUCCESS",
+                "model": "ar",
+                "datasetId": "vector-monitoring",
+                "asOf": "2025-11-11",
+                "horizon": 1,
+                "evaluatedPairs": 8,
+                "groups": [
+                  {
+                    "city": "郑州市",
+                    "methodName": "诱蚊灯法",
+                    "unit": "captures/record",
+                    "asOf": "2025-11-11",
+                    "sampleCount": 1287,
+                    "window": {
+                      "start": "2020-05",
+                      "end": "2025-10"
+                    },
+                    "evaluatedPairs": 8,
+                    "mae": 3.0123598167177,
+                    "rmse": 3.9678933990077954,
+                    "r2": 0.30380102902371453,
+                    "smapePercent": 32.221582624761105,
+                    "baselineMae": 4.027765710045317,
+                    "meetsTenPercentSmapeCriterion": false,
+                    "pairs": [
+                      {
+                        "origin": "2024-06",
+                        "target": "2024-07",
+                        "actual": 12.305555555555555,
+                        "predicted": 17.482462893020333
+                      },
+                      {
+                        "origin": "2024-07",
+                        "target": "2024-08",
+                        "actual": 17.102040816326532,
+                        "predicted": 9.942054748137497
+                      },
+                      {
+                        "origin": "2024-08",
+                        "target": "2024-09",
+                        "actual": 9.853658536585366,
+                        "predicted": 8.694939477717963
+                      },
+                      {
+                        "origin": "2024-09",
+                        "target": "2024-10",
+                        "actual": 1.9333333333333333,
+                        "predicted": 7.881696330207907
+                      },
+                      {
+                        "origin": "2025-06",
+                        "target": "2025-07",
+                        "actual": 14.71830985915493,
+                        "predicted": 12.86516930941774
+                      },
+                      {
+                        "origin": "2025-07",
+                        "target": "2025-08",
+                        "actual": 13.686274509803921,
+                        "predicted": 10.906416133441988
+                      },
+                      {
+                        "origin": "2025-08",
+                        "target": "2025-09",
+                        "actual": 8.5,
+                        "predicted": 8.485921885538438
+                      },
+                      {
+                        "origin": "2025-09",
+                        "target": "2025-10",
+                        "actual": 5.172413793103448,
+                        "predicted": 5.180239824888576
+                      }
+                    ]
+                  }
+                ],
+                "baseline": {
+                  "郑州市|诱蚊灯法": {
+                    "method": "previous-year-same-month-or-last-observation",
+                    "mae": 4.027765710045317
+                  }
+                },
+                "metrics": {
+                  "mae": {
+                    "value": 3.0123598167177,
+                    "evaluationKind": "real-backtest",
+                    "datasetIds": [
+                      "vector-monitoring"
+                    ],
+                    "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+                  }
+                },
+                "qualityFlags": [
+                  "capture-count-not-standard-density",
+                  "method-specific-errors-not-pooled",
+                  "capture-forecast-does-not-validate-standard-density-requirement"
+                ]
+              }
+            },
+            "metrics": {
+              "mae": {
+                "value": 3.0123598167177,
+                "evaluationKind": "real-backtest",
+                "datasetIds": [
+                  "vector-monitoring"
+                ],
+                "definition": "滚动截止点后实际观测误差；不同地市/采样方法分别报告，根值仅单组时提供"
+              }
+            },
+            "qualityFlags": [
+              "capture-count-not-standard-density",
+              "method-specific-errors-not-pooled",
+              "capture-forecast-does-not-validate-standard-density-requirement"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "domain": "foodborne",
+    "runId": "23f79ba4-4cac-4034-a340-a77a8f29783b",
+    "result": {
+      "runId": "23f79ba4-4cac-4034-a340-a77a8f29783b",
+      "interactionId": "388e9cd8-9301-4808-b46f-251252270518",
+      "status": "SUCCESS",
+      "replyText": "已按请求调用 skill_molecular_trace（clusterId=OUTBREAK-202608-01，threshold=5）。工具状态为 SUCCESS，数据来源为 Mock 监测快照，登记日期为 2026-10-12。实际分析 8 株副溶血性弧菌 ST3 分离株，均位于郑州市，形成 1 个 cgMLST 单链接候选簇 CLONE-GRP-01。工具报告该候选簇组级最大内部距离为 4；列出的直接连接中，ISO-2026-0007 与 ISO-2026-0001、ISO-2026-0006、ISO-2026-0008 的距离为 0（相似度 100%），与 ISO-2026-0004 的距离为 1（相似度 96.7%），与 ISO-2026-0003、ISO-2026-0002、ISO-2026-0005 的距离为 2（相似度 93.3%）。上述直接距离均低于阈值 5，因此被纳入单链接候选簇。该结果仅为分子分型候选关联，工具质量标记提示单链接结果不代表暴发确诊，也不能据此认定已确诊暴发源头，需人工复核。",
+      "agui": [
+        {
+          "version": "1",
+          "runId": "23f79ba4-4cac-4034-a340-a77a8f29783b",
+          "component": "ANALYTICS_RESULT",
+          "result": {
+            "schemaVersion": "1",
+            "runId": "23f79ba4-4cac-4034-a340-a77a8f29783b",
+            "domain": "foodborne",
+            "status": "SUCCESS",
+            "method": "allele-distance-single-link-v1",
+            "datasets": [
+              {
+                "id": "foodborne-monitoring",
+                "domain": "foodborne",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "cgMLST 距离与单链接候选簇",
+              "data": {
+                "success": true,
+                "analyzedIsolatesCount": 8,
+                "clusterThreshold": 5,
+                "homologousGroupsCount": 1,
+                "homologousGroups": [
+                  {
+                    "groupId": "CLONE-GRP-01",
+                    "pathogenName": "副溶血性弧菌",
+                    "stType": "ST3",
+                    "isolateCount": 8,
+                    "coverageCities": [
+                      "郑州市"
+                    ],
+                    "maxInternalDistance": 4,
+                    "conclusion": "阈值边形成的单链接候选簇；内部最大距离可能大于阈值，需人工复核，不代表传播源头或暴发确诊。"
+                  }
+                ],
+                "networkGraph": {
+                  "nodes": [
+                    {
+                      "id": "ISO-2026-0004",
+                      "name": "ISO-2026-0004\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-004",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-4",
+                        "date": "2026-08-20"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0007",
+                      "name": "ISO-2026-0007\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-007",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-7",
+                        "date": "2026-08-20"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0001",
+                      "name": "ISO-2026-0001\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-001",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-1",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0003",
+                      "name": "ISO-2026-0003\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-003",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-3",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0006",
+                      "name": "ISO-2026-0006\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-006",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-6",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0008",
+                      "name": "ISO-2026-0008\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-008",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-8",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0002",
+                      "name": "ISO-2026-0002\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-002",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-2",
+                        "date": "2026-08-18"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0005",
+                      "name": "ISO-2026-0005\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-005",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-5",
+                        "date": "2026-08-18"
+                      }
+                    }
+                  ],
+                  "links": [
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0001",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0006",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0008",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0004",
+                      "target": "ISO-2026-0007",
+                      "distance": 1,
+                      "similarityRate": 96.7,
+                      "isHomologous": true,
+                      "label": "Δ=1位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0003",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0002",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0005",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    }
+                  ]
+                },
+                "status": "SUCCESS",
+                "method": "allele-distance-single-link-v1",
+                "qualityFlags": [
+                  "single-link-not-outbreak-confirmation",
+                  "typing-schema-unvalidated",
+                  "sample-limited"
+                ],
+                "summary": "实际分析 8 株，发现 1 个单链接候选簇。"
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "single-link-not-outbreak-confirmation",
+              "typing-schema-unvalidated",
+              "sample-limited"
+            ]
+          }
+        }
+      ],
+      "skillRuns": [
+        {
+          "callId": "call_56c1c9c67f5b4eb493e1694d",
+          "skillId": "skill_molecular_trace",
+          "skillName": "cgMLST 距离与单链接候选簇",
+          "args": {
+            "clusterId": "OUTBREAK-202608-01",
+            "threshold": 5
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "23f79ba4-4cac-4034-a340-a77a8f29783b",
+            "domain": "foodborne",
+            "status": "SUCCESS",
+            "method": "allele-distance-single-link-v1",
+            "datasets": [
+              {
+                "id": "foodborne-monitoring",
+                "domain": "foodborne",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "cgMLST 距离与单链接候选簇",
+              "data": {
+                "success": true,
+                "analyzedIsolatesCount": 8,
+                "clusterThreshold": 5,
+                "homologousGroupsCount": 1,
+                "homologousGroups": [
+                  {
+                    "groupId": "CLONE-GRP-01",
+                    "pathogenName": "副溶血性弧菌",
+                    "stType": "ST3",
+                    "isolateCount": 8,
+                    "coverageCities": [
+                      "郑州市"
+                    ],
+                    "maxInternalDistance": 4,
+                    "conclusion": "阈值边形成的单链接候选簇；内部最大距离可能大于阈值，需人工复核，不代表传播源头或暴发确诊。"
+                  }
+                ],
+                "networkGraph": {
+                  "nodes": [
+                    {
+                      "id": "ISO-2026-0004",
+                      "name": "ISO-2026-0004\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-004",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-4",
+                        "date": "2026-08-20"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0007",
+                      "name": "ISO-2026-0007\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-007",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-7",
+                        "date": "2026-08-20"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0001",
+                      "name": "ISO-2026-0001\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-001",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-1",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0003",
+                      "name": "ISO-2026-0003\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-003",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-3",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0006",
+                      "name": "ISO-2026-0006\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-006",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-6",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0008",
+                      "name": "ISO-2026-0008\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-008",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-8",
+                        "date": "2026-08-19"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0002",
+                      "name": "ISO-2026-0002\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-002",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-2",
+                        "date": "2026-08-18"
+                      }
+                    },
+                    {
+                      "id": "ISO-2026-0005",
+                      "name": "ISO-2026-0005\n(郑州市)",
+                      "value": "ST3",
+                      "symbolSize": 36,
+                      "category": "郑州市",
+                      "isOutbreak": true,
+                      "details": {
+                        "caseId": "CASE-OB-8-01-005",
+                        "pathogen": "副溶血性弧菌",
+                        "serotype": "O3:K6",
+                        "source": "病例粪便标本-5",
+                        "date": "2026-08-18"
+                      }
+                    }
+                  ],
+                  "links": [
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0001",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0006",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0008",
+                      "distance": 0,
+                      "similarityRate": 100,
+                      "isHomologous": true,
+                      "label": "Δ=0位点"
+                    },
+                    {
+                      "source": "ISO-2026-0004",
+                      "target": "ISO-2026-0007",
+                      "distance": 1,
+                      "similarityRate": 96.7,
+                      "isHomologous": true,
+                      "label": "Δ=1位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0003",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0002",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    },
+                    {
+                      "source": "ISO-2026-0007",
+                      "target": "ISO-2026-0005",
+                      "distance": 2,
+                      "similarityRate": 93.3,
+                      "isHomologous": true,
+                      "label": "Δ=2位点"
+                    }
+                  ]
+                },
+                "status": "SUCCESS",
+                "method": "allele-distance-single-link-v1",
+                "qualityFlags": [
+                  "single-link-not-outbreak-confirmation",
+                  "typing-schema-unvalidated",
+                  "sample-limited"
+                ],
+                "summary": "实际分析 8 株，发现 1 个单链接候选簇。"
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "single-link-not-outbreak-confirmation",
+              "typing-schema-unvalidated",
+              "sample-limited"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "domain": "env",
+    "runId": "e04b2d5f-3579-4c09-aab9-68817f8dda8c",
+    "result": {
+      "runId": "e04b2d5f-3579-4c09-aab9-68817f8dda8c",
+      "interactionId": "06180b95-9e6e-45bf-89ad-ffa2e33adf20",
+      "status": "SUCCESS",
+      "replyText": "已调用 skill_sewage_pathogen_trace，对郑州市诺如病毒污水浓度与记录门诊病例在 maxLag=14 范围内进行了日历对齐 Pearson 相关分析。结果基于 Mock 数据快照，截至 2026-08-31，共 660 条分析样本，覆盖 11 个污水处理厂，每个厂 60 个观测日期。各厂最优滞后窗口均为 0 天，相关系数约 0.928 至 0.952，p 值均远小于 0.001；7 天滞后相关约 0.425 至 0.714；14 天滞后相关约 0.379 至 0.635。但 1 至 6 天、8 至 13 天滞后窗口无配对样本，因此不能解释为完整 0 至 14 天连续滞后曲线。由于缺少管网拓扑，反向溯源来源为空，不能宣称已锁定源头；本次结果仅可作为探索性相关信号。方法限制包括：日历对齐 Pearson 相关、探索性滞后选择未做多重比较校正、医院病例关联未验证、缺失日期未插补。未执行导出。",
+      "agui": [
+        {
+          "version": "1",
+          "runId": "e04b2d5f-3579-4c09-aab9-68817f8dda8c",
+          "component": "ANALYTICS_RESULT",
+          "result": {
+            "schemaVersion": "1",
+            "runId": "e04b2d5f-3579-4c09-aab9-68817f8dda8c",
+            "domain": "env",
+            "status": "SUCCESS",
+            "method": "calendar-aligned-pearson-v1",
+            "datasets": [
+              {
+                "id": "env-monitoring",
+                "domain": "env",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "污水日历滞后探索统计",
+              "data": {
+                "status": "SUCCESS",
+                "method": "calendar-aligned-pearson-v1",
+                "sampleCount": 660,
+                "asOf": "2026-08-31",
+                "groups": [
+                  {
+                    "plantId": "STN-SWG-0002",
+                    "plantName": "郑州市金水区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9300548509605917,
+                      "significanceP": 6.733072008828394e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9300548509605917,
+                        "significanceP": 6.733072008828394e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5855139822202444,
+                        "significanceP": 1.1099248591157856e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.4596175602110664,
+                        "significanceP": 0.0002839761119986497
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0005",
+                    "plantName": "郑州市二七区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9368193685943101,
+                      "significanceP": 3.8744854237423227e-28
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9368193685943101,
+                        "significanceP": 3.8744854237423227e-28
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6866374669336475,
+                        "significanceP": 1.927201235038184e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.43823165661761004,
+                        "significanceP": 0.000580395858051847
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0008",
+                    "plantName": "郑州市中原区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9446978304983656,
+                      "significanceP": 9.087153479597738e-30
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9446978304983656,
+                        "significanceP": 9.087153479597738e-30
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.7144854316872765,
+                        "significanceP": 2.0869981454780966e-10
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.60657509108013,
+                        "significanceP": 4.490862503789706e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0011",
+                    "plantName": "郑州市管城回族区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9316844773516181,
+                      "significanceP": 3.476990720652696e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9316844773516181,
+                        "significanceP": 3.476990720652696e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5125160591986219,
+                        "significanceP": 3.326659814899803e-05
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.37922290735992775,
+                        "significanceP": 0.003327750834539684
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0014",
+                    "plantName": "郑州市惠济区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9376400750836418,
+                      "significanceP": 2.682320753169326e-28
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9376400750836418,
+                        "significanceP": 2.682320753169326e-28
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6851248387643122,
+                        "significanceP": 2.15933014871247e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6186029041464778,
+                        "significanceP": 2.2784006031850208e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0017",
+                    "plantName": "郑州市中牟县城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9289860569462504,
+                      "significanceP": 1.0297032215212533e-26
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9289860569462504,
+                        "significanceP": 1.0297032215212533e-26
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5436943257758764,
+                        "significanceP": 8.579085735571981e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.5666208787548315,
+                        "significanceP": 3.542173809664693e-06
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0020",
+                    "plantName": "郑州市巩义市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.928326820384843,
+                      "significanceP": 1.3337729871444197e-26
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.928326820384843,
+                        "significanceP": 1.3337729871444197e-26
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.602994097687892,
+                        "significanceP": 4.325008839576814e-07
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6022611544966686,
+                        "significanceP": 5.689683001238555e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0023",
+                    "plantName": "郑州市新郑市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9337445984926009,
+                      "significanceP": 1.4725171080134007e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9337445984926009,
+                        "significanceP": 1.4725171080134007e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5642929114625828,
+                        "significanceP": 3.2444102128951503e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.5550331319497271,
+                        "significanceP": 6.137535434262617e-06
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0026",
+                    "plantName": "郑州市新密市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.931929058295111,
+                      "significanceP": 3.1442492397587388e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.931929058295111,
+                        "significanceP": 3.1442492397587388e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.42499708993489055,
+                        "significanceP": 0.0007930275591980917
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.47985183139924825,
+                        "significanceP": 0.0001381087813745173
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0029",
+                    "plantName": "郑州市登封市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9342308528008914,
+                      "significanceP": 1.197391223401321e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9342308528008914,
+                        "significanceP": 1.197391223401321e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.46485885606464306,
+                        "significanceP": 0.00020784186465700187
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.538050611760901,
+                        "significanceP": 1.324666769730813e-05
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0032",
+                    "plantName": "郑州市荥阳市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.951529637801647,
+                      "significanceP": 2.1820760636425297e-31
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.951529637801647,
+                        "significanceP": 2.1820760636425297e-31
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6895732293912471,
+                        "significanceP": 1.542468546140377e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6351775595439502,
+                        "significanceP": 8.524140620679703e-08
+                      }
+                    ]
+                  }
+                ],
+                "reverseTracingSources": [],
+                "qualityFlags": [
+                  "exploratory-lag-selection-unadjusted-p",
+                  "hospital-linkage-unvalidated",
+                  "missing-dates-not-imputed",
+                  "no-pipeline-topology-no-source-lock"
+                ]
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "exploratory-lag-selection-unadjusted-p",
+              "hospital-linkage-unvalidated",
+              "missing-dates-not-imputed",
+              "no-pipeline-topology-no-source-lock"
+            ]
+          }
+        }
+      ],
+      "skillRuns": [
+        {
+          "callId": "call_dddcd123b04a455c951b087a",
+          "skillId": "skill_sewage_pathogen_trace",
+          "skillName": "污水日历滞后探索统计",
+          "args": {
+            "city": "郑州市",
+            "pathogen": "诺如病毒",
+            "maxLag": 14
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "e04b2d5f-3579-4c09-aab9-68817f8dda8c",
+            "domain": "env",
+            "status": "SUCCESS",
+            "method": "calendar-aligned-pearson-v1",
+            "datasets": [
+              {
+                "id": "env-monitoring",
+                "domain": "env",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "污水日历滞后探索统计",
+              "data": {
+                "status": "SUCCESS",
+                "method": "calendar-aligned-pearson-v1",
+                "sampleCount": 660,
+                "asOf": "2026-08-31",
+                "groups": [
+                  {
+                    "plantId": "STN-SWG-0002",
+                    "plantName": "郑州市金水区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9300548509605917,
+                      "significanceP": 6.733072008828394e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9300548509605917,
+                        "significanceP": 6.733072008828394e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5855139822202444,
+                        "significanceP": 1.1099248591157856e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.4596175602110664,
+                        "significanceP": 0.0002839761119986497
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0005",
+                    "plantName": "郑州市二七区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9368193685943101,
+                      "significanceP": 3.8744854237423227e-28
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9368193685943101,
+                        "significanceP": 3.8744854237423227e-28
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6866374669336475,
+                        "significanceP": 1.927201235038184e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.43823165661761004,
+                        "significanceP": 0.000580395858051847
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0008",
+                    "plantName": "郑州市中原区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9446978304983656,
+                      "significanceP": 9.087153479597738e-30
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9446978304983656,
+                        "significanceP": 9.087153479597738e-30
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.7144854316872765,
+                        "significanceP": 2.0869981454780966e-10
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.60657509108013,
+                        "significanceP": 4.490862503789706e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0011",
+                    "plantName": "郑州市管城回族区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9316844773516181,
+                      "significanceP": 3.476990720652696e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9316844773516181,
+                        "significanceP": 3.476990720652696e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5125160591986219,
+                        "significanceP": 3.326659814899803e-05
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.37922290735992775,
+                        "significanceP": 0.003327750834539684
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0014",
+                    "plantName": "郑州市惠济区城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9376400750836418,
+                      "significanceP": 2.682320753169326e-28
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9376400750836418,
+                        "significanceP": 2.682320753169326e-28
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6851248387643122,
+                        "significanceP": 2.15933014871247e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6186029041464778,
+                        "significanceP": 2.2784006031850208e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0017",
+                    "plantName": "郑州市中牟县城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9289860569462504,
+                      "significanceP": 1.0297032215212533e-26
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9289860569462504,
+                        "significanceP": 1.0297032215212533e-26
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5436943257758764,
+                        "significanceP": 8.579085735571981e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.5666208787548315,
+                        "significanceP": 3.542173809664693e-06
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0020",
+                    "plantName": "郑州市巩义市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.928326820384843,
+                      "significanceP": 1.3337729871444197e-26
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.928326820384843,
+                        "significanceP": 1.3337729871444197e-26
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.602994097687892,
+                        "significanceP": 4.325008839576814e-07
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6022611544966686,
+                        "significanceP": 5.689683001238555e-07
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0023",
+                    "plantName": "郑州市新郑市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9337445984926009,
+                      "significanceP": 1.4725171080134007e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9337445984926009,
+                        "significanceP": 1.4725171080134007e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.5642929114625828,
+                        "significanceP": 3.2444102128951503e-06
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.5550331319497271,
+                        "significanceP": 6.137535434262617e-06
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0026",
+                    "plantName": "郑州市新密市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.931929058295111,
+                      "significanceP": 3.1442492397587388e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.931929058295111,
+                        "significanceP": 3.1442492397587388e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.42499708993489055,
+                        "significanceP": 0.0007930275591980917
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.47985183139924825,
+                        "significanceP": 0.0001381087813745173
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0029",
+                    "plantName": "郑州市登封市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.9342308528008914,
+                      "significanceP": 1.197391223401321e-27
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.9342308528008914,
+                        "significanceP": 1.197391223401321e-27
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.46485885606464306,
+                        "significanceP": 0.00020784186465700187
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.538050611760901,
+                        "significanceP": 1.324666769730813e-05
+                      }
+                    ]
+                  },
+                  {
+                    "plantId": "STN-SWG-0032",
+                    "plantName": "郑州市荥阳市城市污水处理与生态循环厂",
+                    "observedDates": 60,
+                    "optimalLagWindow": {
+                      "lagDays": 0,
+                      "pairedDates": 60,
+                      "pearsonCorrelation": 0.951529637801647,
+                      "significanceP": 2.1820760636425297e-31
+                    },
+                    "lagCorrelationTrend": [
+                      {
+                        "lagDays": 0,
+                        "pairedDates": 60,
+                        "pearsonCorrelation": 0.951529637801647,
+                        "significanceP": 2.1820760636425297e-31
+                      },
+                      {
+                        "lagDays": 1,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 2,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 3,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 4,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 5,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 6,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 7,
+                        "pairedDates": 59,
+                        "pearsonCorrelation": 0.6895732293912471,
+                        "significanceP": 1.542468546140377e-09
+                      },
+                      {
+                        "lagDays": 8,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 9,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 10,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 11,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 12,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 13,
+                        "pairedDates": 0,
+                        "pearsonCorrelation": null,
+                        "significanceP": null
+                      },
+                      {
+                        "lagDays": 14,
+                        "pairedDates": 58,
+                        "pearsonCorrelation": 0.6351775595439502,
+                        "significanceP": 8.524140620679703e-08
+                      }
+                    ]
+                  }
+                ],
+                "reverseTracingSources": [],
+                "qualityFlags": [
+                  "exploratory-lag-selection-unadjusted-p",
+                  "hospital-linkage-unvalidated",
+                  "missing-dates-not-imputed",
+                  "no-pipeline-topology-no-source-lock"
+                ]
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "exploratory-lag-selection-unadjusted-p",
+              "hospital-linkage-unvalidated",
+              "missing-dates-not-imputed",
+              "no-pipeline-topology-no-source-lock"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "domain": "chronic",
+    "runId": "984d2c45-6a41-4ab2-b8dd-5f1086c7d758",
+    "result": {
+      "runId": "984d2c45-6a41-4ab2-b8dd-5f1086c7d758",
+      "interactionId": "032c0127-0ad3-4a37-acb8-e0b8e56f4263",
+      "status": "SUCCESS",
+      "replyText": "已调用 skill_mortality_cluster_rare。以下为 Mock 数据结果：数据源 origin=mock，快照登记日期 2026-10-12，结果数据 asOf=2026-08-19；仅用于演示，不代表真实生产数据或真实死亡风险。\n\n郑州市共 509 条死亡记录，实际死亡月计数（2024-01 至 2026-08）：2024-01:16，2024-02:15，2024-03:20，2024-04:19，2024-05:15，2024-06:14，2024-07:16，2024-08:10，2024-09:9，2024-10:15，2024-11:13，2024-12:21，2025-01:19，2025-02:11，2025-03:13，2025-04:15，2025-05:18，2025-06:8，2025-07:17，2025-08:26，2025-09:21，2025-10:12，2025-11:21，2025-12:19，2026-01:20，2026-02:14，2026-03:15，2026-04:24，2026-05:15，2026-06:15，2026-07:15，2026-08:8。\n\nDBSCAN 基于区县中心执行，参数 epsKm=5、minSamples=2：簇0：中原区 40、新密市 47；簇1：二七区 42、巩义市 44；噪声点：中牟县 59、惠济区 48、新郑市 44、登封市 42、管城回族区 41、荥阳市 52、金水区 50。簇编号仅表示空间邻近关系，不代表死亡风险、因果关系或疾病风险。\n\n另发现 1 个罕见死亡码候选：金水区 ICD10 A81.0，3 例，时间范围 2026-08-15 至 2026-08-19，标记为需人工复核。未输出 ARIMA 预测，也未计算年死亡率或人口死亡率。",
+      "agui": [
+        {
+          "version": "1",
+          "runId": "984d2c45-6a41-4ab2-b8dd-5f1086c7d758",
+          "component": "ANALYTICS_RESULT",
+          "result": {
+            "schemaVersion": "1",
+            "runId": "984d2c45-6a41-4ab2-b8dd-5f1086c7d758",
+            "domain": "chronic",
+            "status": "SUCCESS",
+            "method": "district-centroid-dbscan-v1",
+            "datasets": [
+              {
+                "id": "chronic-monitoring",
+                "domain": "chronic",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "死亡记录统计与区县中心聚类",
+              "data": {
+                "status": "SUCCESS",
+                "method": "district-centroid-dbscan-v1",
+                "asOf": "2026-08-19",
+                "totalDeaths": 509,
+                "observedMonthlyDeaths": [
+                  {
+                    "month": "2024-01",
+                    "deaths": 16
+                  },
+                  {
+                    "month": "2024-02",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-03",
+                    "deaths": 20
+                  },
+                  {
+                    "month": "2024-04",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2024-05",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-06",
+                    "deaths": 14
+                  },
+                  {
+                    "month": "2024-07",
+                    "deaths": 16
+                  },
+                  {
+                    "month": "2024-08",
+                    "deaths": 10
+                  },
+                  {
+                    "month": "2024-09",
+                    "deaths": 9
+                  },
+                  {
+                    "month": "2024-10",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-11",
+                    "deaths": 13
+                  },
+                  {
+                    "month": "2024-12",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-01",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2025-02",
+                    "deaths": 11
+                  },
+                  {
+                    "month": "2025-03",
+                    "deaths": 13
+                  },
+                  {
+                    "month": "2025-04",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2025-05",
+                    "deaths": 18
+                  },
+                  {
+                    "month": "2025-06",
+                    "deaths": 8
+                  },
+                  {
+                    "month": "2025-07",
+                    "deaths": 17
+                  },
+                  {
+                    "month": "2025-08",
+                    "deaths": 26
+                  },
+                  {
+                    "month": "2025-09",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-10",
+                    "deaths": 12
+                  },
+                  {
+                    "month": "2025-11",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-12",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2026-01",
+                    "deaths": 20
+                  },
+                  {
+                    "month": "2026-02",
+                    "deaths": 14
+                  },
+                  {
+                    "month": "2026-03",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-04",
+                    "deaths": 24
+                  },
+                  {
+                    "month": "2026-05",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-06",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-07",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-08",
+                    "deaths": 8
+                  }
+                ],
+                "dbscanSpatialClusters": [
+                  {
+                    "city": "郑州市",
+                    "district": "中原区",
+                    "lat": 34.5564,
+                    "lon": 113.5527,
+                    "observedDeaths": 40,
+                    "clusterId": 0
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "中牟县",
+                    "lat": 34.9218,
+                    "lon": 113.7606,
+                    "observedDeaths": 59,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "二七区",
+                    "lat": 34.7894,
+                    "lon": 113.6484,
+                    "observedDeaths": 42,
+                    "clusterId": 1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "巩义市",
+                    "lat": 34.7865,
+                    "lon": 113.698,
+                    "observedDeaths": 44,
+                    "clusterId": 1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "惠济区",
+                    "lat": 34.6734,
+                    "lon": 113.8036,
+                    "observedDeaths": 48,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "新密市",
+                    "lat": 34.5653,
+                    "lon": 113.564,
+                    "observedDeaths": 47,
+                    "clusterId": 0
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "新郑市",
+                    "lat": 34.8907,
+                    "lon": 113.643,
+                    "observedDeaths": 44,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "登封市",
+                    "lat": 34.8335,
+                    "lon": 113.8065,
+                    "observedDeaths": 42,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "管城回族区",
+                    "lat": 34.8163,
+                    "lon": 113.6028,
+                    "observedDeaths": 41,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "荥阳市",
+                    "lat": 34.7867,
+                    "lon": 113.7682,
+                    "observedDeaths": 52,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "金水区",
+                    "lat": 34.6654,
+                    "lon": 113.6598,
+                    "observedDeaths": 50,
+                    "clusterId": -1
+                  }
+                ],
+                "rareMortalityClustersDetected": [
+                  {
+                    "city": "郑州市",
+                    "district": "金水区",
+                    "icd10_code": "A81.0",
+                    "caseCount": 3,
+                    "start": "2026-08-15T00:00:00",
+                    "end": "2026-08-19T00:00:00",
+                    "reviewRequired": true
+                  }
+                ],
+                "rareClusterCount": 1,
+                "qualityFlags": [
+                  "centroids-not-individual-death-locations",
+                  "clusters-not-risk-or-causality",
+                  "rare-disease-code-candidate-requires-review",
+                  "no-arima-no-population-rate"
+                ]
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "centroids-not-individual-death-locations",
+              "clusters-not-risk-or-causality",
+              "rare-disease-code-candidate-requires-review",
+              "no-arima-no-population-rate"
+            ]
+          }
+        }
+      ],
+      "skillRuns": [
+        {
+          "callId": "call_d2263a91b45c413897164f41",
+          "skillId": "skill_mortality_cluster_rare",
+          "skillName": "死亡记录统计与区县中心聚类",
+          "args": {
+            "city": "郑州市",
+            "epsKm": 5,
+            "minSamples": 2
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "984d2c45-6a41-4ab2-b8dd-5f1086c7d758",
+            "domain": "chronic",
+            "status": "SUCCESS",
+            "method": "district-centroid-dbscan-v1",
+            "datasets": [
+              {
+                "id": "chronic-monitoring",
+                "domain": "chronic",
+                "origin": "mock",
+                "version": "existing-snapshot-2026-10-12",
+                "asOf": "2026-10-12",
+                "schemaVersion": "1"
+              }
+            ],
+            "payload": {
+              "type": "ANALYTICS_RESULT",
+              "title": "死亡记录统计与区县中心聚类",
+              "data": {
+                "status": "SUCCESS",
+                "method": "district-centroid-dbscan-v1",
+                "asOf": "2026-08-19",
+                "totalDeaths": 509,
+                "observedMonthlyDeaths": [
+                  {
+                    "month": "2024-01",
+                    "deaths": 16
+                  },
+                  {
+                    "month": "2024-02",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-03",
+                    "deaths": 20
+                  },
+                  {
+                    "month": "2024-04",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2024-05",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-06",
+                    "deaths": 14
+                  },
+                  {
+                    "month": "2024-07",
+                    "deaths": 16
+                  },
+                  {
+                    "month": "2024-08",
+                    "deaths": 10
+                  },
+                  {
+                    "month": "2024-09",
+                    "deaths": 9
+                  },
+                  {
+                    "month": "2024-10",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2024-11",
+                    "deaths": 13
+                  },
+                  {
+                    "month": "2024-12",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-01",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2025-02",
+                    "deaths": 11
+                  },
+                  {
+                    "month": "2025-03",
+                    "deaths": 13
+                  },
+                  {
+                    "month": "2025-04",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2025-05",
+                    "deaths": 18
+                  },
+                  {
+                    "month": "2025-06",
+                    "deaths": 8
+                  },
+                  {
+                    "month": "2025-07",
+                    "deaths": 17
+                  },
+                  {
+                    "month": "2025-08",
+                    "deaths": 26
+                  },
+                  {
+                    "month": "2025-09",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-10",
+                    "deaths": 12
+                  },
+                  {
+                    "month": "2025-11",
+                    "deaths": 21
+                  },
+                  {
+                    "month": "2025-12",
+                    "deaths": 19
+                  },
+                  {
+                    "month": "2026-01",
+                    "deaths": 20
+                  },
+                  {
+                    "month": "2026-02",
+                    "deaths": 14
+                  },
+                  {
+                    "month": "2026-03",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-04",
+                    "deaths": 24
+                  },
+                  {
+                    "month": "2026-05",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-06",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-07",
+                    "deaths": 15
+                  },
+                  {
+                    "month": "2026-08",
+                    "deaths": 8
+                  }
+                ],
+                "dbscanSpatialClusters": [
+                  {
+                    "city": "郑州市",
+                    "district": "中原区",
+                    "lat": 34.5564,
+                    "lon": 113.5527,
+                    "observedDeaths": 40,
+                    "clusterId": 0
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "中牟县",
+                    "lat": 34.9218,
+                    "lon": 113.7606,
+                    "observedDeaths": 59,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "二七区",
+                    "lat": 34.7894,
+                    "lon": 113.6484,
+                    "observedDeaths": 42,
+                    "clusterId": 1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "巩义市",
+                    "lat": 34.7865,
+                    "lon": 113.698,
+                    "observedDeaths": 44,
+                    "clusterId": 1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "惠济区",
+                    "lat": 34.6734,
+                    "lon": 113.8036,
+                    "observedDeaths": 48,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "新密市",
+                    "lat": 34.5653,
+                    "lon": 113.564,
+                    "observedDeaths": 47,
+                    "clusterId": 0
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "新郑市",
+                    "lat": 34.8907,
+                    "lon": 113.643,
+                    "observedDeaths": 44,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "登封市",
+                    "lat": 34.8335,
+                    "lon": 113.8065,
+                    "observedDeaths": 42,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "管城回族区",
+                    "lat": 34.8163,
+                    "lon": 113.6028,
+                    "observedDeaths": 41,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "荥阳市",
+                    "lat": 34.7867,
+                    "lon": 113.7682,
+                    "observedDeaths": 52,
+                    "clusterId": -1
+                  },
+                  {
+                    "city": "郑州市",
+                    "district": "金水区",
+                    "lat": 34.6654,
+                    "lon": 113.6598,
+                    "observedDeaths": 50,
+                    "clusterId": -1
+                  }
+                ],
+                "rareMortalityClustersDetected": [
+                  {
+                    "city": "郑州市",
+                    "district": "金水区",
+                    "icd10_code": "A81.0",
+                    "caseCount": 3,
+                    "start": "2026-08-15T00:00:00",
+                    "end": "2026-08-19T00:00:00",
+                    "reviewRequired": true
+                  }
+                ],
+                "rareClusterCount": 1,
+                "qualityFlags": [
+                  "centroids-not-individual-death-locations",
+                  "clusters-not-risk-or-causality",
+                  "rare-disease-code-candidate-requires-review",
+                  "no-arima-no-population-rate"
+                ]
+              }
+            },
+            "metrics": {},
+            "qualityFlags": [
+              "centroids-not-individual-death-locations",
+              "clusters-not-risk-or-causality",
+              "rare-disease-code-candidate-requires-review",
+              "no-arima-no-population-rate"
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

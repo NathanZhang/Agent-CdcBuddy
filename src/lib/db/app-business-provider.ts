@@ -1,3 +1,4 @@
+import {ensureBusinessInitialized} from '@/infrastructure/db/migrations';
 import Database from 'better-sqlite3';
 import path from 'path';
 import { randomUUID } from 'node:crypto';
@@ -26,7 +27,8 @@ export class AppBusinessProvider {
   close(){this.db?.close();this.db=null;}
   private getDb(): Database.Database {
     if (!this.db) {
-      this.db = new Database(this.dbPath);
+      ensureBusinessInitialized(this.dbPath);
+      this.db = new Database(this.dbPath,{fileMustExist:true});
     }
     return this.db;
   }
@@ -265,22 +267,7 @@ export class AppBusinessProvider {
   }
 
   // ---------------- 6. 自定义技能元数据 ----------------
-  private ensureCustomSkillsTableSchema() {
-    const db = this.getDb();
-    try {
-      const columns = db.prepare(`PRAGMA table_info(biz_custom_skills)`).all() as Array<{ name: string }>;
-      const hasVisibility = columns.some(c => c.name === 'visibility');
-      if (!hasVisibility) {
-        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN visibility TEXT DEFAULT 'private'`).run();
-      }
-      const hasDomain = columns.some(c => c.name === 'domain');
-      if (!hasDomain) {
-        db.prepare(`ALTER TABLE biz_custom_skills ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
-      }
-    } catch (e) {
-      // 忽略检查异常
-    }
-  }
+  private ensureCustomSkillsTableSchema(){this.getDb();}
 
   async saveCustomSkill(skill: BizCustomSkill): Promise<void> {
     this.ensureCustomSkillsTableSchema();
@@ -369,65 +356,7 @@ export class AppBusinessProvider {
   }
 
   // ---------------- 7. 历史会话与消息真实持久化管理 ----------------
-  private ensureChatSessionTables(): void {
-    const db = this.getDb();
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS biz_chat_sessions (
-        session_id VARCHAR(64) PRIMARY KEY,
-        user_id VARCHAR(64) NOT NULL,
-        user_name VARCHAR(64) NOT NULL,
-        user_role VARCHAR(64) NOT NULL,
-        domain VARCHAR(32) DEFAULT 'vector',
-        title VARCHAR(256) NOT NULL,
-        last_generative_view TEXT,
-        message_count INTEGER DEFAULT 0,
-        is_pinned INTEGER DEFAULT 0,
-        created_at DATETIME NOT NULL,
-        updated_at DATETIME NOT NULL
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_updated
-      ON biz_chat_sessions(user_id, domain, is_pinned DESC, updated_at DESC);
-
-      CREATE TABLE IF NOT EXISTS biz_chat_messages (
-        message_id VARCHAR(64) PRIMARY KEY,
-        session_id VARCHAR(64) NOT NULL,
-        sender VARCHAR(16) NOT NULL,
-        text TEXT NOT NULL,
-        reasoning_text TEXT,
-        reasoning_duration INTEGER,
-        skill_used VARCHAR(64),
-        generative_view_snapshot TEXT,
-        timestamp VARCHAR(32) NOT NULL,
-        created_at DATETIME NOT NULL,
-        FOREIGN KEY (session_id) REFERENCES biz_chat_sessions(session_id) ON DELETE CASCADE
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_chat_messages_session_time
-      ON biz_chat_messages(session_id, created_at ASC);
-    `);
-
-    // 动态平滑迁移：检查并补充列
-    try {
-      const db = this.getDb();
-      const sessionCols = db.prepare(`PRAGMA table_info(biz_chat_sessions)`).all() as Array<{ name: string }>;
-      const sessionColNames = new Set(sessionCols.map(c => c.name));
-      if (!sessionColNames.has('domain')) {
-        db.prepare(`ALTER TABLE biz_chat_sessions ADD COLUMN domain VARCHAR(32) DEFAULT 'vector'`).run();
-      }
-
-      const cols = db.prepare(`PRAGMA table_info(biz_chat_messages)`).all() as Array<{ name: string }>;
-      const colNames = new Set(cols.map(c => c.name));
-      if (!colNames.has('reasoning_text')) {
-        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_text TEXT`).run();
-      }
-      if (!colNames.has('reasoning_duration')) {
-        db.prepare(`ALTER TABLE biz_chat_messages ADD COLUMN reasoning_duration INTEGER`).run();
-      }
-    } catch (e) {
-      // 忽略迁移尝试异常
-    }
-  }
+  private ensureChatSessionTables(){this.getDb();}
 
   /**
    * 分页与关键词检索历史会话列表

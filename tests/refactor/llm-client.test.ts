@@ -33,3 +33,7 @@ it('uses bounded non-thinking native function calls without exposing model reaso
  await createLLMClient({env,fetch:async(_url,init)=>{sent=JSON.parse(init!.body as string);return Response.json({choices:[{message:{role:'assistant',content:'{"mode":"answer","replyText":"结果"}',reasoning_content:'private reasoning'}}]});}}).complete(request);
  expect(sent.enable_thinking).toBe(false);expect(sent.max_tokens).toBe(4096);expect(sent.temperature).toBe(0.7);
 });
+
+it('requests vendor JSON mode only for the no-tools synthesis phase',async()=>{
+ const bodies:any[]=[];const client=createLLMClient({env,fetch:async(_url,init)=>{bodies.push(JSON.parse(init!.body as string));return Response.json({choices:[{message:{role:'assistant',content:'{"mode":"answer","replyText":"结果"}'}}]});}});await client.complete({...request,toolChoice:'none'});await client.complete({...request,tools:[{type:'function',function:{name:'query'}}],toolChoice:'auto'});expect(bodies[0].response_format).toEqual({type:'json_object'});expect(bodies[1].response_format).toBeUndefined();
+});

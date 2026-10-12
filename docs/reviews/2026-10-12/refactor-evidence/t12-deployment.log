@@ -1,0 +1,11 @@
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py deployment
+
+test_migrations_once_backup_restore_preserves_sessions_jobs_tickets (test_deployment.Deployment.test_migrations_once_backup_restore_preserves_sessions_jobs_tickets) ... ok
+test_pilot_never_generates_missing_fact_and_demo_generation_is_explicit (test_deployment.Deployment.test_pilot_never_generates_missing_fact_and_demo_generation_is_explicit) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.572s
+
+OK

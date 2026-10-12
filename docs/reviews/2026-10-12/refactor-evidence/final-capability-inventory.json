@@ -1,0 +1,724 @@
+{
+  "generatedAt": "2026-10-12T09:09:21.849Z",
+  "notice": "available means this bounded Skill implementation is executable; it does not sign off the complete original requirement or real effectiveness.",
+  "domains": {
+    "vector": [
+      {
+        "id": "skill_population_dynamics",
+        "name": "按采样方法的月捕获量自回归预测",
+        "availability": "available",
+        "method": "autoregression-seasonal-capture-v1",
+        "requirementIds": [
+          23
+        ]
+      },
+      {
+        "id": "skill_species_composition",
+        "name": "物种构成、多样性与探索性 K-Means",
+        "availability": "available",
+        "method": "method-separated-kmeans-capture-v1",
+        "requirementIds": [
+          24
+        ]
+      },
+      {
+        "id": "skill_resistance_evaluation",
+        "name": "抗药性实测记录查询（无模型推断）",
+        "availability": "available",
+        "method": "observed-bioassay-records-v1",
+        "requirementIds": [
+          25
+        ]
+      },
+      {
+        "id": "skill_pathogen_risk",
+        "name": "PCR 检测比例与两项关联规则",
+        "availability": "available",
+        "method": "pcr-record-pair-association-v1",
+        "requirementIds": [
+          26
+        ]
+      },
+      {
+        "id": "skill_spatial_early_warning",
+        "name": "监测捕获量 IDW 插值（不生成疾病预警）",
+        "availability": "available",
+        "method": "observed-capture-idw-v1",
+        "requirementIds": [
+          27
+        ]
+      },
+      {
+        "id": "skill_alert_push_dispatch",
+        "name": "分级预警依据与多渠道推送",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          28
+        ]
+      },
+      {
+        "id": "skill_disposal_workflow",
+        "name": "消杀处置闭环与工单流转管理",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          29
+        ]
+      },
+      {
+        "id": "skill_density_forecast",
+        "name": "按采样方法的捕获量 GBDT 预测",
+        "availability": "available",
+        "method": "gradient-boosting-capture-v1",
+        "requirementIds": [
+          30
+        ]
+      },
+      {
+        "id": "skill_transmission_risk",
+        "name": "传播风险输入统计（模型尚未验证）",
+        "availability": "available",
+        "method": "observed-transmission-inputs-v1",
+        "requirementIds": [
+          31
+        ]
+      },
+      {
+        "id": "skill_resistance_evolution",
+        "name": "抗药性基因演化与耐药暴发预测",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          32
+        ]
+      },
+      {
+        "id": "skill_vector_nlq",
+        "name": "CDC 专家知识库与数据智能问答 (NLQ)",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          33
+        ]
+      },
+      {
+        "id": "skill_auto_report_gen",
+        "name": "全域监测与风险专题报告生成器",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          34
+        ]
+      },
+      {
+        "id": "skill_mobile_assistant_api",
+        "name": "移动端现场采集识别与智能质控 API",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          35
+        ]
+      },
+      {
+        "id": "skill_meta_custom_builder",
+        "name": "病媒对话式自定义技能构建器 (Meta-Skill Builder)",
+        "availability": "available",
+        "method": "validated-custom-skill-create-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_monitoring_data_table",
+        "name": "病媒监测明细数据表查询 (Text2SQL)",
+        "availability": "available",
+        "method": "bounded-domain-query-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_satscan_spatial",
+        "name": "近似圆形空间扫描（非完整 SaTScan）",
+        "availability": "available",
+        "method": "conditional-poisson-circular-scan-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_lstm_predictor",
+        "name": "LSTM 深度时序外推预测模型",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_satscan_kmeans_lstm",
+        "name": "SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_composable_workflow",
+        "name": "通用多技能动态协同工作流 (LangGraph Composable)",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_vector_backtest",
+        "name": "病媒捕获量滚动回测与季节基线对照",
+        "availability": "available",
+        "method": "rolling-past-origin-capture-backtest-v1",
+        "requirementIds": [
+          23,
+          30
+        ]
+      },
+      {
+        "id": "skill_session_manage",
+        "name": "用户对话会话管理（不是领域监测数据查询）",
+        "availability": "available",
+        "method": "skill_session_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_collection_manage",
+        "name": "现场采集质控与提交（人工物种录入）",
+        "availability": "available",
+        "method": "skill_collection_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_catalog_manage",
+        "name": "技能列表、编辑与删除",
+        "availability": "available",
+        "method": "skill_catalog_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_artifact_export",
+        "name": "导出真实查询 CSV 或已归档报告 Markdown",
+        "availability": "available",
+        "method": "skill_artifact_export-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_daemon_surveillance",
+        "name": "配置周期主线Agent巡检",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_job_manage",
+        "name": "提交、读取持久分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_approval_decision",
+        "name": "专业审批分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_retest_submit",
+        "name": "提交已采集的真实复测记录",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_inbox_read",
+        "name": "查看已投递站内通知",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      }
+    ],
+    "foodborne": [
+      {
+        "id": "skill_spatial_early_warning",
+        "name": "全域时空动态多维预警与地图热力分析",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          27
+        ]
+      },
+      {
+        "id": "skill_auto_report_gen",
+        "name": "全域监测与风险专题报告生成器",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          41
+        ]
+      },
+      {
+        "id": "skill_foodborne_cluster_detect",
+        "name": "病例短时窗共同暴露候选",
+        "availability": "available",
+        "method": "food-exposure-window-candidates-v1",
+        "requirementIds": [
+          36
+        ]
+      },
+      {
+        "id": "skill_foodborne_risk_forecast",
+        "name": "食源性风险预测与时序外推模型",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          37
+        ]
+      },
+      {
+        "id": "skill_molecular_trace",
+        "name": "cgMLST 距离与单链接候选簇",
+        "availability": "available",
+        "method": "allele-distance-single-link-v1",
+        "requirementIds": [
+          38
+        ]
+      },
+      {
+        "id": "skill_food_attribution",
+        "name": "已报告食品及阳性病例统计",
+        "availability": "available",
+        "method": "recorded-food-case-summary-v1",
+        "requirementIds": [
+          38,
+          40
+        ]
+      },
+      {
+        "id": "skill_outbreak_disposal_advice",
+        "name": "食源性暴发事件标准化处置建议与协同工单",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          39
+        ]
+      },
+      {
+        "id": "skill_foodborne_report_export",
+        "name": "食源性疾病暴发调查专题公报与简报生成",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          41
+        ]
+      },
+      {
+        "id": "skill_foodborne_case_table",
+        "name": "食源性病例与抽检台账查询 (Text2SQL)",
+        "availability": "available",
+        "method": "bounded-domain-query-v1",
+        "requirementIds": [
+          36,
+          40
+        ]
+      },
+      {
+        "id": "skill_foodborne_custom_builder",
+        "name": "食源性专属自定义技能构建器 (Meta-Skill Builder)",
+        "availability": "available",
+        "method": "validated-custom-skill-create-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_session_manage",
+        "name": "用户对话会话管理（不是领域监测数据查询）",
+        "availability": "available",
+        "method": "skill_session_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_catalog_manage",
+        "name": "技能列表、编辑与删除",
+        "availability": "available",
+        "method": "skill_catalog_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_artifact_export",
+        "name": "导出真实查询 CSV 或已归档报告 Markdown",
+        "availability": "available",
+        "method": "skill_artifact_export-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_daemon_surveillance",
+        "name": "配置周期主线Agent巡检",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_job_manage",
+        "name": "提交、读取持久分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_approval_decision",
+        "name": "专业审批分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_retest_submit",
+        "name": "提交已采集的真实复测记录",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_inbox_read",
+        "name": "查看已投递站内通知",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      }
+    ],
+    "env": [
+      {
+        "id": "skill_spatial_early_warning",
+        "name": "全域时空动态多维预警与地图热力分析",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          27
+        ]
+      },
+      {
+        "id": "skill_auto_report_gen",
+        "name": "全域监测与风险专题报告生成器",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          56
+        ]
+      },
+      {
+        "id": "skill_env_ocr_entry",
+        "name": "水质与环境单据 OCR 智能录入引擎",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          42
+        ]
+      },
+      {
+        "id": "skill_water_safety_eval",
+        "name": "实际水质样本统计",
+        "availability": "available",
+        "method": "observed-water-summary-v1",
+        "requirementIds": [
+          44,
+          45
+        ]
+      },
+      {
+        "id": "skill_sewage_pathogen_trace",
+        "name": "污水日历滞后探索统计",
+        "availability": "available",
+        "method": "calendar-aligned-pearson-v1",
+        "requirementIds": [
+          46,
+          47
+        ]
+      },
+      {
+        "id": "skill_air_climate_health_risk",
+        "name": "空气污染暴露评估与 72h 极端气候健康预警",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          50,
+          51
+        ]
+      },
+      {
+        "id": "skill_river_basin_pollution_chain",
+        "name": "河流浓度统计与可选空间自相关",
+        "availability": "available",
+        "method": "descriptive-metals-moran-v1",
+        "requirementIds": [
+          52,
+          53
+        ]
+      },
+      {
+        "id": "skill_env_scenario_simulation",
+        "name": "环境干预政策健康效益量化情景推演",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          57
+        ]
+      },
+      {
+        "id": "skill_env_monitoring_table",
+        "name": "环境水质与空气监测数据表查询 (Text2SQL)",
+        "availability": "available",
+        "method": "bounded-domain-query-v1",
+        "requirementIds": [
+          44,
+          50
+        ]
+      },
+      {
+        "id": "skill_env_custom_builder",
+        "name": "环境健康专属自定义技能构建器 (Meta-Skill Builder)",
+        "availability": "available",
+        "method": "validated-custom-skill-create-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_env_early_warning_disposal",
+        "name": "环境健康超标预警空间溯源与应急处置闭环",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          54,
+          55
+        ]
+      },
+      {
+        "id": "skill_session_manage",
+        "name": "用户对话会话管理（不是领域监测数据查询）",
+        "availability": "available",
+        "method": "skill_session_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_catalog_manage",
+        "name": "技能列表、编辑与删除",
+        "availability": "available",
+        "method": "skill_catalog_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_artifact_export",
+        "name": "导出真实查询 CSV 或已归档报告 Markdown",
+        "availability": "available",
+        "method": "skill_artifact_export-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_daemon_surveillance",
+        "name": "配置周期主线Agent巡检",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_job_manage",
+        "name": "提交、读取持久分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_approval_decision",
+        "name": "专业审批分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_retest_submit",
+        "name": "提交已采集的真实复测记录",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_inbox_read",
+        "name": "查看已投递站内通知",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      }
+    ],
+    "chronic": [
+      {
+        "id": "skill_spatial_early_warning",
+        "name": "全域时空动态多维预警与地图热力分析",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          27
+        ]
+      },
+      {
+        "id": "skill_auto_report_gen",
+        "name": "全域监测与风险专题报告生成器",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          72
+        ]
+      },
+      {
+        "id": "skill_death_cert_qc",
+        "name": "死亡证明书规则复核候选",
+        "availability": "available",
+        "method": "death-certificate-rule-candidates-v1",
+        "requirementIds": [
+          59
+        ]
+      },
+      {
+        "id": "skill_icd10_nlp_inference",
+        "name": "死因链医学知识图谱根本死因推断与 ICD-10 编码",
+        "availability": "available",
+        "method": "icd10-dictionary-candidate-v1",
+        "requirementIds": [
+          60,
+          61
+        ]
+      },
+      {
+        "id": "skill_mortality_cluster_rare",
+        "name": "死亡记录统计与区县中心聚类",
+        "availability": "available",
+        "method": "district-centroid-dbscan-v1",
+        "requirementIds": [
+          62,
+          63
+        ]
+      },
+      {
+        "id": "skill_chronic_risk_forecast",
+        "name": "三大重大慢病发病预测与并发症关联挖掘",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          64,
+          65
+        ]
+      },
+      {
+        "id": "skill_injury_attribution_tree",
+        "name": "伤害记录统计与24小时候选聚集",
+        "availability": "available",
+        "method": "injury-observed-counts-v1",
+        "requirementIds": [
+          67,
+          68,
+          69
+        ]
+      },
+      {
+        "id": "skill_chronic_screening_roi",
+        "name": "早癌与心脑血管筛查卫生经济学收益与人群清单",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          66
+        ]
+      },
+      {
+        "id": "skill_chronic_death_report",
+        "name": "死因顺位、YPLL 与早死概率 4q70 综合公报生成",
+        "availability": "available",
+        "method": "persisted-descriptive-report-v1",
+        "requirementIds": [
+          72,
+          73
+        ]
+      },
+      {
+        "id": "skill_chronic_monitoring_table",
+        "name": "死因证明书与慢病随访明细查询 (Text2SQL)",
+        "availability": "available",
+        "method": "bounded-domain-query-v1",
+        "requirementIds": [
+          59,
+          64
+        ]
+      },
+      {
+        "id": "skill_chronic_custom_builder",
+        "name": "慢病死因专属自定义技能构建器 (Meta-Skill Builder)",
+        "availability": "available",
+        "method": "validated-custom-skill-create-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_chronic_early_warning_disposal",
+        "name": "重大慢病峰值预警深度研判与应急处置工单闭环",
+        "availability": "planned",
+        "method": "not-implemented",
+        "requirementIds": [
+          70,
+          71,
+          74,
+          75,
+          76
+        ]
+      },
+      {
+        "id": "skill_session_manage",
+        "name": "用户对话会话管理（不是领域监测数据查询）",
+        "availability": "available",
+        "method": "skill_session_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_catalog_manage",
+        "name": "技能列表、编辑与删除",
+        "availability": "available",
+        "method": "skill_catalog_manage-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_artifact_export",
+        "name": "导出真实查询 CSV 或已归档报告 Markdown",
+        "availability": "available",
+        "method": "skill_artifact_export-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_daemon_surveillance",
+        "name": "配置周期主线Agent巡检",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_job_manage",
+        "name": "提交、读取持久分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_approval_decision",
+        "name": "专业审批分析任务",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_retest_submit",
+        "name": "提交已采集的真实复测记录",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      },
+      {
+        "id": "skill_inbox_read",
+        "name": "查看已投递站内通知",
+        "availability": "available",
+        "method": "persistent-evidence-workflow-v1",
+        "requirementIds": []
+      }
+    ]
+  }
+}

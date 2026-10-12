@@ -1,0 +1,1 @@
+import {readiness} from '@/application/config/readiness';export const dynamic='force-dynamic';export async function GET(){const result=readiness();return Response.json(result,{status:result.ready?200:503,headers:{'Cache-Control':'no-store'}});}

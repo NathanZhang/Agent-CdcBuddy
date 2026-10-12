@@ -1,3 +1,4 @@
+import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
 import {mkdtempSync,existsSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {it,expect} from 'vitest';
@@ -8,7 +9,7 @@ const request=(args:Record<string,any>={})=>({task:'species_clustering',domain:'
 it('validates task/domain/dataset before spawning and sends explicit dataset identity',async()=>{
  const runner=createAnalyticsRunner({scriptPath});
  for(const input of [{...request(),task:'invalid'},{...request(),domain:'env' as const},{...request(),datasetId:'env-monitoring'}]){expect((await runner.runAnalytics(input)).status).toBe('FAILED');expect(runner.getStats().started).toBe(0);}
- const result=await runner.runAnalytics(request({value:4}));expect(result.status).toBe('SUCCESS');expect(result.payload).toMatchObject({value:8,datasetId:'vector-monitoring'});expect(result.datasets[0].origin).toBe('observed');
+ const result=await runner.runAnalytics(request({value:4}));expect(result.status).toBe('SUCCESS');expect(result.payload).toMatchObject({value:8,datasetId:'vector-monitoring'});expect(result.datasets[0]).toEqual(loadDatasetManifest().find(d=>d.domain==='vector'));
 });
 it('bounds running concurrency to two and queued cancellation never starts a child',async()=>{
  const runner=createAnalyticsRunner({scriptPath,concurrency:2});const cancelled=new AbortController();

@@ -1,0 +1,128 @@
+{
+  "writersStopped": true,
+  "checks": [
+    {
+      "database": "business.db",
+      "table": "biz_disposal_tickets",
+      "rows": 7,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_early_warning_events",
+      "rows": 138,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_mobile_submissions",
+      "rows": 2,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_kb_standards",
+      "rows": 6,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_generated_reports",
+      "rows": 8,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_custom_skills",
+      "rows": 1,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_chat_sessions",
+      "rows": 48,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_chat_messages",
+      "rows": 166,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_agent_runs",
+      "rows": 191,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_artifacts",
+      "rows": 3,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_jobs",
+      "rows": 1,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_workflow_tickets",
+      "rows": 1,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_retests",
+      "rows": 0,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_outbox",
+      "rows": 1,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_inbox",
+      "rows": 1,
+      "equal": true
+    },
+    {
+      "database": "business.db",
+      "table": "biz_job_schedules",
+      "rows": 0,
+      "equal": true
+    },
+    {
+      "database": "checkpoints.db",
+      "table": "checkpoints",
+      "rows": 3,
+      "equal": true
+    },
+    {
+      "database": "checkpoints.db",
+      "table": "writes",
+      "rows": 8,
+      "equal": true
+    }
+  ],
+  "actualAnalyzedJobs": [
+    [
+      "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "APPROVED",
+      "21697800-6241-4c76-9d6f-06382d1c6874"
+    ]
+  ],
+  "actualWorkflowTickets": [
+    [
+      "390f1ed6-3980-4253-83ad-4243834d3b3a",
+      "8cbab814-2029-40b5-ba8f-4f6d8fe38e27",
+      "OPEN"
+    ]
+  ],
+  "checkpointCopied": true
+}

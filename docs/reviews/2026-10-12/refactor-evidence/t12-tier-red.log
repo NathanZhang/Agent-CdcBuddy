@@ -1,0 +1,35 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/deployment.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/deployment.test.ts (3 tests | 1 failed) 53ms
+   ✓ applies each version once and never seeds fabricated jobs, alerts or users; missing sources cannot be ready 13ms
+   ✓ refuses business migrations against a fact database and detects altered migration checksums 5ms
+   × production without an explicit tier rejects anonymous identities and development principals 35ms
+     → expected [Function] to throw an error
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/deployment.test.ts > production without an explicit tier rejects anonymous identities and development principals
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/deployment.test.ts:6:582
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  16:57:02
+   Duration  550ms (transform 141ms, setup 0ms, collect 340ms, tests 53ms, environment 0ms, prepare 41ms)
+

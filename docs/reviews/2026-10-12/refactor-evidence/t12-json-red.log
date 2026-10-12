@@ -1,0 +1,85 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run tests/refactor/dispatch.test.ts tests/refactor/llm-client.test.ts
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ❯ tests/refactor/llm-client.test.ts (9 tests | 1 failed) 33ms
+   ✓ LLM boundary > retries another model then returns only a validated LLM message 6ms
+   ✓ LLM boundary > exhausted model retries produce failure and never fabricate a response 1ms
+   ✓ LLM boundary > missing API key never issues an external request 0ms
+   ✓ LLM boundary > does not retry malformed or denied responses as successful content 1ms
+   ✓ LLM boundary > caller cancellation does not trigger retry 0ms
+   ✓ LLM boundary > times out the body read as well as the fetch 21ms
+   ✓ treats nullable vendor tool_calls as absent while preserving actual assistant content 1ms
+   ✓ uses bounded non-thinking native function calls without exposing model reasoning 0ms
+   × requests vendor JSON mode only for the no-tools synthesis phase 2ms
+     → expected undefined to deeply equal { type: 'json_object' }
+ ❯ tests/refactor/dispatch.test.ts (14 tests | 2 failed) 106ms
+   ✓ single main Agent dispatch > HTTP and stream collect identical actual skill evidence, LLM reply and AG-UI 39ms
+   ✓ single main Agent dispatch > LLM outage fails and runs zero skills without keyword fallback 3ms
+   ✓ single main Agent dispatch > executes two tool calls in order and then asks LLM to ground final answer 8ms
+   ✓ single main Agent dispatch > halts before executing calls beyond a whole-batch budget 17ms
+   ✓ single main Agent dispatch > malformed JSON tool arguments never become empty valid input 2ms
+   ✓ single main Agent dispatch > failed or empty skills cannot reuse a successful old view 2ms
+   ✓ single main Agent dispatch > rejects business answers without executed skills but permits explicit clarification 3ms
+   ✓ single main Agent dispatch > binds domain to server context and ignores forged client principal/domain 1ms
+   ✓ single main Agent dispatch > cancellation does not launch a skill or retain an old view 1ms
+   ✓ single main Agent dispatch > retains SSE event names and Unicode across arbitrary byte boundaries 1ms
+   ✓ reserves the last model round for an LLM-generated grounded final response 8ms
+   ✓ summarizes after tools without reopening native tools unless LLM explicitly requests another step 4ms
+   × asks the LLM once to correct invalid final JSON without reexecuting Skills 8ms
+     → expected 'FAILED' to be 'SUCCESS' // Object.is equality
+   × fails transparently when the bounded LLM format correction also fails 8ms
+     → expected 2 to be 3 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/dispatch.test.ts > asks the LLM once to correct invalid final JSON without reexecuting Skills
+AssertionError: expected 'FAILED' to be 'SUCCESS' // Object.is equality
+
+Expected: "SUCCESS"
+Received: "FAILED"
+
+ ❯ tests/refactor/dispatch.test.ts:92:139
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/refactor/dispatch.test.ts > fails transparently when the bounded LLM format correction also fails
+AssertionError: expected 2 to be 3 // Object.is equality
+
+- Expected
++ Received
+
+- 3
++ 2
+
+ ❯ tests/refactor/dispatch.test.ts:95:318
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/refactor/llm-client.test.ts > requests vendor JSON mode only for the no-tools synthesis phase
+AssertionError: expected undefined to deeply equal { type: 'json_object' }
+
+- Expected: 
+{
+  "type": "json_object",
+}
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/llm-client.test.ts:38:433
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 20 passed (23)
+   Start at  16:56:29
+   Duration  636ms (transform 183ms, setup 0ms, collect 428ms, tests 140ms, environment 0ms, prepare 87ms)
+

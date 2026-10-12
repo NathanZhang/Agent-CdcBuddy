@@ -86,3 +86,11 @@ it('summarizes after tools without reopening native tools unless LLM explicitly 
  let rounds=0;const llm:LLMClient={complete:async request=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool()]};expect(request.toolChoice).toBe('none');expect(request.tools).toBeUndefined();return answer;}};
  const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));expect(result.status).toBe('SUCCESS');expect(rounds).toBe(2);expect(result.agui).toHaveLength(1);
 });
+
+it('asks the LLM once to correct invalid final JSON without reexecuting Skills',async()=>{
+ let rounds=0,executions=0;const llm:LLMClient={complete:async request=>{rounds++;if(rounds===1)return {role:'assistant',content:null,tool_calls:[tool()]};if(rounds===2)return {role:'assistant',content:'```json\n{"mode":"answer","replyText":"格式错误"}\n```'};expect(request.toolChoice).toBe('none');expect(request.tools).toBeUndefined();expect(request.messages.some(m=>m.role==='tool')).toBe(true);return answer;}};
+ const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(result.status).toBe('SUCCESS');expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.agui).toHaveLength(1);
+});
+it('fails transparently when the bounded LLM format correction also fails',async()=>{
+ let rounds=0,executions=0;const llm:LLMClient={complete:async()=>{rounds++;return rounds===1?{role:'assistant',content:null,tool_calls:[tool()]}:{role:'assistant',content:'not JSON'};}};const result=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm,()=>executions++)));expect(rounds).toBe(3);expect(executions).toBe(1);expect(result.error?.code).toBe('INVALID_LLM_RESPONSE');expect(result.agui).toEqual([]);
+});

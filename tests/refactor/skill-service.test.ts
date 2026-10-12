@@ -1,3 +1,4 @@
+import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
 import { mkdtempSync,rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -18,7 +19,7 @@ describe('one execution service',()=>{
     const canonical=await executeSkill('skill_species_composition',{city:'郑州市',category:'蚊'},context('vector'));
     const alias=await executeSkill('species_composition',{city:'郑州市',category:'蚊'},context('vector'));
     expect(canonical.status).toBe('SUCCESS');expect(alias.payload).toEqual(canonical.payload);expect(alias.method).toBe(canonical.method);
-    expect(canonical.datasets[0].origin).toBe('observed');
+    expect(canonical.datasets[0]).toEqual(loadDatasetManifest().find(d=>d.domain==='vector'));
   },20000);
   it('refuses unknown IDs and invalid parameters',async()=>{
     expect((await executeSkill('unregistered',{},context('env'))).error?.code).toBe('UNKNOWN_SKILL');
