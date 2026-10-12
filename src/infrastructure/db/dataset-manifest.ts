@@ -26,3 +26,12 @@ export function readDatasetLocations(input?: unknown): DatasetLocation[] {
 export function loadDatasetManifest(input?: unknown): DatasetRef[] {
   return readDatasetLocations(input).map(({ path: _path, ...ref }) => ref);
 }
+
+export function resolveDatasetLocation(domain: DatasetRef['domain'], datasetId?: string): DatasetLocation {
+  const matches = readDatasetLocations().filter(d => d.domain === domain && (!datasetId || d.id === datasetId));
+  if (matches.length !== 1) throw new Error(`Expected one configured dataset for ${domain}`);
+  const location = matches[0];
+  const manifest = process.env.DATASET_MANIFEST_PATH ?? path.join(process.cwd(),'config/datasets.json');
+  const configured = process.env[`DATASET_${domain.toUpperCase()}_PATH`] ?? location.path;
+  return {...location,path:path.resolve(path.dirname(manifest),configured)};
+}

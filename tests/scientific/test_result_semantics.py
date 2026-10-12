@@ -22,8 +22,7 @@ class ResultSemanticsTests(unittest.TestCase):
                 conn.execute('CREATE TABLE fact_water_monitoring(record_id TEXT,station_id TEXT,city TEXT,district TEXT,sample_type TEXT,disinfection_method TEXT,turbidity REAL,free_chlorine REAL,cod_mn REAL,total_coliforms INTEGER,lead_val REAL,cadmium_val REAL,arsenic_val REAL,fluoride_val REAL,chloroform_val REAL,is_standard_met INTEGER,carcinogenic_risk REAL,hazard_quotient REAL,monitoring_date TEXT)')
                 for idx,(passed,cr,hq) in enumerate([(1,1e-6,0.1),(1,2e-5,1.7),(0,3e-6,0.3)]):
                     conn.execute('INSERT INTO fact_water_monitoring VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(str(idx),'station','郑州市','金水区','末梢水','次氯酸钠',0.2,0.6,1.0,0,0.01,0.001,0.001,0.1,0.01,passed,cr,hq,'2026-08-01'))
-            with patch('env.water_rf_kriging.DB_PATH',str(db)):
-                output = evaluate_water_health_risk('郑州市')
+            output = evaluate_water_health_risk('郑州市',db_path=str(db))
             self.assertEqual(output['passRate'],66.67)
             self.assertEqual(output['evaluationResult']['overallComplianceRate'],'66.7%')
             self.assertAlmostEqual(float(output['evaluationResult']['maxCarcinogenicRiskCR']),2e-5)

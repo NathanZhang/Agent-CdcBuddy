@@ -965,28 +965,13 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
  * 确定当前运行的智能体 Domain
  */
 export function getCurrentAgentDomain(): AgentDomainType {
-  // 1. 优先从客户端环境变量获取
-  const envDomain = process.env.NEXT_PUBLIC_AGENT_DOMAIN || process.env.AGENT_DOMAIN;
-  if (envDomain && (envDomain in AGENT_PROFILES)) {
-    return envDomain as AgentDomainType;
-  }
-
-  // 2. 浏览器环境下根据 URL 路径或端口智能判断
   if (typeof window !== 'undefined') {
-    const pathname = window.location.pathname.toLowerCase();
-    if (pathname.startsWith('/food')) return 'foodborne';
-    if (pathname.startsWith('/env')) return 'env';
-    if (pathname.startsWith('/death') || pathname.startsWith('/chronic')) return 'chronic';
-    if (pathname.startsWith('/vector')) return 'vector';
-
-    const port = window.location.port;
-    if (port === '3002') return 'foodborne';
-    if (port === '3003') return 'env';
-    if (port === '3004') return 'chronic';
-    if (port === '3001' || port === '3000') return 'vector';
+    const injected = (window as unknown as {__CDC_RUNTIME_PROFILE__?:{domain:AgentDomainType}}).__CDC_RUNTIME_PROFILE__?.domain;
+    if (injected && Object.hasOwn(AGENT_PROFILES,injected)) return injected;
   }
-
-  return 'vector';
+  const domain = process.env.AGENT_DOMAIN ?? process.env.NEXT_PUBLIC_AGENT_DOMAIN ?? 'vector';
+  if (!Object.hasOwn(AGENT_PROFILES,domain)) throw new Error('Invalid agent domain');
+  return domain as AgentDomainType;
 }
 
 /**

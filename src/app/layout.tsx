@@ -1,7 +1,10 @@
+import { getRuntimeProfile } from "@/application/config/runtime-profile";
 import type { Metadata } from "next";
 import "./globals.css";
 import "@copilotkit/react-ui/styles.css";
 import { Providers } from "@/components/Providers";
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "CdcBuddy - 疾控病媒生物监测预警智能体",
@@ -16,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen antialiased selection:bg-sky-500 selection:text-white transition-colors duration-200">
+        <script dangerouslySetInnerHTML={{ __html: `window.__CDC_RUNTIME_PROFILE__=${JSON.stringify(getRuntimeProfile()).replaceAll('<','\\u003c')};` }} />
         <Providers>
           {children}
         </Providers>

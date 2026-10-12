@@ -1,0 +1,31 @@
+"""Explicit domain dataset locations; read-only facts and no developer-machine fallback."""
+import json
+import os
+import sqlite3
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DOMAINS = {'vector','foodborne','env','chronic'}
+
+def resolve_dataset_path(domain, dataset_id=None):
+    if domain not in DOMAINS: raise ValueError('Unknown domain')
+    manifest = Path(os.environ.get('DATASET_MANIFEST_PATH',ROOT/'config/datasets.json')).resolve()
+    rows = json.loads(manifest.read_text())
+    if not isinstance(rows,list): raise ValueError('Invalid dataset manifest')
+    ids = set()
+    for row in rows:
+        if row.get('domain') not in DOMAINS or row.get('origin') not in ('observed','mock'):
+            raise ValueError('Invalid dataset domain or origin')
+        if any(not isinstance(row.get(k),str) or not row[k] for k in ('id','path','version','asOf','schemaVersion')):
+            raise ValueError('Missing dataset metadata')
+        if row['id'] in ids: raise ValueError('Duplicate dataset ID')
+        ids.add(row['id'])
+    matches = [row for row in rows if row['domain']==domain and (dataset_id is None or row['id']==dataset_id)]
+    if len(matches) != 1: raise ValueError(f'Expected one configured dataset for {domain}')
+    configured = os.environ.get(f'DATASET_{domain.upper()}_PATH',matches[0]['path'])
+    return (manifest.parent / configured).resolve()
+
+def connect_readonly(path):
+    return sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True)
+
+def connect_dataset(domain,dataset_id=None):
+    return connect_readonly(resolve_dataset_path(domain,dataset_id))

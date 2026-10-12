@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -11,16 +12,16 @@ import sqlite3
 import json
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_DB_PATH = os.path.join(BASE_DIR, "chronic_monitoring.db")
+
 
 def calculate_lifetable_4q70_and_screening_roi(
     db_path: str = None,
     city: str = None
 ):
     if not db_path:
-        db_path = DEFAULT_DB_PATH
+        db_path = str(resolve_dataset_path('chronic'))
 
-    conn = sqlite3.connect(db_path)
+    conn = connect_readonly(db_path)
     cur = conn.cursor()
 
     # 1. 统计死因顺位与潜在减寿年数 (YPLL)

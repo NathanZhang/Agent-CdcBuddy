@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -19,13 +20,13 @@ import json
 from typing import Dict, Any, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
 
-def evaluate_air_climate_health_risk(city: str = "焦作市") -> Dict[str, Any]:
+
+def evaluate_air_climate_health_risk(city: str = "焦作市", db_path: str = None) -> Dict[str, Any]:
     """
     评估空气污染物分布滞后效应及 72 小时极端高温热浪/重污染健康风险
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect_readonly(db_path or resolve_dataset_path('env'))
     cur = conn.cursor()
 
     cur.execute("""

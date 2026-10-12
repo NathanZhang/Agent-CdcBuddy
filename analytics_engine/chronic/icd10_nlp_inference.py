@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -11,7 +12,7 @@ import sqlite3
 import json
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_DB_PATH = os.path.join(BASE_DIR, "chronic_monitoring.db")
+
 
 ICD10_KNOWLEDGE_BASE = {
     "急性心肌梗死": {"code": "I21.9", "full_code": "I21.900", "chapter": "第九章 循环系统疾病", "block": "缺血性心脏病 (I20-I25)"},
@@ -34,12 +35,12 @@ def infer_underlying_cause_and_icd10(
     input_chain: dict = None
 ):
     if not db_path:
-        db_path = DEFAULT_DB_PATH
+        db_path = str(resolve_dataset_path('chronic'))
 
     if input_chain is not None:
         a,b,c,d = [str(input_chain.get(key) or "") for key in ["a","b","c","d"]]
     else:
-        conn = sqlite3.connect(db_path)
+        conn = connect_readonly(db_path)
         try:
             cur = conn.cursor()
             if cert_id:

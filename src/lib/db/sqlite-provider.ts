@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
-import path from 'path';
-import fs from 'fs';
+import { resolveDatasetLocation } from '@/infrastructure/db/dataset-manifest';
+import { getDomainRepository, type QueryScope } from '@/infrastructure/db/domain-repository';
 import {
   IVectorDataProvider,
   TimeSeriesFilter,
@@ -28,33 +28,13 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
   private dbPath: string;
 
   constructor() {
-    // 优先读取同级 DataMock 目录下的 SQLite 数据库
-    const possiblePaths = [
-      path.resolve(process.cwd(), '../Agent-CdcBuddy-DataMock/vector_monitoring.db'),
-      path.resolve(process.cwd(), './vector_monitoring.db'),
-      '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy-DataMock/vector_monitoring.db'
-    ];
-
-    let resolvedPath = possiblePaths[0];
-    for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        resolvedPath = p;
-        break;
-      }
-    }
-    this.dbPath = resolvedPath;
+    this.dbPath = resolveDatasetLocation('vector').path;
   }
 
   private getDb(): Database.Database {
-    if (!this.db) {
-      try {
-        this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
-      } catch (err) {
-        console.warn(`[SQLiteProvider] 无法打开指定路径数据库: ${this.dbPath}, 正在尝试备用路径...`, err);
-        // Fallback open
-        this.db = new Database(this.dbPath, { readonly: true });
-      }
-    }
+    const configured = resolveDatasetLocation('vector').path;
+    if (configured !== this.dbPath) { this.db?.close(); this.db=null; this.dbPath=configured; }
+    if (!this.db) this.db = new Database(this.dbPath,{readonly:true,fileMustExist:true});
     return this.db;
   }
 
@@ -588,15 +568,10 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
     return filtered;
   }
 
-  async queryCustomSql(sql: string, params: any[] = []): Promise<any[]> {
-    const db = this.getDb();
-    // 只允许 SELECT 安全查询
-    const trimmed = sql.trim();
-    if (!trimmed.toLowerCase().startsWith('select')) {
-      throw new Error('仅支持 SELECT 查询操作以确保数据安全');
-    }
-    return db.prepare(trimmed).all(...params);
+  async queryCustomSql(sql: string, params: any[] = [], scope?: QueryScope): Promise<any[]> {
+    return getDomainRepository('vector').query(sql,params,scope ?? {domain:'vector'});
   }
+
 }
 
 // 单例模式导出
@@ -608,63 +583,15 @@ export function getVectorDataProvider(): IVectorDataProvider {
   return globalProvider;
 }
 
-// 多智能体领域数据库单例连接池
-const domainDbInstances: Partial<Record<AgentDomainType, Database.Database>> = {};
-
-export function resolveDomainDbPath(domain: AgentDomainType): string {
-  const dbFileMap: Record<AgentDomainType, { filename: string; mockSubdir?: string }> = {
-    vector: { filename: 'vector_monitoring.db' },
-    chronic: { filename: 'chronic_monitoring.db', mockSubdir: 'chronic' },
-    foodborne: { filename: 'foodborne_monitoring.db', mockSubdir: 'foodborne' },
-    env: { filename: 'env_monitoring.db', mockSubdir: 'env' }
-  };
-
-  const config = dbFileMap[domain] || dbFileMap.vector;
-  const candidates: string[] = [
-    path.resolve(process.cwd(), `./${config.filename}`),
-    path.resolve(process.cwd(), `../Agent-CdcBuddy/${config.filename}`),
-    `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/${config.filename}`
-  ];
-
-  if (config.mockSubdir) {
-    candidates.unshift(
-      path.resolve(process.cwd(), `../Agent-CdcBuddy-DataMock/data/${config.mockSubdir}/${config.filename}`),
-      `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy-DataMock/data/${config.mockSubdir}/${config.filename}`
-    );
-  } else {
-    candidates.unshift(
-      path.resolve(process.cwd(), `../Agent-CdcBuddy-DataMock/${config.filename}`),
-      `/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy-DataMock/${config.filename}`
-    );
-  }
-
-  for (const p of candidates) {
-    if (fs.existsSync(p)) {
-      return p;
-    }
-  }
-
-  return path.resolve(process.cwd(), `./${config.filename}`);
-}
-
+// Compatibility reads use the same explicit domain resolver.
+const domainDbInstances = new Map<string,Database.Database>();
+export function resolveDomainDbPath(domain: AgentDomainType): string { return resolveDatasetLocation(domain).path; }
 export function getDomainDb(domain: AgentDomainType): Database.Database {
-  if (!domainDbInstances[domain]) {
-    const dbPath = resolveDomainDbPath(domain);
-    try {
-      domainDbInstances[domain] = new Database(dbPath, { readonly: true, fileMustExist: true });
-    } catch (err) {
-      console.warn(`[DomainDb] 无法以 fileMustExist 打开 ${domain} 数据库 (${dbPath}), 尝试标准打开:`, err);
-      domainDbInstances[domain] = new Database(dbPath, { readonly: true });
-    }
-  }
-  return domainDbInstances[domain]!;
+  const configured=resolveDomainDbPath(domain);
+  let db=domainDbInstances.get(configured);
+  if (!db) { db=new Database(configured,{readonly:true,fileMustExist:true}); domainDbInstances.set(configured,db); }
+  return db;
 }
-
-export async function queryDomainSql(domain: AgentDomainType, sql: string, params: any[] = []): Promise<any[]> {
-  const db = getDomainDb(domain);
-  const trimmed = sql.trim();
-  if (!trimmed.toLowerCase().startsWith('select')) {
-    throw new Error('仅支持 SELECT 查询操作以确保数据安全');
-  }
-  return db.prepare(trimmed).all(...params);
+export async function queryDomainSql(domain: AgentDomainType, sql: string, params: any[] = [], scope?: QueryScope): Promise<any[]> {
+  return getDomainRepository(domain).query(sql,params,scope ?? {domain});
 }

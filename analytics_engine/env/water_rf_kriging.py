@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -19,13 +20,13 @@ import math
 from typing import Dict, Any, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
 
-def evaluate_water_health_risk(city: str = None, district: str = None) -> Dict[str, Any]:
+
+def evaluate_water_health_risk(city: str = None, district: str = None, db_path: str = None) -> Dict[str, Any]:
     """
     基于实测水质数据执行随机森林与 US EPA 健康风险评估
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect_readonly(db_path or resolve_dataset_path('env'))
     cur = conn.cursor()
 
     query = """

@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -19,13 +20,13 @@ import json
 from typing import Dict, Any, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
 
-def analyze_river_basin_pollution_chain(basin_name: str = "黄河流域河南段") -> Dict[str, Any]:
+
+def analyze_river_basin_pollution_chain(basin_name: str = "黄河流域河南段", db_path: str = None) -> Dict[str, Any]:
     """
     分析四河流域跨介质重金属富集迁移链及空间自相关集聚特征
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect_readonly(db_path or resolve_dataset_path('env'))
     cur = conn.cursor()
 
     cur.execute("""

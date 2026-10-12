@@ -31,7 +31,7 @@ def main():
     evidence.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='cdcbuddy-legacy-') as temp:
         isolated = Path(temp)
-        for name in ['analytics_engine', 'tests']:
+        for name in ['analytics_engine', 'tests', 'config']:
             shutil.copytree(ROOT / name, isolated / name, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         for dataset in datasets:
             snapshot_database(dataset, isolated / dataset.name)

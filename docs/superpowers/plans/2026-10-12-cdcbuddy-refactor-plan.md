@@ -172,11 +172,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`getDomainRepository(domain)`、`getRuntimeProfile(domain): {domain,datasets,capabilities}`、`executeReadQuery(query,scope)`。scope显式包含domain与地理/时间条件；T11把服务端授权范围注入scope。
 
-- [ ] 测试：环境查询不能读病媒表；不存在city不退回全省；显式`LIMIT 1000000`被拒；多语句/不允许表列被拒；换DB路径后结果读取新库；公网自定义端口不改变domain。
-- [ ] 运行 `npm run test:refactor -- domain-repository query-gateway runtime-profile`，确认缺失边界先失败。
-- [ ] 实现路径配置、领域Repository与单语句AST/表列/数量控制；删除本机绝对路径fallback；业务运行配置由服务端注入，Mock域可显式运行demo。
-- [ ] 运行上述契约测试和Python临时DB集成；查询白名单只列现有需求实际用到的SQL构造，不承诺任意SQL兼容。
-- [ ] 提交：`refactor: unify domain datasets and controlled query execution`。
+- [x] 测试：环境查询不能读病媒表；不存在city不退回全省；显式`LIMIT 1000000`被拒；多语句/不允许表列被拒；换DB路径后结果读取新库；公网自定义端口不改变domain。
+- [x] 运行 `npm run test:refactor -- domain-repository query-gateway runtime-profile`，确认缺失边界先失败。
+- [x] 实现路径配置、领域Repository与单语句AST/表列/数量控制；删除本机绝对路径fallback；业务运行配置由服务端注入，Mock域可显式运行demo。
+- [x] 运行上述契约测试和Python临时DB集成；查询白名单只列现有需求实际用到的SQL构造，不承诺任意SQL兼容。
+- [x] 提交：`refactor: unify domain datasets and controlled query execution`。
 
 ### Task 4：技能注册与执行按领域拆分
 

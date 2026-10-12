@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import taskDomains from '../../../config/analytics-tasks.json';
+import { resolveDatasetLocation } from '@/infrastructure/db/dataset-manifest';
+import type { AgentDomain } from '@/contracts/dataset';
 
 export interface AnalyticsEngineTask {
   task: 
@@ -34,70 +37,23 @@ export async function runAnalyticsEngine<T = any>(
   task: AnalyticsEngineTask['task'],
   args: Record<string, any> = {}
 ): Promise<T> {
-  const engineScriptPaths = [
-    path.resolve(process.cwd(), 'analytics_engine/engine.py'),
-    path.resolve(process.cwd(), '../Agent-CdcBuddy/analytics_engine/engine.py'),
-    '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/analytics_engine/engine.py'
-  ];
-
-  let scriptPath = engineScriptPaths[0];
-  for (const p of engineScriptPaths) {
-    if (fs.existsSync(p)) {
-      scriptPath = p;
-      break;
-    }
-  }
-
-  const dbPaths = [
-    path.resolve(process.cwd(), 'vector_monitoring.db'),
-    path.resolve(process.cwd(), '../Agent-CdcBuddy/vector_monitoring.db'),
-    '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/vector_monitoring.db'
-  ];
-
-  let dbPath = dbPaths[0];
-  for (const p of dbPaths) {
-    if (fs.existsSync(p)) {
-      dbPath = p;
-      break;
-    }
-  }
-
-  const pythonCandidates = [
-    path.resolve(process.cwd(), '.venv/bin/python3'),
-    path.resolve(process.cwd(), '.venv/bin/python'),
-    path.resolve(process.cwd(), '../Agent-CdcBuddy/.venv/bin/python3'),
-    path.resolve(process.cwd(), '../Agent-CdcBuddy/.venv/bin/python'),
-    '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.venv/bin/python3',
-    '/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.venv/bin/python',
-    'python3',
-    'python'
-  ];
-
-  let pythonBin = 'python3';
-  for (const py of pythonCandidates) {
-    if (py.startsWith('/') || py.startsWith('.')) {
-      if (fs.existsSync(py)) {
-        pythonBin = py;
-        break;
-      }
-    }
-  }
-
-  const resolvedPyBin = path.resolve(pythonBin);
-  const venvBinDir = path.dirname(resolvedPyBin);
-  const venvRoot = path.dirname(venvBinDir);
+  const scriptPath = path.resolve(process.env.ANALYTICS_ENGINE_SCRIPT ?? path.join(process.cwd(),'analytics_engine/engine.py'));
+  if (!fs.existsSync(scriptPath)) throw new Error('Analytics engine script missing');
+  const domain = (taskDomains as Record<string,AgentDomain>)[task];
+  if (!domain) throw new Error(`Unknown analytics task: ${task}`);
+  const dbPath = resolveDatasetLocation(domain).path;
+  const venvPython = path.resolve(process.cwd(),'.venv/bin/python');
+  const pythonBin = process.env.PYTHON_BIN ?? (fs.existsSync(venvPython) ? venvPython : 'python3');
   const projectRoot = path.resolve(process.cwd());
 
   return new Promise((resolve, reject) => {
     const jsonArgs = JSON.stringify(args);
-    const cmdArgs = [scriptPath, '--task', task, '--args', jsonArgs, '--db', dbPath];
+    const cmdArgs = [scriptPath, '--task', task, '--args', jsonArgs, '--domain',domain,'--db', dbPath];
 
     const child = spawn(pythonBin, cmdArgs, {
       cwd: path.dirname(scriptPath),
       env: {
         ...process.env,
-        VIRTUAL_ENV: venvRoot,
-        PATH: `${venvBinDir}:${process.env.PATH || ''}`,
         PYTHONPATH: `${projectRoot}:${path.dirname(scriptPath)}:${process.env.PYTHONPATH || ''}`,
         PYTHONIOENCODING: 'utf-8'
       }

@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -12,7 +13,7 @@ import sqlite3
 import json
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_DB_PATH = os.path.join(BASE_DIR, "chronic_monitoring.db")
+
 
 def predict_chronic_risk_and_complications(
     db_path: str = None,
@@ -20,9 +21,9 @@ def predict_chronic_risk_and_complications(
     target_disease: str = None
 ):
     if not db_path:
-        db_path = DEFAULT_DB_PATH
+        db_path = str(resolve_dataset_path('chronic'))
 
-    conn = sqlite3.connect(db_path)
+    conn = connect_readonly(db_path)
     cur = conn.cursor()
 
     query = """

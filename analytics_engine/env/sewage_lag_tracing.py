@@ -1,3 +1,4 @@
+from repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -19,13 +20,13 @@ import json
 from typing import Dict, Any, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
 
-def analyze_sewage_lag_correlation(city: str = "郑州市", pathogen: str = "诺如病毒") -> Dict[str, Any]:
+
+def analyze_sewage_lag_correlation(city: str = "郑州市", pathogen: str = "诺如病毒", db_path: str = None) -> Dict[str, Any]:
     """
     计算污水病原浓度与哨点医院腹泻/呼吸道门诊量的滞后关联与反向溯源
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect_readonly(db_path or resolve_dataset_path('env'))
     cur = conn.cursor()
 
     cur.execute("""
