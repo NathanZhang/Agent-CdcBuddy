@@ -1,17 +1,18 @@
-import { buildDomainSkills,scopeFromArgs } from '../../shared/skill-factory';
-import { getDomainRepository } from '@/infrastructure/db/domain-repository';
-import type { SkillExecution } from '@/contracts/skill-definition';
-import type { ExecutionContext } from '@/contracts/execution-context';
-async function speciesComposition(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution>{
-  const params:unknown[]=[args.category ?? '蚊'];
-  let where='s.category=?';
-  if(args.year!==undefined){where+=' AND substr(f.date_id,1,4)=?';params.push(String(args.year));}
-  const rows=getDomainRepository('vector').query(`SELECT s.species_name,s.latin_name,s.category,SUM(f.capture_count) AS totalCount FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id WHERE ${where} GROUP BY s.species_name,s.latin_name,s.category ORDER BY totalCount DESC`,params,scopeFromArgs(args,ctx));
-  if(!rows.length)return {status:'NO_DATA',payload:null};
-  const total=rows.reduce((sum,row)=>sum+Number(row.totalCount),0);
-  if(total===0)return {status:'INSUFFICIENT_DATA',payload:{type:'SPECIES_COMPOSITION',items:[],dominantSpecies:null,shannonWienerIndex:null,clusters:[]},qualityFlags:['zero-capture-denominator']};
-  const items=rows.map(row=>({speciesName:row.species_name,latinName:row.latin_name,category:row.category,totalCount:Number(row.totalCount),percentage:Math.round(Number(row.totalCount)/total*10000)/100,cityBreakdown:[]}));
-  const h=rows.reduce((sum,row)=>{const p=Number(row.totalCount)/total;return p>0?sum-p*Math.log(p):sum;},0);
-  return {status:'SUCCESS',payload:{type:'SPECIES_COMPOSITION',city:args.city ?? '河南省全域',category:args.category ?? '蚊',items,dominantSpecies:items[0].speciesName,shannonWienerIndex:Math.round(h*1000)/1000,clusters:[]},qualityFlags:['composition-only-no-cluster-inference']};
+import {analyticsSkill} from '../../shared/analytics-skill';
+import type {SkillDefinition} from '@/contracts/skill-definition';
+import { buildDomainSkills } from '../../shared/skill-factory';
+const dateSchema={type:'string',pattern:'^[0-9]{4}-[0-9]{2}-[0-9]{2}$'};
+const captureProperties={category:{enum:['蚊','蝇','蟑螂','鼠','蜱','恙螨']},speciesName:{type:'string'},methodName:{type:'string'},asOf:dateSchema,dataWindow:{type:'integer',minimum:1,maximum:120},forecastMonths:{type:'integer',minimum:1,maximum:24}};
+export function vectorSkills():SkillDefinition[]{const definitions=buildDomainSkills('vector',{
+ skill_population_dynamics:analyticsSkill('population_dynamics','autoregression-seasonal-capture-v1','按采样方法的月捕获量自回归预测',captureProperties),
+ skill_density_forecast:analyticsSkill('density_gbdt','gradient-boosting-capture-v1','按采样方法的捕获量 GBDT 预测',captureProperties),
+ skill_spatial_early_warning:analyticsSkill('spatial_idw','observed-capture-idw-v1','监测捕获量 IDW 插值（不生成疾病预警）',{category:captureProperties.category,methodName:{type:'string'},asOf:dateSchema,from:dateSchema}),
+ skill_resistance_evaluation:analyticsSkill('resistance_prediction','observed-bioassay-records-v1','抗药性实测记录查询（无模型推断）',{speciesName:{type:'string'},pesticideName:{type:'string'},asOf:dateSchema}),
+ skill_pathogen_risk:analyticsSkill('pathogen_apriori','pcr-record-pair-association-v1','PCR 检测比例与两项关联规则',{speciesName:{type:'string'},pathogenName:{type:'string'},asOf:dateSchema,from:dateSchema}),
+ skill_transmission_risk:analyticsSkill('transmission_risk','observed-transmission-inputs-v1','传播风险输入统计（模型尚未验证）',{diseaseName:{type:'string'},asOf:dateSchema,from:dateSchema}),
+ skill_satscan_spatial:analyticsSkill('satscan_cluster','conditional-poisson-circular-scan-v1','近似圆形空间扫描（非完整 SaTScan）',{category:captureProperties.category,methodName:{type:'string'},year:{type:'integer',minimum:1900,maximum:2100},month:{type:'integer',minimum:1,maximum:12},seed:{type:'integer',minimum:0,maximum:2147483647},numSimulations:{type:'integer',minimum:19,maximum:999},pThreshold:{type:'number',exclusiveMinimum:0,maximum:.1},maxClusterRadiusKm:{type:'number',exclusiveMinimum:0,maximum:500}}),skill_species_composition:analyticsSkill('species_clustering','method-separated-kmeans-capture-v1','物种构成、多样性与探索性 K-Means',{category:captureProperties.category,city:{type:'string'},district:{type:'string'},year:{type:'integer',minimum:1900,maximum:2100},asOf:dateSchema,methodName:{type:'string'}})
+});
+ const backtest=analyticsSkill('vector_backtest','rolling-past-origin-capture-backtest-v1','病媒捕获量滚动回测与季节基线对照',{asOf:dateSchema,methodName:{type:'string'},horizon:{type:'integer',minimum:1,maximum:12},model:{enum:['ar','gbdt']},dataWindow:{type:'integer',minimum:24,maximum:120}});
+ backtest.inputSchema={...backtest.inputSchema,required:['asOf']};
+ return [...definitions,{id:'skill_vector_backtest',aliases:['vector_backtest'],domain:'vector',requirementIds:[23,30],...backtest}];
 }
-export function vectorSkills(){return buildDomainSkills('vector',{skill_species_composition:{availability:'available',name:'物种捕获构成与多样性汇总',description:'按实际捕获数计算物种构成比与Shannon指数；不输出未执行的聚类结论。',method:'observed-species-composition-v1',inputSchema:{type:'object',additionalProperties:false,properties:{category:{enum:['蚊','蝇','蟑螂','鼠','蜱','恙螨']},city:{type:'string'},district:{type:'string'},year:{type:'integer',minimum:1900,maximum:2100}}},outputSchema:{type:'object',required:['type','items','dominantSpecies','shannonWienerIndex'],properties:{type:{const:'SPECIES_COMPOSITION'},items:{type:'array'},dominantSpecies:{type:['string','null']},shannonWienerIndex:{type:['number','null']}}},allowedOperations:['read'],execute:speciesComposition}});}

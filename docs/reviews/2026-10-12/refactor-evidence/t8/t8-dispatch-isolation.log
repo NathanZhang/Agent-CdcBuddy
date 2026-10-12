@@ -1,0 +1,15 @@
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run dispatch
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/dispatch-http.test.ts (4 tests) 73ms
+ ✓ tests/refactor/dispatch.test.ts (12 tests) 128ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  15:32:18
+   Duration  758ms (transform 200ms, setup 0ms, collect 806ms, tests 201ms, environment 0ms, prepare 127ms)
+

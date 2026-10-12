@@ -48,5 +48,6 @@
   "species_clustering": "vector",
   "transmission_risk": "vector",
   "water_health_risk": "env",
-  "water_safety_eval": "env"
+  "water_safety_eval": "env",
+  "vector_backtest": "vector"
 }

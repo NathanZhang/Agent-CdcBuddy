@@ -1,3 +1,7 @@
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {beforeAll,afterAll} from 'vitest';
 import { it,expect,vi,afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST as http } from '@/app/api/agent/dispatch/route';
@@ -7,6 +11,10 @@ import { createSseDecoder } from '@/application/dispatch/sse';
 import { EventSchemas } from '@ag-ui/core';
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
 function llmFixture(){let calls=0;vi.stubEnv('SILICONFLOW_API_KEY','test-only');vi.stubEnv('AGENT_DOMAIN','vector');vi.stubGlobal('fetch',vi.fn(async()=>{calls++;return Response.json({choices:[{message:calls%2?{role:'assistant',content:null,tool_calls:[{id:`call-${calls}`,type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]}:{role:'assistant',content:'{"mode":"answer","replyText":"已读取病媒实测记录，数量见表。"}'}}]});}));return ()=>calls;}
+const traceDirectory=mkdtempSync(join(tmpdir(),'cdc-dispatch-trace-'));
+const previousBusinessPath=process.env.APP_BUSINESS_DB_PATH;
+beforeAll(()=>{process.env.APP_BUSINESS_DB_PATH=join(traceDirectory,'business.db');});
+afterAll(()=>{if(previousBusinessPath===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previousBusinessPath;rmSync(traceDirectory,{recursive:true,force:true});});
 const request=(path:string,body:any)=>new NextRequest(`http://localhost:9567${path}`,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'application/json'}});
 it('HTTP and SSE APIs use server-bound domain and publish real Skill plus AG-UI',async()=>{
  const calls=llmFixture();const body={promptText:'查询总数',domain:'chronic',userRole:'attacker'};

@@ -1,0 +1,105 @@
+
+> agent-cdc-buddy@2.0.0 lint
+> eslint src tests/refactor --max-warnings 0
+
+
+> agent-cdc-buddy@2.0.0 test
+> npm run test:refactor && npm run test:scientific && npm run test:integration && npm run test:baseline
+
+
+> agent-cdc-buddy@2.0.0 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/cdcbuddy-refactor/Agent-CdcBuddy
+
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 93ms
+ ✓ tests/refactor/dispatch.test.ts (12 tests) 161ms
+ ✓ tests/refactor/interaction-skills.test.ts (10 tests) 236ms
+ ✓ tests/refactor/llm-client.test.ts (8 tests) 34ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 24ms
+ ✓ tests/refactor/dispatch-http.test.ts (4 tests) 72ms
+ ✓ tests/refactor/query-gateway.test.ts (14 tests) 25ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 22ms
+ ✓ tests/refactor/agui.test.ts (1 test) 7ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 1082ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  492ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > rolling holdouts are reachable through the main Skill contract with real provenance  308ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 3ms
+ ✓ tests/refactor/results.test.ts (6 tests) 10ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 3ms
+ ✓ tests/refactor/workbench.test.tsx (11 tests) 1909ms
+   ✓ legacy snapshots render their stored values read-only without live fallback metrics or actions  1888ms
+ ✓ tests/refactor/results-ui.test.ts (3 tests) 7ms
+ ✓ tests/refactor/analytics-runner.test.ts (7 tests) 3585ms
+   ✓ timeout and cancellation terminate a running child and release the slot for a real next execution  867ms
+   ✓ timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer  1805ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 9591ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  4500ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  5050ms
+
+ Test Files  17 passed (17)
+      Tests  104 passed (104)
+   Start at  15:34:20
+   Duration  10.46s (transform 1.01s, setup 0ms, collect 4.06s, tests 16.86s, environment 17ms, prepare 1.12s)
+
+
+> agent-cdc-buddy@2.0.0 test:scientific
+> ./.venv/bin/python tests/run_scientific.py
+
+test_actual_payload_and_origin_retained (test_result_contract.ResultContractTests.test_actual_payload_and_origin_retained) ... ok
+test_invalid_success_and_unvalidated_metrics_rejected (test_result_contract.ResultContractTests.test_invalid_success_and_unvalidated_metrics_rejected) ... ok
+test_nonfinite_payload_rejected (test_result_contract.ResultContractTests.test_nonfinite_payload_rejected) ... ok
+test_empty_or_mismatched_genes_rejected (test_result_semantics.ResultSemanticsTests.test_empty_or_mismatched_genes_rejected) ... ok
+test_known_dictionary_candidate_does_not_claim_validated_accuracy (test_result_semantics.ResultSemanticsTests.test_known_dictionary_candidate_does_not_claim_validated_accuracy) ... ok
+test_unknown_city_is_no_data (test_result_semantics.ResultSemanticsTests.test_unknown_city_is_no_data) ... ok
+test_unknown_death_chain_has_no_default_diagnosis (test_result_semantics.ResultSemanticsTests.test_unknown_death_chain_has_no_default_diagnosis) ... ok
+test_water_rate_and_max_derive_from_samples (test_result_semantics.ResultSemanticsTests.test_water_rate_and_max_derive_from_samples) ... ok
+test_zero_positive_remains_zero (test_result_semantics.ResultSemanticsTests.test_zero_positive_remains_zero) ... ok
+test_apriori_pair_support_and_confidence_are_actual_filtered_counts (test_vector_methods.VectorMethods.test_apriori_pair_support_and_confidence_are_actual_filtered_counts) ... ok
+test_cutoff_blocks_future_records_and_keeps_real_training_window (test_vector_methods.VectorMethods.test_cutoff_blocks_future_records_and_keeps_real_training_window) ... ok
+test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older (test_vector_methods.VectorMethods.test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older) ... ok
+test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth (test_vector_methods.VectorMethods.test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth) ... ok
+test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district (test_vector_methods.VectorMethods.test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district) ... ok
+test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number (test_vector_methods.VectorMethods.test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number) ... ok
+test_legacy_composable_graph_cannot_complete_an_unregistered_skill (test_vector_methods.VectorMethods.test_legacy_composable_graph_cannot_complete_an_unregistered_skill) ... ok
+test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts (test_vector_methods.VectorMethods.test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts) ... ok
+test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency (test_vector_methods.VectorMethods.test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency) ... ok
+test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts (test_vector_methods.VectorMethods.test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts) ... ok
+test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles (test_vector_methods.VectorMethods.test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles) ... ok
+test_recent_daily_window_does_not_select_oldest_sixty (test_vector_methods.VectorMethods.test_recent_daily_window_does_not_select_oldest_sixty) ... ok
+test_sampling_methods_are_separate_and_missing_effort_is_explicit (test_vector_methods.VectorMethods.test_sampling_methods_are_separate_and_missing_effort_is_explicit) ... ok
+test_scan_permutation_detects_actual_hotspot_without_forced_radius (test_vector_methods.VectorMethods.test_scan_permutation_detects_actual_hotspot_without_forced_radius) ... ok
+test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters (test_vector_methods.VectorMethods.test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters) ... ok
+test_untrained_lstm_returns_unavailable_without_synthetic_forecasts (test_vector_methods.VectorMethods.test_untrained_lstm_returns_unavailable_without_synthetic_forecasts) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 1.352s
+
+OK
+
+> agent-cdc-buddy@2.0.0 test:integration
+> ./.venv/bin/python tests/run_integration.py
+
+test_manifest_change_takes_effect_without_reimport (test_domain_paths.DomainPathTests.test_manifest_change_takes_effect_without_reimport) ... ok
+test_missing_dataset_is_not_created (test_domain_paths.DomainPathTests.test_missing_dataset_is_not_created) ... ok
+test_foodborne_alias_uses_foodborne_domain (test_domain_paths.TaskRoutingTests.test_foodborne_alias_uses_foodborne_domain) ... ok
+test_explicit_output_isolated_and_seeded (test_fixture_isolation.FixtureIsolationTests.test_explicit_output_isolated_and_seeded) ... ok
+test_import_has_no_filesystem_side_effects (test_fixture_isolation.FixtureIsolationTests.test_import_has_no_filesystem_side_effects) ... ok
+test_actual_cli_protocol_and_explicit_dataset (test_graph_contract.GraphContracts.test_actual_cli_protocol_and_explicit_dataset) ... ok
+test_protocol_cannot_spoof_dataset_origin (test_graph_contract.GraphContracts.test_protocol_cannot_spoof_dataset_origin) ... ok
+test_registry_has_no_duplicate_hub_and_rejects_unknown_graph (test_graph_contract.GraphContracts.test_registry_has_no_duplicate_hub_and_rejects_unknown_graph) ... ok
+test_task_arguments_reject_nonfinite_and_nonobject (test_graph_contract.GraphContracts.test_task_arguments_reject_nonfinite_and_nonobject) ... ok
+test_snapshot_writes_never_reach_source (test_legacy_isolation.LegacyIsolationTests.test_snapshot_writes_never_reach_source) ... ok
+test_empty_selected_suite_fails (test_test_runners.RunnerTests.test_empty_selected_suite_fails) ... ok
+test_unknown_selection_is_not_a_success (test_test_runners.RunnerTests.test_unknown_selection_is_not_a_success) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 3.031s
+
+OK
+
+> agent-cdc-buddy@2.0.0 test:baseline
+> ./.venv/bin/python tests/run_isolated_legacy.py
+
+Legacy regression: 44/44; source databases unchanged=True

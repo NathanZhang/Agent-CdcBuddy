@@ -1,0 +1,628 @@
+{
+  "interaction": {
+    "userInput": "重新执行郑州市诱蚊灯法月捕获量自回归预测：截止2023-12-31，最近36个观测月，预测截止日期之后的2个月。列出实际训练期、预测月份和数据限制。",
+    "kind": "conversation"
+  },
+  "result": {
+    "runId": "b13996ce-c37d-4b73-abd5-384b3915ade1",
+    "interactionId": "b4cdd6e7-89c4-4828-9438-400a9536cc1d",
+    "status": "SUCCESS",
+    "replyText": "已重新执行郑州市诱蚊灯法月捕获量自回归预测（方法：autoregression-seasonal-capture-v1，分析截止：2023-12-31）。\n\n实际训练期：2020-05 至 2023-10，共 24 个观测月、753 条监测记录；未达到请求的最近 36 个观测月，原因是截至 2023-12-31 可用有效观测月为 24 个月，且监测日历存在缺口。\n\n预测月份：\n- 2024-01：15.8799 captures/record\n- 2024-02：22.2870 captures/record\n\n单位：captures/record，即按监测记录折算的捕获量，不是标准化密度。\n\n数据限制：捕获量未标准化；采样努力量不可用；采样单位语义未验证；监测日历存在缺口；缺失月份按递归外推处理；训练拟合结果不等同于回测验证；天气相关性不可用。",
+    "agui": [
+      {
+        "version": "1",
+        "runId": "b13996ce-c37d-4b73-abd5-384b3915ade1",
+        "component": "ANALYTICS_RESULT",
+        "result": {
+          "schemaVersion": "1",
+          "runId": "b13996ce-c37d-4b73-abd5-384b3915ade1",
+          "domain": "vector",
+          "status": "SUCCESS",
+          "method": "autoregression-seasonal-capture-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "observed",
+              "version": "existing-snapshot-2026-10-12",
+              "asOf": "2026-10-12",
+              "schemaVersion": "1"
+            }
+          ],
+          "payload": {
+            "type": "ANALYTICS_RESULT",
+            "title": "按采样方法的月捕获量自回归预测",
+            "data": {
+              "status": "SUCCESS",
+              "method": "autoregression-seasonal-capture-v1",
+              "asOf": "2023-12-31",
+              "groups": [
+                {
+                  "methodName": "诱蚊灯法",
+                  "city": "郑州市",
+                  "unit": "captures/record",
+                  "status": "SUCCESS",
+                  "trainingWindow": {
+                    "start": "2020-05",
+                    "end": "2023-10",
+                    "asOf": "2023-12-31",
+                    "periods": 24,
+                    "sampleCount": 753
+                  },
+                  "history": [
+                    {
+                      "period": "2020-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 4.62962962962963,
+                      "captureCount": 125,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 2.5510204081632653
+                    },
+                    {
+                      "period": "2020-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.375,
+                      "captureCount": 332,
+                      "sampleCount": 32,
+                      "effortRecords": 32,
+                      "samplingUnitRatio": 5.928571428571429
+                    },
+                    {
+                      "period": "2020-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 16.59375,
+                      "captureCount": 531,
+                      "sampleCount": 32,
+                      "effortRecords": 32,
+                      "samplingUnitRatio": 9.155172413793103
+                    },
+                    {
+                      "period": "2020-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.318181818181818,
+                      "captureCount": 542,
+                      "sampleCount": 44,
+                      "effortRecords": 44,
+                      "samplingUnitRatio": 7.131578947368421
+                    },
+                    {
+                      "period": "2020-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.195121951219512,
+                      "captureCount": 254,
+                      "sampleCount": 41,
+                      "effortRecords": 41,
+                      "samplingUnitRatio": 3.3866666666666667
+                    },
+                    {
+                      "period": "2020-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 2.72,
+                      "captureCount": 68,
+                      "sampleCount": 25,
+                      "effortRecords": 25,
+                      "samplingUnitRatio": 1.5454545454545454
+                    },
+                    {
+                      "period": "2020-11",
+                      "methodName": "诱蚊灯法",
+                      "value": 4,
+                      "captureCount": 4,
+                      "sampleCount": 1,
+                      "effortRecords": 1,
+                      "samplingUnitRatio": 4
+                    },
+                    {
+                      "period": "2021-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 8.785714285714286,
+                      "captureCount": 246,
+                      "sampleCount": 28,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 4.555555555555555
+                    },
+                    {
+                      "period": "2021-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 7.962962962962963,
+                      "captureCount": 215,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 4.673913043478261
+                    },
+                    {
+                      "period": "2021-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 9.129032258064516,
+                      "captureCount": 283,
+                      "sampleCount": 31,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 5.1454545454545455
+                    },
+                    {
+                      "period": "2021-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 5.8,
+                      "captureCount": 174,
+                      "sampleCount": 30,
+                      "effortRecords": 30,
+                      "samplingUnitRatio": 3.3461538461538463
+                    },
+                    {
+                      "period": "2021-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 8.382352941176471,
+                      "captureCount": 285,
+                      "sampleCount": 34,
+                      "effortRecords": 34,
+                      "samplingUnitRatio": 5
+                    },
+                    {
+                      "period": "2021-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 4.178571428571429,
+                      "captureCount": 117,
+                      "sampleCount": 28,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 2.25
+                    },
+                    {
+                      "period": "2022-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.409090909090909,
+                      "captureCount": 141,
+                      "sampleCount": 22,
+                      "effortRecords": 21,
+                      "samplingUnitRatio": 2.4716981132075473
+                    },
+                    {
+                      "period": "2022-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.363636363636363,
+                      "captureCount": 408,
+                      "sampleCount": 33,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 3.5576923076923075
+                    },
+                    {
+                      "period": "2022-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 17.711111111111112,
+                      "captureCount": 797,
+                      "sampleCount": 45,
+                      "effortRecords": 25,
+                      "samplingUnitRatio": 2.7291666666666665
+                    },
+                    {
+                      "period": "2022-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.88888888888889,
+                      "captureCount": 464,
+                      "sampleCount": 36,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 3.107142857142857
+                    },
+                    {
+                      "period": "2022-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.6,
+                      "captureCount": 318,
+                      "sampleCount": 30,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 3.230769230769231
+                    },
+                    {
+                      "period": "2023-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 3.8484848484848486,
+                      "captureCount": 127,
+                      "sampleCount": 33,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 2.0925925925925926
+                    },
+                    {
+                      "period": "2023-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.552631578947368,
+                      "captureCount": 401,
+                      "sampleCount": 38,
+                      "effortRecords": 30,
+                      "samplingUnitRatio": 3.2264150943396226
+                    },
+                    {
+                      "period": "2023-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.545454545454545,
+                      "captureCount": 348,
+                      "sampleCount": 33,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 4.078431372549019
+                    },
+                    {
+                      "period": "2023-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 7.911111111111111,
+                      "captureCount": 356,
+                      "sampleCount": 45,
+                      "effortRecords": 39,
+                      "samplingUnitRatio": 2.6133333333333333
+                    },
+                    {
+                      "period": "2023-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 3.774193548387097,
+                      "captureCount": 117,
+                      "sampleCount": 31,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 1.8870967741935485
+                    },
+                    {
+                      "period": "2023-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.703703703703703,
+                      "captureCount": 181,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 3.62
+                    }
+                  ],
+                  "forecasts": [
+                    {
+                      "period": "2024-01",
+                      "value": 15.879855179674793,
+                      "nonnegativeConstraintApplied": false
+                    },
+                    {
+                      "period": "2024-02",
+                      "value": 22.286958908001516,
+                      "nonnegativeConstraintApplied": false
+                    }
+                  ],
+                  "trainingR2": 0.6913759464796476,
+                  "trainingRmse": 2.418732328836474,
+                  "factorWeights": null,
+                  "qualityFlags": [
+                    "capture-count-not-standard-density",
+                    "missing-months-recursively-extrapolated",
+                    "sampling-effort-unavailable",
+                    "sampling-unit-semantics-not-validated",
+                    "gaps-in-monitoring-calendar"
+                  ]
+                }
+              ],
+              "trend": [],
+              "r2Score": 0.6913759464796476,
+              "weatherCorrelation": {
+                "tempCorr": null,
+                "humidityCorr": null
+              },
+              "qualityFlags": [
+                "capture-count-not-standard-density",
+                "training-fit-is-not-backtest"
+              ],
+              "metrics": {}
+            }
+          },
+          "metrics": {},
+          "qualityFlags": [
+            "capture-count-not-standard-density",
+            "training-fit-is-not-backtest"
+          ]
+        }
+      }
+    ],
+    "skillRuns": [
+      {
+        "callId": "call_adc783d15f8a45beba5f38b8",
+        "skillId": "skill_population_dynamics",
+        "skillName": "按采样方法的月捕获量自回归预测",
+        "args": {
+          "city": "郑州市",
+          "category": "蚊",
+          "methodName": "诱蚊灯法",
+          "asOf": "2023-12-31",
+          "dataWindow": 36,
+          "forecastMonths": 2
+        },
+        "result": {
+          "schemaVersion": "1",
+          "runId": "b13996ce-c37d-4b73-abd5-384b3915ade1",
+          "domain": "vector",
+          "status": "SUCCESS",
+          "method": "autoregression-seasonal-capture-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "observed",
+              "version": "existing-snapshot-2026-10-12",
+              "asOf": "2026-10-12",
+              "schemaVersion": "1"
+            }
+          ],
+          "payload": {
+            "type": "ANALYTICS_RESULT",
+            "title": "按采样方法的月捕获量自回归预测",
+            "data": {
+              "status": "SUCCESS",
+              "method": "autoregression-seasonal-capture-v1",
+              "asOf": "2023-12-31",
+              "groups": [
+                {
+                  "methodName": "诱蚊灯法",
+                  "city": "郑州市",
+                  "unit": "captures/record",
+                  "status": "SUCCESS",
+                  "trainingWindow": {
+                    "start": "2020-05",
+                    "end": "2023-10",
+                    "asOf": "2023-12-31",
+                    "periods": 24,
+                    "sampleCount": 753
+                  },
+                  "history": [
+                    {
+                      "period": "2020-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 4.62962962962963,
+                      "captureCount": 125,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 2.5510204081632653
+                    },
+                    {
+                      "period": "2020-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.375,
+                      "captureCount": 332,
+                      "sampleCount": 32,
+                      "effortRecords": 32,
+                      "samplingUnitRatio": 5.928571428571429
+                    },
+                    {
+                      "period": "2020-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 16.59375,
+                      "captureCount": 531,
+                      "sampleCount": 32,
+                      "effortRecords": 32,
+                      "samplingUnitRatio": 9.155172413793103
+                    },
+                    {
+                      "period": "2020-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.318181818181818,
+                      "captureCount": 542,
+                      "sampleCount": 44,
+                      "effortRecords": 44,
+                      "samplingUnitRatio": 7.131578947368421
+                    },
+                    {
+                      "period": "2020-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.195121951219512,
+                      "captureCount": 254,
+                      "sampleCount": 41,
+                      "effortRecords": 41,
+                      "samplingUnitRatio": 3.3866666666666667
+                    },
+                    {
+                      "period": "2020-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 2.72,
+                      "captureCount": 68,
+                      "sampleCount": 25,
+                      "effortRecords": 25,
+                      "samplingUnitRatio": 1.5454545454545454
+                    },
+                    {
+                      "period": "2020-11",
+                      "methodName": "诱蚊灯法",
+                      "value": 4,
+                      "captureCount": 4,
+                      "sampleCount": 1,
+                      "effortRecords": 1,
+                      "samplingUnitRatio": 4
+                    },
+                    {
+                      "period": "2021-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 8.785714285714286,
+                      "captureCount": 246,
+                      "sampleCount": 28,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 4.555555555555555
+                    },
+                    {
+                      "period": "2021-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 7.962962962962963,
+                      "captureCount": 215,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 4.673913043478261
+                    },
+                    {
+                      "period": "2021-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 9.129032258064516,
+                      "captureCount": 283,
+                      "sampleCount": 31,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 5.1454545454545455
+                    },
+                    {
+                      "period": "2021-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 5.8,
+                      "captureCount": 174,
+                      "sampleCount": 30,
+                      "effortRecords": 30,
+                      "samplingUnitRatio": 3.3461538461538463
+                    },
+                    {
+                      "period": "2021-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 8.382352941176471,
+                      "captureCount": 285,
+                      "sampleCount": 34,
+                      "effortRecords": 34,
+                      "samplingUnitRatio": 5
+                    },
+                    {
+                      "period": "2021-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 4.178571428571429,
+                      "captureCount": 117,
+                      "sampleCount": 28,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 2.25
+                    },
+                    {
+                      "period": "2022-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.409090909090909,
+                      "captureCount": 141,
+                      "sampleCount": 22,
+                      "effortRecords": 21,
+                      "samplingUnitRatio": 2.4716981132075473
+                    },
+                    {
+                      "period": "2022-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.363636363636363,
+                      "captureCount": 408,
+                      "sampleCount": 33,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 3.5576923076923075
+                    },
+                    {
+                      "period": "2022-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 17.711111111111112,
+                      "captureCount": 797,
+                      "sampleCount": 45,
+                      "effortRecords": 25,
+                      "samplingUnitRatio": 2.7291666666666665
+                    },
+                    {
+                      "period": "2022-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 12.88888888888889,
+                      "captureCount": 464,
+                      "sampleCount": 36,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 3.107142857142857
+                    },
+                    {
+                      "period": "2022-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.6,
+                      "captureCount": 318,
+                      "sampleCount": 30,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 3.230769230769231
+                    },
+                    {
+                      "period": "2023-05",
+                      "methodName": "诱蚊灯法",
+                      "value": 3.8484848484848486,
+                      "captureCount": 127,
+                      "sampleCount": 33,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 2.0925925925925926
+                    },
+                    {
+                      "period": "2023-06",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.552631578947368,
+                      "captureCount": 401,
+                      "sampleCount": 38,
+                      "effortRecords": 30,
+                      "samplingUnitRatio": 3.2264150943396226
+                    },
+                    {
+                      "period": "2023-07",
+                      "methodName": "诱蚊灯法",
+                      "value": 10.545454545454545,
+                      "captureCount": 348,
+                      "sampleCount": 33,
+                      "effortRecords": 28,
+                      "samplingUnitRatio": 4.078431372549019
+                    },
+                    {
+                      "period": "2023-08",
+                      "methodName": "诱蚊灯法",
+                      "value": 7.911111111111111,
+                      "captureCount": 356,
+                      "sampleCount": 45,
+                      "effortRecords": 39,
+                      "samplingUnitRatio": 2.6133333333333333
+                    },
+                    {
+                      "period": "2023-09",
+                      "methodName": "诱蚊灯法",
+                      "value": 3.774193548387097,
+                      "captureCount": 117,
+                      "sampleCount": 31,
+                      "effortRecords": 31,
+                      "samplingUnitRatio": 1.8870967741935485
+                    },
+                    {
+                      "period": "2023-10",
+                      "methodName": "诱蚊灯法",
+                      "value": 6.703703703703703,
+                      "captureCount": 181,
+                      "sampleCount": 27,
+                      "effortRecords": 27,
+                      "samplingUnitRatio": 3.62
+                    }
+                  ],
+                  "forecasts": [
+                    {
+                      "period": "2024-01",
+                      "value": 15.879855179674793,
+                      "nonnegativeConstraintApplied": false
+                    },
+                    {
+                      "period": "2024-02",
+                      "value": 22.286958908001516,
+                      "nonnegativeConstraintApplied": false
+                    }
+                  ],
+                  "trainingR2": 0.6913759464796476,
+                  "trainingRmse": 2.418732328836474,
+                  "factorWeights": null,
+                  "qualityFlags": [
+                    "capture-count-not-standard-density",
+                    "missing-months-recursively-extrapolated",
+                    "sampling-effort-unavailable",
+                    "sampling-unit-semantics-not-validated",
+                    "gaps-in-monitoring-calendar"
+                  ]
+                }
+              ],
+              "trend": [],
+              "r2Score": 0.6913759464796476,
+              "weatherCorrelation": {
+                "tempCorr": null,
+                "humidityCorr": null
+              },
+              "qualityFlags": [
+                "capture-count-not-standard-density",
+                "training-fit-is-not-backtest"
+              ],
+              "metrics": {}
+            }
+          },
+          "metrics": {},
+          "qualityFlags": [
+            "capture-count-not-standard-density",
+            "training-fit-is-not-backtest"
+          ]
+        }
+      }
+    ]
+  }
+}

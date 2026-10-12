@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import {AnalyticsResultCard} from './AnalyticsResultCard';
 import { VectorMapComponent } from './VectorMapComponent';
 import { DensityTrendChart } from './DensityTrendChart';
 import { SpeciesCompositionChart } from './SpeciesCompositionChart';
@@ -66,6 +67,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
     <div className={containerClasses} data-run-id={view.runId}>
       <div className="flex flex-wrap gap-2 text-xs px-3 py-2 text-slate-500">{sourceLabels(view.datasets).map(label=><span key={label}>{label}</span>)}{view.qualityFlags?.includes('legacy-unverified')&&<span className="text-amber-600">历史快照：结果尚未按新执行协议验证</span>}{view.status&&view.status!=='SUCCESS'&&<span>{view.status}</span>}</div>
       {view.type==='AGUI_RESULT_GROUP'&&view.views.map((child:any,index:number)=><GenerativeComponentRenderer key={index} view={child} isCompact={isCompact}/>)}
+      {view.type==='ANALYTICS_RESULT'&&<AnalyticsResultCard data={view}/>}
       {view.type==='COLLECTION_FORM'&&<MobileSimulationModal data={view}/>}
       {view.type==='ARTIFACT_DOWNLOAD'&&<div className="p-5"><h3 className="font-semibold">导出文件</h3><a href={view.downloadUrl} className="text-sky-600 underline" download>{view.fileName}</a><p className="text-xs text-slate-500 mt-2">{view.byteLength} 字节</p></div>}
       {view.type==='SESSION_RESULT'&&<div className="p-5"><h3 className="font-semibold">会话管理</h3>{view.sessions?.map((session:any)=><p key={session.sessionId}>{session.title} · {session.messageCount} 条消息</p>)}{view.session&&<p>{view.session.title}</p>}</div>}

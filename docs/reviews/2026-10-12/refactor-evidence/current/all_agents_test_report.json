@@ -1,5 +1,5 @@
 {
-  "execution_time": "2026-10-12T14:37:01.392980",
+  "execution_time": "2026-10-12T15:34:37.464301",
   "suites": {
     "vector": {
       "name": "病媒生物与宿主动物监测预警智能体",
@@ -29,5 +29,6 @@
   "total_tests": 44,
   "total_passed": 44,
   "total_failed": 0,
-  "overall_status": "PASSED"
+  "overall_status": "PASSED",
+  "interpretation": "Compatibility/status regression only; passing unavailable/refusal cases does not mean all requirements implemented or scientific accuracy validated"
 }

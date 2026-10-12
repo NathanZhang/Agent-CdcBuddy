@@ -3,7 +3,8 @@ import os
 import json
 import argparse
 
-# 确保导入同目录模块
+# 确保直接 CLI 与包调用使用同一导入路径
+sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from population_dynamics import calculate_population_dynamics
@@ -32,98 +33,28 @@ def execute_task(task,args,db_path):
     result = {}
     if task in GRAPH_TASKS:
         return invoke_graph(task,db_path,args,os.environ.get("APP_BUSINESS_DB_PATH") or os.path.join(ROOT,"app_business.db"))
-    if task == "population_dynamics":
-        result = calculate_population_dynamics(
-            db_path=db_path,
-            category=args.get("category", "蚊"),
-            species_name=args.get("speciesName"),
-            city=args.get("city"),
-            forecast_months=int(args.get("forecastMonths", 3))
-        )
-    elif task == "species_clustering":
-        result = calculate_species_clustering(
-            db_path=db_path,
-            category=args.get("category", "蚊"),
-            city=args.get("city"),
-            year=args.get("year")
-        )
-    elif task == "resistance_prediction":
-        result = calculate_resistance_prediction(
-            db_path=db_path,
-            species_name=args.get("speciesName"),
-            pesticide_name=args.get("pesticideName"),
-            city=args.get("city")
-        )
-    elif task == "pathogen_apriori":
-        result = calculate_pathogen_risk_apriori(
-            db_path=db_path,
-            pathogen_name=args.get("pathogenName"),
-            species_name=args.get("speciesName"),
-            city=args.get("city")
-        )
-    elif task == "density_gbdt":
-        result = calculate_gbdt_density_forecast(
-            db_path=db_path,
-            category=args.get("category", "蚊"),
-            city=args.get("city"),
-            forecast_months=int(args.get("forecastMonths", 2))
-        )
-    elif task == "spatial_idw":
-        result = calculate_spatial_idw(
-            db_path=db_path,
-            city=args.get("city"),
-            category=args.get("category", "蚊"),
-            district=args.get("district")
-        )
-    elif task == "transmission_risk":
-        result = calculate_transmission_risk(
-            db_path=db_path,
-            city=args.get("city", "郑州市"),
-            disease_name=args.get("diseaseName", "登革热 (Dengue Fever)")
-        )
-    elif task == "resistance_evolution":
-        result = calculate_resistance_evolution(
-            db_path=db_path,
-            species_name=args.get("speciesName", "淡色库蚊"),
-            pesticide_name=args.get("pesticideName", "氯氰菊酯")
-        )
-    elif task == "satscan_cluster":
-        result = calculate_satscan_spatial_clusters(
-            db_path=db_path,
-            year=int(args.get("year", 2022)),
-            month=int(args.get("month", 3)),
-            category=args.get("category", "蚊"),
-            max_cluster_radius_km=float(args.get("maxClusterRadiusKm", 120.0)),
-            p_threshold=float(args.get("pThreshold", 0.05))
-        )
-    elif task == "lstm_predictor":
-        result = calculate_lstm_short_term_forecast(
-            db_path=db_path,
-            target_cities=args.get("targetCities"),
-            category=args.get("category", "蚊"),
-            forecast_days=int(args.get("forecastDays", 7)),
-            start_date_str=args.get("startDateStr", "2022-04-01")
-        )
-    elif task in ["satscan_cluster", "satscan_spatial", "satscan_spatial_standalone"]:
-        from satscan_cluster import run_satscan_spatial_standalone
-        result = run_satscan_spatial_standalone(
-            db_path=db_path,
-            year=int(args.get("year", 2022)),
-            month=int(args.get("month", 6)),
-            category=args.get("category", "蚊"),
-            max_cluster_radius_km=float(args.get("maxRadiusKm", 120.0)),
-            p_threshold=float(args.get("pThreshold", 0.05))
-        )
-    elif task in ["lstm_predictor", "lstm_forecast", "lstm_predictor_standalone"]:
-        from lstm_predictor import run_lstm_predictor_standalone
-        result = run_lstm_predictor_standalone(
-            db_path=db_path,
-            target_cities=args.get("targetCities"),
-            city=args.get("city"),
-            category=args.get("category", "蚊"),
-            forecast_days=int(args.get("forecastDays", 7)),
-            start_date_str=args.get("startDateStr", "2022-06-01")
-        )
+    if task in ('population_dynamics','density_gbdt'):
+        func=calculate_population_dynamics if task=='population_dynamics' else calculate_gbdt_density_forecast
+        result=func(db_path=db_path,category=args.get('category','蚊'),city=args.get('city'),district=args.get('district'),as_of=args.get('asOf'),method_name=args.get('methodName'),data_window=int(args.get('dataWindow',60)),forecast_months=int(args.get('forecastMonths',3 if task=='population_dynamics' else 2)),species_name=args.get('speciesName'))
+    elif task=='species_clustering':
+        result=calculate_species_clustering(db_path,category=args.get('category','蚊'),city=args.get('city'),district=args.get('district'),as_of=args.get('asOf'),method_name=args.get('methodName'),year=args.get('year'))
+    elif task=='resistance_prediction':
+        result=calculate_resistance_prediction(db_path,species_name=args.get('speciesName'),pesticide_name=args.get('pesticideName'),city=args.get('city'),district=args.get('district'),as_of=args.get('asOf'))
+    elif task=='pathogen_apriori':
+        result=calculate_pathogen_risk_apriori(db_path,pathogen_name=args.get('pathogenName'),species_name=args.get('speciesName'),city=args.get('city'),district=args.get('district'),as_of=args.get('asOf'),from_date=args.get('from'))
+    elif task=='spatial_idw':
+        result=calculate_spatial_idw(db_path,city=args.get('city'),district=args.get('district'),category=args.get('category','蚊'),as_of=args.get('asOf'),from_date=args.get('from'),method_name=args.get('methodName'))
+    elif task=='transmission_risk':
+        result=calculate_transmission_risk(db_path,city=args.get('city'),district=args.get('district'),disease_name=args.get('diseaseName'),as_of=args.get('asOf'),from_date=args.get('from'))
+    elif task=='resistance_evolution':
+        result=calculate_resistance_evolution(db_path,species_name=args.get('speciesName'),pesticide_name=args.get('pesticideName'),city=args.get('city'),district=args.get('district'),as_of=args.get('asOf'))
+    elif task in ('satscan_cluster','satscan_spatial','satscan_spatial_standalone'):
+        result=calculate_satscan_spatial_clusters(db_path,year=int(args.get('year',2022)),month=int(args.get('month',3)),category=args.get('category','蚊'),city=args.get('city'),district=args.get('district'),method_name=args.get('methodName'),seed=int(args.get('seed',42)),num_simulations=int(args.get('numSimulations',99)),max_cluster_radius_km=float(args.get('maxClusterRadiusKm',120)),p_threshold=float(args.get('pThreshold',.05)))
+    elif task in ('lstm_predictor','lstm_forecast','lstm_predictor_standalone'):
+        result=calculate_lstm_short_term_forecast(db_path)
+    elif task=='vector_backtest':
+        from analytics_engine.vector_backtest import evaluate_vector_forecast
+        result=evaluate_vector_forecast('vector-monitoring',args['asOf'],int(args.get('horizon',1)),db_path=db_path,city=args.get('city'),district=args.get('district'),method_name=args.get('methodName'),data_window=int(args.get('dataWindow',60)),model=args.get('model','ar'))
     elif task in ["foodborne_cluster_detect", "foodborne_clusters"]:
         from foodborne.outbreak_scanner import scan_outbreak_clusters
         fb_db = db_path

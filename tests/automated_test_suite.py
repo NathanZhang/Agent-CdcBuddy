@@ -23,6 +23,7 @@ from datetime import datetime
 
 # 确保引入 analytics_engine 模块
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, "analytics_engine"))
 
 from population_dynamics import calculate_population_dynamics
@@ -121,225 +122,79 @@ class VectorSurveillanceTestSuite:
     # 序号 23: 种群动态模型
     # --------------------------------------------------------------------------
     def test_req_23_population_dynamics(self, r: TestResult):
-        r.scenario = "全省蚊媒密度随气温变化的季节消长规律及未来3个月ARIMA时序预测"
-        res = calculate_population_dynamics(
-            db_path=VECTOR_DB_PATH,
-            category="蚊",
-            species_name=None,
-            city=None,
-            forecast_months=3
-        )
-        r.assert_true("trend" in res and len(res["trend"]) > 0, "返回时序趋势点集且非空")
-        r.assert_true("r2Score" in res, "模型计算拟合优度 R^2 指标")
-        r.assert_in_range(res["r2Score"], 0.60, 1.00, "时间序列自回归模型拟合优度 R² >= 0.60")
-        
-        trend = res["trend"]
-        hist_points = [p for p in trend if "historicalValue" in p]
-        pred_points = [p for p in trend if "predictedValue" in p]
-        
-        r.assert_true(len(hist_points) >= 12, f"历史监测月度样本量充足 (共 {len(hist_points)} 个月)")
-        r.assert_true(len(pred_points) == 3, f"成功预测未来 3 个月波动曲线 (共 {len(pred_points)} 点)")
-        
-        for p in pred_points:
-            r.assert_true(p["lowerBound"] <= p["predictedValue"] <= p["upperBound"], 
-                          f"预测值 {p['predictedValue']} 处于 95% 置信区间 [{p['lowerBound']}, {p['upperBound']}]")
-            r.assert_true("avgTemp" in p and "avgHumidity" in p, "关联预测月份气象温湿度基线")
-
-        corr = res.get("weatherCorrelation", {})
-        r.assert_in_range(corr.get("tempCorr", 0.0), -1.0, 1.0, "气温皮尔逊相关系数处于 [-1, 1] 区间")
-        r.assert_in_range(corr.get("humidityCorr", 0.0), -1.0, 1.0, "湿度皮尔逊相关系数处于 [-1, 1] 区间")
-        
-        r.metrics = {
-            "r2Score": res["r2Score"],
-            "historicalMonths": len(hist_points),
-            "forecastMonths": len(pred_points),
-            "tempCorrelation": corr.get("tempCorr"),
-            "humidityCorrelation": corr.get("humidityCorr")
-        }
+        r.scenario='子能力回归：按方法、截止月份的实际 AR 捕获预测（非完整 ARIMA）'
+        res=calculate_population_dynamics(VECTOR_DB_PATH,city='郑州市',method_name='诱蚊灯法',as_of='2023-12-31',forecast_months=3)
+        r.assert_true(res['status']=='SUCCESS','真实 AR 训练执行')
+        g=res['groups'][0]
+        r.assert_true(g['trainingWindow']['end']<='2023-12','不使用截止点后数据')
+        r.assert_true(len(g['forecasts'])==3,'实际三个未来月预测')
+        r.assert_true(g['unit']=='captures/record','不冒充标准密度')
+        r.assert_true(g['trainingR2'] is None or g['trainingR2']<=1,'保留真实拟合值，允许负值')
+        r.metrics={'coverage':'partial AR capture forecast','trainingR2':g['trainingR2'],'periods':g['trainingWindow']['periods']}
 
     # --------------------------------------------------------------------------
     # 序号 24: 种群识别模型
     # --------------------------------------------------------------------------
     def test_req_24_species_clustering(self, r: TestResult):
-        r.scenario = "郑州市蚊类优势种群构成比（白纹伊蚊 vs 淡色库蚊）识别与 K-Means 聚类"
-        res = calculate_species_clustering(
-            db_path=VECTOR_DB_PATH,
-            category="蚊",
-            city="郑州市"
-        )
-        r.assert_true("items" in res and len(res["items"]) > 0, "物种构成比分析结果非空")
-        r.assert_true("dominantSpecies" in res and len(res["dominantSpecies"]) > 0, "准确识别绝对优势种群")
-        r.assert_true("shannonWienerIndex" in res, "计算 Shannon-Wiener 物种多样性指数")
-        r.assert_in_range(res["shannonWienerIndex"], 0.1, 5.0, "物种多样性指数处于合理范围")
-        
-        comp = res["items"]
-        total_pct = sum(item["percentage"] for item in comp)
-        r.assert_almost_equal(total_pct, 100.0, 1.5, "所有物种构成比百分比总和为 100%")
-        
-        species_names = [item["speciesName"] for item in comp]
-        r.assert_true(any("蚊" in name for name in species_names), "成功识别主要蚊类媒介物种构成")
-        
-        r.assert_true("clusters" in res and len(res["clusters"]) > 0, "K-Means 空间聚类划分簇群")
-        for cl in res["clusters"]:
-            r.assert_true("clusterId" in cl and "dominantSpecies" in cl and "samplePointCount" in cl, "聚类簇数据结构完整")
-
-        r.metrics = {
-            "dominantSpecies": res["dominantSpecies"],
-            "shannonWienerIndex": res["shannonWienerIndex"],
-            "speciesCount": len(comp),
-            "clustersCount": len(res["clusters"])
-        }
+        r.scenario='子能力回归：实际构成比、Shannon 与按采样方法的探索性 K-Means'
+        res=calculate_species_clustering(VECTOR_DB_PATH,city='郑州市')
+        r.assert_true(res['status']=='SUCCESS','构成与聚类执行')
+        r.assert_almost_equal(sum(i['percentage'] for i in res['items']),100,1e-8,'捕获构成分母正确')
+        r.assert_true(res['shannonWienerIndex']>=0,'Shannon 指数非负')
+        r.assert_true(bool(res['clusters']),'实际有效分组')
+        r.assert_true(all('densityLevel' not in g for g in res['clusters']),'簇编号不映射伪风险等级')
+        r.metrics={'speciesCount':len(res['items']),'clustersCount':len(res['clusters']),'coverage':'exploratory only'}
 
     # --------------------------------------------------------------------------
     # 序号 25: 抗药性预测模型
     # --------------------------------------------------------------------------
     def test_req_25_resistance_prediction(self, r: TestResult):
-        r.scenario = "输入杀虫剂类型与监测点数据，预测病媒生物耐药等级（敏感/中抗/高抗）并推荐消杀用药处方"
-        res = calculate_resistance_prediction(
-            db_path=VECTOR_DB_PATH,
-            species_name="家蝇",
-            pesticide_name="高效氯氰菊酯"
-        )
-        r.assert_true("items" in res and len(res["items"]) > 0, "查询到抗药性历史生物测定及预测记录")
-        
-        valid_levels = {"敏感", "低抗", "中抗", "高抗"}
-        for item in res["items"][:5]:
-            r.assert_true(item["resistanceLevel"] in valid_levels, f"耐药等级 '{item['resistanceLevel']}' 符合国家分级规范")
-            r.assert_in_range(item["predictionConfidence"], 0.5, 1.0, "预测置信度处于 [0.5, 1.0]")
-            r.assert_true(len(item.get("guidelineRecommendation", "")) > 10, "生成具有指导意义的科学消杀轮换处方")
-
-        r.assert_true("rotationSuggestions" in res and len(res["rotationSuggestions"]) > 0, "生成宏观抗药性轮换建议清单")
-        r.metrics = {
-            "evaluatedRecords": len(res["items"]),
-            "topSpecies": res["items"][0]["speciesName"],
-            "topPesticide": res["items"][0]["pesticideName"],
-            "topLevel": res["items"][0]["resistanceLevel"],
-            "topConfidence": res["items"][0]["predictionConfidence"],
-            "topRecommendation": res["items"][0]["guidelineRecommendation"][:30] + "..."
-        }
+        r.scenario='子能力回归：查询实测生测记录，模型置信度与用药建议未验证'
+        res=calculate_resistance_prediction(VECTOR_DB_PATH)
+        conn=sqlite3.connect(VECTOR_DB_PATH)
+        n=conn.execute('SELECT COUNT(*) FROM fact_insecticide_resistance').fetchone()[0];conn.close()
+        r.assert_true(len(res['items'])==min(100,n),'实测记录总量与数据库相符')
+        r.assert_true(all(i['predictionConfidence'] is None for i in res['items']),'缺少模型不能生成置信度')
+        r.assert_true(res['rotationSuggestions']==[],'不能伪造用药轮换建议')
+        r.metrics={'recordCount':len(res['items']),'coverage':'observed records; prediction unavailable'}
 
     # --------------------------------------------------------------------------
     # 序号 26: 病原携带风险评估模型
     # --------------------------------------------------------------------------
     def test_req_26_pathogen_risk(self, r: TestResult):
-        r.scenario = "整合病媒 PCR 检测结果与宿主分布，通过 Apriori 关联规则挖掘高风险病原组合"
-        res = calculate_pathogen_risk_apriori(
-            db_path=VECTOR_DB_PATH,
-            pathogen_name="登革病毒",
-            species_name="淡色库蚊"
-        )
-        r.assert_true("items" in res and len(res["items"]) > 0, "识别高风险媒介与病原组合")
-        r.assert_true("associationRules" in res and len(res["associationRules"]) > 0, "Apriori 频繁项集关联挖掘规则生成成功")
-        
-        for item in res["items"][:5]:
-            r.assert_true("speciesName" in item and "pathogenName" in item, "包含靶标媒介与病原体信息")
-            r.assert_in_range(item.get("positivityRate", 0.0), 0.0, 100.0, "PCR 阳性率计算在 [0%, 100%]")
-            r.assert_true("associatedDisease" in item and len(item["associatedDisease"]) > 0, "精准关联对应的法定传染病")
-
-        for rule in res["associationRules"]:
-            r.assert_in_range(rule["support"], 0.0, 1.0, "Apriori 支持度 Support 满足 [0, 1]")
-            r.assert_in_range(rule["confidence"], 0.0, 1.0, "Apriori 置信度 Confidence 满足 [0, 1]")
-            r.assert_true(rule["lift"] >= 0.0, "Apriori 提升度 Lift >= 0")
-
-        r.metrics = {
-            "highRiskItemsCount": len(res["items"]),
-            "associationRulesCount": len(res["associationRules"]),
-            "topRiskPair": f"{res['items'][0]['speciesName']} + {res['items'][0]['pathogenName']}",
-            "positivityRate": f"{res['items'][0]['positivityRate']}%",
-            "associatedDisease": res['items'][0]['associatedDisease']
-        }
+        r.scenario='子能力回归：PCR 记录阳性比例与实际两项关联支持度'
+        res=calculate_pathogen_risk_apriori(VECTOR_DB_PATH,city='郑州市')
+        r.assert_true(res['status']=='SUCCESS','读取实际 PCR 记录')
+        for item in res['items']:
+            r.assert_almost_equal(item['positivityRate'],100*item['positiveCount']/item['testedCount'],1e-8,'分子与分母实际计算')
+        for rule in res['associationRules']:
+            r.assert_in_range(rule['support'],0,1,'支持度有效');r.assert_in_range(rule['confidence'],0,1,'置信度有效')
+        r.assert_true(res['highRiskLocations']==[],'不从未经验证的阈值发布疾病风险')
+        r.metrics={'transactionCount':res['transactionCount'],'rules':len(res['associationRules']),'coverage':'pair association only'}
 
     # --------------------------------------------------------------------------
     # 序号 27: 动态预警分析
     # --------------------------------------------------------------------------
     def test_req_27_dynamic_spatial_warning(self, r: TestResult):
-        r.scenario = "多维度预警触发与 IDW 空间插值连续热力图生成，支持地市与区县下钻"
-        res = calculate_spatial_idw(
-            db_path=VECTOR_DB_PATH,
-            city="郑州市",
-            category="蚊"
-        )
-        r.assert_true("alerts" in res, "包含预警触发事件集合")
-        r.assert_true("grid" in res and len(res["grid"]) > 0, "IDW 空间插值网格点阵计算成功")
-        
-        alerts = res["alerts"]
-        valid_severity = {"red", "orange", "yellow"}
-        for a in alerts:
-            r.assert_true(a["level"] in valid_severity, f"预警等级 '{a['level']}' 属于红/橙/黄三级分类")
-            r.assert_true(a["currentDensity"] >= a["threshold"], "当前密度达到或超过预警触发阈值")
-            r.assert_true("latitude" in a and "longitude" in a, "预警点包含精确 GIS 经纬度坐标")
-            r.assert_true(a["affectedPopulationEstimate"] > 0, "估算预警受影响暴露人口")
-
-        for g in res["grid"][:10]:
-            r.assert_true("lat" in g and "lon" in g and "density" in g, "网格点包含坐标与插值密度")
-            r.assert_true(g["density"] >= 0.0, "插值密度非负")
-
-        r.metrics = {
-            "totalAlerts": len(alerts),
-            "redAlerts": sum(1 for a in alerts if a["level"] == "red"),
-            "orangeAlerts": sum(1 for a in alerts if a["level"] == "orange"),
-            "yellowAlerts": sum(1 for a in alerts if a["level"] == "yellow"),
-            "gridDensityPoints": len(res["grid"])
-        }
+        r.scenario='子能力回归：单一采样方法的实际 IDW 捕获插值，不伪造预警'
+        res=calculate_spatial_idw(VECTOR_DB_PATH,city='郑州市',method_name='诱蚊灯法')
+        r.assert_true(res['status']=='SUCCESS' and bool(res['grid']),'实际 IDW 网格')
+        r.assert_true(res['alerts']==[],'未验证阈值不触发疾病预警')
+        observed=[p['value'] for p in res['monitoringPoints']]
+        r.assert_true(all(min(observed)-1e-8<=g['value']<=max(observed)+1e-8 for g in res['grid']),'插值位于观测值凸包')
+        absent=calculate_spatial_idw(VECTOR_DB_PATH,city='郑州市',district='不存在区',method_name='诱蚊灯法')
+        r.assert_true(absent['status']=='NO_DATA','无数据不能扩大辖区或补点')
+        r.metrics={'gridPoints':len(res['grid']),'coverage':'capture interpolation only'}
 
     # --------------------------------------------------------------------------
     # 序号 28: 预警推送信息
     # --------------------------------------------------------------------------
     def test_req_28_alert_push_dispatch(self, r: TestResult):
-        r.scenario = "按风险等级自动分类预警，生成通知推送卡片与依据，并持久化写入业务库"
-        # 1. 执行预警生成
-        spatial_res = calculate_spatial_idw(db_path=VECTOR_DB_PATH, category="蚊")
-        alerts = spatial_res.get("alerts", [])
-        r.assert_true(len(alerts) > 0, "成功捕获全省超标预警事件")
-        
-        # 2. 写入应用业务库 biz_early_warning_events 并验证
-        conn = sqlite3.connect(APP_BUSINESS_DB_PATH)
-        cur = conn.cursor()
-        
-        test_event_id = f"TEST-ALERT-{int(time.time())}"
-        cur.execute("""
-            INSERT INTO biz_early_warning_events (
-                event_id, title, level, category, city, district, street,
-                latitude, longitude, trigger_reason, current_density, threshold,
-                affected_population, recommended_action, push_channels, push_status, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            test_event_id,
-            "郑州市金水区蚊媒密度严重预警 (自动化测试)",
-            "red",
-            "蚊",
-            "郑州市",
-            "金水区",
-            "未来路街道",
-            34.8003,
-            113.6627,
-            "成蚊诱蚊灯捕获密度达 86.0 只/灯·夜，超严重预警线 (50.0)",
-            86.0,
-            50.0,
-            152000,
-            "立即组织第一消杀队进行超低容量喷雾消杀",
-            "系统通知,短信网关,移动端APP推送",
-            "SENT",
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        ))
-        conn.commit()
-        
-        # 查询验证
-        row = cur.execute("SELECT event_id, level, push_status, push_channels FROM biz_early_warning_events WHERE event_id = ?", (test_event_id,)).fetchone()
-        cur.execute("DELETE FROM biz_early_warning_events WHERE event_id = ? OR event_id LIKE 'TEST-ALERT-%'", (test_event_id,))
-        conn.commit()
-        conn.close()
-        
-        r.assert_true(row is not None, "预警事件成功持久化到业务数据库")
-        r.assert_true(row[1] == "red", "预警等级为严重 (red)")
-        r.assert_true(row[2] == "SENT", "推送状态为已发送 (SENT)")
-        r.assert_true("移动端APP推送" in row[3], "包含移动端多渠道分发配置")
-
-        r.metrics = {
-            "persistedEventId": test_event_id,
-            "pushStatus": "SENT",
-            "channels": "系统通知,短信网关,移动端APP推送"
-        }
+        r.scenario='拒绝固定预警与送达的回归；真实持久通知链在 T10 验证'
+        res=calculate_spatial_idw(VECTOR_DB_PATH,city='郑州市',method_name='诱蚊灯法')
+        r.assert_true(res['alerts']==[],'插值不虚构预警或推送状态')
+        r.assert_true('pushStatus' not in res,'未实际投递不能声明 SENT')
+        r.metrics={'coverage':'unsupported warning publication; no delivery claim'}
 
     # --------------------------------------------------------------------------
     # 序号 29: 处置闭环信息
@@ -417,98 +272,36 @@ class VectorSurveillanceTestSuite:
     # 序号 30: 密度预测模型 (GBDT)
     # --------------------------------------------------------------------------
     def test_req_30_density_gbdt(self, r: TestResult):
-        r.scenario = "融合气象数据与地理生境，通过 GBDT 梯度提升回归模型预测未来 1-2 个月密度及因子权重"
-        res = calculate_gbdt_density_forecast(
-            db_path=VECTOR_DB_PATH,
-            category="蚊",
-            city="郑州市",
-            forecast_months=2
-        )
-        r.assert_true("city" in res, "返回预测目标城市")
-        r.assert_true("predictedDensity" in res and res["predictedDensity"] > 0, "GBDT 模型输出预测密度值")
-        r.assert_true("factorWeights" in res and len(res["factorWeights"]) > 0, "输出气象与生境特征重要性权重")
-        
-        weights = res["factorWeights"]
-        total_weight = sum(item["weight"] for item in weights)
-        r.assert_almost_equal(total_weight, 1.0, 0.05, "GBDT 特征重要性权重总和归一化为 1.0 (100%)")
-        
-        factor_names = [item["factor"] for item in weights]
-        r.assert_true(any("气温" in f for f in factor_names), "特征重要性包含气温驱动因子")
-        r.assert_true(any("降水" in f or "湿度" in f for f in factor_names), "特征重要性包含水分/降水驱动因子")
-        
-        r.assert_true("forecastSummary" in res and len(res["forecastSummary"]) > 10, "生成专家级研判综述")
-        
-        r.metrics = {
-            "city": res["city"],
-            "predictedDensity": res["predictedDensity"],
-            "topDriver": f"{weights[0]['factor']} ({weights[0]['weight']*100:.1f}%)",
-            "factorsEvaluated": len(weights)
-        }
+        r.scenario='子能力回归：实际训练 GBDT 捕获量预测，不声称气象密度模型'
+        res=calculate_gbdt_density_forecast(VECTOR_DB_PATH,city='郑州市',method_name='诱蚊灯法',as_of='2023-12-31')
+        r.assert_true(res['status']=='SUCCESS','实际 GBDT 训练')
+        g=res['groups'][0];weights=g['factorWeights']
+        r.assert_true(len(g['forecasts'])==2,'真实未来两个月输出')
+        r.assert_almost_equal(sum(w['weight'] for w in weights),1,1e-8,'真实模型特征重要性')
+        r.assert_true(all('气温' not in w['factor'] for w in weights),'不伪装未使用的气象特征')
+        r.metrics={'trainingR2':g['trainingR2'],'coverage':'lag/season capture GBDT only'}
 
     # --------------------------------------------------------------------------
     # 序号 31: 传播风险评估模型
     # --------------------------------------------------------------------------
     def test_req_31_transmission_risk(self, r: TestResult):
-        r.scenario = "构建'病媒密度 × 病原携带率 × 人群暴露指数'关联数学模型，量化传染病传播风险 (0-100)"
-        res = calculate_transmission_risk(
-            db_path=VECTOR_DB_PATH,
-            city="郑州市",
-            disease_name="登革热 (Dengue Fever)"
-        )
-        r.assert_true("riskScore" in res, "计算综合传播风险指数")
-        r.assert_in_range(res["riskScore"], 0.0, 100.0, "综合风险评分处于 [0, 100] 标度")
-        
-        r.assert_true("riskLevel" in res and len(res["riskLevel"]) > 0, "输出传播风险等级分级")
-        
-        sub = res.get("breakdown", {})
-        r.assert_true("vectorDensityIndex" in sub, "包含病媒密度分项评分")
-        r.assert_true("pathogenPrevalenceIndex" in sub, "包含病原携带率分项评分")
-        r.assert_true("populationExposureIndex" in sub, "包含人群暴露分项评分")
-        r.assert_true("climateSuitabilityIndex" in sub, "包含气候适宜度分项评分")
-        
-        for k, v in sub.items():
-            r.assert_in_range(v, 0.0, 100.0, f"分项指标 {k} 评分处于 [0, 100]")
-
-        r.assert_true("assessmentSummary" in res and len(res["assessmentSummary"]) > 0, "输出量化模型综合评估综述")
-
-        r.metrics = {
-            "riskScore": res["riskScore"],
-            "riskLevel": res["riskLevel"],
-            "vectorDensityIndex": sub["vectorDensityIndex"],
-            "pathogenPrevalenceIndex": sub["pathogenPrevalenceIndex"],
-            "populationExposureIndex": sub["populationExposureIndex"],
-            "climateSuitabilityIndex": sub["climateSuitabilityIndex"]
-        }
+        r.scenario='拒判回归：实测输入统计可用，传播模型和人口暴露不足'
+        res=calculate_transmission_risk(VECTOR_DB_PATH,city='郑州市')
+        r.assert_true(res['status']=='INSUFFICIENT_DATA','缺少验证模型明确数据不足')
+        r.assert_true(res['riskScore'] is None,'不得发布固定传播评分')
+        r.assert_true(res['pathogenPositiveCount']<=res['pathogenTestCount'],'PCR 分母一致')
+        r.metrics={'positiveCount':res['pathogenPositiveCount'],'coverage':'risk model unavailable'}
 
     # --------------------------------------------------------------------------
     # 序号 32: 抗药性演化预测
     # --------------------------------------------------------------------------
     def test_req_32_resistance_evolution(self, r: TestResult):
-        r.scenario = "基于历史数据与用药频率，贝叶斯/马尔可夫网络预测 1 年内耐药基因频率演化与突变暴发预警"
-        res = calculate_resistance_evolution(
-            db_path=VECTOR_DB_PATH,
-            species_name="淡色库蚊",
-            pesticide_name="氯氰菊酯"
-        )
-        r.assert_true("kdrGeneFrequency" in res and len(res["kdrGeneFrequency"]) >= 4, "计算当前与预测耐药等位基因频率序列")
-        r.assert_true("evolutionYears" in res and len(res["evolutionYears"]) >= 4, "生成演化年份时序")
-        r.assert_true("resistanceRatio" in res and len(res["resistanceRatio"]) >= 4, "计算抗药性抗性倍数演变")
-        
-        for q in res["kdrGeneFrequency"]:
-            r.assert_in_range(q, 0.0, 1.0, f"KDR 抗性基因频率 {q} 处于 [0.0, 1.0]")
-
-        for ratio in res["resistanceRatio"]:
-            r.assert_true(ratio >= 1.0, f"抗性倍数 {ratio} >= 1.0")
-
-        r.assert_true("warningAlert" in res and len(res["warningAlert"]) > 10, "生成耐药基因暴发与轮换预警建议")
-        
-        r.metrics = {
-            "evolutionYears": res["evolutionYears"],
-            "kdrGeneFrequency": res["kdrGeneFrequency"],
-            "resistanceRatio": res["resistanceRatio"],
-            "latestFreq": f"{res['kdrGeneFrequency'][-1]*100:.1f}%",
-            "warningAlert": res["warningAlert"][:35] + "..."
-        }
+        r.scenario='拒判回归：缺少基因型与敏感株参考不能推断基因频率'
+        res=calculate_resistance_evolution(VECTOR_DB_PATH,species_name='淡色库蚊',pesticide_name='氯氰菊酯')
+        r.assert_true(res['status'] in ['NO_DATA','INSUFFICIENT_DATA'],'不生成伪遗传模型')
+        r.assert_true(all(v is None for v in res['kdrGeneFrequency']),'基因数据缺失，频率为空')
+        r.assert_true(all(v is None for v in res['resistanceRatio']),'敏感株分母缺失，倍数为空')
+        r.metrics={'coverage':'genetic model unavailable','observedYears':len(res['observations'])}
 
     # --------------------------------------------------------------------------
     # 序号 33: 自然语言问答 (NLQ)
@@ -718,42 +511,11 @@ class VectorSurveillanceTestSuite:
     # EXT-02: SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线 (LangGraph Pipeline)
     # --------------------------------------------------------------------------
     def test_ext_satscan_kmeans_lstm_pipeline(self, r: TestResult):
-        res = run_satscan_kmeans_lstm_pipeline(
-            db_path=VECTOR_DB_PATH,
-            year=2022,
-            month=3,
-            category="蚊",
-            forecast_days=7,
-            p_threshold=0.05
-        )
-
-        r.assert_true(res.get("success") is True, "SaTScan ➔ K-Means ➔ LSTM 多步流水线成功执行")
-        
-        satscan_clusters = res.get("satscan_data", {}).get("clusters", [])
-        r.assert_true(len(satscan_clusters) > 0, f"SaTScan 成功扫描出 {len(satscan_clusters)} 个空间聚集区")
-        
-        primary_c = satscan_clusters[0] if satscan_clusters else {}
-        r.assert_true(primary_c.get("log_likelihood_ratio", 0) > 0, f"一级聚集区 LLR={primary_c.get('log_likelihood_ratio')} > 0")
-        r.assert_true(primary_c.get("relative_risk", 0) >= 1.0, f"一级聚集区相对危险度 RR={primary_c.get('relative_risk')} >= 1.0")
-
-        kmeans_groups = res.get("kmeans_subgroups", [])
-        r.assert_true(len(kmeans_groups) == 3, "K-Means 成功完成 3 类生态亚群画像与消杀配方赋能")
-
-        lstm_pred = res.get("lstm_forecast", {})
-        r.assert_true(lstm_pred.get("success") is True, "LSTM 递归神经网络成功完成未来 7 天密度外推")
-        r.assert_true(len(lstm_pred.get("predictions", {})) > 0, "成功为所有高危热点城市生成带状 95% 置信区间预测曲线")
-
-        logs = res.get("execution_logs", [])
-        r.assert_true(len(logs) >= 5, "完整记录 LangGraph 状态图 5 个节点的审计日志")
-
-        r.metrics = {
-            "targetTime": res.get("target_time"),
-            "clustersCount": len(satscan_clusters),
-            "primaryCity": primary_c.get("center_city"),
-            "primaryLLR": primary_c.get("log_likelihood_ratio"),
-            "kmeansSubgroups": len(kmeans_groups),
-            "requiresHilReview": res.get("summary", {}).get("requires_hil_review")
-        }
+        r.scenario='拒绝未训练 LSTM 的完整流水线，不签收原能力'
+        res=run_satscan_kmeans_lstm_pipeline(VECTOR_DB_PATH)
+        r.assert_true(res['status']=='FAILED' and res['error']['code']=='CAPABILITY_UNAVAILABLE','完整流水线明确不可用')
+        r.assert_true(not res['kmeans_subgroups'],'不返回固定群落画像')
+        r.metrics={'coverage':'full pipeline unavailable'}
 
     # --------------------------------------------------------------------------
     # EXT-03: 后台常驻数据分析智能体 (Surveillance Daemon Agent)
@@ -801,106 +563,32 @@ class VectorSurveillanceTestSuite:
     # EXT-04: 独立原子技能 · SaTScan 空间泊松扫描 (独立使用场景)
     # --------------------------------------------------------------------------
     def test_ext_satscan_spatial_standalone(self, r: TestResult):
-        r.scenario = "单独调用 SaTScan 空间泊松时空扫描，输出纯 GIS 扫描图层、显著聚集簇与 LLR/RR 统计量"
-        res = run_satscan_spatial_standalone(
-            db_path=VECTOR_DB_PATH,
-            year=2022,
-            month=6,
-            category="蚊",
-            max_cluster_radius_km=120.0,
-            p_threshold=0.05
-        )
-
-        r.assert_true(res.get("success") is True, "独立 SaTScan 空间扫描执行成功")
-        r.assert_true(res.get("mode") == "standalone_satscan", "确认处于 standalone_satscan 独立研判模式")
-        r.assert_true(res.get("generative_ui", {}).get("component") == "SatScanSpatialCard", "绑定独立生成式组件 SatScanSpatialCard")
-        
-        clusters = res.get("clusters", [])
-        r.assert_true(len(clusters) > 0, f"成功扫描识别 {len(clusters)} 个空间聚集簇")
-        
-        primary = clusters[0]
-        r.assert_true(primary.get("log_likelihood_ratio", 0) > 0, f"一类核心聚集区 LLR={primary.get('log_likelihood_ratio')} > 0")
-        r.assert_true(primary.get("relative_risk", 0) >= 1.0, f"相对危险度 RR={primary.get('relative_risk')} >= 1.0")
-
-        r.metrics = {
-            "title": res.get("title"),
-            "clustersCount": len(clusters),
-            "primaryCity": primary.get("center_city"),
-            "primaryDistrict": primary.get("center_district"),
-            "primaryRR": primary.get("relative_risk"),
-            "component": res.get("generative_ui", {}).get("component")
-        }
+        r.scenario='近似圆形条件泊松扫描的性质回归，非完整 SaTScan'
+        args=dict(db_path=VECTOR_DB_PATH,year=2022,month=6,method_name='诱蚊灯法',seed=7,num_simulations=19)
+        res=run_satscan_spatial_standalone(**args)
+        r.assert_true(res==run_satscan_spatial_standalone(**args),'固定随机种子结果可复现')
+        r.assert_true(res['status'] in ['SUCCESS','INSUFFICIENT_DATA','NO_DATA'],'保留真实可计算状态')
+        r.assert_true(all(c['p_value']<=.05 for c in res['clusters']),'不强制制造显著聚集簇')
+        r.metrics={'coverage':'approximate scan only','clusters':len(res['clusters'])}
 
     # --------------------------------------------------------------------------
     # EXT-05: 独立原子技能 · LSTM 深度时序预测 (独立使用场景)
     # --------------------------------------------------------------------------
     def test_ext_lstm_predictor_standalone(self, r: TestResult):
-        r.scenario = "单独运行 LSTM 递归神经网络，滚动预测指定地市未来 7 天日级密度走势与 95% 置信带"
-        res = run_lstm_predictor_standalone(
-            db_path=VECTOR_DB_PATH,
-            city="信阳市",
-            category="蚊",
-            forecast_days=7,
-            start_date_str="2022-06-01"
-        )
-
-        r.assert_true(res.get("success") is True, "独立 LSTM 深度时序预测执行成功")
-        r.assert_true(res.get("mode") == "standalone_lstm", "确认处于 standalone_lstm 独立时序外推模式")
-        r.assert_true(res.get("generative_ui", {}).get("component") == "LSTMPredictorCard", "绑定独立生成式组件 LSTMPredictorCard")
-        
-        preds = res.get("predictions", {})
-        r.assert_true("信阳市" in preds, "包含信阳市日级预测序列")
-        
-        xy_series = preds["信阳市"]["forecast_series"]
-        r.assert_true(len(xy_series) == 7, f"完整输出 7 天滚动日级序列 (实际 {len(xy_series)} 天)")
-        r.assert_true(xy_series[-1]["ci_upper"] >= xy_series[-1]["predicted_density"], "置信区间上界 ci_upper >= 点估计密度")
-        r.assert_true(xy_series[-1]["ci_lower"] <= xy_series[-1]["predicted_density"], "置信区间下界 ci_lower <= 点估计密度")
-
-        r.metrics = {
-            "targetCity": "信阳市",
-            "forecastHorizon": f"{res.get('forecast_days')} 天",
-            "peakDensity": preds["信阳市"]["peak_density"],
-            "peakDate": preds["信阳市"]["peak_date"],
-            "component": res.get("generative_ui", {}).get("component")
-        }
+        r.scenario='拒判回归：没有训练完成的 LSTM，不返回随机预测或置信区间'
+        res=run_lstm_predictor_standalone(VECTOR_DB_PATH,city='信阳市')
+        r.assert_true(res['status']=='FAILED' and res['error']['code']=='CAPABILITY_UNAVAILABLE','未训练模型不可用')
+        r.assert_true(not res['predictionsByCity'],'无伪造预测值')
+        r.metrics={'coverage':'trained LSTM unavailable'}
 
     # --------------------------------------------------------------------------
     # EXT-06: 通用可编排 LangGraph 多技能动态协同工作流 (跨技能自由组合)
     # --------------------------------------------------------------------------
     def test_ext_composable_workflow(self, r: TestResult):
-        r.scenario = "动态编排 3 项跨领域技能 (SaTScan 空间扫描 ➔ 病原 PCR 关联 ➔ 自动消杀派单)，共享上下文自动传递"
-        steps = [
-            {"stepId": 1, "skillId": "skill_satscan_spatial", "title": "SaTScan 空间泊松扫描", "args": {"year": 2022, "month": 6, "category": "蚊"}},
-            {"stepId": 2, "skillId": "skill_pathogen_risk", "title": "病原 PCR 携带关联挖掘", "args": {}},
-            {"stepId": 3, "skillId": "skill_disposal_workflow", "title": "全自动消杀处置派单", "args": {}}
-        ]
-
-        res = run_dynamic_composable_workflow(
-            db_path=VECTOR_DB_PATH,
-            workflow_name="SaTScan空间扫描 ➔ 病原关联挖掘 ➔ 自动消杀派单 协同流",
-            steps=steps,
-            initial_context={"year": 2022, "month": 6, "category": "蚊"}
-        )
-
-        r.assert_true(res.get("success") is True, "动态组合 LangGraph 工作流执行成功")
-        r.assert_true(res.get("total_steps") == 3, "成功流转全部 3 个动态编排节点")
-        r.assert_true(res.get("generative_ui", {}).get("component") == "ComposableWorkflowCard", "绑定通用多步骤工作流看板 ComposableWorkflowCard")
-        
-        step_res = res.get("step_results", {})
-        r.assert_true("step_1" in step_res and "step_2" in step_res and "step_3" in step_res, "三步产物全部在 step_results 中完整沉淀")
-        
-        shared_ctx = res.get("shared_context", {})
-        r.assert_true(len(shared_ctx.get("high_risk_cities", [])) > 0, "Step 1 识别的高危城市成功传递到 shared_context 供 Step 2/3 消费")
-
-        logs = res.get("execution_logs", [])
-        r.assert_true(len(logs) >= 4, f"完整记录动态 DAG 执行流审计日志 ({len(logs)} 条)")
-
-        r.metrics = {
-            "workflowName": res.get("workflow_name"),
-            "totalSteps": res.get("total_steps"),
-            "sharedContextKeys": list(shared_ctx.keys()),
-            "component": res.get("generative_ui", {}).get("component")
-        }
+        r.scenario='拒判回归：旧组合图不能绕过主线 Agent 的 Skills 校验与审批'
+        res=run_dynamic_composable_workflow(VECTOR_DB_PATH,workflow_name='反例',steps=[{'skillId':'imaginary_skill'}])
+        r.assert_true(res['status']=='FAILED' and not res['success'],'旧图不伪装未知技能执行完成')
+        r.metrics={'coverage':'legacy graph unavailable; persistent workflow tested separately'}
 
     # --------------------------------------------------------------------------
     # 执行全套测试并生成报告

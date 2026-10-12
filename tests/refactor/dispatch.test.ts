@@ -1,3 +1,7 @@
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {beforeAll,afterAll} from 'vitest';
 import { describe,it,expect } from 'vitest';
 import { dispatch,collectDispatch } from '@/application/dispatch/dispatch-service';
 import { createMainAgent } from '@/application/agent/main-agent';
@@ -6,6 +10,10 @@ import type { LLMClient,LLMMessage } from '@/infrastructure/llm/client';
 import { createDevelopmentContext } from '@/lib/skills/server-executor';
 import { normalizeInteraction,toLegacyResult,toLegacyEvents } from '@/application/dispatch/legacy-adapter';
 import { createSseDecoder } from '@/application/dispatch/sse';
+const traceDirectory=mkdtempSync(join(tmpdir(),'cdc-dispatch-trace-'));
+const previousBusinessPath=process.env.APP_BUSINESS_DB_PATH;
+beforeAll(()=>{process.env.APP_BUSINESS_DB_PATH=join(traceDirectory,'business.db');});
+afterAll(()=>{if(previousBusinessPath===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previousBusinessPath;rmSync(traceDirectory,{recursive:true,force:true});});
 const input={interactionId:'turn-fixture',kind:'conversation' as const,userInput:'统计监测记录'};
 const tool=(id='call-1')=>({id,type:'function' as const,function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}});
 const answer={role:'assistant' as const,content:JSON.stringify({mode:'answer',replyText:'数据库记录数见结果表，来源为病媒实测数据。'})};
@@ -43,7 +51,7 @@ describe('single main Agent dispatch',()=>{
   expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('INVALID_TOOL_ARGUMENTS');expect(calls).toBe(0);
  });
  it('failed or empty skills cannot reuse a successful old view',async()=>{
-  const unavailable={...tool(),function:{name:'skill_density_forecast',arguments:'{}'}};
+  const unavailable={...tool(),function:{name:'skill_resistance_evolution',arguments:'{}'}};
   const turn=await collectDispatch(dispatch({...input,viewContext:{type:'OLD_SUCCESS'}},createDevelopmentContext('vector'),agent(stub([{role:'assistant',content:null,tool_calls:[unavailable]},answer]))));
   expect(turn.status).toBe('FAILED');expect(toLegacyResult(turn).success).toBe(false);expect(toLegacyResult(turn).generativeView).toBeNull();
  });

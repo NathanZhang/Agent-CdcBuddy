@@ -1,6 +1,6 @@
 # CdcBuddy 分阶段重构实施计划（修订版）
 
-> **实施说明：**本文件供用户审阅，尚未执行。批准后使用 `superpowers:executing-plans` 按任务逐项实施，步骤采用复选框记录；如用户另行选择子代理执行，再切换相应流程。
+> **实施说明：**用户已批准开始重构；隔离分支按12任务连续实施，已完成T1—T8。执行使用 `superpowers:executing-plans` 按任务逐项实施，步骤采用复选框记录；如用户另行选择子代理执行，再切换相应流程。
 
 **目标：**保留现有四领域交互资产，建立统一、可维护、可追溯的业务内核；以病媒真实数据验证实用效果，以其他三域Mock数据验证实际功能与算法执行链；所有功能交互均经主线Agent的LLM+Skills返回对话与AG-UI，随后建设RBAC和试点运行能力。
 
@@ -184,11 +184,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`listSkillDefinitions(domain)`、`executeSkill(id,args,ctx)`。统一保存`requirementIds`，旧字符串编号由适配器生成；别名解析只指向一个标准ID。
 
-- [ ] 测试：旧ID和别名结果一致；未知ID拒绝；输入schema失败不启动计算；输出schema失败标FAILED；三域自定义技能按存储domain查询；SQL异常不伪造“执行完成”。
-- [ ] 运行 `npm run test:refactor -- skill-service`，确认新的统一入口约束先失败。
-- [ ] 每次迁移一组技能到领域模块；旧executor变成代理；保留UI类型；纠正No.56/58及慢病编号映射。
-- [ ] 运行上述测试和旧回归；覆盖所有已注册ID的输入/输出fixture，禁止遗漏通过default分支吞掉错误。
-- [ ] 提交：`refactor: organize skills by domain behind one execution service`。
+- [x] 测试：旧ID和别名结果一致；未知ID拒绝；输入schema失败不启动计算；输出schema失败标FAILED；三域自定义技能按存储domain查询；SQL异常不伪造“执行完成”。
+- [x] 运行 `npm run test:refactor -- skill-service`，确认新的统一入口约束先失败。
+- [x] 每次迁移一组技能到领域模块；旧executor变成代理；保留UI类型；纠正No.56/58及慢病编号映射。
+- [x] 运行上述测试和旧回归；覆盖所有已注册ID的输入/输出fixture，禁止遗漏通过default分支吞掉错误。
+- [x] 提交：`refactor: organize skills by domain behind one execution service`。
 
 ### Task 5：主线Agent统一编排与流式/非流式调度
 
@@ -196,11 +196,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`dispatch(request,ctx): AsyncIterable<RunEvent>`、`collectDispatch(events)`；实现 `runAgentTurn(interaction,ctx): AsyncIterable<RunEvent>`，由LLM生成工具调用→T4的executeSkill→LLM基于产物生成答复→由Skill产物/组件schema构造AG-UI。tool循环上限拟定4轮/8次执行，默认保留现有LLM超时配置；达到上限明确失败/结束，不递归无限调用。
 
-- [ ] 测试：同一受控LLM响应下，流式/非流式skillId、status、payload一致；LLM超时仅重试/切换模型，无可用LLM则FAILED且Skills调用次数为0，不走规则兜底；两个tool按顺序执行；超预算终止；服务端domain不受客户端伪造改变。
-- [ ] 运行 `npm run test:refactor -- dispatch`，使用确定性LLM stub而非外网调用，确认失败。
-- [ ] 抽取重复统计/提示词/解释，两个API只做主线Agent协议适配；移除生产路径的fallbackRuleMatch直接执行、固定解释答复和Copilot仅返回成功文字的占位action。统一错误事件与取消信号，保留旧客户端事件转换。
-- [ ] 重跑测试；增加JSON/tool/SSE分片边界fixture；所有成功业务turn同时断言LLM调用、Skills实际产物、replyText与AG-UI。没有实际执行的占位action不得通过；失败不标success/旧viewReady。
-- [ ] 提交：`refactor: share dispatch execution across HTTP and SSE`。
+- [x] 测试：同一受控LLM响应下，流式/非流式skillId、status、payload一致；LLM超时仅重试/切换模型，无可用LLM则FAILED且Skills调用次数为0，不走规则兜底；两个tool按顺序执行；超预算终止；服务端domain不受客户端伪造改变。
+- [x] 运行 `npm run test:refactor -- dispatch`，使用确定性LLM stub而非外网调用，确认失败。
+- [x] 抽取重复统计/提示词/解释，两个API只做主线Agent协议适配；移除生产路径的fallbackRuleMatch直接执行、固定解释答复和Copilot仅返回成功文字的占位action。统一错误事件与取消信号，保留旧客户端事件转换。
+- [x] 重跑测试；增加JSON/tool/SSE分片边界fixture；所有成功业务turn同时断言LLM调用、Skills实际产物、replyText与AG-UI。没有实际执行的占位action不得通过；失败不标success/旧viewReady。
+- [x] 提交：`refactor: share dispatch execution across HTTP and SSE`。
 
 ### Task 6：共享工作台、会话与旧视图兼容
 
@@ -208,11 +208,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`useWorkbenchController({domain,client})`暴露send/cancel/loadSession/startSession与工作台状态；同一service为Web和Widget提供能力；新增 `interact(interaction: AgentInteraction)`，send/loadSession/startSession及功能按钮统一转换交互事件调用T5主线Agent。
 
-- [ ] 测试：两个入口同输入得到相同状态转移；技能卡/地图钻取/移动采集/报告生成导出/会话管理/审批按钮全部有同一Agent runId，不能直接调用业务执行API；未知城市清空当前分析结果而不保存旧成功快照；读取旧会话fixture正常；新结果显示各domain真实/Mock来源；快速取消和切会话不串消息。
-- [ ] 运行 `npm run test:refactor -- workbench`，验证新增状态/兼容断言失败。
-- [ ] 将所有功能交互、SSE订阅、会话读写与视图恢复移入共享controller；扩展对应session/report/collection/review等Skills。旧REST业务入口做代理或限制为内部，不能绕过Agent执行功能；来源标签按结果datasets决定。
-- [ ] 运行测试并浏览器验证四领域Web/Widget；逐入口检查主线Agent→LLM→Skills→reply+AG-UI追踪，及source标签、NO_DATA和旧快照；纯展示动作不触发新业务计算。
-- [ ] 提交：`refactor: share workbench and session state between entry points`。
+- [x] 测试：两个入口同输入得到相同状态转移；技能卡/地图钻取/移动采集/报告生成导出/会话管理/审批按钮全部有同一Agent runId，不能直接调用业务执行API；未知城市清空当前分析结果而不保存旧成功快照；读取旧会话fixture正常；新结果显示各domain真实/Mock来源；快速取消和切会话不串消息。
+- [x] 运行 `npm run test:refactor -- workbench`，验证新增状态/兼容断言失败。
+- [x] 将所有功能交互、SSE订阅、会话读写与视图恢复移入共享controller；扩展对应session/report/collection/review等Skills。旧REST业务入口做代理或限制为内部，不能绕过Agent执行功能；来源标签按结果datasets决定。
+- [x] 运行测试并浏览器验证四领域Web/Widget；逐入口检查主线Agent→LLM→Skills→reply+AG-UI追踪，及source标签、NO_DATA和旧快照；纯展示动作不触发新业务计算。
+- [x] 提交：`refactor: share workbench and session state between entry points`。
 
 ### Task 7：有界算法Runner与LangGraph入口整理
 
@@ -220,11 +220,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**`runAnalytics(request,options): Promise<SkillResult<unknown>>`；保留CLI兼容，图registry统一解析，去掉未被真实执行入口使用的重复中枢。
 
-- [ ] 测试：非法task拒绝；超时/取消终止子进程并释放槽位；非有限JSON/异常输出标FAILED；峰值运行并发不超过2；指定datasetId被传给Python；图结果符合T2契约。
-- [ ] 运行 `npm run test:refactor -- analytics-runner` 与 `.venv/bin/python -m unittest discover -s tests/integration -p 'test_graph_contract.py'`，确认旧Runner不满足限制。
-- [ ] 实现默认并发2、子进程超时120秒、stdout上限8MiB/stderr上限1MiB；全部可配置，超限失败；删除静默正则修补NaN；stdout只用标准协议。
-- [ ] 重跑测试及一个真实病媒计算快照；能力变化时才调整预算，不从有限数据推断生产容量。
-- [ ] 提交：`refactor: bound analytics execution and consolidate graph entry points`。
+- [x] 测试：非法task拒绝；超时/取消终止子进程并释放槽位；非有限JSON/异常输出标FAILED；峰值运行并发不超过2；指定datasetId被传给Python；图结果符合T2契约。
+- [x] 运行 `npm run test:refactor -- analytics-runner` 与 `.venv/bin/python -m unittest discover -s tests/integration -p 'test_graph_contract.py'`，确认旧Runner不满足限制。
+- [x] 实现默认并发2、子进程超时120秒、stdout上限8MiB/stderr上限1MiB；全部可配置，超限失败；删除静默正则修补NaN；stdout只用标准协议。
+- [x] 重跑测试及一个真实病媒计算快照；能力变化时才调整预算，不从有限数据推断生产容量。
+- [x] 提交：`refactor: bound analytics execution and consolidate graph entry points`。
 
 ### Task 8：病媒真实数据分析基线与可复现回测
 
@@ -232,11 +232,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**预测增加显式`as_of`/`data_window`；`evaluate_vector_forecast(dataset_id, as_of, horizon)`返回MetricEvidence。方法名称按实际实现声明；无训练模型时不发布LSTM能力为validated。
 
-- [ ] 测试：读取asOf前最近窗口而非最早60条；添加asOf后记录不改变当次预测；R²允许真实负值，不做下限截断；零病原不被替换1；不同采样方法/单位不混合；固定seed扫描可复现。
-- [ ] 运行 `npm run test:scientific -- test_vector_methods`，确认原时间/指标逻辑不满足。
-- [ ] 先保留并校正真实AR/GBDT/IDW/K-Means/Apriori等子能力，建立季节基线和滚动回测；捕获量不足以代表标准密度时明确单位/分母不足；KDR用药/基因数据缺失时返回能力受限。
-- [ ] 运行数学基准和真实病媒快照回测；报样本量、时间窗、分地市误差与基线对照。未达到原≤10%要求如实记录，不以固定9.2%填补。
-- [ ] 提交：`fix: validate vector analytics against time-bounded observed data`。
+- [x] 测试：读取asOf前最近窗口而非最早60条；添加asOf后记录不改变当次预测；R²允许真实负值，不做下限截断；零病原不被替换1；不同采样方法/单位不混合；固定seed扫描可复现。
+- [x] 运行 `npm run test:scientific -- test_vector_methods`，确认原时间/指标逻辑不满足。
+- [x] 先保留并校正真实AR/GBDT/IDW/K-Means/Apriori等子能力，建立季节基线和滚动回测；捕获量不足以代表标准密度时明确单位/分母不足；KDR用药/基因数据缺失时返回能力受限。
+- [x] 运行数学基准和真实病媒快照回测；报样本量、时间窗、分地市误差与基线对照。未达到原≤10%要求如实记录，不以固定9.2%填补。
+- [x] 提交：`fix: validate vector analytics against time-bounded observed data`。
 
 **本任务不承诺**完整PyTorch训练、完整SaTScan/Bernoulli与贝叶斯基因模型；这些需单独数据/算法任务，不能在重构时凭改名签收。
 
@@ -336,4 +336,4 @@ tests/integration/                # 临时DB与任务恢复
 
 默认建议在当前协作方式下逐任务执行，每个任务独立提交、验证与回滚，不预先启动多代理或并行修改。任务跨度较大的M2/M3实施前可据稳定接口细化为独立子计划；不影响本轮审阅整体路线。
 
-用户审阅后再开始；本次不创建实现分支、不迁移数据库、不安装依赖、不改业务代码。
+用户已批准开始重构；按12任务连续实施、验证和提交，完成后提供成果及剩余能力清单，集成主分支另行处理。

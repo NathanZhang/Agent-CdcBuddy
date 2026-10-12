@@ -21,6 +21,6 @@ def task_result(run_id,domain,task,dataset,payload=None,error=None):
  status='FAILED' if error else payload.get('status','SUCCESS') if isinstance(payload,dict) else 'SUCCESS'
  if status not in ('SUCCESS','NO_DATA','INSUFFICIENT_DATA','FAILED','REVIEW_REQUIRED','CANCELLED'):raise ValueError('Unknown algorithm status')
  if isinstance(payload,dict) and payload.get('error') and status=='SUCCESS':status='FAILED';error=str(payload['error'])
- result={'schemaVersion':'1','runId':run_id,'domain':domain,'status':status,'method':'analytics:'+task,'datasets':[dataset],'payload':None if status in ('NO_DATA','FAILED','CANCELLED') else json_value(payload),'metrics':{},'qualityFlags':payload.get('qualityFlags',[]) if isinstance(payload,dict) else []}
- if status=='FAILED':result['error']={'code':'ANALYTICS_FAILED','message':error or 'Algorithm failed','retryable':False}
+ result={'schemaVersion':'1','runId':run_id,'domain':domain,'status':status,'method':payload.get('method','analytics:'+task) if isinstance(payload,dict) else 'analytics:'+task,'datasets':[dataset],'payload':None if status in ('NO_DATA','FAILED','CANCELLED') else json_value(payload),'metrics':payload.get('metrics',{}) if isinstance(payload,dict) else {},'qualityFlags':payload.get('qualityFlags',[]) if isinstance(payload,dict) else []}
+ if status=='FAILED':result['error']=payload.get('error') if isinstance(payload,dict) and isinstance(payload.get('error'),dict) else {'code':'ANALYTICS_FAILED','message':error or 'Algorithm failed','retryable':False}
  return SkillResult.model_validate(result).model_dump(exclude_none=False)

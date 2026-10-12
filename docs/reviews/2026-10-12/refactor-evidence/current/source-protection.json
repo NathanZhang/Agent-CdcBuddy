@@ -2,7 +2,7 @@
   "sha256": {
     "foodborne_monitoring.db": "70e9dafb28fabf6a72f0c2d38c3eb47c6d41202ec53cb3f8d8750c27f162ee4b",
     "chronic_monitoring.db": "334a428546e687ed5e030ad6b87777b84042a079af73a5ee8ef29040490d03d7",
-    "app_business.db": "6181ad93c7462f04b88d5b9d19df59697ee7ed8159a1416cd3b52bc12f2f8f72",
+    "app_business.db": "211c4afb0824d1a50406bd52c2639a1724df84561f911e1cb9ef8ef76f2e45d6",
     "env_monitoring.db": "47be80e6aeb86f1eb5b014c4d3091dc4200664c1acb0565d13a7b796e75f4467",
     "vector_monitoring.db": "ee3d8393f9bdf4d707dd51bdb95385fe6ff189c9d6ac5b30da2d9aa5467a5f82"
   },

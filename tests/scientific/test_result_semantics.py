@@ -48,6 +48,8 @@ class ResultSemanticsTests(unittest.TestCase):
             result=calculate_transmission_risk(str(db),city='郑州市')
             self.assertEqual(result['pathogenPositiveRate'],0.0)
             self.assertEqual(result['measuredAverageCapture'],0.0)
+            self.assertIsNone(result['riskScore'])
+            self.assertEqual(result['status'],'INSUFFICIENT_DATA')
 
     def test_unknown_death_chain_has_no_default_diagnosis(self):
         result=infer_underlying_cause_and_icd10(input_chain={'a':'未知原因甲','b':'未知原因乙','c':'未知原因丙','d':'未知原因丁'})
