@@ -160,11 +160,11 @@ tests/integration/                # 临时DB与任务恢复
 
 **接口：**产出第四节的`SkillResult<T>`/`DatasetRef`/`MetricEvidence`/`ExecutionContext`/`Principal`与`validateSkillResult(value)`；后续T4/T7必须使用。
 
-- [ ] 写失败断言：水质达标率为`337条样本中的达标数/337*100`且≤100；max=max原始值；不存在市返回NO_DATA/payload=null；零阳性为0；未知死因REVIEW_REQUIRED；空基因向量拒绝比较；捕获0保留0。
-- [ ] 运行 `npm run test:refactor -- results` 与 `npm run test:scientific -- test_result_semantics`，确认原实现无法满足断言。
-- [ ] 实现封套和验证；旧报告/解释删除固定达标声明，错误与无数据展示明确状态；未评估指标value=null。修复原评估探针对应根因。
-- [ ] 重跑以上测试，要求全部通过；验证旧卡片适配保留已有效字段，空结果不展示默认成功指标。
-- [ ] 提交：`fix: distinguish execution status and correct result semantics`。
+- [x] 写失败断言：水质达标率为`337条样本中的达标数/337*100`且≤100；max=max原始值；不存在市返回NO_DATA/payload=null；零阳性为0；未知死因REVIEW_REQUIRED；空基因向量拒绝比较；捕获0保留0。
+- [x] 运行 `npm run test:refactor -- results` 与 `npm run test:scientific -- test_result_semantics`，确认原实现无法满足断言。
+- [x] 实现封套和验证；旧报告/解释删除固定达标声明，错误与无数据展示明确状态；未评估指标value=null。修复原评估探针对应根因。
+- [x] 重跑以上测试，要求全部通过；验证旧卡片适配保留已有效字段，空结果不展示默认成功指标。
+- [x] 提交：`fix: distinguish execution status and correct result semantics`。
 
 ### Task 3：统一领域数据访问与运行配置
 

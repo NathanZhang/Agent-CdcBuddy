@@ -23,26 +23,14 @@ export const WaterPipelineGisMap: React.FC<WaterPipelineGisMapProps> = ({ data =
   const [searchKey, setSearchKey] = useState<string>('');
 
   const evaluation = data?.evaluationResult || {};
-  const featureImportances = data?.randomForestFeatureImportances || [
-    { feature: '三氯甲烷 (消毒副产物)', importance: 0.364, riskType: '致癌健康风险首要因子' },
-    { feature: '总大肠菌群 (微生物指标)', importance: 0.285, riskType: '急性肠道感染高危因子' },
-    { feature: '重金属铅 (管网溶出)', importance: 0.168, riskType: '神经与肾脏蓄积毒性' },
-    { feature: '高锰酸盐指数 (COD)', importance: 0.112, riskType: '有机污染综合指标' },
-    { feature: '重金属镉', importance: 0.071, riskType: '骨骼与肾功能危害' }
-  ];
-  const gridPoints = data?.krigingGridPoints || [
-    { city: '郑州市', district: '金水区', hazardIndex: 0.42, riskLevel: 'safe', lat: 34.80, lon: 113.66 },
-    { city: '新乡市', district: '凤泉区', hazardIndex: 1.15, riskLevel: 'moderate', lat: 35.44, lon: 113.78 },
-    { city: '焦作市', district: '山阳区', hazardIndex: 0.54, riskLevel: 'moderate', lat: 35.06, lon: 113.20 },
-    { city: '洛阳市', district: '吉利区', hazardIndex: 0.88, riskLevel: 'moderate', lat: 34.90, lon: 112.58 },
-    { city: '开封市', district: '鼓楼区', hazardIndex: 0.35, riskLevel: 'safe', lat: 34.70, lon: 114.17 }
-  ];
-
-  const totalPoints = evaluation?.totalStationsSampled || 465;
-  const complianceRate = evaluation?.overallComplianceRate || '96.2%';
-  const maxCr = evaluation?.maxCarcinogenicRiskCR || '1.82×10⁻⁵';
-  const maxHq = evaluation?.maxHazardQuotientHQ || 1.15;
-  const disposalAdvice = data?.disposalAdvice || '强化老旧供水管网末梢水冲洗排污，严格次氯酸钠在线投加闭环控制，定期检测消毒副产物。';
+  const featureImportances = data?.randomForestFeatureImportances ?? [];
+  const gridPoints = data?.observedPoints ?? data?.krigingGridPoints ?? [];
+  const totalPoints = evaluation?.totalStationsSampled ?? 0;
+  const complianceRate = evaluation?.overallComplianceRate ?? '未计算';
+  const maxCr = evaluation?.maxCarcinogenicRiskCR ?? '未计算';
+  const maxHq = evaluation?.maxHazardQuotientHQ ?? '未计算';
+  const disposalAdvice = data?.disposalAdvice ?? '';
+  if (data?.status === 'NO_DATA' || !data?.evaluationResult) return <div role="status" className="p-4 border rounded-xl">{data?.message ?? '无数据'}</div>;
 
   const filteredPoints = gridPoints.filter((pt: any) => {
     if (filterLevel !== 'all' && pt.riskLevel !== filterLevel) return false;
@@ -64,7 +52,7 @@ export const WaterPipelineGisMap: React.FC<WaterPipelineGisMapProps> = ({ data =
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <span>饮用水全流程健康风险评估与普通克里金空间场</span>
+              <span>饮用水全流程健康风险评估与普通监测点空间场</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300 font-medium">
                 GB 5749-2022 · 随机森林 CR/HQ
               </span>
@@ -98,7 +86,7 @@ export const WaterPipelineGisMap: React.FC<WaterPipelineGisMapProps> = ({ data =
           <span className="text-[10px] text-slate-400">安全限值 HQ ≤ 1.0</span>
         </div>
         <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">普通克里金空间插值场</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">普通监测点空间插值场</span>
           <p className="text-xl font-black text-cyan-600 dark:text-cyan-400 mt-0.5">高精度连续场</p>
           <span className="text-[10px] text-slate-400">球状变异函数拟合</span>
         </div>

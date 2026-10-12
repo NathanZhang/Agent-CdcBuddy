@@ -89,10 +89,10 @@ class ChronicSurveillanceTestSuite:
                 "d": "原发性高血压3级 (很高危)"
             }
         )
-        res.assert_true(result["status"] == "SUCCESS", "根本死因知识图谱推理引擎执行状态为 SUCCESS")
+        res.assert_true(result["status"] == "REVIEW_REQUIRED", "编码字典候选需人工复核")
 
-        acc = result.get("accuracyRate", 0.0)
-        res.assert_true(acc >= 0.95, f"ICD-10 编码准确率强制达标 (当前: {acc * 100:.1f}% >= 95.0%)")
+        res.assert_true(result.get("accuracyRate") is None, "无独立评估不能声明准确率达标")
+        res.assert_true(result["metrics"]["accuracy"]["evaluationKind"] == "unvalidated", "准确率来源标记为未评估")
 
         underlying = result.get("inferredUnderlyingCause", {})
         res.assert_true("脑梗死" in underlying.get("diseaseName", ""), f"因果顺应性推断根本死因为脑梗死 ({underlying.get('diseaseName')})")

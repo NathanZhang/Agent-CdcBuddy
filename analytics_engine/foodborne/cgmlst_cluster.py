@@ -19,12 +19,11 @@ from typing import Dict, Any, List
 
 def calculate_cgmlst_distance(vec_a: List[int], vec_b: List[int]) -> int:
     """计算两株致病菌 30 个 cgMLST 核心等位基因位点的差异数 (汉明距离)"""
-    diff = 0
-    length = min(len(vec_a), len(vec_b))
-    for i in range(length):
-        if vec_a[i] != vec_b[i]:
-            diff += 1
-    return diff
+    if not isinstance(vec_a,list) or not isinstance(vec_b,list) or not vec_a or len(vec_a) != len(vec_b):
+        raise ValueError("Allele vectors must be nonempty and have equal length")
+    if any(type(allele) is not int or allele < 0 for allele in vec_a + vec_b):
+        raise ValueError("Alleles must be nonnegative integers")
+    return sum(left != right for left,right in zip(vec_a,vec_b))
 
 def calculate_cgmlst_clustering(
     db_path: str,
@@ -73,6 +72,10 @@ def calculate_cgmlst_clustering(
             vec = json.loads(r["cgmlst_vector"])
         except Exception:
             vec = []
+        try:
+            calculate_cgmlst_distance(vec, vec)
+        except ValueError:
+            return {"status":"INSUFFICIENT_DATA","success":False,"payload":None,"message":f"Invalid allele evidence: {r['isolate_id']}","isolates":[],"homologous_groups":[],"network_graph":{"nodes":[],"links":[]}}
         isolates.append({
             "id": r["isolate_id"],
             "caseId": r["case_id"],
@@ -124,7 +127,7 @@ def calculate_cgmlst_clustering(
                 "source": isolates[u]["id"],
                 "target": isolates[v]["id"],
                 "distance": d,
-                "similarityRate": round((1.0 - d / 30.0) * 100, 1),
+                "similarityRate": round((1.0 - d / float(len(isolates[u]["vector"]))) * 100, 1),
                 "isHomologous": is_homologous,
                 "label": f"Δ={d}位点"
             })

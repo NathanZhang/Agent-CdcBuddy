@@ -15,7 +15,7 @@
     "start:env": "NEXT_PUBLIC_AGENT_DOMAIN=env PORT=3003 next start -p 3003",
     "start:chronic": "NEXT_PUBLIC_AGENT_DOMAIN=chronic PORT=3004 next start -p 3004",
     "lint": "eslint src tests/refactor --max-warnings 0",
-    "test": "npm run test:refactor && npm run test:integration && npm run test:baseline",
+    "test": "npm run test:refactor && npm run test:scientific && npm run test:integration && npm run test:baseline",
     "test:vector": "./.venv/bin/python tests/automated_test_suite.py",
     "test:foodborne": "./.venv/bin/python tests/suites/test_suite_foodborne.py",
     "test:env": "./.venv/bin/python tests/suites/test_suite_env.py",
@@ -42,7 +42,8 @@
     "next": "^15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "ajv": "8.20.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

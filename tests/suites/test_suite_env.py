@@ -94,15 +94,13 @@ class EnvSurveillanceTestSuite:
         res.assert_true("maxCarcinogenicRiskCR" in eval_res, "包含最大致癌风险 CR 指标")
         res.assert_true("maxHazardQuotientHQ" in eval_res, "包含最大非致癌危害商数 HQ 指标")
 
-        # 特征重要性
         features = result.get("randomForestFeatureImportances", [])
-        res.assert_true(len(features) >= 3, f"随机森林特征重要性评估完整 (指标数: {len(features)})")
-        top_feature = features[0]["feature"]
-        res.assert_true("三氯甲烷" in top_feature or "总大肠菌群" in top_feature, f"首要致癌/健康风险因子识别准确 ({top_feature})")
-
-        # 普通克里金空间插值点
-        kriging_points = result.get("krigingGridPoints", [])
-        res.assert_true(len(kriging_points) > 10, f"普通克里金空间插值输出网格点充足 (点数: {len(kriging_points)})")
+        res.assert_true(features == [], "未执行随机森林，不输出固定特征权重")
+        res.assert_true("random-forest-unavailable" in result.get("qualityFlags", []), "未实现模型明确标注")
+        res.assert_true(result.get("krigingGridPoints", []) == [], "未执行克里金，不输出伪网格")
+        observed = result.get("observedPoints", [])
+        res.assert_true(len(observed) > 10, "真实坐标监测点保留")
+        res.assert_true(0 <= result["passRate"] <= 100, "综合达标率不超过100%")
 
     def test_46_47_sewage_lag_tracing(self, res: TestResult):
         """No. 46/47 污水管网病原时序滞后关联分析与 GIS 拓扑反向溯源"""

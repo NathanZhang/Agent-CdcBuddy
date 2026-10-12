@@ -8,26 +8,33 @@ import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
+    const required = ['userId','userName','city','district','category','speciesName'];
+    if (required.some(key => typeof data[key] !== 'string' || !data[key].trim()) || typeof data.captureCount !== 'number' || !Number.isSafeInteger(data.captureCount) || data.captureCount < 0) {
+      return NextResponse.json({success:false,error:'Missing or invalid sampling evidence'}, {status:400});
+    }
+    for (const key of ['latitude','longitude','weatherTemp','weatherHumidity','aiConfidence']) {
+      if (data[key] !== undefined && (typeof data[key] !== 'number' || !Number.isFinite(data[key]))) return NextResponse.json({success:false,error:`Invalid ${key}`},{status:400});
+    }
     const bizProvider = getAppBusinessProvider();
 
     const record = await bizProvider.submitMobileRecord({
-      user_id: data.userId || 'USR-FIELD-01',
-      user_name: data.userName || '现场监测员 (张三)',
-      city: data.city || '郑州市',
-      district: data.district || '金水区',
-      street: data.street || '未来路街道',
-      latitude: data.latitude || 34.8003,
-      longitude: data.longitude || 113.6627,
+      user_id: data.userId,
+      user_name: data.userName,
+      city: data.city,
+      district: data.district,
+      street: data.street,
+      latitude: data.latitude,
+      longitude: data.longitude,
       image_url_base64: data.imageBase64,
-      recognized_species: data.recognizedSpecies || '白纹伊蚊',
-      ai_confidence: data.aiConfidence || 98.4,
-      category: data.category || '蚊',
-      species_name: data.speciesName || '白纹伊蚊',
-      capture_count: parseInt(data.captureCount || 25, 10),
-      weather_temp: parseFloat(data.weatherTemp || 28.5),
-      weather_humidity: parseFloat(data.weatherHumidity || 72.0),
-      habitat_type: data.habitatType || '居民区绿化带',
-      method_name: data.methodName || '诱蚊灯法'
+      recognized_species: data.recognizedSpecies,
+      ai_confidence: data.aiConfidence,
+      category: data.category,
+      species_name: data.speciesName,
+      capture_count: data.captureCount,
+      weather_temp: data.weatherTemp,
+      weather_humidity: data.weatherHumidity,
+      habitat_type: data.habitatType,
+      method_name: data.methodName
     });
 
     return NextResponse.json({
@@ -36,12 +43,12 @@ export async function POST(req: NextRequest) {
       data: {
         recordId: record.submission_id,
         auditStatus: record.audit_status,
-        currentAuditor: '市级疾控质量审核组',
+        currentAuditor: record.auditor_name ?? null,
         uploadedAt: record.submitted_at,
         locationMatched: `${record.city}${record.district}${record.street || ''}`,
-        syncToSpatialMap: true
+        syncToSpatialMap: false
       },
-      message: '现场监测记录已成功持久化写入业务数据库，并进入市级审核流'
+      message: '现场监测记录已成功持久化写入业务数据库，，等待后续审核'
     });
   } catch (err: any) {
     return NextResponse.json({ code: 500, success: false, error: err.message }, { status: 500 });

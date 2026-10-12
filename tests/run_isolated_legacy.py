@@ -27,7 +27,7 @@ def main():
         print(f'Missing baseline datasets: {missing}', file=sys.stderr)
         return 2
     before = {p.name: fingerprint(p) for p in datasets}
-    evidence = ROOT / 'docs/reviews/2026-10-12/refactor-evidence'
+    evidence = ROOT / 'docs/reviews/2026-10-12/refactor-evidence/current'
     evidence.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='cdcbuddy-legacy-') as temp:
         isolated = Path(temp)

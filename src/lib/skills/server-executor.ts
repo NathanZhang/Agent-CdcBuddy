@@ -328,8 +328,8 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
           speciesName: args.speciesName || '主要优势种群',
           city: gbdtResult.city,
           trend: trendData.trend || [],
-          r2Score: trendData.r2Score || 0.88,
-          weatherCorrelation: trendData.weatherCorrelation || { tempCorr: 0.78, humidityCorr: 0.65 },
+          r2Score: trendData.r2Score ?? null,
+          weatherCorrelation: trendData.weatherCorrelation ?? { tempCorr:null, humidityCorr:null },
           insights: [
             gbdtResult.forecastSummary,
             ...(trendData.insights || [])
@@ -390,18 +390,19 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
     case 'skill_auto_report_gen': {
       const city = args.city || '郑州市';
       const stats = await provider.getSummaryStats();
-      const popDynamics = await runAnalyticsEngine('population_dynamics', { city, category: '蚊' }).catch(() => ({ r2Score: 0.89, insights: [] }));
-      const clustering = await runAnalyticsEngine('species_clustering', { city, category: '蚊' }).catch(() => ({ dominantSpecies: '白纹伊蚊', shannonWienerIndex: 0.86 }));
-      const resistance = await runAnalyticsEngine('resistance_prediction', { city }).catch(() => ({ items: [] }));
+      const popDynamics = await runAnalyticsEngine('population_dynamics', { city, category: '蚊' });
+      if (popDynamics.status === 'NO_DATA') return {type:'AUTO_GENERATED_REPORT',status:'NO_DATA',payload:null,message:'当前城市无可用于报告的监测数据'};
+      const clustering = await runAnalyticsEngine('species_clustering', { city, category: '蚊' });
+      const resistance = await runAnalyticsEngine('resistance_prediction', { city });
       
-      const dominant = clustering?.dominantSpecies || '白纹伊蚊';
-      const r2 = popDynamics?.r2Score || 0.89;
+      const dominant = clustering?.dominantSpecies ?? '未识别';
+      const r2 = popDynamics?.r2Score ?? '未评估';
       const topRes = resistance?.items && resistance.items[0] 
         ? `${resistance.items[0].speciesName}对${resistance.items[0].pesticideName}处于【${resistance.items[0].resistanceLevel}】` 
-        : '氯氰菊酯中抗';
+        : '当前范围无抗药性测定结果';
 
-      const title = args.reportTitle || `${city} 2024年夏季蚊媒监测与登革热风险评估专项报告`;
-      const shannonIdx = clustering?.shannonWienerIndex !== undefined ? clustering.shannonWienerIndex : 0.86;
+      const title = args.reportTitle || `${city} 蚊媒监测计算报告`;
+      const shannonIdx = clustering?.shannonWienerIndex !== undefined ? clustering.shannonWienerIndex : null;
       const summary = `本报告基于全省 ${stats.coveredDistricts} 个区县监测网络共计 ${stats.totalMonitoringRecords} 条多维监测数据编制。期内 ${city} 优势种为 ${dominant}（物种多样性指数 H'=${shannonIdx}），时序拟合优度 R² 达 ${r2}。`;
       const sec2Insight = popDynamics?.insights?.[1] ? ` ${popDynamics.insights[1]}` : '';
 
@@ -414,11 +415,11 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
         sections: [
           {
             heading: '一、 监测工作概况与数据质量',
-            content: `本监测周期内累计开展生态监测 ${stats.totalMonitoringRecords} 点次，完成 PCR 病原体筛查 ${stats.totalPathogenTests} 批次。数据完整率达 99.8%，各监测点位温湿度数据已通过逻辑一致性校验。`
+            content: `本监测周期内累计开展生态监测 ${stats.totalMonitoringRecords} 点次，完成 PCR 病原体筛查 ${stats.totalPathogenTests} 批次。数据完整率和逻辑一致性尚未独立评估。`
           },
           {
             heading: '二、 种群动态与季节消长特征',
-            content: `ARIMA/SARIMAX 时序模型拟合优度 R² 达 ${r2}。消长曲线呈现显著的双峰形态，首个高峰集中在 6 月下旬，次高峰出现在 8 月中旬。${sec2Insight}`
+            content: `当前时序计算返回拟合优度 R²=${r2}，不等同于独立回测效果。${sec2Insight}`
           },
           {
             heading: '三、 杀虫剂抗药性与用药研判',
@@ -432,19 +433,15 @@ export async function executeSkillServer(skillId: string, args: Record<string, a
       };
 
       // 归档至应用业务库
-      try {
-        await bizProvider.saveReport({
-          report_id: `REP-${Date.now()}`,
-          title,
-          author: reportData.author,
-          city,
-          report_type: 'SPECIAL_VECTOR_REPORT',
-          summary,
-          content_markdown: reportData.sections.map(s => `### ${s.heading}\n${s.content}`).join('\n\n')
-        });
-      } catch (saveErr) {
-        console.warn('[skill_auto_report_gen] 报告归档至业务库失败 (非致命):', saveErr);
-      }
+      await bizProvider.saveReport({
+        report_id: `REP-${Date.now()}`,
+        title,
+        author: reportData.author,
+        city,
+        report_type: 'SPECIAL_VECTOR_REPORT',
+        summary,
+        content_markdown: reportData.sections.map(s => `### ${s.heading}\n${s.content}`).join('\n\n')
+      });
 
       return reportData;
     }

@@ -46,8 +46,10 @@ def calculate_population_dynamics(db_path: str, category: str = "蚊", species_n
     if df.empty:
         return {
             "trend": [],
-            "r2Score": 0.85,
-            "weatherCorrelation": {"tempCorr": 0.75, "humidityCorr": 0.60},
+            "status": "NO_DATA",
+            "payload": None,
+            "r2Score": None,
+            "weatherCorrelation": {"tempCorr": None, "humidityCorr": None},
             "insights": ["当前筛选条件下无充足历史时序数据。"]
         }
 
@@ -171,7 +173,7 @@ def calculate_population_dynamics(db_path: str, category: str = "蚊", species_n
     insights = [
         f"时间序列 AR({p}) 季节消长模型拟合优度 R² 达 {r2:.3f}，消长周期呈现显著的单/双峰形态。",
         f"病媒密度与气温皮尔逊相关系数为 {temp_corr} (湿度相关性 {hum_corr})，在均温 >26℃ 期间密度增长斜率最陡。",
-        f"未来 {forecast_months} 个月预测曲线显示平均预测误差率在 ≤9.2% 以内，95% 置信区间已成功收敛。"
+        f"未来 {forecast_months} 个月为模型外推，尚未进行独立回测，不能据此声称误差率达标。"
     ]
 
     return {

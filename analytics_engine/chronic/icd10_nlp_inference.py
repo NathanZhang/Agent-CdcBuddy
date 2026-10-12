@@ -36,90 +36,44 @@ def infer_underlying_cause_and_icd10(
     if not db_path:
         db_path = DEFAULT_DB_PATH
 
-    # 如果传入自定义死因链
-    if input_chain:
-        a = input_chain.get("a", "中枢性呼吸衰竭")
-        b = input_chain.get("b", "大面积脑疝")
-        c = input_chain.get("c", "大面积大脑中动脉脑梗死")
-        d = input_chain.get("d", "原发性高血压3级 (很高危)")
+    if input_chain is not None:
+        a,b,c,d = [str(input_chain.get(key) or "") for key in ["a","b","c","d"]]
     else:
-        # 从数据库调取典型样本
         conn = sqlite3.connect(db_path)
-        cur = conn.cursor()
-        if cert_id:
-            cur.execute("""
-            SELECT death_cert_id, patient_name, gender, age, city, district,
-                   cause_chain_a, cause_chain_b, cause_chain_c, cause_chain_d,
-                   underlying_cause, icd10_code, icd10_category
-            FROM fact_death_registry WHERE death_cert_id = ?
-            """, (cert_id,))
-        else:
-            cur.execute("""
-            SELECT death_cert_id, patient_name, gender, age, city, district,
-                   cause_chain_a, cause_chain_b, cause_chain_c, cause_chain_d,
-                   underlying_cause, icd10_code, icd10_category
-            FROM fact_death_registry WHERE underlying_cause LIKE '%心肌梗死%' LIMIT 1
-            """)
-        row = cur.fetchone()
-        conn.close()
-
-        if row:
-            cid, name, gender, age, city, dist, a, b, c, d, u_cause, icd, cat = row
-        else:
-            a, b, c, d = "心源性休克", "心室颤动", "急性下壁心肌梗死", "冠状动脉粥样硬化性心脏病"
-
-    # 基于 WHO 根本死因选择规则（总原则与规则1~3）推理
-    # 最早起始的致病原发病（d优先，其次c，再次b）
-    inference_path = []
-    underlying = "急性心肌梗死"
-    matched_icd = "I21.9"
-    full_info = ICD10_KNOWLEDGE_BASE["急性心肌梗死"]
-
-    full_chain_text = f"{a} -> {b} -> {c} -> {d}".strip()
-
-    for kw, val in ICD10_KNOWLEDGE_BASE.items():
-        if kw in full_chain_text:
-            underlying = kw
-            matched_icd = val["code"]
-            full_info = val
-            break
-
-    inference_path.append({
-        "step": 1,
-        "title": "直接死因逻辑过滤 (消除终末状态)",
-        "content": f"识别并剥离终末症状【{a}】，根据国家规范，呼吸心跳骤停/衰竭不得作为根本死因。"
-    })
-    inference_path.append({
-        "step": 2,
-        "title": "死因链因果顺应性溯源",
-        "content": f"由中间状态【{b}】回溯至最早引发一系列病理级联反应的原发疾病【{c or d or underlying}】。"
-    })
-    inference_path.append({
-        "step": 3,
-        "title": "ICD-10 知识图谱编码锁定",
-        "content": f"匹配至国家标准 ICD-10 字典，映射为【{matched_icd} {underlying}】({full_info['block']})。"
-    })
-
+        try:
+            cur = conn.cursor()
+            if cert_id:
+                cur.execute("SELECT cause_chain_a,cause_chain_b,cause_chain_c,cause_chain_d FROM fact_death_registry WHERE death_cert_id = ?",(cert_id,))
+            else:
+                cur.execute("SELECT cause_chain_a,cause_chain_b,cause_chain_c,cause_chain_d FROM fact_death_registry ORDER BY death_cert_id LIMIT 1")
+            row = cur.fetchone()
+        finally:
+            conn.close()
+        if not row:
+            return {"status":"NO_DATA","payload":None,"inferredUnderlyingCause":None,"accuracyRate":None,"message":"未查询到死亡证明书"}
+        a,b,c,d = [str(value or "") for value in row]
+    candidate = None
+    # Prefer the earliest supplied chain item; a match only proposes a dictionary candidate.
+    for item in [d,c,b,a]:
+        for keyword in sorted(ICD10_KNOWLEDGE_BASE,key=len,reverse=True):
+            if keyword in item:
+                info = ICD10_KNOWLEDGE_BASE[keyword]
+                candidate = {"diseaseName":keyword,"standardIcd10":info["code"],"icd10ExpandedCode":info["full_code"],"chapter":info["chapter"],"block":info["block"],"confidenceScore":None}
+                break
+        if candidate: break
+    workflow = [
+        {"step":1,"title":"读取死因链","content":f"按原始输入读取 (a)={a}, (b)={b}, (c)={c}, (d)={d}"},
+        {"step":2,"title":"字典候选检索","content":f"检索结果：{candidate['diseaseName']}" if candidate else "未找到可支持编码的字典条目"},
+        {"step":3,"title":"人工复核","content":"字典匹配不能验证因果链或替代专业编码审核，需人工复核"}
+    ]
     return {
-        "status": "SUCCESS",
-        "accuracyRate": 0.965,
-        "accuracyCompliance": "达标 (96.5% >= 95.0% 国家标准)",
-        "inputDeathChain": {
-            "part1_a": a,
-            "part1_b": b,
-            "part1_c": c,
-            "part1_d": d
-        },
-        "inferredUnderlyingCause": {
-            "diseaseName": underlying,
-            "standardIcd10": matched_icd,
-            "icd10ExpandedCode": full_info["full_code"],
-            "chapter": full_info["chapter"],
-            "block": full_info["block"],
-            "confidenceScore": 0.982
-        },
-        "reasoningWorkflow": inference_path,
-        "replacementBenefit": "已完全替代人工初审初编，单份证明书解析平均耗时由 8 分钟降至 0.04 秒。"
+        "status":"REVIEW_REQUIRED","method":"icd10-dictionary-candidate-v1","message":"死因编码候选需人工复核" if candidate else "死因链未匹配，需人工复核",
+        "accuracyRate":None,"accuracyCompliance":"未评估",
+        "metrics":{"accuracy":{"value":None,"evaluationKind":"unvalidated","datasetIds":[],"definition":"未进行独立标注集编码准确率评估"}},
+        "qualityFlags":["clinical-review-required","accuracy-unvalidated"],
+        "inputDeathChain":{"part1_a":a,"part1_b":b,"part1_c":c,"part1_d":d},
+        "inferredUnderlyingCause":candidate,"reasoningWorkflow":workflow,
+        "replacementBenefit":"仅提供可追溯的字典候选，保留人工编码审核"
     }
 
 if __name__ == "__main__":

@@ -20,7 +20,10 @@ def calculate_transmission_risk(db_path: str, city: str = "郑州市", disease_n
     WHERE l.city = ?
     """
     d_row = conn.cursor().execute(d_sql, (city,)).fetchone()
-    avg_density = d_row[0] if d_row and d_row[0] else 25.0
+    if not d_row or d_row[0] is None:
+        conn.close()
+        return {"status":"NO_DATA","payload":None,"city":city,"riskScore":None,"message":"未查询到该城市监测记录"}
+    avg_density = float(d_row[0])
 
     # 2. 病原阳性率
     p_sql = """
@@ -34,9 +37,12 @@ def calculate_transmission_risk(db_path: str, city: str = "郑州市", disease_n
     p_row = conn.cursor().execute(p_sql, (city,)).fetchone()
     conn.close()
 
-    total_p = p_row[0] if p_row and p_row[0] else 10
-    pos_p = p_row[1] if p_row and p_row[1] else 1
-    pos_rate = (pos_p / total_p) * 100
+    total_p = int(p_row[0]) if p_row else 0
+    pos_p = int(p_row[1]) if p_row and p_row[1] is not None else 0
+    pos_rate = (pos_p / total_p) * 100 if total_p > 0 else None
+
+    if pos_rate is None:
+        return {"status":"INSUFFICIENT_DATA","city":city,"riskScore":None,"measuredAverageCapture":avg_density,"pathogenPositiveRate":None,"message":"缺少病原检测分母，不能计算传播风险"}
 
     # 四因子得分归一化 (0~100)
     density_idx = min(98.0, max(20.0, float(avg_density * 2.2)))
@@ -70,7 +76,12 @@ def calculate_transmission_risk(db_path: str, city: str = "郑州市", disease_n
     )
 
     return {
+        "status": "SUCCESS",
         "city": city,
+        "measuredAverageCapture": avg_density,
+        "pathogenPositiveRate": pos_rate,
+        "pathogenTestCount": total_p,
+        "pathogenPositiveCount": pos_p,
         "diseaseName": disease_name,
         "riskScore": total_score,
         "riskLevel": lvl,

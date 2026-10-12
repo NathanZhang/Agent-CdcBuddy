@@ -17,42 +17,12 @@ interface Icd10InferenceCardProps {
 }
 
 export const Icd10InferenceCard: React.FC<Icd10InferenceCardProps> = ({ data = {} }) => {
-  const chain = data?.inputDeathChain || {
-    part1_a: '心源性休克',
-    part1_b: '心室颤动',
-    part1_c: '急性下壁心肌梗死',
-    part1_d: '冠状动脉粥样硬化性心脏病'
-  };
-
-  const underlying = data?.inferredUnderlyingCause || {
-    diseaseName: '急性下壁心肌梗死',
-    standardIcd10: 'I21.1',
-    icd10ExpandedCode: 'I21.101',
-    chapter: '第九章 循环系统疾病',
-    block: '缺血性心脏病 (I20-I25)',
-    confidenceScore: 0.982
-  };
-
-  const workflow = data?.reasoningWorkflow || [
-    {
-      step: 1,
-      title: '直接死因逻辑过滤 (消除终末状态)',
-      content: `识别并剥离终末症状【${chain.part1_a}】，根据国家规范，呼吸心跳骤停/衰竭不得作为根本死因。`
-    },
-    {
-      step: 2,
-      title: '死因链因果顺应性溯源',
-      content: `由中间状态【${chain.part1_b}】回溯至最早引发一系列病理级联反应的原发疾病【${chain.part1_c}】。`
-    },
-    {
-      step: 3,
-      title: 'ICD-10 知识图谱编码锁定',
-      content: `匹配至国家标准 ICD-10 字典，映射为【${underlying.standardIcd10} ${underlying.diseaseName}】(${underlying.block})。`
-    }
-  ];
-
-  const accuracyCompliance = data?.accuracyCompliance || '达标 (96.5% >= 95.0% 国家标准)';
-  const benefit = data?.replacementBenefit || '已完全替代人工初审初编，单份证明书解析平均耗时由 8 分钟降至 0.04 秒。';
+  if (!data?.inferredUnderlyingCause) return <div role="status" className="p-4 border rounded-xl">{data?.message ?? '无可支持的编码候选，需人工复核'}</div>;
+  const chain = data.inputDeathChain ?? {};
+  const underlying = data.inferredUnderlyingCause;
+  const workflow = data.reasoningWorkflow ?? [];
+  const accuracyCompliance = data.accuracyCompliance ?? '未评估';
+  const benefit = data.replacementBenefit ?? '编码候选需人工复核';
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 rounded-xl p-5 border border-purple-200 dark:border-purple-500/30 shadow-md space-y-5">
@@ -66,11 +36,11 @@ export const Icd10InferenceCard: React.FC<Icd10InferenceCardProps> = ({ data = {
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <span>死因链医学知识图谱根本死因推断与 ICD-10 智能编码</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 font-medium">
-                NLP 因果推理 · 准确率≥95%
+                字典候选 · 需人工复核
               </span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              基于 WHO 根本死因选择总原则与修正规则，自动解析非结构化死亡因果链
+              根据输入死因链检索编码候选，未验证临床因果关系
             </p>
           </div>
         </div>
@@ -80,7 +50,7 @@ export const Icd10InferenceCard: React.FC<Icd10InferenceCardProps> = ({ data = {
             编码准确率: {accuracyCompliance}
           </span>
           <span className="px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-500/30">
-            置信度: {(underlying.confidenceScore * 100).toFixed(1)}%
+            置信度: {typeof underlying.confidenceScore === 'number' ? `${(underlying.confidenceScore * 100).toFixed(1)}%` : '未评估'}
           </span>
         </div>
       </div>
