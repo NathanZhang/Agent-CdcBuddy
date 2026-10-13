@@ -1,5 +1,7 @@
 import {authHeaders} from '@/infrastructure/auth/client';
 import { createSseDecoder } from '@/application/dispatch/sse';
+import {decodeDispatchSseData,DISPATCH_SSE_ENCODING,DISPATCH_SSE_ENCODING_HEADER} from '@/application/dispatch/dispatch-wire';
+import {MAX_DISPATCH_SSE_FRAME_BYTES} from '@/contracts/transport-budget';
 import type { AgentDomainType } from '@/lib/config/agent-profile';
 export interface DispatchResult {
  mapComposition?:import('@/contracts/map-composition').MapComposition;outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];intentSummary?:Record<string,unknown>;
@@ -20,10 +22,11 @@ export async function dispatchSkillPromptStream(promptText:string,context?:Dispa
  if(!promptText.trim())return failed('请输入有效指令');
  let reader:ReadableStreamDefaultReader<Uint8Array>|undefined;
  try{
-  const response=await fetch('/api/agent/stream-dispatch',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json',Accept:'text/event-stream'},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});
+  const response=await fetch('/api/agent/stream-dispatch',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json',Accept:'text/event-stream',[DISPATCH_SSE_ENCODING_HEADER]:DISPATCH_SSE_ENCODING},signal:context?.signal,body:JSON.stringify(requestBody(promptText,context))});
   if(!response.ok||!response.body)throw new Error(`智能体服务响应异常 (${response.status})`);
-  reader=response.body.getReader();const decoder=createSseDecoder();let result:DispatchResult|undefined;let content='',reasoning='';
-  const consume=(frames:ReturnType<typeof decoder.push>)=>{for(const {event,data} of frames){
+  reader=response.body.getReader();const decoder=createSseDecoder({maxFrameBytes:MAX_DISPATCH_SSE_FRAME_BYTES});let result:DispatchResult|undefined;let content='',reasoning='';
+  const consume=(frames:ReturnType<typeof decoder.push>)=>{for(const {event,data:payload} of frames){
+   const data=decodeDispatchSseData(payload);
    if(event==='reasoning_start')context?.onReasoningStart?.();
    else if(event==='reasoning_chunk'){reasoning=(data.replace?'':reasoning)+data.text;context?.onReasoningChunk?.(data.text,reasoning);}
    else if(event==='reasoning_end')context?.onReasoningEnd?.(data.durationMs ?? 0);

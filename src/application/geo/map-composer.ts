@@ -2,6 +2,7 @@ import type {MapView} from '@/contracts/map-view';
 import type {SpatialOutput} from '@/contracts/spatial-output';
 import {validateSpatialOutput} from '@/contracts/spatial-output';
 import type {MapComposition,MapLayerRequest,MapLayerOutcome} from '@/contracts/map-composition';
+import {MAX_MAP_COMPOSITION_BYTES} from '@/contracts/transport-budget';
 export interface MapComposeContext {authorizedRunIds:string[];revision?:number;maxFeatures?:number;maxLayerFeatures?:number;maxLayers?:number;maxBytes?:number;cameraPolicy?:MapComposition['cameraPolicy'];}
 export function composeMap(base:MapView,requests:MapLayerRequest[],outputs:SpatialOutput[],ctx:MapComposeContext):MapComposition{
  if(requests.length>(ctx.maxLayers??16)||new Set(requests.map(r=>r.id)).size!==requests.length)throw Error('MAP_DATA_LIMIT');
@@ -28,5 +29,5 @@ export function composeMap(base:MapView,requests:MapLayerRequest[],outputs:Spati
  const order={area:0,grid:0,line:1,circle:2,heatmap:3,points:4,labels:5};layers.sort((a,b)=>order[a.request.rendering]-order[b.request.rendering]);
  const domains=new Map<string,number[]>();const metricKey=(l:MapComposition['layers'][number])=>JSON.stringify([l.output.source.method,l.output.channels.unit,l.output.channels.definition,l.output.semantics,l.output.precision]);for(const l of layers)if(l.output.channels.value){const k=metricKey(l),values=l.output.geometry.features.map(f=>f.properties?.value).filter((v):v is number=>typeof v==='number'&&Number.isFinite(v));domains.set(k,[...(domains.get(k)??[]),...values]);}for(const l of layers){const values=domains.get(metricKey(l));if(values?.length)l.colorDomain=[Math.min(...values),Math.max(...values)];}
  const map:MapComposition={type:'MAP_COMPOSITION',mapId:base.mapId,revision:ctx.revision??1,baseResultRef:{runId:base.mapId.replace(/-map$/,'')},base,layers,layerOutcomes,legendGroups:layers.map(l=>({layerId:l.id,title:l.output.source.skillId,unit:l.output.channels.unit,definition:l.output.channels.definition,semantics:l.output.semantics,precision:l.output.precision,runId:l.output.source.runId,...(l.colorDomain?{domain:l.colorDomain}:{}),...(l.output.channels.category?{categories:[...new Set(l.output.geometry.features.map(f=>String(f.properties?.category??'')))]}:{})})),cameraPolicy:ctx.cameraPolicy??'preserve',lineage:outputs.filter(o=>allowed.has(o.source.runId)).map(o=>({runId:o.source.runId,callId:o.source.callId,outputId:o.outputId}))};
- if(new TextEncoder().encode(JSON.stringify(map)).byteLength>(ctx.maxBytes??8*1024*1024))throw Error('MAP_DATA_LIMIT');return map;
+ if(new TextEncoder().encode(JSON.stringify(map)).byteLength>(ctx.maxBytes??MAX_MAP_COMPOSITION_BYTES))throw Error('MAP_DATA_LIMIT');return map;
 }

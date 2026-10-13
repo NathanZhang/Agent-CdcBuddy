@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/dispatch-wire.test.ts (9 tests) 398ms
+   ✓ rejects oversized dispatch events at both encoding and decoding boundaries  370ms
+ ✓ tests/refactor/map-sse-transport.test.ts (2 tests) 612ms
+   ✓ retains ordinary JSON event shapes for clients without compact-encoding negotiation  312ms
+ ✓ tests/refactor/dispatch.test.ts (22 tests) 595ms
+ ✓ tests/refactor/session-history.test.ts (28 tests) 1647ms
+   ✓ restores grouped chart/table outputs and can reopen an earlier turn after a no-data reply  1042ms
+ ✓ tests/refactor/sse-budget.test.ts (6 tests) 49ms
+ ✓ tests/refactor/dispatch-http.test.ts (6 tests) 182ms
+
+ Test Files  6 passed (6)
+      Tests  73 passed (73)
+   Start at  22:34:38
+   Duration  3.20s (transform 709ms, setup 0ms, collect 1.61s, tests 3.48s, environment 1ms, prepare 234ms)
+

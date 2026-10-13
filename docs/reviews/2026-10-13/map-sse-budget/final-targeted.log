@@ -1,0 +1,15 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/dispatch-wire.test.ts (9 tests) 378ms
+   ✓ rejects oversized dispatch events at both encoding and decoding boundaries  359ms
+ ✓ tests/refactor/sse-budget.test.ts (6 tests) 50ms
+ ✓ tests/refactor/map-sse-transport.test.ts (3 tests) 740ms
+   ✓ keeps a successful Henan city/county map after the real route is delivered in 64 KiB fragments  310ms
+   ✓ retains ordinary JSON event shapes for clients without compact-encoding negotiation  340ms
+
+ Test Files  3 passed (3)
+      Tests  18 passed (18)
+   Start at  22:38:00
+   Duration  1.82s (transform 382ms, setup 0ms, collect 843ms, tests 1.17s, environment 0ms, prepare 139ms)
+

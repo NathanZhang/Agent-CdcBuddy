@@ -1,0 +1,104 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ❯ tests/refactor/sse-budget.test.ts (6 tests | 4 failed) 47ms
+   × rejects oversized complete and fragmented frames with chunk size 1 12ms
+     → expected [Function] to throw an error
+   ✓ rejects oversized complete and fragmented frames with chunk size 65536 12ms
+   × counts UTF-8 bytes rather than JavaScript characters 5ms
+     → expected [Function] to throw an error
+   ✓ accepts several valid frames even when one read exceeds the frame budget 5ms
+   × allows a larger bounded application frame without increasing the LLM default 10ms
+     → SSE frame exceeds budget
+   × enforces exact byte boundaries while preserving split UTF-8 and CRLF 1ms
+     → expected [Function] to throw an error
+ ❯ tests/refactor/map-sse-transport.test.ts (2 tests | 1 failed) 647ms
+   × keeps a successful Henan city/county map after the real route is delivered in 64 KiB fragments 327ms
+     → expected 'FAILED' to be 'SUCCESS' // Object.is equality
+   ✓ retains ordinary JSON event shapes for clients without compact-encoding negotiation  319ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/map-sse-transport.test.ts > keeps a successful Henan city/county map after the real route is delivered in 64 KiB fragments
+AssertionError: expected 'FAILED' to be 'SUCCESS' // Object.is equality
+
+Expected: "SUCCESS"
+Received: "FAILED"
+
+ ❯ tests/refactor/map-sse-transport.test.ts:46:39
+     44|  const controller=createWorkbenchController({domain:'vector',client:ag…
+     45|  const turn=await controller.send(prompt);
+     46|  expect(controller.getState().status).toBe('SUCCESS');
+       |                                       ^
+     47|  expect(controller.getState().view?.type).toBe('MAP_COMPOSITION');
+     48|  expect(turn?.mapComposition?.base.resources.map(r=>r.featureCount)).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/refactor/sse-budget.test.ts > rejects oversized complete and fragmented frames with chunk size 1
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/sse-budget.test.ts:10:193
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/refactor/sse-budget.test.ts > counts UTF-8 bytes rather than JavaScript characters
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/sse-budget.test.ts:15:45
+     13| it('counts UTF-8 bytes rather than JavaScript characters',()=>{
+     14|  const bytes=wire('界'.repeat(400000));
+     15|  expect(()=>createSseDecoder().push(bytes)).toThrow('SSE frame exceeds…
+       |                                             ^
+     16| });
+     17| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/refactor/sse-budget.test.ts > allows a larger bounded application frame without increasing the LLM default
+Error: SSE frame exceeds budget
+ ❯ parse src/application/dispatch/sse.ts:10:38
+
+ ❯ Object.push src/application/dispatch/sse.ts:12:85
+ ❯ tests/refactor/sse-budget.test.ts:25:77
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/refactor/sse-budget.test.ts > enforces exact byte boundaries while preserving split UTF-8 and CRLF
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/sse-budget.test.ts:35:75
+     33|  for(const byte of bytes)frames.push(...decoder.push(Uint8Array.of(byt…
+     34|  expect(frames).toEqual([{event:'message',data:{text:'河南'}}]);
+     35|  expect(()=>createSseDecoder({maxFrameBytes:bytes.length-1}).push(byte…
+       |                                                                           ^
+     36| });
+     37| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 3 passed (8)
+   Start at  22:31:09
+   Duration  1.62s (transform 308ms, setup 0ms, collect 660ms, tests 693ms, environment 0ms, prepare 88ms)
+

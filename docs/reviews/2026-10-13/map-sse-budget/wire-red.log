@@ -1,0 +1,114 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ❯ tests/refactor/dispatch-wire.test.ts (9 tests | 6 failed) 155ms
+   × pools repeated geometries while restoring exact properties, array positions, and shared objects 5ms
+     → expected [ '"coordinates":[113.6,34.7]', …(2) ] to have a length of 1 but got 3
+   ✓ leaves unnegotiated and non-map frames as ordinary event JSON 1ms
+   ✓ decodes an allowed large geometry in arbitrary fragments without requiring a previous frame 14ms
+   × rejects oversized dispatch events at both encoding and decoding boundaries 131ms
+     → expected [Function] to throw an error
+   × rejects malformed compact index references 3ms
+     → Cannot read properties of undefined (reading '0')
+   × rejects malformed compact path references 0ms
+     → Cannot read properties of undefined (reading '0')
+   × rejects malformed compact inherited references 0ms
+     → Cannot read properties of undefined (reading '0')
+   × rejects malformed compact geometry references 0ms
+     → Cannot set properties of undefined (setting '0')
+   ✓ still rejects truncated compact frames 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > pools repeated geometries while restoring exact properties, array positions, and shared objects
+AssertionError: expected [ '"coordinates":[113.6,34.7]', …(2) ] to have a length of 1 but got 3
+
+- Expected
++ Received
+
+- 1
++ 3
+
+ ❯ tests/refactor/dispatch-wire.test.ts:13:53
+     11|  const bytes=encodeDispatchSseFrame('finish',data,true);
+     12|  const raw=new TextDecoder().decode(bytes);
+     13|  expect(raw.match(/"coordinates":\[113.6,34.7\]/g)).toHaveLength(1);
+       |                                                     ^
+     14|  const restored=decodeDispatchSseData(read(bytes).data);
+     15|  expect(restored).toEqual(data);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > rejects oversized dispatch events at both encoding and decoding boundaries
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/refactor/dispatch-wire.test.ts:39:52
+     37| it('rejects oversized dispatch events at both encoding and decoding bo…
+     38|  const data={text:'x'.repeat(MAX_DISPATCH_SSE_FRAME_BYTES)};
+     39|  expect(()=>encodeDispatchSseFrame('finish',data)).toThrow('SSE frame …
+       |                                                    ^
+     40|  const bytes=new TextEncoder().encode(`event: finish\ndata: ${JSON.str…
+     41|  expect(()=>read(bytes)).toThrow('SSE frame exceeds budget');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > rejects malformed compact index references
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ tests/refactor/dispatch-wire.test.ts:46:32
+     44| it.each(['index','path','inherited','geometry'])('rejects malformed co…
+     45|  const envelope=read(encodeDispatchSseFrame('finish',{geometry},true))…
+     46|  if(problem==='index')envelope.locations[0].index=99;
+       |                                ^
+     47|  if(problem==='path')envelope.locations[0].path=['missing'];
+     48|  if(problem==='inherited')envelope.locations[0].path=['__proto__','pol…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > rejects malformed compact path references
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ tests/refactor/dispatch-wire.test.ts:47:31
+     45|  const envelope=read(encodeDispatchSseFrame('finish',{geometry},true))…
+     46|  if(problem==='index')envelope.locations[0].index=99;
+     47|  if(problem==='path')envelope.locations[0].path=['missing'];
+       |                               ^
+     48|  if(problem==='inherited')envelope.locations[0].path=['__proto__','pol…
+     49|  if(problem==='geometry')envelope.geometries[0]={type:'Point',coordina…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > rejects malformed compact inherited references
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ tests/refactor/dispatch-wire.test.ts:48:36
+     46|  if(problem==='index')envelope.locations[0].index=99;
+     47|  if(problem==='path')envelope.locations[0].path=['missing'];
+     48|  if(problem==='inherited')envelope.locations[0].path=['__proto__','pol…
+       |                                    ^
+     49|  if(problem==='geometry')envelope.geometries[0]={type:'Point',coordina…
+     50|  expect(()=>decodeDispatchSseData(envelope)).toThrow('Invalid compact …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/refactor/dispatch-wire.test.ts > rejects malformed compact geometry references
+TypeError: Cannot set properties of undefined (setting '0')
+ ❯ tests/refactor/dispatch-wire.test.ts:49:47
+     47|  if(problem==='path')envelope.locations[0].path=['missing'];
+     48|  if(problem==='inherited')envelope.locations[0].path=['__proto__','pol…
+     49|  if(problem==='geometry')envelope.geometries[0]={type:'Point',coordina…
+       |                                               ^
+     50|  expect(()=>decodeDispatchSseData(envelope)).toThrow('Invalid compact …
+     51|  expect(({} as any).polluted).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 3 passed (9)
+   Start at  22:33:29
+   Duration  478ms (transform 34ms, setup 0ms, collect 37ms, tests 155ms, environment 0ms, prepare 50ms)
+
