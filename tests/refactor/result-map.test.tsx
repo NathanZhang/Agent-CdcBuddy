@@ -66,3 +66,5 @@ it('shows a map for the current spatial analysis using observed capture values, 
  const html=renderToStaticMarkup(<ThemeProvider><AnalyticsResultCard data={{method:'observed-capture-idw-v1',data:{monitoringPoints:[{id:'A',street:'真实点',lat:34.75,lon:113.6,value:0}],grid:[],alerts:[]}}}/></ThemeProvider>);
  expect(html).toContain('data-map-engine="maplibre"');expect(html).toContain('真实点：0 捕获量 / 记录');expect(html).toContain('<table');expect(html).not.toContain('一级暴发');
 });
+
+it('shows standalone nonnumeric map points without inventing a zero measurement',()=>{const nonnumeric={kind:'map' as const,latKey:'lat',lonKey:'lon',labelKey:'name'};const html=renderToStaticMarkup(<ThemeProvider><QueryResultVisualization rows={[{name:'入口',lat:34,lon:113}]} spec={nonnumeric}/></ThemeProvider>);expect(html).toContain('入口');expect(html).not.toContain('入口：0');});

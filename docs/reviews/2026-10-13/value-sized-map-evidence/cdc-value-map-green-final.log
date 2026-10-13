@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ✓ tests/refactor/map-interaction.test.ts (1 test) 16ms
+ ✓ tests/refactor/value-sized-map.test.ts (7 tests) 344ms
+   ✓ carries approved value sizing through actual grouped query output and preserves its details  324ms
+
+ Test Files  2 passed (2)
+      Tests  8 passed (8)
+   Start at  21:17:07
+   Duration  1.20s (transform 305ms, setup 0ms, collect 693ms, tests 360ms, environment 0ms, prepare 109ms)
+

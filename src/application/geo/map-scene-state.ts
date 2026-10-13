@@ -1,0 +1,6 @@
+import type {MapSceneState,MapSceneOperation} from '@/contracts/map-composition';
+export function applyMapSceneOperation(state:MapSceneState,operation:MapSceneOperation,expectedRevision:number):MapSceneState{
+ if(state.revision!==expectedRevision)throw Error('SCENE_REVISION_CONFLICT');const next=structuredClone(state);const target=(id:string)=>{const layer=next.layers.find(l=>l.id===id);if(!layer)throw Error('MAP_LAYER_NOT_FOUND');return layer;};
+ switch(operation.type){case 'replaceScene':next.layers=structuredClone(operation.layers);break;case 'addLayers':next.layers.push(...structuredClone(operation.layers));break;case 'replaceLayer':{const original=target(operation.layerId);next.layers[next.layers.indexOf(original)]=structuredClone(operation.layer);break;}case 'removeLayers':for(const id of operation.layerIds)target(id);next.layers=next.layers.filter(l=>!operation.layerIds.includes(l.id));break;case 'setVisibility':target(operation.layerId).visible=operation.visible;break;case 'setRendering':{const layer=target(operation.layerId);layer.rendering=operation.rendering;if(operation.rendering!=='points')delete layer.pointSize;break;}case 'setBasemap':next.basemap=operation.basemap;break;}
+ if(new Set(next.layers.map(l=>l.id)).size!==next.layers.length)throw Error('MAP_LAYER_ID_CONFLICT');next.revision++;return next;
+}

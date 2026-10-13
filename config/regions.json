@@ -1,0 +1,3181 @@
+{
+  "schemaVersion": 1,
+  "version": "local-boundaries-2026-10-13-v1",
+  "source": "existing-repository-boundaries; not current nationwide coverage",
+  "resources": [
+    {
+      "assetId": "henan-province",
+      "filename": "henan province border.geojson",
+      "sha256": "1296aa46865fa53f8a5791649c0d4ab3e6aab073369817e6bea2516afdf37c66",
+      "featureCount": 1
+    },
+    {
+      "assetId": "henan-city",
+      "filename": "henan city border.geojson",
+      "sha256": "7ae4f8c4dbf16603daed520a01bba66ed945eaa7b9dc1774ef7c439ee8f14bda",
+      "featureCount": 18
+    },
+    {
+      "assetId": "henan-county",
+      "filename": "henan county border.geojson",
+      "sha256": "381fc3be81edcc18b697c60f1491ea9f21e3e1ace0aae9f4965e345a9975d02c",
+      "featureCount": 157
+    }
+  ],
+  "regions": [
+    {
+      "code": "410000",
+      "name": "河南省",
+      "level": "province",
+      "parentCode": null,
+      "aliases": [
+        "河南省",
+        "河南",
+        "全省",
+        "全域",
+        "全省全景",
+        "河南省全域"
+      ],
+      "assetId": "henan-province",
+      "sourceId": "156410000",
+      "bbox": [
+        110.353676,
+        31.384459,
+        116.647011,
+        36.374184
+      ]
+    },
+    {
+      "code": "411100",
+      "name": "漯河市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "漯河市",
+        "漯河"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411100",
+      "bbox": [
+        113.452257,
+        33.403829,
+        114.290873,
+        33.984845
+      ]
+    },
+    {
+      "code": "411000",
+      "name": "许昌市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "许昌市",
+        "许昌"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411000",
+      "bbox": [
+        113.058317,
+        33.690112,
+        114.320947,
+        34.406388
+      ]
+    },
+    {
+      "code": "410900",
+      "name": "濮阳市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "濮阳市",
+        "濮阳"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410900",
+      "bbox": [
+        114.867038,
+        35.332648,
+        116.092756,
+        36.208961
+      ]
+    },
+    {
+      "code": "419001",
+      "name": "济源市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "济源市",
+        "济源"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156419001",
+      "bbox": [
+        112.029033,
+        34.895335,
+        112.765979,
+        35.282619
+      ]
+    },
+    {
+      "code": "410600",
+      "name": "鹤壁市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "鹤壁市",
+        "鹤壁"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410600",
+      "bbox": [
+        113.990707,
+        35.44414,
+        114.746725,
+        36.05208
+      ]
+    },
+    {
+      "code": "411700",
+      "name": "驻马店市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "驻马店市",
+        "驻马店"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411700",
+      "bbox": [
+        113.089987,
+        32.279574,
+        115.20652,
+        33.532685
+      ]
+    },
+    {
+      "code": "410500",
+      "name": "安阳市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "安阳市",
+        "安阳"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410500",
+      "bbox": [
+        113.630676,
+        35.206651,
+        114.982473,
+        36.374184
+      ]
+    },
+    {
+      "code": "411600",
+      "name": "周口市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "周口市",
+        "周口"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411600",
+      "bbox": [
+        114.084674,
+        33.050941,
+        115.644472,
+        34.338648
+      ]
+    },
+    {
+      "code": "410800",
+      "name": "焦作市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "焦作市",
+        "焦作"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410800",
+      "bbox": [
+        112.563089,
+        34.814475,
+        113.64348,
+        35.494569
+      ]
+    },
+    {
+      "code": "410700",
+      "name": "新乡市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "新乡市",
+        "新乡"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410700",
+      "bbox": [
+        113.373661,
+        34.8811,
+        115.015037,
+        35.839732
+      ]
+    },
+    {
+      "code": "410200",
+      "name": "开封市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "开封市",
+        "开封"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410200",
+      "bbox": [
+        113.871252,
+        34.195708,
+        115.261211,
+        35.025608
+      ]
+    },
+    {
+      "code": "411300",
+      "name": "南阳市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "南阳市",
+        "南阳"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411300",
+      "bbox": [
+        110.977661,
+        32.275147,
+        113.807463,
+        33.799289
+      ]
+    },
+    {
+      "code": "410100",
+      "name": "郑州市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "郑州市",
+        "郑州"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410100",
+      "bbox": [
+        112.714796,
+        34.264049,
+        114.206024,
+        34.984173
+      ]
+    },
+    {
+      "code": "411200",
+      "name": "三门峡市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "三门峡市",
+        "三门峡"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411200",
+      "bbox": [
+        110.353676,
+        33.549706,
+        112.025052,
+        35.081684
+      ]
+    },
+    {
+      "code": "410400",
+      "name": "平顶山市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "平顶山市",
+        "平顶山"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410400",
+      "bbox": [
+        112.243962,
+        33.130562,
+        113.682458,
+        34.346464
+      ]
+    },
+    {
+      "code": "411500",
+      "name": "信阳市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "信阳市",
+        "信阳"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411500",
+      "bbox": [
+        113.70656,
+        31.384459,
+        115.934616,
+        32.663931
+      ]
+    },
+    {
+      "code": "410300",
+      "name": "洛阳市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "洛阳市",
+        "洛阳"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156410300",
+      "bbox": [
+        111.130565,
+        33.564117,
+        112.974271,
+        35.070545
+      ]
+    },
+    {
+      "code": "411400",
+      "name": "商丘市",
+      "level": "city",
+      "parentCode": "410000",
+      "aliases": [
+        "商丘市",
+        "商丘"
+      ],
+      "assetId": "henan-city",
+      "sourceId": "156411400",
+      "bbox": [
+        114.823199,
+        33.709564,
+        116.647011,
+        34.862503
+      ]
+    },
+    {
+      "code": "410581",
+      "name": "林州市",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "林州市",
+        "林州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410581",
+      "bbox": [
+        113.630676,
+        35.673098,
+        114.079421,
+        36.374184
+      ]
+    },
+    {
+      "code": "410185",
+      "name": "登封市",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "登封市",
+        "登封"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410185",
+      "bbox": [
+        112.714796,
+        34.264049,
+        113.322767,
+        34.595379
+      ]
+    },
+    {
+      "code": "410184",
+      "name": "新郑市",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "新郑市",
+        "新郑"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410184",
+      "bbox": [
+        113.504779,
+        34.275893,
+        113.900458,
+        34.65356
+      ]
+    },
+    {
+      "code": "410181",
+      "name": "巩义市",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "巩义市",
+        "巩义"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410181",
+      "bbox": [
+        112.805359,
+        34.519216,
+        113.272322,
+        34.872954
+      ]
+    },
+    {
+      "code": "410183",
+      "name": "新密市",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "新密市",
+        "新密"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410183",
+      "bbox": [
+        113.156961,
+        34.335643,
+        113.668929,
+        34.66664
+      ]
+    },
+    {
+      "code": "410182",
+      "name": "荥阳市",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "荥阳市",
+        "荥阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410182",
+      "bbox": [
+        113.134072,
+        34.608903,
+        113.513403,
+        34.984173
+      ]
+    },
+    {
+      "code": "410505",
+      "name": "殷都区",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "殷都区",
+        "殷都"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410505",
+      "bbox": [
+        114.081824,
+        36.080464,
+        114.334092,
+        36.209849
+      ]
+    },
+    {
+      "code": "410108",
+      "name": "惠济区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "惠济区",
+        "惠济"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410108",
+      "bbox": [
+        113.491924,
+        34.798792,
+        113.796383,
+        34.971613
+      ]
+    },
+    {
+      "code": "410902",
+      "name": "华龙区",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "华龙区",
+        "华龙"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410902",
+      "bbox": [
+        114.867038,
+        35.587472,
+        115.255264,
+        35.86298
+      ]
+    },
+    {
+      "code": "410506",
+      "name": "龙安区",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "龙安区",
+        "龙安"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410506",
+      "bbox": [
+        114.098996,
+        35.958056,
+        114.349255,
+        36.111235
+      ]
+    },
+    {
+      "code": "410622",
+      "name": "淇县",
+      "level": "county",
+      "parentCode": "410600",
+      "aliases": [
+        "淇县",
+        "淇"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410622",
+      "bbox": [
+        113.990707,
+        35.496756,
+        114.298252,
+        35.808211
+      ]
+    },
+    {
+      "code": "410105",
+      "name": "金水区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "金水区",
+        "金水"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410105",
+      "bbox": [
+        113.603777,
+        34.735528,
+        113.852785,
+        34.890993
+      ]
+    },
+    {
+      "code": "410621",
+      "name": "浚县",
+      "level": "county",
+      "parentCode": "410600",
+      "aliases": [
+        "浚县",
+        "浚"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410621",
+      "bbox": [
+        114.254726,
+        35.44414,
+        114.746725,
+        35.84246
+      ]
+    },
+    {
+      "code": "410225",
+      "name": "兰考县",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "兰考县",
+        "兰考"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410225",
+      "bbox": [
+        114.686933,
+        34.744958,
+        115.261211,
+        35.025608
+      ]
+    },
+    {
+      "code": "410104",
+      "name": "管城回族区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "管城回族区",
+        "管城回族"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410104",
+      "bbox": [
+        113.645733,
+        34.612894,
+        113.863185,
+        34.76993
+      ]
+    },
+    {
+      "code": "410503",
+      "name": "北关区",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "北关区",
+        "北关"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410503",
+      "bbox": [
+        114.327123,
+        36.093835,
+        114.428979,
+        36.233687
+      ]
+    },
+    {
+      "code": "410502",
+      "name": "文峰区",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "文峰区",
+        "文峰"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410502",
+      "bbox": [
+        114.333762,
+        35.958056,
+        114.452486,
+        36.111607
+      ]
+    },
+    {
+      "code": "410106",
+      "name": "上街区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "上街区",
+        "上街"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410106",
+      "bbox": [
+        113.237655,
+        34.716861,
+        113.318847,
+        34.844102
+      ]
+    },
+    {
+      "code": "410222",
+      "name": "通许县",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "通许县",
+        "通许"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410222",
+      "bbox": [
+        114.303372,
+        34.261085,
+        114.645476,
+        34.592257
+      ]
+    },
+    {
+      "code": "410221",
+      "name": "杞县",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "杞县",
+        "杞"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410221",
+      "bbox": [
+        114.603486,
+        34.224362,
+        114.931119,
+        34.76391
+      ]
+    },
+    {
+      "code": "410103",
+      "name": "二七区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "二七区",
+        "二七"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410103",
+      "bbox": [
+        113.500576,
+        34.60499,
+        113.670495,
+        34.767875
+      ]
+    },
+    {
+      "code": "410223",
+      "name": "尉氏县",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "尉氏县",
+        "尉氏"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410223",
+      "bbox": [
+        113.871252,
+        34.195708,
+        114.437401,
+        34.618826
+      ]
+    },
+    {
+      "code": "410102",
+      "name": "中原区",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "中原区",
+        "中原"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410102",
+      "bbox": [
+        113.447468,
+        34.699311,
+        113.627961,
+        34.860385
+      ]
+    },
+    {
+      "code": "411681",
+      "name": "项城市",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "项城市",
+        "项城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411681",
+      "bbox": [
+        114.674215,
+        33.050941,
+        115.069778,
+        33.505191
+      ]
+    },
+    {
+      "code": "411281",
+      "name": "义马市",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "义马市",
+        "义马"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411281",
+      "bbox": [
+        111.820411,
+        34.693249,
+        111.992511,
+        34.80397
+      ]
+    },
+    {
+      "code": "411282",
+      "name": "灵宝市",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "灵宝市",
+        "灵宝"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411282",
+      "bbox": [
+        110.353676,
+        34.119993,
+        111.191921,
+        34.738964
+      ]
+    },
+    {
+      "code": "411729",
+      "name": "新蔡县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "新蔡县",
+        "新蔡"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411729",
+      "bbox": [
+        114.628183,
+        32.579657,
+        115.20652,
+        32.973337
+      ]
+    },
+    {
+      "code": "411726",
+      "name": "泌阳县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "泌阳县",
+        "泌阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411726",
+      "bbox": [
+        113.089987,
+        32.570274,
+        113.650091,
+        33.16462
+      ]
+    },
+    {
+      "code": "411725",
+      "name": "确山县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "确山县",
+        "确山"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411725",
+      "bbox": [
+        113.626994,
+        32.447812,
+        114.236586,
+        32.867017
+      ]
+    },
+    {
+      "code": "411329",
+      "name": "新野县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "新野县",
+        "新野"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411329",
+      "bbox": [
+        112.218447,
+        32.328308,
+        112.596131,
+        32.813355
+      ]
+    },
+    {
+      "code": "411728",
+      "name": "遂平县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "遂平县",
+        "遂平"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411728",
+      "bbox": [
+        113.618534,
+        32.992471,
+        114.176767,
+        33.307373
+      ]
+    },
+    {
+      "code": "411727",
+      "name": "汝南县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "汝南县",
+        "汝南"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411727",
+      "bbox": [
+        114.100865,
+        32.63119,
+        114.588792,
+        33.188911
+      ]
+    },
+    {
+      "code": "411722",
+      "name": "上蔡县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "上蔡县",
+        "上蔡"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411722",
+      "bbox": [
+        114.08366,
+        33.130394,
+        114.72533,
+        33.486712
+      ]
+    },
+    {
+      "code": "411326",
+      "name": "淅川县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "淅川县",
+        "淅川"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411326",
+      "bbox": [
+        110.977661,
+        32.595814,
+        111.873994,
+        33.373813
+      ]
+    },
+    {
+      "code": "411721",
+      "name": "西平县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "西平县",
+        "西平"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411721",
+      "bbox": [
+        113.599283,
+        33.186992,
+        114.189896,
+        33.532685
+      ]
+    },
+    {
+      "code": "411325",
+      "name": "内乡县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "内乡县",
+        "内乡"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411325",
+      "bbox": [
+        111.564388,
+        32.819656,
+        112.15257,
+        33.595308
+      ]
+    },
+    {
+      "code": "411724",
+      "name": "正阳县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "正阳县",
+        "正阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411724",
+      "bbox": [
+        114.18633,
+        32.279574,
+        114.898776,
+        32.800421
+      ]
+    },
+    {
+      "code": "411603",
+      "name": "淮阳区",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "淮阳区",
+        "淮阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411603",
+      "bbox": [
+        114.641655,
+        33.413183,
+        115.08815,
+        33.930709
+      ]
+    },
+    {
+      "code": "411328",
+      "name": "唐河县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "唐河县",
+        "唐河"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411328",
+      "bbox": [
+        112.469625,
+        32.345386,
+        113.263889,
+        32.918722
+      ]
+    },
+    {
+      "code": "411723",
+      "name": "平舆县",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "平舆县",
+        "平舆"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411723",
+      "bbox": [
+        114.395628,
+        32.735754,
+        114.924103,
+        33.177477
+      ]
+    },
+    {
+      "code": "411602",
+      "name": "川汇区",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "川汇区",
+        "川汇"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411602",
+      "bbox": [
+        114.575713,
+        33.502556,
+        114.851894,
+        33.716614
+      ]
+    },
+    {
+      "code": "411327",
+      "name": "社旗县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "社旗县",
+        "社旗"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411327",
+      "bbox": [
+        112.767725,
+        32.791695,
+        113.201648,
+        33.15483
+      ]
+    },
+    {
+      "code": "411322",
+      "name": "方城县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "方城县",
+        "方城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411322",
+      "bbox": [
+        112.626592,
+        33.069046,
+        113.401166,
+        33.616566
+      ]
+    },
+    {
+      "code": "411321",
+      "name": "南召县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "南召县",
+        "南召"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411321",
+      "bbox": [
+        111.908558,
+        33.198217,
+        112.852601,
+        33.721198
+      ]
+    },
+    {
+      "code": "411324",
+      "name": "镇平县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "镇平县",
+        "镇平"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411324",
+      "bbox": [
+        111.964641,
+        32.848376,
+        112.417423,
+        33.338817
+      ]
+    },
+    {
+      "code": "411203",
+      "name": "陕州区",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "陕州区",
+        "陕州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411203",
+      "bbox": [
+        111.020712,
+        34.41894,
+        111.728878,
+        34.857098
+      ]
+    },
+    {
+      "code": "411323",
+      "name": "西峡县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "西峡县",
+        "西峡"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411323",
+      "bbox": [
+        110.991127,
+        33.088741,
+        111.830609,
+        33.799289
+      ]
+    },
+    {
+      "code": "411202",
+      "name": "湖滨区",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "湖滨区",
+        "湖滨"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411202",
+      "bbox": [
+        111.132569,
+        34.669943,
+        111.394504,
+        34.8298
+      ]
+    },
+    {
+      "code": "410725",
+      "name": "原阳县",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "原阳县",
+        "原阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410725",
+      "bbox": [
+        113.580032,
+        34.8811,
+        114.270015,
+        35.185732
+      ]
+    },
+    {
+      "code": "410329",
+      "name": "伊川县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "伊川县",
+        "伊川"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410329",
+      "bbox": [
+        112.200041,
+        34.214138,
+        112.770172,
+        34.544593
+      ]
+    },
+    {
+      "code": "410603",
+      "name": "山城区",
+      "level": "county",
+      "parentCode": "410600",
+      "aliases": [
+        "山城区",
+        "山城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410603",
+      "bbox": [
+        114.140254,
+        35.837293,
+        114.303814,
+        35.994083
+      ]
+    },
+    {
+      "code": "410724",
+      "name": "获嘉县",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "获嘉县",
+        "获嘉"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410724",
+      "bbox": [
+        113.505537,
+        35.034475,
+        113.744304,
+        35.346287
+      ]
+    },
+    {
+      "code": "410328",
+      "name": "洛宁县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "洛宁县",
+        "洛宁"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410328",
+      "bbox": [
+        111.130565,
+        34.091881,
+        111.824059,
+        34.633241
+      ]
+    },
+    {
+      "code": "410727",
+      "name": "封丘县",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "封丘县",
+        "封丘"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410727",
+      "bbox": [
+        114.229881,
+        34.890393,
+        114.776617,
+        35.229003
+      ]
+    },
+    {
+      "code": "410726",
+      "name": "延津县",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "延津县",
+        "延津"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410726",
+      "bbox": [
+        113.988809,
+        35.105874,
+        114.432999,
+        35.478735
+      ]
+    },
+    {
+      "code": "410721",
+      "name": "新乡县",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "新乡县",
+        "新乡"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410721",
+      "bbox": [
+        113.702151,
+        35.088617,
+        114.059056,
+        35.364165
+      ]
+    },
+    {
+      "code": "410204",
+      "name": "鼓楼区",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "鼓楼区",
+        "鼓楼"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410204",
+      "bbox": [
+        114.245458,
+        34.678461,
+        114.36304,
+        34.801399
+      ]
+    },
+    {
+      "code": "410325",
+      "name": "嵩县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "嵩县",
+        "嵩"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410325",
+      "bbox": [
+        111.704768,
+        33.564117,
+        112.370919,
+        34.346777
+      ]
+    },
+    {
+      "code": "410203",
+      "name": "顺河回族区",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "顺河回族区",
+        "顺河回族"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410203",
+      "bbox": [
+        114.349912,
+        34.758807,
+        114.500633,
+        34.85739
+      ]
+    },
+    {
+      "code": "410324",
+      "name": "栾川县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "栾川县",
+        "栾川"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410324",
+      "bbox": [
+        111.196873,
+        33.656177,
+        112.032739,
+        34.185191
+      ]
+    },
+    {
+      "code": "410602",
+      "name": "鹤山区",
+      "level": "county",
+      "parentCode": "410600",
+      "aliases": [
+        "鹤山区",
+        "鹤山"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410602",
+      "bbox": [
+        114.02378,
+        35.90772,
+        114.194391,
+        36.05208
+      ]
+    },
+    {
+      "code": "410327",
+      "name": "宜阳县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "宜阳县",
+        "宜阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410327",
+      "bbox": [
+        111.745565,
+        34.271571,
+        112.348731,
+        34.698696
+      ]
+    },
+    {
+      "code": "410205",
+      "name": "禹王台区",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "禹王台区",
+        "禹王台"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410205",
+      "bbox": [
+        114.316386,
+        34.701852,
+        114.443284,
+        34.785142
+      ]
+    },
+    {
+      "code": "410326",
+      "name": "汝阳县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "汝阳县",
+        "汝阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410326",
+      "bbox": [
+        112.197861,
+        33.807594,
+        112.617053,
+        34.360087
+      ]
+    },
+    {
+      "code": "410202",
+      "name": "龙亭区",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "龙亭区",
+        "龙亭"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410202",
+      "bbox": [
+        114.111291,
+        34.702504,
+        114.428343,
+        34.94069
+      ]
+    },
+    {
+      "code": "410323",
+      "name": "新安县",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "新安县",
+        "新安"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410323",
+      "bbox": [
+        111.876768,
+        34.602749,
+        112.318542,
+        35.070545
+      ]
+    },
+    {
+      "code": "411381",
+      "name": "邓州市",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "邓州市",
+        "邓州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411381",
+      "bbox": [
+        111.635918,
+        32.378853,
+        112.343093,
+        32.999324
+      ]
+    },
+    {
+      "code": "410611",
+      "name": "淇滨区",
+      "level": "county",
+      "parentCode": "410600",
+      "aliases": [
+        "淇滨区",
+        "淇滨"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410611",
+      "bbox": [
+        114.001741,
+        35.64033,
+        114.404354,
+        35.920261
+      ]
+    },
+    {
+      "code": "411425",
+      "name": "虞城县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "虞城县",
+        "虞城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411425",
+      "bbox": [
+        115.675442,
+        34.006245,
+        116.194488,
+        34.624958
+      ]
+    },
+    {
+      "code": "411303",
+      "name": "卧龙区",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "卧龙区",
+        "卧龙"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411303",
+      "bbox": [
+        112.292993,
+        32.703212,
+        112.642544,
+        33.278712
+      ]
+    },
+    {
+      "code": "411424",
+      "name": "柘城县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "柘城县",
+        "柘城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411424",
+      "bbox": [
+        115.040549,
+        33.933826,
+        115.544103,
+        34.273695
+      ]
+    },
+    {
+      "code": "411702",
+      "name": "驿城区",
+      "level": "county",
+      "parentCode": "411700",
+      "aliases": [
+        "驿城区",
+        "驿城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411702",
+      "bbox": [
+        113.507854,
+        32.835002,
+        114.236349,
+        33.150269
+      ]
+    },
+    {
+      "code": "411426",
+      "name": "夏邑县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "夏邑县",
+        "夏邑"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411426",
+      "bbox": [
+        115.873959,
+        33.992909,
+        116.463366,
+        34.428219
+      ]
+    },
+    {
+      "code": "411025",
+      "name": "襄城县",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "襄城县",
+        "襄城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411025",
+      "bbox": [
+        113.359423,
+        33.690112,
+        113.756706,
+        34.033073
+      ]
+    },
+    {
+      "code": "411421",
+      "name": "民权县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "民权县",
+        "民权"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411421",
+      "bbox": [
+        114.823199,
+        34.526932,
+        115.461074,
+        34.862503
+      ]
+    },
+    {
+      "code": "411024",
+      "name": "鄢陵县",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "鄢陵县",
+        "鄢陵"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411024",
+      "bbox": [
+        114.040524,
+        33.768349,
+        114.320947,
+        34.252782
+      ]
+    },
+    {
+      "code": "411302",
+      "name": "宛城区",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "宛城区",
+        "宛城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411302",
+      "bbox": [
+        112.464391,
+        32.633632,
+        112.832661,
+        33.164609
+      ]
+    },
+    {
+      "code": "411423",
+      "name": "宁陵县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "宁陵县",
+        "宁陵"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411423",
+      "bbox": [
+        115.134728,
+        34.249195,
+        115.453652,
+        34.625767
+      ]
+    },
+    {
+      "code": "410212",
+      "name": "祥符区",
+      "level": "county",
+      "parentCode": "410200",
+      "aliases": [
+        "祥符区",
+        "祥符"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410212",
+      "bbox": [
+        114.140056,
+        34.509519,
+        114.728261,
+        34.923018
+      ]
+    },
+    {
+      "code": "411422",
+      "name": "睢县",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "睢县",
+        "睢"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411422",
+      "bbox": [
+        114.843699,
+        34.206056,
+        115.207373,
+        34.571465
+      ]
+    },
+    {
+      "code": "410781",
+      "name": "卫辉市",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "卫辉市",
+        "卫辉"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410781",
+      "bbox": [
+        113.862862,
+        35.32848,
+        114.324958,
+        35.706205
+      ]
+    },
+    {
+      "code": "410703",
+      "name": "卫滨区",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "卫滨区",
+        "卫滨"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410703",
+      "bbox": [
+        113.77947,
+        35.225003,
+        113.888086,
+        35.325016
+      ]
+    },
+    {
+      "code": "410307",
+      "name": "偃师区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "偃师区",
+        "偃师"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410307",
+      "bbox": [
+        112.61263,
+        34.469108,
+        112.974271,
+        34.8048
+      ]
+    },
+    {
+      "code": "410823",
+      "name": "武陟县",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "武陟县",
+        "武陟"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410823",
+      "bbox": [
+        113.150241,
+        34.908553,
+        113.64348,
+        35.179308
+      ]
+    },
+    {
+      "code": "410702",
+      "name": "红旗区",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "红旗区",
+        "红旗"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410702",
+      "bbox": [
+        113.865374,
+        35.202882,
+        114.093057,
+        35.347205
+      ]
+    },
+    {
+      "code": "410825",
+      "name": "温县",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "温县",
+        "温"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410825",
+      "bbox": [
+        112.852963,
+        34.8297,
+        113.217621,
+        35.050127
+      ]
+    },
+    {
+      "code": "410704",
+      "name": "凤泉区",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "凤泉区",
+        "凤泉"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410704",
+      "bbox": [
+        113.724336,
+        35.336523,
+        113.966144,
+        35.451951
+      ]
+    },
+    {
+      "code": "410308",
+      "name": "孟津区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "孟津区",
+        "孟津"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410308",
+      "bbox": [
+        112.208842,
+        34.718712,
+        112.807844,
+        34.962617
+      ]
+    },
+    {
+      "code": "410303",
+      "name": "西工区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "西工区",
+        "西工"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410303",
+      "bbox": [
+        112.283487,
+        34.644489,
+        112.460196,
+        34.735099
+      ]
+    },
+    {
+      "code": "410423",
+      "name": "鲁山县",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "鲁山县",
+        "鲁山"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410423",
+      "bbox": [
+        112.243962,
+        33.561333,
+        113.232695,
+        33.993121
+      ]
+    },
+    {
+      "code": "410302",
+      "name": "老城区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "老城区",
+        "老城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410302",
+      "bbox": [
+        112.380432,
+        34.6683,
+        112.489714,
+        34.758927
+      ]
+    },
+    {
+      "code": "410822",
+      "name": "博爱县",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "博爱县",
+        "博爱"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410822",
+      "bbox": [
+        112.944635,
+        35.037407,
+        113.17122,
+        35.363503
+      ]
+    },
+    {
+      "code": "410305",
+      "name": "涧西区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "涧西区",
+        "涧西"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410305",
+      "bbox": [
+        112.261181,
+        34.546212,
+        112.419091,
+        34.696237
+      ]
+    },
+    {
+      "code": "410821",
+      "name": "修武县",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "修武县",
+        "修武"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410821",
+      "bbox": [
+        113.137321,
+        35.124856,
+        113.542579,
+        35.494569
+      ]
+    },
+    {
+      "code": "410425",
+      "name": "郏县",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "郏县",
+        "郏"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410425",
+      "bbox": [
+        112.996128,
+        33.797086,
+        113.414905,
+        34.180652
+      ]
+    },
+    {
+      "code": "410304",
+      "name": "瀍河回族区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "瀍河回族区",
+        "瀍河回族"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410304",
+      "bbox": [
+        112.465784,
+        34.672288,
+        112.540206,
+        34.741384
+      ]
+    },
+    {
+      "code": "410783",
+      "name": "长垣市",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "长垣市",
+        "长垣"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410783",
+      "bbox": [
+        114.481862,
+        34.99183,
+        115.015037,
+        35.392034
+      ]
+    },
+    {
+      "code": "410782",
+      "name": "辉县市",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "辉县市",
+        "辉县"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410782",
+      "bbox": [
+        113.373661,
+        35.289289,
+        113.950121,
+        35.839732
+      ]
+    },
+    {
+      "code": "410422",
+      "name": "叶县",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "叶县",
+        "叶"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410422",
+      "bbox": [
+        113.016825,
+        33.337265,
+        113.624188,
+        33.764138
+      ]
+    },
+    {
+      "code": "410421",
+      "name": "宝丰县",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "宝丰县",
+        "宝丰"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410421",
+      "bbox": [
+        112.713667,
+        33.780593,
+        113.298913,
+        34.029431
+      ]
+    },
+    {
+      "code": "411122",
+      "name": "临颍县",
+      "level": "county",
+      "parentCode": "411100",
+      "aliases": [
+        "临颍县",
+        "临颍"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411122",
+      "bbox": [
+        113.718658,
+        33.717513,
+        114.155452,
+        33.984845
+      ]
+    },
+    {
+      "code": "411121",
+      "name": "舞阳县",
+      "level": "county",
+      "parentCode": "411100",
+      "aliases": [
+        "舞阳县",
+        "舞阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411121",
+      "bbox": [
+        113.452257,
+        33.403829,
+        113.863161,
+        33.716385
+      ]
+    },
+    {
+      "code": "411082",
+      "name": "长葛市",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "长葛市",
+        "长葛"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411082",
+      "bbox": [
+        113.570617,
+        34.143716,
+        114.133628,
+        34.33863
+      ]
+    },
+    {
+      "code": "411481",
+      "name": "永城市",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "永城市",
+        "永城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411481",
+      "bbox": [
+        115.974289,
+        33.709564,
+        116.647011,
+        34.297733
+      ]
+    },
+    {
+      "code": "411081",
+      "name": "禹州市",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "禹州市",
+        "禹州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411081",
+      "bbox": [
+        113.058317,
+        33.98697,
+        113.652858,
+        34.406388
+      ]
+    },
+    {
+      "code": "411528",
+      "name": "息县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "息县",
+        "息"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411528",
+      "bbox": [
+        114.563466,
+        32.138415,
+        115.121104,
+        32.663931
+      ]
+    },
+    {
+      "code": "411527",
+      "name": "淮滨县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "淮滨县",
+        "淮滨"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411527",
+      "bbox": [
+        115.020673,
+        32.249638,
+        115.591488,
+        32.639878
+      ]
+    },
+    {
+      "code": "411524",
+      "name": "商城县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "商城县",
+        "商城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411524",
+      "bbox": [
+        115.108172,
+        31.384459,
+        115.634802,
+        32.100874
+      ]
+    },
+    {
+      "code": "411403",
+      "name": "睢阳区",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "睢阳区",
+        "睢阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411403",
+      "bbox": [
+        115.328101,
+        34.062157,
+        115.780045,
+        34.435243
+      ]
+    },
+    {
+      "code": "411523",
+      "name": "新县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "新县",
+        "新"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411523",
+      "bbox": [
+        114.541176,
+        31.458874,
+        115.205595,
+        31.832988
+      ]
+    },
+    {
+      "code": "411402",
+      "name": "梁园区",
+      "level": "county",
+      "parentCode": "411400",
+      "aliases": [
+        "梁园区",
+        "梁园"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411402",
+      "bbox": [
+        115.389499,
+        34.320368,
+        115.802476,
+        34.640244
+      ]
+    },
+    {
+      "code": "411526",
+      "name": "潢川县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "潢川县",
+        "潢川"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411526",
+      "bbox": [
+        114.896427,
+        31.870998,
+        115.372077,
+        32.379602
+      ]
+    },
+    {
+      "code": "410711",
+      "name": "牧野区",
+      "level": "county",
+      "parentCode": "410700",
+      "aliases": [
+        "牧野区",
+        "牧野"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410711",
+      "bbox": [
+        113.778131,
+        35.301452,
+        113.991817,
+        35.385375
+      ]
+    },
+    {
+      "code": "411525",
+      "name": "固始县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "固始县",
+        "固始"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411525",
+      "bbox": [
+        115.344343,
+        31.755105,
+        115.934616,
+        32.581482
+      ]
+    },
+    {
+      "code": "411003",
+      "name": "建安区",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "建安区",
+        "建安"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411003",
+      "bbox": [
+        113.584521,
+        33.854482,
+        114.085834,
+        34.187187
+      ]
+    },
+    {
+      "code": "411002",
+      "name": "魏都区",
+      "level": "county",
+      "parentCode": "411000",
+      "aliases": [
+        "魏都区",
+        "魏都"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411002",
+      "bbox": [
+        113.735903,
+        33.986217,
+        113.882097,
+        34.098406
+      ]
+    },
+    {
+      "code": "411522",
+      "name": "光山县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "光山县",
+        "光山"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411522",
+      "bbox": [
+        114.537877,
+        31.701908,
+        115.181272,
+        32.192784
+      ]
+    },
+    {
+      "code": "411521",
+      "name": "罗山县",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "罗山县",
+        "罗山"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411521",
+      "bbox": [
+        114.165311,
+        31.728725,
+        114.708372,
+        32.31493
+      ]
+    },
+    {
+      "code": "410311",
+      "name": "洛龙区",
+      "level": "county",
+      "parentCode": "410300",
+      "aliases": [
+        "洛龙区",
+        "洛龙"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410311",
+      "bbox": [
+        112.319418,
+        34.485673,
+        112.694332,
+        34.748705
+      ]
+    },
+    {
+      "code": "410482",
+      "name": "汝州市",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "汝州市",
+        "汝州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410482",
+      "bbox": [
+        112.529048,
+        33.943762,
+        113.103918,
+        34.346464
+      ]
+    },
+    {
+      "code": "410481",
+      "name": "舞钢市",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "舞钢市",
+        "舞钢"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410481",
+      "bbox": [
+        113.359968,
+        33.130562,
+        113.682458,
+        33.427449
+      ]
+    },
+    {
+      "code": "411330",
+      "name": "桐柏县",
+      "level": "county",
+      "parentCode": "411300",
+      "aliases": [
+        "桐柏县",
+        "桐柏"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411330",
+      "bbox": [
+        112.998604,
+        32.275147,
+        113.807463,
+        32.715335
+      ]
+    },
+    {
+      "code": "410927",
+      "name": "台前县",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "台前县",
+        "台前"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410927",
+      "bbox": [
+        115.64481,
+        35.831787,
+        116.092756,
+        36.110466
+      ]
+    },
+    {
+      "code": "410926",
+      "name": "范县",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "范县",
+        "范"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410926",
+      "bbox": [
+        115.338513,
+        35.621841,
+        115.727388,
+        35.930572
+      ]
+    },
+    {
+      "code": "410928",
+      "name": "濮阳县",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "濮阳县",
+        "濮阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410928",
+      "bbox": [
+        114.926288,
+        35.332648,
+        115.430176,
+        35.797834
+      ]
+    },
+    {
+      "code": "410923",
+      "name": "南乐县",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "南乐县",
+        "南乐"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410923",
+      "bbox": [
+        114.99894,
+        35.975719,
+        115.480919,
+        36.208961
+      ]
+    },
+    {
+      "code": "410527",
+      "name": "内黄县",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "内黄县",
+        "内黄"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410527",
+      "bbox": [
+        114.579224,
+        35.642754,
+        114.982473,
+        36.137093
+      ]
+    },
+    {
+      "code": "410802",
+      "name": "解放区",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "解放区",
+        "解放"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410802",
+      "bbox": [
+        113.162843,
+        35.158246,
+        113.24763,
+        35.31363
+      ]
+    },
+    {
+      "code": "410922",
+      "name": "清丰县",
+      "level": "county",
+      "parentCode": "410900",
+      "aliases": [
+        "清丰县",
+        "清丰"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410922",
+      "bbox": [
+        114.922391,
+        35.767431,
+        115.393517,
+        36.078458
+      ]
+    },
+    {
+      "code": "410526",
+      "name": "滑县",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "滑县",
+        "滑"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410526",
+      "bbox": [
+        114.384383,
+        35.206651,
+        114.979099,
+        35.697466
+      ]
+    },
+    {
+      "code": "410804",
+      "name": "马村区",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "马村区",
+        "马村"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410804",
+      "bbox": [
+        113.293371,
+        35.215295,
+        113.443899,
+        35.359439
+      ]
+    },
+    {
+      "code": "410803",
+      "name": "中站区",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "中站区",
+        "中站"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410803",
+      "bbox": [
+        113.086015,
+        35.178102,
+        113.208603,
+        35.357594
+      ]
+    },
+    {
+      "code": "410523",
+      "name": "汤阴县",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "汤阴县",
+        "汤阴"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410523",
+      "bbox": [
+        114.224902,
+        35.761198,
+        114.698089,
+        36.010223
+      ]
+    },
+    {
+      "code": "410402",
+      "name": "新华区",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "新华区",
+        "新华"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410402",
+      "bbox": [
+        113.066107,
+        33.725008,
+        113.30825,
+        33.836904
+      ]
+    },
+    {
+      "code": "410522",
+      "name": "安阳县",
+      "level": "county",
+      "parentCode": "410500",
+      "aliases": [
+        "安阳县",
+        "安阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410522",
+      "bbox": [
+        113.954266,
+        35.960656,
+        114.762215,
+        36.360325
+      ]
+    },
+    {
+      "code": "410404",
+      "name": "石龙区",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "石龙区",
+        "石龙"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410404",
+      "bbox": [
+        112.838217,
+        33.85139,
+        112.920933,
+        33.921679
+      ]
+    },
+    {
+      "code": "410403",
+      "name": "卫东区",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "卫东区",
+        "卫东"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410403",
+      "bbox": [
+        113.280453,
+        33.722039,
+        113.467106,
+        33.829167
+      ]
+    },
+    {
+      "code": "410882",
+      "name": "沁阳市",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "沁阳市",
+        "沁阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410882",
+      "bbox": [
+        112.72609,
+        34.98322,
+        113.045575,
+        35.314415
+      ]
+    },
+    {
+      "code": "410122",
+      "name": "中牟县",
+      "level": "county",
+      "parentCode": "410100",
+      "aliases": [
+        "中牟县",
+        "中牟"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410122",
+      "bbox": [
+        113.78338,
+        34.435663,
+        114.206024,
+        34.952968
+      ]
+    },
+    {
+      "code": "410883",
+      "name": "孟州市",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "孟州市",
+        "孟州"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410883",
+      "bbox": [
+        112.563089,
+        34.814475,
+        112.924591,
+        35.042173
+      ]
+    },
+    {
+      "code": "411221",
+      "name": "渑池县",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "渑池县",
+        "渑池"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411221",
+      "bbox": [
+        111.547662,
+        34.594297,
+        112.025052,
+        35.081684
+      ]
+    },
+    {
+      "code": "411627",
+      "name": "太康县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "太康县",
+        "太康"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411627",
+      "bbox": [
+        114.531929,
+        33.89688,
+        115.133346,
+        34.290644
+      ]
+    },
+    {
+      "code": "411628",
+      "name": "鹿邑县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "鹿邑县",
+        "鹿邑"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411628",
+      "bbox": [
+        115.057132,
+        33.717909,
+        115.644472,
+        34.092627
+      ]
+    },
+    {
+      "code": "411623",
+      "name": "商水县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "商水县",
+        "商水"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411623",
+      "bbox": [
+        114.245211,
+        33.295559,
+        114.872183,
+        33.745497
+      ]
+    },
+    {
+      "code": "411502",
+      "name": "浉河区",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "浉河区",
+        "浉河"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411502",
+      "bbox": [
+        113.715057,
+        31.756893,
+        114.207499,
+        32.352783
+      ]
+    },
+    {
+      "code": "411622",
+      "name": "西华县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "西华县",
+        "西华"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411622",
+      "bbox": [
+        114.084674,
+        33.605514,
+        114.723891,
+        33.985539
+      ]
+    },
+    {
+      "code": "411625",
+      "name": "郸城县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "郸城县",
+        "郸城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411625",
+      "bbox": [
+        115.007689,
+        33.426447,
+        115.63195,
+        33.815063
+      ]
+    },
+    {
+      "code": "410811",
+      "name": "山阳区",
+      "level": "county",
+      "parentCode": "410800",
+      "aliases": [
+        "山阳区",
+        "山阳"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410811",
+      "bbox": [
+        113.087065,
+        35.099007,
+        113.371734,
+        35.317964
+      ]
+    },
+    {
+      "code": "411624",
+      "name": "沈丘县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "沈丘县",
+        "沈丘"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411624",
+      "bbox": [
+        114.96431,
+        33.083576,
+        115.357918,
+        33.534031
+      ]
+    },
+    {
+      "code": "411503",
+      "name": "平桥区",
+      "level": "county",
+      "parentCode": "411500",
+      "aliases": [
+        "平桥区",
+        "平桥"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411503",
+      "bbox": [
+        113.70656,
+        32.033504,
+        114.376331,
+        32.627793
+      ]
+    },
+    {
+      "code": "411102",
+      "name": "源汇区",
+      "level": "county",
+      "parentCode": "411100",
+      "aliases": [
+        "源汇区",
+        "源汇"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411102",
+      "bbox": [
+        113.780298,
+        33.44356,
+        114.039949,
+        33.613124
+      ]
+    },
+    {
+      "code": "411104",
+      "name": "召陵区",
+      "level": "county",
+      "parentCode": "411100",
+      "aliases": [
+        "召陵区",
+        "召陵"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411104",
+      "bbox": [
+        114.033113,
+        33.433751,
+        114.290873,
+        33.706294
+      ]
+    },
+    {
+      "code": "411621",
+      "name": "扶沟县",
+      "level": "county",
+      "parentCode": "411600",
+      "aliases": [
+        "扶沟县",
+        "扶沟"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411621",
+      "bbox": [
+        114.251293,
+        33.852168,
+        114.618928,
+        34.338648
+      ]
+    },
+    {
+      "code": "410411",
+      "name": "湛河区",
+      "level": "county",
+      "parentCode": "410400",
+      "aliases": [
+        "湛河区",
+        "湛河"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156410411",
+      "bbox": [
+        113.074276,
+        33.653604,
+        113.376634,
+        33.772073
+      ]
+    },
+    {
+      "code": "411103",
+      "name": "郾城区",
+      "level": "county",
+      "parentCode": "411100",
+      "aliases": [
+        "郾城区",
+        "郾城"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411103",
+      "bbox": [
+        113.746852,
+        33.578573,
+        114.113434,
+        33.764964
+      ]
+    },
+    {
+      "code": "411224",
+      "name": "卢氏县",
+      "level": "county",
+      "parentCode": "411200",
+      "aliases": [
+        "卢氏县",
+        "卢氏"
+      ],
+      "assetId": "henan-county",
+      "sourceId": "156411224",
+      "bbox": [
+        110.576889,
+        33.549706,
+        111.362595,
+        34.387733
+      ]
+    }
+  ]
+}

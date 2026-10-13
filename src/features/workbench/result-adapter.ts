@@ -21,7 +21,7 @@ export function restoreSession(session:any){
 
 export function queryExportArgs(view:any):Record<string,any>{
  if(typeof view?.sql!=='string'||!view.sql.trim())throw new Error('No executed query available for export');
- const args:Record<string,any>={format:'csv',sql:view.sql,fileName:view.title ?? '监测导出'};
+ const args:Record<string,any>={...(view.runId&&view.callId?{sourceRunId:view.runId,sourceCallId:view.callId}:{}),format:'csv',sql:view.sql,fileName:view.title ?? '监测导出'};
  for(const key of ['city','district','from','to'])if(view.scope?.[key]!==undefined)args[key]=view.scope[key];
  return args;
 }

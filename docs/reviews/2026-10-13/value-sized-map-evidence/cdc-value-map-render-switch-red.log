@@ -1,0 +1,41 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (8 tests | 1 failed | 7 skipped) 5ms
+   ↓ accepts a complete metric-sized point request without treating presentation as a scope filter
+   ↓ carries approved value sizing through actual grouped query output and preserves its details
+   ↓ renders larger measured values with larger bounded circles and retains zero and missing distinctions
+   ↓ refuses metric-sized circles with no usable values instead of silently rendering fixed circles
+   ↓ rejects a value-size request attached to a heatmap before execution
+   ↓ identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it
+   ↓ links a detail row by its real point identity and never falls back to another indexed feature
+   × drops point-only sizing when an existing layer is changed to a heatmap 4ms
+     → expected { id: 'sites', …(4) } to not have property "pointSize"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > drops point-only sizing when an existing layer is changed to a heatmap
+AssertionError: expected { id: 'sites', …(4) } to not have property "pointSize"
+
+- Expected: 
+undefined
+
++ Received: 
+"value"
+
+ ❯ tests/refactor/value-sized-map.test.ts:69:84
+     67|  const scene={mapId:'map',revision:1,basemap:'vec' as const,layers:[re…
+     68|  const changed=applyMapSceneOperation(scene,{type:'setRendering',layer…
+     69|  expect(changed.layers[0].rendering).toBe('heatmap');expect(changed.la…
+       |                                                                                    ^
+     70| });
+     71| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 skipped (8)
+   Start at  21:22:50
+   Duration  722ms (transform 250ms, setup 0ms, collect 559ms, tests 5ms, environment 0ms, prepare 44ms)
+

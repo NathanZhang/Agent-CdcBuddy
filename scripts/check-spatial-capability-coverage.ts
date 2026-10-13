@@ -1,0 +1,4 @@
+import fs from 'node:fs';import {listSkillDefinitions} from '@/application/skills/skill-service';import {spatialCapabilityFor} from '@/application/geo/spatial-capabilities';
+const report=['# 空间能力登记覆盖','', '|领域|技能|方法|归类|允许图层|原因|','|---|---|---|---|---|---|'];let count=0;
+for(const domain of ['vector','foodborne','env','chronic'] as const)for(const skill of listSkillDefinitions(domain,{includeInternal:true})){const c=spatialCapabilityFor(skill);count++;report.push(`|${domain}|${c.skillId}|${c.method}|${c.disposition}|${c.renderings.join(',')}|${c.reason}|`);}
+fs.mkdirSync('.superpowers/sdd/2026-10-13-llm-region-map-improvement-plan',{recursive:true});fs.writeFileSync('.superpowers/sdd/2026-10-13-llm-region-map-improvement-plan/spatial-capability-coverage.md',report.join('\n')+'\n');console.log(`Classified ${count} runtime skill definitions. Output contracts verified separately by spatial-capability-coverage.test.ts and adapter tests.`);

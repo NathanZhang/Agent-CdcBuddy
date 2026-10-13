@@ -18,7 +18,7 @@ from resistance_evolution import calculate_resistance_evolution
 from satscan_cluster import calculate_satscan_spatial_clusters
 from lstm_predictor import calculate_lstm_short_term_forecast
 
-from repositories.datasets import resolve_dataset_path
+from analytics_engine.repositories.datasets import resolve_dataset_path
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0,ROOT)
 with open(os.path.join(ROOT,'config/analytics-tasks.json')) as definition_file:
@@ -146,6 +146,10 @@ def main():
     if parsed.domain and parsed.domain!=domain:parser.error('Task domain mismatch')
     try:args=parse_task_args(parsed.args)
     except ValueError as error:parser.error(str(error))
+    from analytics_engine.repositories.scoped import ACTIVE_SCOPE
+    if args.get('approvedScope') is not None:
+        if args['approvedScope'].get('domain')!=domain:parser.error('Scope domain mismatch')
+        ACTIVE_SCOPE.set(args['approvedScope'])
     db_path=parsed.db or str(resolve_dataset_path(domain,parsed.dataset_id))
     if parsed.protocol:
         if not parsed.run_id:parser.error('Protocol requires run ID')

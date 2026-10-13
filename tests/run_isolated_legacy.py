@@ -1,4 +1,5 @@
 """Run legacy compatibility tests against SQLite backups in a disposable project."""
+import os
 import hashlib
 import json
 import shutil
@@ -21,8 +22,14 @@ def fingerprint(path):
 
 def main():
     datasets = list(ROOT.glob('*.db'))
+    business_source=os.environ.get('BASELINE_BUSINESS_SOURCE_PATH')
+    if business_source:
+        business_source=Path(business_source).resolve()
+        if not business_source.is_file():
+            print('Missing explicit baseline business source',file=sys.stderr);return 2
+        datasets=[p for p in datasets if p.name!='app_business.db']+[business_source]
     required = ['vector_monitoring.db', 'foodborne_monitoring.db', 'env_monitoring.db', 'chronic_monitoring.db', 'app_business.db']
-    missing = [name for name in required if not (ROOT / name).is_file()]
+    missing = [name for name in required if not any(p.name==name and p.is_file() for p in datasets)]
     if missing:
         print(f'Missing baseline datasets: {missing}', file=sys.stderr)
         return 2

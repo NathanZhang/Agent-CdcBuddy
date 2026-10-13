@@ -1,0 +1,45 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (7 tests | 1 failed | 6 skipped) 10ms
+   ↓ accepts a complete metric-sized point request without treating presentation as a scope filter
+   ↓ carries approved value sizing through actual grouped query output and preserves its details
+   ↓ renders larger measured values with larger bounded circles and retains zero and missing distinctions
+   ↓ refuses metric-sized circles with no usable values instead of silently rendering fixed circles
+   ↓ rejects a value-size request attached to a heatmap before execution
+   ↓ identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it
+   × links a detail row by its real point identity and never falls back to another indexed feature 9ms
+     → expected { Object (mapId, surfaceId, ...) } to deeply equal { Object (mapId, surfaceId, ...) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > links a detail row by its real point identity and never falls back to another indexed feature
+AssertionError: expected { Object (mapId, surfaceId, ...) } to deeply equal { Object (mapId, surfaceId, ...) }
+
+- Expected
++ Received
+
+  {
+-   "featureId": "site-a",
++   "featureId": "wrong",
+    "layerId": "sites",
+    "mapId": "map",
+    "surfaceId": "web",
+  }
+
+ ❯ tests/refactor/value-sized-map.test.ts:63:85
+     61|  expect((m as any).mapFeatureForRow({},0,visualization,refs)).toBeUnde…
+     62|  expect((m as any).mapFeatureForRow({},0,{...visualization,idKey:undef…
+     63|  expect((m as any).mapFeatureForRow({site_id:'site-a'},0,undefined,ref…
+       |                                                                                     ^
+     64| });
+     65| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+   Start at  21:16:39
+   Duration  904ms (transform 249ms, setup 0ms, collect 558ms, tests 10ms, environment 0ms, prepare 43ms)
+

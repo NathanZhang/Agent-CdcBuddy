@@ -4,7 +4,7 @@ from collections import defaultdict,Counter
 import numpy as np
 from scipy.stats import pearsonr
 from sklearn.cluster import DBSCAN
-from repositories.datasets import connect_readonly,resolve_dataset_path
+from analytics_engine.repositories.datasets import connect_readonly,resolve_dataset_path
 
 def lag_correlations(concentration,cases,max_lag=14):
  if not 0<=max_lag<=30:raise ValueError('maxLag must be 0..30')
@@ -59,7 +59,7 @@ def sewage(city=None,pathogen='诺如病毒',db_path=None,district=None,from_dat
   concentrations={d:float(np.mean(v)) if (v:=[r[columns[pathogen]] for r in rs if r[columns[pathogen]] is not None]) else None for d,rs in daily.items()}
   cases={d:float(np.mean(v)) if (v:=[r['sentinel_hospital_cases'] for r in rs if r['sentinel_hospital_cases'] is not None]) else None for d,rs in daily.items()}
   curves=lag_correlations(concentrations,cases,max_lag);valid=[r for r in curves if r['pearsonCorrelation'] is not None];best=max(valid,key=lambda r:r['pearsonCorrelation']) if valid else None
-  groups.append({'plantId':plant,'plantName':rs[0]['plant_name'],'observedDates':len(daily),'optimalLagWindow':best,'lagCorrelationTrend':curves})
+  groups.append({'plantId':plant,'plantName':rs[0]['plant_name'],'city':rs[0]['city'],'district':rs[0]['district'],'observedDates':len(daily),'optimalLagWindow':best,'lagCorrelationTrend':curves})
  return {'status':'NO_DATA' if not rows else 'SUCCESS' if any(g['optimalLagWindow'] for g in groups) else 'INSUFFICIENT_DATA','method':'calendar-aligned-pearson-v1','sampleCount':len(rows),'asOf':cutoff,'groups':groups,'reverseTracingSources':[],'qualityFlags':['exploratory-lag-selection-unadjusted-p','hospital-linkage-unvalidated','missing-dates-not-imputed','no-pipeline-topology-no-source-lock']}
 
 def river(basin_name=None,db_path=None,city=None,district=None,from_date=None,as_of=None,weights=None,permutations=199,seed=42):
@@ -103,6 +103,6 @@ def mortality(db_path=None,target_city=None,district=None,from_date=None,as_of=N
 def injury(db_path=None,city=None,district=None,from_date=None,as_of=None):
  rows,cutoff=scoped_rows('chronic','fact_injury_surveillance','injury_time',db_path,city,district,from_date,as_of)
  def stats(key):return [{key:k,'caseCount':v,'percentage':v/len(rows)*100} for k,v in Counter(r[key] for r in rows).most_common()] if rows else []
- return {'status':'SUCCESS' if rows else 'NO_DATA','method':'injury-observed-counts-v1','asOf':cutoff,'totalInjuriesMonitored':len(rows),'injuryTypeComposition':stats('injury_type'),'recordedCauseComposition':stats('injury_cause_factor'),'clusterIncidentsDetected':window_candidates(rows,'injury_time',['city','district','injury_place','injury_type'],1,5),'decisionTreeAttribution':None,'qualityFlags':['recorded-causes-not-causal-estimates','no-trained-decision-tree','24-hour-candidates-require-review']}
+ return {'status':'SUCCESS' if rows else 'NO_DATA','method':'injury-observed-counts-v1','asOf':cutoff,'totalInjuriesMonitored':len(rows),'regionalSummaries':[{'city':city_name,'district':district_name,'caseCount':sum(r['city']==city_name and r['district']==district_name for r in rows)} for city_name,district_name in sorted(set((r['city'],r['district']) for r in rows))],'injuryTypeComposition':stats('injury_type'),'recordedCauseComposition':stats('injury_cause_factor'),'clusterIncidentsDetected':window_candidates(rows,'injury_time',['city','district','injury_place','injury_type'],1,5),'decisionTreeAttribution':None,'qualityFlags':['recorded-causes-not-causal-estimates','no-trained-decision-tree','24-hour-candidates-require-review']}
 
 def unavailable(method):return {'status':'FAILED','method':method,'payload':None,'error':{'code':'CAPABILITY_UNAVAILABLE','message':'Required implementation, training or validation data unavailable','retryable':False}}

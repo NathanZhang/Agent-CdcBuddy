@@ -108,7 +108,7 @@ export function QueryResultMap({points,unit}:{points:ResultMapPoint[];unit:strin
    <div ref={container} role="region" aria-label={`交互地图（${unit}），可拖动与缩放，点击点位查看数值`} className="h-[420px] sm:h-[500px] w-full"/>
    {error&&<p role="status" className="absolute top-3 left-3 right-3 rounded-lg bg-amber-50/95 text-amber-900 text-xs p-3">{error}</p>}
   </div>
-  <p className="p-3 text-xs text-slate-500 dark:text-slate-400">{points.length} 个有效点位 · 圆点大小表示 {unit} · 点击点位查看数值；地图与下方明细使用同一批数据。</p>
-  <ul className="sr-only" aria-label="地图点位数值">{points.map((p,i)=><li key={i}>{`${p.label}：${format(p.value)} ${unit}；经度 ${p.lon}，纬度 ${p.lat}`}</li>)}</ul>
+  <p className="p-3 text-xs text-slate-500 dark:text-slate-400">{points.length} 个有效点位 · {points.some(p=>p.value!==undefined)?`圆点大小表示 ${unit}`:'点位未附数值指标'} · 点击点位查看数值；地图与下方明细使用同一批数据。</p>
+  <ul className="sr-only" aria-label="地图点位数值">{points.map((p,i)=><li key={i}>{pointDescription(p,unit)}</li>)}</ul>
  </figure>;
 }

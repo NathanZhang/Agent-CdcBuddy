@@ -16,6 +16,11 @@ jobs:
       - run: npm run test:refactor && npm run test:scientific && npm run test:integration
         env:
           DATASET_MANIFEST_PATH: /tmp/cdc-ci/manifest.json
+          DATASET_REGION_BINDINGS_PATH: /tmp/cdc-ci/region-bindings.json
+      - run: node scripts/check-spatial-capability-coverage.mjs
+        env:
+          DATASET_MANIFEST_PATH: /tmp/cdc-ci/manifest.json
+          DATASET_REGION_BINDINGS_PATH: /tmp/cdc-ci/region-bindings.json
       - run: npm run build
       - run: docker build -t cdcbuddy-ci .
       - uses: actions/upload-artifact@v4

@@ -2,7 +2,7 @@
 
 Agent-CdcBuddy 面向病媒生物、食源性疾病、环境健康、死因慢病与伤害四个领域提供疾控监测分析工作台。2.0 将业务交互统一到主线 Agent，由实际 LLM 调用真实 Skills，根据执行证据生成中文对话与 AG-UI。
 
-当前版本为 **2.0.0**，Git 标签为 **v2.0.0**。发布范围和限制见 [2.0 发布说明](docs/releases/v2.0.0.md)，详细验收边界见 [重构交付与剩余能力](docs/reviews/2026-10-12/重构交付与剩余能力.md)。原54项专业功能尚未全部实现；Skill可调用表示相应受限方法可执行，不代表完整专业需求已验收。
+当前版本为 **2.0.1**，Git 标签为 **v2.0.1**。发布范围和限制见 [2.0.1 发布说明](docs/releases/v2.0.1.md)，详细验收边界见 [重构交付与剩余能力](docs/reviews/2026-10-12/重构交付与剩余能力.md)。原54项专业功能尚未全部实现；Skill可调用表示相应受限方法可执行，不代表完整专业需求已验收。
 
 ## 执行架构
 
@@ -57,3 +57,13 @@ npm run build
 [数据不足诊断与Agent生成Mock数据方案](docs/reviews/2026-10-12/数据不足诊断与Agent生成Mock数据方案.md)及[实施计划](docs/superpowers/plans/2026-10-12-data-insufficiency-plan.md)目前为待审阅稿，未包含在2.0已实现能力中。
 
 旧版README保存于 [历史项目说明](docs/history/README-before-v2.md)。其中的模型、部署和完成度描述是旧版内容；当前发布状态以本README、发布说明与重构验收文档为准。
+
+## 地域识别与共同地图
+
+自由文本先由 LLM 识别任务、地域、时间、筛选及逐层请求，再由服务器验证原文证据、行政目录、权限和来源绑定。“显示河南省地图”使用独立地图技能，不读取监测事实；“郑州”绑定为郑州市，“新郑市”保持县级范围。新任务清空未明示的历史条件；澄清续答有身份、版本和15分钟时限约束。
+
+地图统一使用 MapComposition。真实 SpatialOutput 可共享为点位、名称、视觉热力、区域面、扫描圆、插值网格或已有线几何；同一范围的查询可供多个呈现复用。数量热力保留零值并排除缺失值，区县中心不作为实测点生成热力；专业分析的网格、扫描半径和来源限制单独保留。没有管网、河网或实际坐标的结果明确报告缺少几何。
+
+部署默认启用 `LLM_REGION_INTENT_ENABLED`。设为 `false` 时自由文本停止执行，显式界面操作和已冻结任务仍使用受控路径。目录由 `node scripts/build-region-catalog.mjs` 从本地行政边界构建；来源绑定使用 `config/dataset-region-bindings.json`，替换快照时必须登记对应版本的地域拼写与坐标系，可用 `DATASET_REGION_BINDINGS_PATH` 指向经过审核的绑定文件。
+
+工程覆盖检查：`node scripts/check-spatial-capability-coverage.mjs`。真实模型开发及留出评估分别运行 `node scripts/evaluate-region-intent.mjs --suite development --repeats 3` 和 `--suite holdout --repeats 3`；凭据只从运行环境读取，报告不输出密钥。测试与运行限制见 [地域地图验收记录](docs/reviews/2026-10-13/地域地图验收记录.md)。

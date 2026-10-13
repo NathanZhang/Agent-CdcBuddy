@@ -1,0 +1,149 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (4 tests | 4 failed) 22ms
+   × accepts a complete metric-sized point request without treating presentation as a scope filter 12ms
+     → expected 'CLARIFICATION' to be 'RESOLVED' // Object.is equality
+   × carries approved value sizing through actual grouped query output and preserves its details 1ms
+     → agent.run is not a function
+   × renders larger measured values with larger bounded circles and retains zero and missing distinctions 3ms
+     → expected 'number' not to be 'number' // Object.is equality
+   × refuses metric-sized circles with no usable values instead of silently rendering fixed circles 5ms
+     → expected [ { …(6) } ] to deeply equal []
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > accepts a complete metric-sized point request without treating presentation as a scope filter
+AssertionError: expected 'CLARIFICATION' to be 'RESOLVED' // Object.is equality
+
+Expected: "RESOLVED"
+Received: "CLARIFICATION"
+
+ ❯ tests/refactor/value-sized-map.test.ts:16:24
+     14| it('accepts a complete metric-sized point request without treating pre…
+     15|  const result=await resolveInteractionIntent({text,domain:'vector',now…
+     16|  expect(result.status).toBe('RESOLVED');
+       |                        ^
+     17| });
+     18| it('carries approved value sizing through actual grouped query output …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > carries approved value sizing through actual grouped query output and preserves its details
+TypeError: agent.run is not a function
+ ❯ tests/refactor/value-sized-map.test.ts:21:43
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > renders larger measured values with larger bounded circles and retains zero and missing distinctions
+AssertionError: expected 'number' not to be 'number' // Object.is equality
+ ❯ tests/refactor/value-sized-map.test.ts:34:89
+     32|  const built=buildMapLayers({id:'sites',sourceId:'s',output,request,vi…
+     33|  expect(validateStyleMin({version:8,sources:{s:{type:'geojson',data:bu…
+     34|  const radius=(built.layers[0] as any).paint['circle-radius'];expect(t…
+       |                                                                                         ^
+     35|  const compiled=expression.createExpression(radius,{type:'number',defa…
+     36|  expect(compiled.result).toBe('success');if(compiled.result!=='success…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > refuses metric-sized circles with no usable values instead of silently rendering fixed circles
+AssertionError: expected [ { …(6) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "id": "a8aa259d-e5c4-4f06-80c4-80ab319b0f1d-map:r:q:points:sites",
++     "opacity": 0.8,
++     "output": {
++       "channels": {
++         "definition": "n",
++         "label": "label",
++         "unit": "只/记录",
++         "value": "value",
++       },
++       "coordinates": {
++         "conversionVersion": "native-geographic-v1",
++         "sourceCRS": "EPSG:4326",
++         "targetCRS": "EPSG:4326",
++       },
++       "dependencies": [],
++       "geometry": {
++         "features": [
++           {
++             "geometry": {
++               "coordinates": [
++                 113,
++                 34,
++               ],
++               "type": "Point",
++             },
++             "id": "0",
++             "properties": {
++               "label": "未命名点位",
++             },
++             "type": "Feature",
++           },
++         ],
++         "type": "FeatureCollection",
++       },
++       "outputId": "points",
++       "precision": "sampling-site",
++       "quality": {
++         "flags": [],
++         "missingGeometry": 0,
++         "returnedCount": 1,
++         "truncated": false,
++       },
++       "renderings": [
++         "points",
++         "labels",
++         "heatmap",
++       ],
++       "schemaVersion": 1,
++       "semantics": "observed",
++       "source": {
++         "callId": "q",
++         "datasetRefs": [],
++         "method": "bounded-domain-query-v1",
++         "runId": "r",
++         "scopeFingerprint": "scope",
++         "skillId": "skill_monitoring_data_table",
++       },
++     },
++     "request": {
++       "id": "sites",
++       "outputRef": {
++         "callId": "q",
++         "outputId": "points",
++         "runId": "r",
++       },
++       "pointSize": "value",
++       "rendering": "points",
++       "scopeFingerprint": "scope",
++     },
++     "sourceId": "spatial:r:q:points",
++     "visible": true,
++   },
++ ]
+
+ ❯ tests/refactor/value-sized-map.test.ts:44:24
+     42|  const output=adaptQuerySpatialOutput([{lat:34,lon:113}],{valueKey:'n'…
+     43|  const result=composeMap(base,[request as any],[output],{authorizedRun…
+     44|  expect(result.layers).toEqual([]);expect(result.layerOutcomes[0]).toM…
+       |                        ^
+     45| });
+     46| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  21:01:42
+   Duration  751ms (transform 255ms, setup 0ms, collect 568ms, tests 22ms, environment 0ms, prepare 43ms)
+

@@ -1,3 +1,7 @@
+import {approveStructuredIntent} from '@/application/agent/structured-intent';
+import {searchRegionCandidates} from '@/infrastructure/geo/region-catalog';
+import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
+import {assertSkillMatchesIntent,compileScopedFilters,assertSqlMatchesIntent} from '@/application/agent/scope-guard';
 import { queryVisualizationSchema } from '@/contracts/query-visualization';
 import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
 import { loadDatasetManifest } from '@/infrastructure/db/dataset-manifest';
@@ -14,22 +18,27 @@ const table:Record<AgentDomain,string>={vector:'fact_monitoring',foodborne:'fact
 const queryIds=['skill_monitoring_data_table','skill_foodborne_case_table','skill_env_monitoring_table','skill_chronic_monitoring_table'];
 const builderIds=['skill_meta_custom_builder','skill_foodborne_custom_builder','skill_env_custom_builder','skill_chronic_custom_builder'];
 const reportIds=['skill_auto_report_gen','skill_foodborne_report_export','skill_chronic_death_report'];
-const queryInput={type:'object',description:'执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。',additionalProperties:false,required:['sql'],properties:{visualization:queryVisualizationSchema,sql:{type:'string',description:'单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。',minLength:1,maxLength:20000},query:{type:'string'},city:{type:'string',minLength:1,description:'只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。'},district:{type:'string',minLength:1},from:{type:'string'},to:{type:'string'}}};
+const queryInput={type:'object',description:'执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。',additionalProperties:false,required:['sql'],properties:{visualization:queryVisualizationSchema,sql:{type:'string',description:'单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。按实际点位汇总时必须按点位主键（如dim_location.location_id）GROUP BY，并SELECT该主键、在地图visualization.idKey指定；不能仅按街道和坐标合并不同点位。单位为只/记录时，COUNT(*)表示事实记录次数，应注明不能等同于独立采样访次。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。',minLength:1,maxLength:20000},query:{type:'string'},city:{type:'string',minLength:1,description:'只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。'},district:{type:'string',minLength:1},from:{type:'string'},to:{type:'string'}}};
 const tableOutput={type:'object',required:['type','data'],properties:{type:{const:'DATA_TABLE_VIEW'},data:{type:'array',items:{type:'object'}}}};
 export function normalizeProvinceCity(city?:string):string|undefined {
   return ['河南','河南省','全省','全域','全省全景','河南省全域'].includes(city?.trim() ?? '')?undefined:city;
 }
 export function scopeFromArgs(args:Record<string,any>,ctx:ExecutionContext) {
-  authorizeScope(args,ctx);
-  // Authorize the original request first; province labels must never widen a city role.
-  const city=normalizeProvinceCity(args.city);
-  const allowedColumns=ctx.principal.role==='PUBLIC_VIEWER'?restrictColumns(getDomainRepository(ctx.domain).getSchema(),ctx.principal):undefined;
-  return {principal:ctx.principal,allowedColumns,domain:ctx.domain,city:ctx.principal.jurisdiction.city ?? city,district:ctx.principal.jurisdiction.district ?? args.district,from:args.from,to:args.to};
+  if(!ctx.approvedIntent)ctx.approvedIntent=approveStructuredIntent(args,ctx);
+  if(ctx.approvedIntent.domain!==ctx.domain||ctx.approvedIntent.owner.userId!==ctx.principal.userId||ctx.approvedIntent.owner.organizationId!==ctx.principal.organizationId)throw new Error('FORBIDDEN_INTENT_OWNER');
+  const candidates=args.city?searchRegionCandidates(args.city).candidates:[];
+  const canonical:Record<string,any>=candidates.length===1&&candidates[0].level==='city'?{...args,city:candidates[0].name}:{...args};
+  if(candidates.length===1&&candidates[0].level==='county'){canonical.city=undefined;canonical.district=candidates[0].name;}
+  if(candidates.length===1&&candidates[0].level==='province')canonical.city=undefined;
+  if(args.district){const parent=candidates[0]?.level==='city'?candidates[0].code:ctx.principal.jurisdiction.city?searchRegionCandidates(ctx.principal.jurisdiction.city).candidates[0]?.code:undefined;const districts=searchRegionCandidates(args.district,parent).candidates;if(districts.length!==1)throw new Error('REGION_UNRESOLVED');canonical.district=loadDatasetRegionBindings(ctx.domain,ctx.approvedIntent.datasetVersion).regions.find(r=>r.code===districts[0].code)?.district??districts[0].name;}
+  authorizeScope(canonical,ctx);
+  if(ctx.approvedIntent){const bindings=loadDatasetRegionBindings(ctx.domain,ctx.approvedIntent.datasetVersion);assertSkillMatchesIntent(canonical,ctx.approvedIntent,bindings);if(args.sql)assertSqlMatchesIntent(args.sql,ctx.approvedIntent,bindings);if(args.sqlQuery)assertSqlMatchesIntent(args.sqlQuery,ctx.approvedIntent,bindings);const scoped=compileScopedFilters(ctx.approvedIntent,bindings);const single=scoped.regionPaths.length===1?scoped.regionPaths[0]:{};return {...scoped,...single,approvedIntent:ctx.approvedIntent,principal:ctx.principal,domain:ctx.domain,allowedColumns:ctx.principal.role==='PUBLIC_VIEWER'?restrictColumns(getDomainRepository(ctx.domain).getSchema(),ctx.principal):undefined};}
+  throw new Error('FORBIDDEN_INTENT');
 }
 async function executeQuery(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const started=Date.now();
   const data=getDomainRepository(ctx.domain).query(args.sql,[],scopeFromArgs(args,ctx));
-  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,scope:scopeFromArgs(args,ctx),executionTimeMs:Date.now()-started,data,...(args.visualization?{visualization:args.visualization}:{})}:null};
+  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,scope:Object.fromEntries(Object.entries(scopeFromArgs(args,ctx)).filter(([key])=>!['principal','allowedColumns','approvedIntent'].includes(key))),executionTimeMs:Date.now()-started,data,...(args.visualization?{visualization:args.visualization}:{})}:null};
 }
 async function executeBuilder(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const data=getDomainRepository(ctx.domain).query(args.sqlQuery,[],scopeFromArgs(args,ctx));

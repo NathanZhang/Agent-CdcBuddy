@@ -1,0 +1,44 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (6 tests | 2 failed) 294ms
+   ✓ accepts a complete metric-sized point request without treating presentation as a scope filter 9ms
+   ✓ carries approved value sizing through actual grouped query output and preserves its details 272ms
+   ✓ renders larger measured values with larger bounded circles and retains zero and missing distinctions 3ms
+   ✓ refuses metric-sized circles with no usable values instead of silently rendering fixed circles 2ms
+   × rejects a value-size request attached to a heatmap before execution 3ms
+     → expected 'RESOLVED' not to be 'RESOLVED' // Object.is equality
+   × identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it 3ms
+     → expected 'CLARIFICATION' to be 'RESOLVED' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > rejects a value-size request attached to a heatmap before execution
+AssertionError: expected 'RESOLVED' not to be 'RESOLVED' // Object.is equality
+ ❯ tests/refactor/value-sized-map.test.ts:48:182
+     46| it('rejects a value-size request attached to a heatmap before executio…
+     47|  const invalid={...intent,layerRequests:[{...intent.layerRequests[0],r…
+     48|  expect((await resolveInteractionIntent({text,domain:'vector',now:'202…
+       |                                                                                                                                                                                      ^
+     49| });
+     50| it('identifies ambiguous repeated filter evidence so the remaining LLM…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it
+AssertionError: expected 'CLARIFICATION' to be 'RESOLVED' // Object.is equality
+
+Expected: "RESOLVED"
+Received: "CLARIFICATION"
+
+ ❯ tests/refactor/value-sized-map.test.ts:53:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  21:05:01
+   Duration  1.16s (transform 230ms, setup 0ms, collect 533ms, tests 294ms, environment 0ms, prepare 39ms)
+

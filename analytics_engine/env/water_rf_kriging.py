@@ -1,4 +1,4 @@
-from repositories.datasets import resolve_dataset_path, connect_readonly
+from analytics_engine.repositories.datasets import resolve_dataset_path, connect_readonly
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 

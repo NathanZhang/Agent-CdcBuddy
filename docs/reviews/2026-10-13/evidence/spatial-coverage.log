@@ -1,0 +1,14 @@
+Classified 98 runtime skill definitions. Output contracts verified separately by spatial-capability-coverage.test.ts and adapter tests.
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ✓ tests/refactor/map-layers.test.ts (3 tests) 34ms
+ ✓ tests/refactor/spatial-capability-coverage.test.ts (1 test) 4ms
+ ✓ tests/refactor/spatial-runtime-coverage.test.ts (1 test) 10879ms
+   ✓ requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering  10877ms
+
+ Test Files  3 passed (3)
+      Tests  5 passed (5)
+   Start at  20:43:51
+   Duration  11.46s (transform 243ms, setup 0ms, collect 679ms, tests 10.92s, environment 0ms, prepare 129ms)
+
