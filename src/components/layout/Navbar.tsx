@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {profile.fullName}
             </h1>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/30 font-semibold font-mono">
-              (v2.0-{process.env.NEXT_PUBLIC_GIT_HASH || 'b3518e6'})
+              (v{process.env.NEXT_PUBLIC_APP_VERSION || 'unknown'}-{process.env.NEXT_PUBLIC_GIT_HASH || 'unknown'})
             </span>
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">

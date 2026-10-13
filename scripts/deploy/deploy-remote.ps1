@@ -25,7 +25,7 @@ foreach ($required in $requiredFiles) {
 }
 
 $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
-$prepareCommand = "mkdir -p -- $quotedRemotePath; if [ -f $quotedRemotePath/compose.production.yml ]; then cp -- $quotedRemotePath/compose.production.yml $quotedRemotePath/compose.production.yml.pre-2.0.0-$timestamp; fi; if [ -f $quotedRemotePath/deploy.env ]; then cp -- $quotedRemotePath/deploy.env $quotedRemotePath/deploy.env.pre-2.0.0-$timestamp; fi"
+$prepareCommand = "mkdir -p -- $quotedRemotePath; if [ -f $quotedRemotePath/compose.production.yml ]; then cp -- $quotedRemotePath/compose.production.yml $quotedRemotePath/compose.production.yml.pre-2.0.1-$timestamp; fi; if [ -f $quotedRemotePath/deploy.env ]; then cp -- $quotedRemotePath/deploy.env $quotedRemotePath/deploy.env.pre-2.0.1-$timestamp; fi"
 Invoke-RemoteCommand -RemoteHost $config.RemoteHost -Command $prepareCommand | Out-Host
 
 Copy-ToRemote -RemoteHost $config.RemoteHost -LocalPath $composePath -RemotePath "$remotePath/compose.production.yml"

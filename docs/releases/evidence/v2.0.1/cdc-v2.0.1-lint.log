@@ -1,0 +1,4 @@
+
+> agent-cdc-buddy@2.0.1 lint
+> eslint src tests/refactor --max-warnings 0
+

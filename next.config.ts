@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { version } from "./package.json";
 import { execSync } from "child_process";
 
 let gitHash = process.env.NEXT_PUBLIC_GIT_HASH?.trim() ?? "";
@@ -18,6 +19,7 @@ const nextConfig: NextConfig = {
   distDir,
   env: {
     NEXT_PUBLIC_GIT_HASH: gitHash,
+    NEXT_PUBLIC_APP_VERSION: version,
   },
   serverExternalPackages: ["better-sqlite3"],
   reactStrictMode: true,

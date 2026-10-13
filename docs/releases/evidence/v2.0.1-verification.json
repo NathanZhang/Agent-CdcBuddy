@@ -1,0 +1,23 @@
+{
+  "version": "2.0.1",
+  "tag": "v2.0.1",
+  "date": "2026-10-13",
+  "timezone": "Asia/Shanghai",
+  "featureHead": "2bf55a0",
+  "branchChecks": {
+    "typescriptFiles": 63,
+    "typescriptTestsPassed": 384,
+    "scientificPassed": 32,
+    "integrationPassed": 24,
+    "legacyBaselinePassed": 44,
+    "sourceDatabasesUnchanged": true,
+    "lint": "passed",
+    "types": "passed",
+    "productionBuild": "passed"
+  },
+  "mergedMainChecks": "pending",
+  "dockerImageBuild": "not run for 2.0.1",
+  "powerShellRemoteDeployment": "not run",
+  "frozenHoldout": "not rerun after manual fix",
+  "evidenceDirectory": "v2.0.1/"
+}
