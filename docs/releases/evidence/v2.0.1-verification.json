@@ -15,9 +15,29 @@
     "types": "passed",
     "productionBuild": "passed"
   },
-  "mergedMainChecks": "pending",
+  "mergedMainChecks": {
+    "typescriptFiles": 63,
+    "typescriptTestsPassed": 384,
+    "scientificPassed": 32,
+    "integrationPassed": 24,
+    "legacyBaselinePassed": 44,
+    "lint": "passed",
+    "types": "passed",
+    "productionBuild": "passed",
+    "originalFiveDatabasesUnchangedDuringIsolatedRerun": true
+  },
   "dockerImageBuild": "not run for 2.0.1",
   "powerShellRemoteDeployment": "not run",
   "frozenHoldout": "not rerun after manual fix",
-  "evidenceDirectory": "v2.0.1/"
+  "evidenceDirectory": "v2.0.1/",
+  "mergeCommit": "459d329",
+  "localValidationIncident": {
+    "initialMainSuiteMigratedDefaultBusinessSchema": true,
+    "identifiedTestCacheRowsRemoved": 3,
+    "oldBusinessTablesUnchangedByCleanup": true,
+    "schemaRetainedAtVersion7": true,
+    "originalBinaryRestored": false,
+    "backupPath": ".refactor-acceptance/v2.0.1-business-test-incident/business-before-test-cleanup.db",
+    "testConfigurationNowDefaultsToTemporaryBusinessDatabase": true
+  }
 }
