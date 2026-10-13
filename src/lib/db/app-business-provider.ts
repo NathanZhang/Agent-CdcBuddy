@@ -1,3 +1,5 @@
+import {assertResultSources,DatasetPolicyError,formalRuntime} from '@/infrastructure/db/dataset-policy';
+import {resolveDatasetLocation} from '@/infrastructure/db/dataset-manifest';
 import {ensureBusinessInitialized} from '@/infrastructure/db/migrations';
 import Database from 'better-sqlite3';
 import path from 'path';
@@ -14,6 +16,8 @@ import {
   ChatSessionFilter,
   DisposalStatus
 } from './types';
+
+function rejectLegacyWorkflow():never{throw new DatasetPolicyError('LEGACY_WORKFLOW_DISABLED','旧工作流缺少可验证的来源证据，请使用主线任务与审批流程');}
 
 export class AppBusinessProvider {
   private db: Database.Database | null = null;
@@ -35,6 +39,7 @@ export class AppBusinessProvider {
 
   // ---------------- 1. 处置工单管理 ----------------
   async getDisposalTickets(filter?: { city?: string; status?: DisposalStatus }): Promise<BizDisposalTicket[]> {
+    if(formalRuntime())rejectLegacyWorkflow();
     const db = this.getDb();
     let sql = 'SELECT * FROM biz_disposal_tickets WHERE 1=1';
     const params: any[] = [];
@@ -57,6 +62,7 @@ export class AppBusinessProvider {
   }
 
   async getDisposalTicketById(ticketId: string): Promise<BizDisposalTicket | null> {
+    if(formalRuntime())rejectLegacyWorkflow();
     const db = this.getDb();
     const row = db.prepare('SELECT * FROM biz_disposal_tickets WHERE ticket_id = ?').get(ticketId) as any;
     if (!row) return null;
@@ -67,6 +73,7 @@ export class AppBusinessProvider {
   }
 
   async createDisposalTicket(ticket: Omit<BizDisposalTicket, 'created_at' | 'updated_at'>): Promise<BizDisposalTicket> {
+    rejectLegacyWorkflow();
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const newRecord = {
@@ -111,6 +118,7 @@ export class AppBusinessProvider {
     notes?: string,
     afterBiIndex?: number
   ): Promise<boolean> {
+    rejectLegacyWorkflow();
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const resolvedAt = status === 'RESOLVED' ? now : null;
@@ -130,6 +138,7 @@ export class AppBusinessProvider {
 
   // ---------------- 2. 预警事件与推送日志 ----------------
   async saveEarlyWarningEvent(event: BizEarlyWarningEvent): Promise<void> {
+    rejectLegacyWorkflow();
     const db = this.getDb();
     db.prepare(`
       INSERT OR REPLACE INTO biz_early_warning_events (
@@ -160,6 +169,8 @@ export class AppBusinessProvider {
 
   // ---------------- 3. 移动端现场上报与审核流 ----------------
   async submitMobileRecord(submission: Omit<BizMobileSubmission, 'submission_id' | 'submitted_at' | 'audit_status'>): Promise<BizMobileSubmission> {
+    const {path:_sourcePath,...sourceDataset}=resolveDatasetLocation('vector');
+    assertResultSources([sourceDataset],undefined,true);
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const submissionId = `SUB-${randomUUID()}`;
@@ -171,7 +182,7 @@ export class AppBusinessProvider {
       submitted_at: now
     };
 
-    db.prepare(`
+    db.transaction(()=>{db.prepare(`
       INSERT INTO biz_mobile_submissions (
         submission_id, user_id, user_name, city, district, street,
         latitude, longitude, image_url_base64, recognized_species, ai_confidence,
@@ -200,6 +211,8 @@ export class AppBusinessProvider {
       record.audit_status,
       record.submitted_at
     );
+    db.prepare('INSERT INTO biz_collection_evidence VALUES(?,?,?)').run(record.submission_id,JSON.stringify(sourceDataset),now);
+    }).immediate();
 
     return db.prepare('SELECT * FROM biz_mobile_submissions WHERE submission_id=?').get(submissionId) as BizMobileSubmission;
   }
@@ -238,6 +251,7 @@ export class AppBusinessProvider {
 
   // ---------------- 5. 自动生成专题报告归档 ----------------
   async saveReport(report: Omit<BizGeneratedReport, 'created_at'>): Promise<BizGeneratedReport> {
+    assertResultSources(JSON.parse(report.metadata_json??'{}').datasets,undefined,true);
     const db = this.getDb();
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const saved: BizGeneratedReport = {

@@ -1,3 +1,4 @@
+import {observedWorkflowFixture} from './fixtures/observed-workflow-context';
 import {it,expect,beforeAll,afterAll} from 'vitest';
 import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {submitJob,claimJob,completeAnalysis,reviewJob,getJob,heartbeat} from '@/application/jobs/job-service';
@@ -7,7 +8,7 @@ import {withBusinessDb,recordAgentTurn} from '@/infrastructure/db/business-store
 import {createDevelopmentContext} from '@/lib/skills/server-executor';
 import {executeSkill} from '@/application/skills/skill-service';
 const dir=mkdtempSync(join(tmpdir(),'cdc-jobs-'));const previous=process.env.APP_BUSINESS_DB_PATH;const ctx=createDevelopmentContext('vector');
-beforeAll(()=>{process.env.APP_BUSINESS_DB_PATH=join(dir,'b.db');});afterAll(()=>{if(previous===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previous;rmSync(dir,{recursive:true,force:true});});
+let restoreSource:()=>void;beforeAll(()=>{restoreSource=observedWorkflowFixture(dir);process.env.APP_BUSINESS_DB_PATH=join(dir,'b.db');});afterAll(()=>{restoreSource();if(previous===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previous;rmSync(dir,{recursive:true,force:true});});
 const captureSql=`SELECT AVG(f.capture_count) AS "value" FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' AND m.method_name='诱蚊灯法'`;
 const interaction={interactionId:crypto.randomUUID(),kind:'skill' as const,userInput:'实际统计',resourceRef:{type:'skill',id:'skill_monitoring_data_table',action:'execute'},attachments:[{type:'operation-input',args:{sql:captureSql,city:'郑州市'}}]};
 const input={retestMeasurement:{category:'蚊',methodName:'诱蚊灯法'},idempotencyKey:'event-1',interaction,city:'郑州市',rule:{field:'value',threshold:1,clearBelow:1,minRetestHours:24,unit:'captures/record'}};

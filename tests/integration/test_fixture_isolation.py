@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLES = {'env': 'fact_water_monitoring', 'foodborne': 'fact_foodborne_case', 'chronic': 'fact_death_registry'}
+TABLES = {'vector': 'fact_monitoring', 'env': 'fact_water_monitoring', 'foodborne': 'fact_foodborne_case', 'chronic': 'fact_death_registry'}
 
 class FixtureIsolationTests(unittest.TestCase):
     def copy_script(self, base, domain):
@@ -18,7 +18,31 @@ class FixtureIsolationTests(unittest.TestCase):
         scripts.mkdir(parents=True, exist_ok=True)
         path = scripts / f'init_{domain}_mock.py'
         path.write_bytes((ROOT / 'scripts' / path.name).read_bytes())
+        engine = base / 'project/analytics_engine'
+        engine.mkdir(exist_ok=True)
+        (engine / 'mock_lifecycle.py').write_bytes((ROOT / 'analytics_engine/mock_lifecycle.py').read_bytes())
+        (scripts / 'mock_geography.py').write_bytes((ROOT / 'scripts/mock_geography.py').read_bytes())
+        config = base / 'project/config'
+        config.mkdir(exist_ok=True)
+        (config / 'regions.json').write_bytes((ROOT / 'config/regions.json').read_bytes())
+        for filename in ['henan city border.geojson', 'henan county border.geojson']:
+            (base / 'project' / filename).write_bytes((ROOT / filename).read_bytes())
+        if domain == 'vector':
+            (scripts / 'init_env_mock.py').write_bytes((ROOT / 'scripts/init_env_mock.py').read_bytes())
+            schema = base / 'project/analytics_engine/mock_schemas/vector.sql'
+            schema.parent.mkdir(parents=True)
+            schema.write_bytes((ROOT / 'analytics_engine/mock_schemas/vector.sql').read_bytes())
         return path
+
+    def test_orchestrators_import_without_parsing_arguments_or_creating_files(self):
+        for filename in ['seed-demo.py', 'ci-fixtures.py', 'mock_bundle.py']:
+            with self.subTest(script=filename), tempfile.TemporaryDirectory() as temp:
+                path = Path(temp) / filename
+                path.write_bytes((ROOT / 'scripts' / filename).read_bytes())
+                spec = importlib.util.spec_from_file_location('generator_entrypoint', path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                self.assertEqual(sorted(p.name for p in Path(temp).iterdir() if p.is_file()), [filename])
 
     def test_import_has_no_filesystem_side_effects(self):
         for domain in TABLES:

@@ -1,0 +1,148 @@
+{
+  "reviewStarted": "2026-10-13",
+  "verifiedOn": "2026-10-14",
+  "scope": [
+    "scripts/init_foodborne_mock.py",
+    "scripts/init_env_mock.py",
+    "scripts/init_chronic_mock.py",
+    "scripts/seed-demo.py",
+    "scripts/ci-fixtures.py",
+    "scripts/init_business_db.py (schema only)",
+    "analytics_engine/mock_methods.py (computation only)"
+  ],
+  "added": [
+    "scripts/init_vector_mock.py",
+    "scripts/mock_bundle.py",
+    "scripts/mock_geography.py"
+  ],
+  "recommendationScenes": 48,
+  "verification": {
+    "refactor": {
+      "tests": 402,
+      "passed": 402,
+      "log": "refactor.log"
+    },
+    "scientific": {
+      "tests": 32,
+      "passed": 32,
+      "log": "scientific.log"
+    },
+    "integration": {
+      "tests": 35,
+      "passed": 35,
+      "log": "integration-verified.log"
+    },
+    "originalCoverageFailureAssertions": 20,
+    "mockCoverageAndIsolation": {
+      "tests": 13,
+      "passed": 13,
+      "log": "coverage-after.log"
+    },
+    "publicGeneratorImports": "passed"
+  },
+  "fixedFindings": [
+    "郑州出厂水32个月覆盖缺口",
+    "污水周采样及同日相关无法展示日级滞后",
+    "空气监测站点外键无法关联",
+    "环境预警表为空",
+    "病例发病时间不在登记事件范围内",
+    "阴性病例及病毒生成细菌cgMLST分离株",
+    "医院与病例地区不一致",
+    "有效死因记录存在非预设年龄逻辑冲突及跌倒编码错误",
+    "坐标随机散落在地市附近导致区县错位",
+    "CI病媒仅2地市、1蚊种、1药剂且缺LC50结果",
+    "脚本入口导入时执行与配置来源日期不准确"
+  ],
+  "datasets": [
+    {
+      "id": "vector-monitoring",
+      "domain": "vector",
+      "origin": "mock",
+      "version": "synthetic-demo-v2-seed-7",
+      "schemaVersion": "1",
+      "asOf": "2025-11-05",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.refactor-acceptance/mock-demo-final-20261014/vector.db",
+      "tableCounts": {
+        "dim_date": 83,
+        "dim_location": 155,
+        "dim_species": 4,
+        "dim_method": 1,
+        "dim_environment": 0,
+        "dim_audit": 0,
+        "dim_pathogen": 1,
+        "dim_pesticide": 2,
+        "fact_monitoring": 25730,
+        "fact_pathogen_detection": 155,
+        "fact_insecticide_resistance": 620
+      },
+      "integrity": "ok",
+      "foreignKeyErrors": 0
+    },
+    {
+      "id": "foodborne-monitoring",
+      "domain": "foodborne",
+      "origin": "mock",
+      "version": "synthetic-demo-v2-seed-7",
+      "schemaVersion": "1",
+      "asOf": "2026-08-31",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.refactor-acceptance/mock-demo-final-20261014/foodborne.db",
+      "tableCounts": {
+        "dim_food_category": 9,
+        "dim_pathogen_type": 7,
+        "dim_hospital": 20,
+        "dim_location": 155,
+        "fact_foodborne_case": 3292,
+        "fact_pathogen_molecular": 242,
+        "fact_food_sampling": 1200,
+        "fact_outbreak_event": 4
+      },
+      "integrity": "ok",
+      "foreignKeyErrors": 0
+    },
+    {
+      "id": "env-monitoring",
+      "domain": "env",
+      "origin": "mock",
+      "version": "synthetic-demo-v2-seed-7",
+      "schemaVersion": "1",
+      "asOf": "2026-08-31",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.refactor-acceptance/mock-demo-final-20261014/env.db",
+      "tableCounts": {
+        "dim_env_stations": 465,
+        "fact_water_monitoring": 19840,
+        "fact_sewage_monitoring": 21390,
+        "fact_air_climate_monitoring": 3600,
+        "fact_river_basin_monitoring": 96,
+        "fact_public_venue_inspection": 175,
+        "fact_env_alerts": 155
+      },
+      "integrity": "ok",
+      "foreignKeyErrors": 0
+    },
+    {
+      "id": "chronic-monitoring",
+      "domain": "chronic",
+      "origin": "mock",
+      "version": "synthetic-demo-v2-seed-7",
+      "schemaVersion": "1",
+      "asOf": "2026-08-19",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.refactor-acceptance/mock-demo-final-20261014/chronic.db",
+      "tableCounts": {
+        "dim_districts": 155,
+        "fact_death_registry": 8500,
+        "fact_chronic_cases": 12000,
+        "fact_injury_surveillance": 5000,
+        "fact_chronic_alerts": 3
+      },
+      "integrity": "ok",
+      "foreignKeyErrors": 0
+    }
+  ],
+  "limitations": [
+    "全部为Mock，仅验证现有示例的数据、技能和渲染，不证明真实专业效果",
+    "坐标为仓库边界中心或内部代表点，部分仅有地市边界；站点为模拟内部点",
+    "未运行真实外部LLM的浏览器端到端演示",
+    "未覆盖或补齐README标为尚未实现的专业模型",
+    "原工作目录来源数据库与默认来源配置未替换"
+  ]
+}

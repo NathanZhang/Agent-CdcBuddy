@@ -39,7 +39,7 @@ export const ActiveAlertsModal: React.FC<ActiveAlertsModalProps> = ({
   onSelectAlertForAnalysis,
   onLocateOnMap
 }) => {
-  const currentAlerts = alerts && alerts.length > 0 ? alerts : ACTIVE_ALERTS_LIST;
+  const currentAlerts = alerts ?? [];
   const [levelFilter, setLevelFilter] = useState<'all' | 'red' | 'orange' | 'yellow'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'in_progress' | 'resolved'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');

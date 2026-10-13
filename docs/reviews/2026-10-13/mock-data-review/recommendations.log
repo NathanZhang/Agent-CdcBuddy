@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/recommendations.test.tsx (52 tests) 10623ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊类物种构成  1540ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: GBDT蚊媒三个月回顾性预测  1504ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 2026年报告食品病例TOP10  1469ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > env: 郑州诺如病毒与门诊滞后分析  1628ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年死亡证明书规则复核  1450ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年伤害类型与记录病因  1489ms
+
+ Test Files  1 passed (1)
+      Tests  52 passed (52)
+   Start at  23:58:42
+   Duration  12.80s (transform 602ms, setup 0ms, collect 1.72s, tests 10.62s, environment 0ms, prepare 45ms)
+

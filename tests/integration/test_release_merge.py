@@ -44,11 +44,11 @@ class ReleaseMerge(unittest.TestCase):
         self.assertIn("@('/', '/api/health/ready')",script)
         self.assertNotIn("@('/', '/api/skills')",script)
 
-    def run_entrypoint(self, directory, domain='vector', override=None):
+    def run_entrypoint(self, directory, domain='vector', override=None, origin='observed'):
         root = Path(directory)
         (root/'config').mkdir(exist_ok=True)
         (root/'config/datasets.json').write_text(json.dumps([
-            {'id': domain, 'domain': domain, 'path': '../'+domain+'_monitoring.db'}
+            {'id': domain, 'domain': domain, 'origin': origin, 'path': '../'+domain+'_monitoring.db'}
         ]))
         (root/'migrate.cjs').write_text("require('fs').writeFileSync('migration-ran','yes')")
         (root/'server.js').write_text("console.log(JSON.stringify({domain:process.env.AGENT_DOMAIN,tier:process.env.DEPLOYMENT_TIER}))")
@@ -58,6 +58,7 @@ class ReleaseMerge(unittest.TestCase):
         script=re.sub(r'/app(?![A-Za-z0-9_])',str(root),source_script)
         (root/'entrypoint.sh').write_text(script)
         env={**os.environ, 'AGENT_DOMAIN':domain, 'DEPLOYMENT_TIER':'pilot',
+             'PYTHONPATH':str(ROOT),
              'APP_BUSINESS_DB_PATH':str(root/'data/vector/app_business.db')}
         env.pop('DATASET_MANIFEST_PATH',None)
         for item in ('vector','foodborne','env','chronic'):
@@ -84,6 +85,21 @@ class ReleaseMerge(unittest.TestCase):
             self.assertEqual(json.loads(result.stdout.splitlines()[-1]),{'domain':'env','tier':'pilot'})
             self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),before)
             self.assertFalse((Path(tmp)/'vector_monitoring.db').exists())
+
+    def test_mock_and_relabelled_mock_are_rejected_before_migration(self):
+        from analytics_engine.mock_lifecycle import generation,digest
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {'DEPLOYMENT_TIER': 'demo'}):
+            source=Path(tmp)/'vector_monitoring.db'
+            with generation(source,'vector',7,__file__):
+                with sqlite3.connect(source) as db:db.execute('CREATE TABLE fact_monitoring(value INTEGER)')
+            before=digest(source)
+            for origin in ['mock','observed']:
+                result=self.run_entrypoint(tmp,origin=origin)
+                self.assertNotEqual(result.returncode,0)
+                self.assertIn('Dataset production policy rejected',result.stderr)
+                self.assertFalse((Path(tmp)/'migration-ran').exists())
+                self.assertEqual(digest(source),before)
 
     def test_legacy_business_and_checkpoint_are_copied_with_originals_preserved(self):
         with tempfile.TemporaryDirectory() as tmp:

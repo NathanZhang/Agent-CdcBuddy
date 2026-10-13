@@ -1,0 +1,15 @@
+{
+  "unchanged": true,
+  "sha256Before": {
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/foodborne_monitoring.db": "70e9dafb28fabf6a72f0c2d38c3eb47c6d41202ec53cb3f8d8750c27f162ee4b",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/chronic_monitoring.db": "334a428546e687ed5e030ad6b87777b84042a079af73a5ee8ef29040490d03d7",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/env_monitoring.db": "47be80e6aeb86f1eb5b014c4d3091dc4200664c1acb0565d13a7b796e75f4467",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/vector_monitoring.db": "ee3d8393f9bdf4d707dd51bdb95385fe6ff189c9d6ac5b30da2d9aa5467a5f82"
+  },
+  "sha256After": {
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/foodborne_monitoring.db": "70e9dafb28fabf6a72f0c2d38c3eb47c6d41202ec53cb3f8d8750c27f162ee4b",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/chronic_monitoring.db": "334a428546e687ed5e030ad6b87777b84042a079af73a5ee8ef29040490d03d7",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/env_monitoring.db": "47be80e6aeb86f1eb5b014c4d3091dc4200664c1acb0565d13a7b796e75f4467",
+    "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/vector_monitoring.db": "ee3d8393f9bdf4d707dd51bdb95385fe6ff189c9d6ac5b30da2d9aa5467a5f82"
+  }
+}

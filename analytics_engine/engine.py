@@ -151,6 +151,8 @@ def main():
         if args['approvedScope'].get('domain')!=domain:parser.error('Scope domain mismatch')
         ACTIVE_SCOPE.set(args['approvedScope'])
     db_path=parsed.db or str(resolve_dataset_path(domain,parsed.dataset_id))
+    from analytics_engine.mock_lifecycle import assert_read_allowed,dataset_lease
+    assert_read_allowed(db_path)
     if parsed.protocol:
         if not parsed.run_id:parser.error('Protocol requires run ID')
         try:
@@ -159,13 +161,13 @@ def main():
             if ref.model_dump()!=resolve_dataset_ref(domain,parsed.dataset_id).model_dump():raise ValueError('Dataset metadata mismatch')
         except Exception as error:parser.error(str(error))
         try:
-            with contextlib.redirect_stdout(sys.stderr):payload=execute_task(parsed.task,args,db_path)
+            with dataset_lease(db_path),contextlib.redirect_stdout(sys.stderr):payload=execute_task(parsed.task,args,db_path)
             result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),payload)
         except Exception as error:
             result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),error=str(error))
         print(json.dumps(result,ensure_ascii=False,allow_nan=False))
     else:
-        with contextlib.redirect_stdout(sys.stderr):result=execute_task(parsed.task,args,db_path)
+        with dataset_lease(db_path),contextlib.redirect_stdout(sys.stderr):result=execute_task(parsed.task,args,db_path)
         print(json.dumps(json_value(result),ensure_ascii=False,allow_nan=False))
 
 if __name__=='__main__':main()

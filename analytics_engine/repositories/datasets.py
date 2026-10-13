@@ -2,6 +2,7 @@
 import json
 import os
 import sqlite3
+from analytics_engine.mock_lifecycle import assert_read_allowed,dataset_lease
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DOMAINS = {'vector','foodborne','env','chronic'}
@@ -22,14 +23,32 @@ def resolve_dataset_path(domain, dataset_id=None):
     matches = [row for row in rows if row['domain']==domain and (dataset_id is None or row['id']==dataset_id)]
     if len(matches) != 1: raise ValueError(f'Expected one configured dataset for {domain}')
     configured = os.environ.get(f'DATASET_{domain.upper()}_PATH',matches[0]['path'])
-    return (manifest.parent / configured).resolve()
+    path = (manifest.parent / configured).resolve()
+    assert_read_allowed(path, matches[0]['origin'])
+    return path
 
 from analytics_engine.repositories.scoped import ACTIVE_SCOPE,connect_scoped_readonly
 
 def connect_readonly(path):
-    scope=ACTIVE_SCOPE.get()
-    if scope is not None:return connect_scoped_readonly(path,scope)
-    return sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True)
+    assert_read_allowed(path)
+    lease=dataset_lease(path);lease.__enter__()
+    class LeasedConnection(sqlite3.Connection):
+        def __exit__(self, *args):
+            try:return super().__exit__(*args)
+            finally:self.close()
+        def close(self):
+            try:super().close()
+            finally:
+                if getattr(self,'mock_lease',None):
+                    self.mock_lease=None;lease.__exit__(None,None,None)
+    try:
+        scope=ACTIVE_SCOPE.get()
+        conn=connect_scoped_readonly(path,scope,LeasedConnection) if scope is not None else sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True,factory=LeasedConnection)
+        conn.mock_lease=lease
+        return conn
+    except BaseException:
+        lease.__exit__(None,None,None)
+        raise
 
 def connect_dataset(domain,dataset_id=None):
     return connect_readonly(resolve_dataset_path(domain,dataset_id))

@@ -10,7 +10,7 @@ class SpatialMetadata(unittest.TestCase):
   with tempfile.TemporaryDirectory() as directory:
    db=Path(directory)/'vector.db'
    with sqlite3.connect(db) as connection:
-    connection.executescript((Path(__file__).resolve().parents[2]/'tests/fixtures/vector-schema.sql').read_text())
+    connection.executescript((Path(__file__).resolve().parents[2]/'analytics_engine/mock_schemas/vector.sql').read_text())
     connection.execute("INSERT INTO dim_species VALUES('s','蚊','测试蚊','synthetic-species')")
     connection.execute("INSERT INTO dim_method VALUES('m','诱蚊灯法')")
     for site,lat,lon,value in [('a',34,113,0),('b',35,113,4),('c',35,114,8)]:

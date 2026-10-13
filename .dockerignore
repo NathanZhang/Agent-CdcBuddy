@@ -24,3 +24,7 @@ npm-debug.log*
 *.checkpoints*
 
 .refactor-acceptance
+
+.mock-audit
+*.sqlite3
+.mock-quarantine-*

@@ -9,6 +9,7 @@ import type {Principal} from '@/contracts/principal';
 import Database from 'better-sqlite3';
 import type { AgentDomain } from '@/contracts/dataset';
 import { resolveDatasetLocation } from './dataset-manifest';
+import {acquireDatasetLease} from './dataset-policy';
 import { validateReadQuery, type QuerySchema } from '../query/query-gateway';
 export interface QueryScope {
   approvedIntent?:ApprovedIntent;
@@ -38,8 +39,9 @@ export class DomainRepository {
     if (!Object.hasOwn(domainTables,domain)) throw new Error('Unknown domain');
   }
   getSchema(): QuerySchema {
-    const db=new Database(resolveDatasetLocation(this.domain,this.datasetId).path,{readonly:true,fileMustExist:true});
-    try {const schema:QuerySchema={};for(const table of domainTables[this.domain]){const columns=db.prepare(`PRAGMA main.table_info(${quoteIdentifier(table)})`).all() as {name:string}[];if(columns.length)schema[table]=columns.map(c=>c.name);}return schema;} finally {db.close();}
+    const location=resolveDatasetLocation(this.domain,this.datasetId),release=acquireDatasetLease(location);
+    let db:Database.Database|undefined;
+    try {db=new Database(location.path,{readonly:true,fileMustExist:true});const schema:QuerySchema={};for(const table of domainTables[this.domain]){const columns=db.prepare(`PRAGMA main.table_info(${quoteIdentifier(table)})`).all() as {name:string}[];if(columns.length)schema[table]=columns.map(c=>c.name);}return schema;} finally {db?.close();release();}
   }
   query(select: string, params: unknown[], scope: QueryScope): Record<string,unknown>[] {
     if(scope.principal){authorizeScope(scope,{runId:'repository',domain:this.domain,deploymentTier:process.env.DEPLOYMENT_TIER==='pilot'?'pilot':'local',principal:scope.principal});scope={...scope,city:scope.principal.jurisdiction.city??scope.city,district:scope.principal.jurisdiction.district??scope.district,allowedColumns:restrictColumns(this.getSchema(),scope.principal)};}
@@ -49,8 +51,10 @@ export class DomainRepository {
     if(scope.approvedIntent)assertSqlMatchesIntent(select,scope.approvedIntent,loadDatasetRegionBindings(this.domain,scope.approvedIntent.datasetVersion));
     const parsed=new Parser().astify(select,{database:'SQLite'});const selected=new Set(((Array.isArray(parsed)?parsed[0]:parsed) as any).from?.map((f:any)=>f.table));
     const location = resolveDatasetLocation(this.domain,this.datasetId);
-    const db = new Database(location.path,{readonly:true,fileMustExist:true});
+    const release=acquireDatasetLease(location);
+    let connection:Database.Database|undefined;
     try {
+      const db=connection=new Database(location.path,{readonly:true,fileMustExist:true});
       const schema: QuerySchema = {};
       const columns: Record<string,string[]> = {};
       for (const table of domainTables[this.domain]) {
@@ -87,7 +91,7 @@ export class DomainRepository {
         db.exec(`CREATE TEMP VIEW ${quoteIdentifier(table)} AS SELECT ${projection} FROM main.${quoteIdentifier(table)}${constraints.length ? ` WHERE ${constraints.join(' AND ')}` : ''}`);
       }
       return db.prepare(safeSql).all(...params) as Record<string,unknown>[];
-    } finally { db.close(); }
+    } finally { connection?.close();release(); }
   }
 }
 export function getDomainRepository(domain: AgentDomain, options?: {datasetId?:string}): DomainRepository { return new DomainRepository(domain,options?.datasetId); }

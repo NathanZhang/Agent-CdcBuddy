@@ -1,3 +1,4 @@
+import {observedWorkflowFixture} from './fixtures/observed-workflow-context';
 import { beforeEach,afterEach,it,expect,vi } from 'vitest';
 import { mkdtempSync,rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -6,9 +7,9 @@ import { executeSkill } from '@/application/skills/skill-service';
 import { createDevelopmentContext } from '@/lib/skills/server-executor';
 import { getArtifact,withBusinessDb } from '@/infrastructure/db/business-store';
 import { migrateDatabase } from '@/infrastructure/db/migrations';
-let dir:string;
-beforeEach(()=>{dir=mkdtempSync(join(tmpdir(),'interaction-skills-'));const file=join(dir,'business.db');migrateDatabase(file);vi.stubEnv('APP_BUSINESS_DB_PATH',file);});
-afterEach(()=>{vi.unstubAllEnvs();rmSync(dir,{recursive:true,force:true});});
+let dir:string,restoreSource:()=>void;
+beforeEach(()=>{dir=mkdtempSync(join(tmpdir(),'interaction-skills-'));const file=join(dir,'business.db');migrateDatabase(file);vi.stubEnv('APP_BUSINESS_DB_PATH',file);restoreSource=observedWorkflowFixture(dir);});
+afterEach(()=>{restoreSource();vi.unstubAllEnvs();rmSync(dir,{recursive:true,force:true});});
 it('session create/read/rename/delete actually persist and enforce owner/domain',async()=>{
  const ctx=createDevelopmentContext('vector');ctx.principal.userId='fixture-owner';
  const created=await executeSkill('skill_session_manage',{action:'create',title:'真实会话'},ctx);expect(created.status).toBe('SUCCESS');const sessionId=(created.payload as any).session.sessionId;

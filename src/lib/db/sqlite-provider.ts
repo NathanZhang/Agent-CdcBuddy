@@ -1,3 +1,4 @@
+import {acquireDatasetLease,formalRuntime,DatasetPolicyError} from '@/infrastructure/db/dataset-policy';
 import Database from 'better-sqlite3';
 import { resolveDatasetLocation } from '@/infrastructure/db/dataset-manifest';
 import { getDomainRepository, type QueryScope } from '@/infrastructure/db/domain-repository';
@@ -26,15 +27,17 @@ import type { AgentDomainType } from '../config/agent-profile';
 export class SQLiteVectorDataProvider implements IVectorDataProvider {
   private db: Database.Database | null = null;
   private dbPath: string;
+  private releaseLease:(()=>void)|undefined;
 
   constructor() {
     this.dbPath = resolveDatasetLocation('vector').path;
   }
 
   private getDb(): Database.Database {
+    if(formalRuntime())throw new DatasetPolicyError('LEGACY_WORKFLOW_DISABLED','旧数据接口含示例回退，正式运行请使用受控领域仓库和主线技能');
     const configured = resolveDatasetLocation('vector').path;
-    if (configured !== this.dbPath) { this.db?.close(); this.db=null; this.dbPath=configured; }
-    if (!this.db) this.db = new Database(this.dbPath,{readonly:true,fileMustExist:true});
+    if (configured !== this.dbPath) { this.db?.close();this.releaseLease?.();this.releaseLease=undefined; this.db=null; this.dbPath=configured; }
+    if (!this.db){this.releaseLease=acquireDatasetLease(resolveDatasetLocation('vector'));try{this.db = new Database(this.dbPath,{readonly:true,fileMustExist:true});}catch(error){this.releaseLease();this.releaseLease=undefined;throw error;}}
     return this.db;
   }
 
@@ -481,6 +484,7 @@ export class SQLiteVectorDataProvider implements IVectorDataProvider {
   }
 
   async getEarlyWarningAlerts(filter: EarlyWarningFilter): Promise<EarlyWarningAlertItem[]> {
+    if(formalRuntime())throw new DatasetPolicyError('LEGACY_WORKFLOW_DISABLED','旧预警计算含未验证的示例参数，正式运行请使用持久审批工作流');
     const db = this.getDb();
     
     const whereClauses: string[] = ['f.capture_count > 0', 'l.latitude IS NOT NULL'];
@@ -589,7 +593,7 @@ export function resolveDomainDbPath(domain: AgentDomainType): string { return re
 export function getDomainDb(domain: AgentDomainType): Database.Database {
   const configured=resolveDomainDbPath(domain);
   let db=domainDbInstances.get(configured);
-  if (!db) { db=new Database(configured,{readonly:true,fileMustExist:true}); domainDbInstances.set(configured,db); }
+  if (!db||!db.open) {const release=acquireDatasetLease(resolveDatasetLocation(domain));try{db=new Database(configured,{readonly:true,fileMustExist:true});const close=db.close.bind(db);db.close=()=>{try{return close();}finally{release();}};domainDbInstances.set(configured,db);}catch(error){release();throw error;}}
   return db;
 }
 export async function queryDomainSql(domain: AgentDomainType, sql: string, params: any[] = [], scope?: QueryScope): Promise<any[]> {

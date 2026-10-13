@@ -53,3 +53,7 @@ logs/
 .refactor-acceptance/
 
 .superpowers/
+
+.mock-audit/
+*.sqlite3
+.mock-quarantine-*

@@ -19,16 +19,12 @@
 
 import os
 from contextlib import closing
-import sys
 import sqlite3
 import random
-import json
 from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "env_monitoring.db")
-DATAMOCK_DIR = os.path.abspath(os.path.join(BASE_DIR, "../Agent-CdcBuddy-DataMock/data/env"))
-DATAMOCK_DB_PATH = os.path.join(DATAMOCK_DIR, "env_monitoring.db")
 
 HENAN_CITIES = [
     ("410100", "郑州市", ["金水区", "二七区", "中原区", "管城回族区", "惠济区", "中牟县", "巩义市", "新郑市", "新密市", "登封市", "荥阳市"], 34.757, 113.665),
@@ -224,7 +220,11 @@ def init_database(db_conn: sqlite3.Connection):
 
     db_conn.commit()
 
-def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
+def _populate(db_conn: sqlite3.Connection, seed: int = 42):
+    if __package__:
+        from .mock_geography import point_in_region
+    else:
+        from mock_geography import point_in_region
     rng = random.Random(seed)
     cur = db_conn.cursor()
     print(">>> 正在生成环境健康风险监测全量底座数据...")
@@ -236,30 +236,29 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
         for dist in districts:
             # 水厂
             s_id = f"STN-WTR-{station_idx:04d}"
-            lat = c_lat + rng.uniform(-0.15, 0.15)
-            lon = c_lon + rng.uniform(-0.15, 0.15)
+            lat, lon = point_in_region(city_name, dist, rng)
             stations.append((s_id, f"{city_name}{dist}第一给水净化厂", "water_plant", city_name, dist, f"{city_name}{dist}迎宾大道88号", lat, lon, rng.randint(30000, 250000), "2024-01-01 00:00:00"))
             station_idx += 1
 
             # 污水厂
             s_id2 = f"STN-SWG-{station_idx:04d}"
-            stations.append((s_id2, f"{city_name}{dist}城市污水处理与生态循环厂", "sewage_plant", city_name, dist, f"{city_name}{dist}滨河西路6号", lat - 0.02, lon + 0.02, rng.randint(50000, 300000), "2024-01-01 00:00:00"))
+            sewage_lat, sewage_lon = point_in_region(city_name, dist, rng)
+            stations.append((s_id2, f"{city_name}{dist}城市污水处理与生态循环厂", "sewage_plant", city_name, dist, f"{city_name}{dist}滨河西路6号", sewage_lat, sewage_lon, rng.randint(50000, 300000), "2024-01-01 00:00:00"))
             station_idx += 1
 
             # 空气国控/省控站
             s_id3 = f"STN-AIR-{station_idx:04d}"
-            stations.append((s_id3, f"{city_name}{dist}环境空气自动监测站", "air_station", city_name, dist, f"{city_name}{dist}政和路1号楼顶", lat + 0.01, lon - 0.01, rng.randint(20000, 150000), "2024-01-01 00:00:00"))
+            air_lat, air_lon = point_in_region(city_name, dist, rng)
+            stations.append((s_id3, f"{city_name}{dist}环境空气自动监测站", "air_station", city_name, dist, f"{city_name}{dist}政和路1号楼顶", air_lat, air_lon, rng.randint(20000, 150000), "2024-01-01 00:00:00"))
             station_idx += 1
 
     cur.executemany("INSERT OR REPLACE INTO dim_env_stations VALUES (?,?,?,?,?,?,?,?,?,?)", stations)
     print(f"  [1/6] 成功初始化 dim_env_stations: {len(stations)} 个环境监测站点")
 
-    # 2. 生成水质监测数据 fact_water_monitoring (近2年约 12,000 条记录)
+    # 2. 每站每月四种水样，保证32个月的趋势及类型对比均有数据。
     water_records = []
     w_idx = 1
-    start_date = datetime(2024, 1, 1)
     end_date = datetime(2026, 8, 31)
-    days_total = (end_date - start_date).days
 
     sample_types = ["出厂水", "管网末梢水", "二次供水", "农村集中供水"]
     disinfections = ["次氯酸钠", "二氧化氯", "臭氧活性炭", "紫外线消毒"]
@@ -269,19 +268,19 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
             continue
         s_id, s_name, s_type, city, dist, addr, lat, lon, pop, _ = stn
         
-        # 每站生成 25~35 次监测采样
-        sample_count = rng.randint(25, 35)
-        for _ in range(sample_count):
+        for sample_index in range(32 * len(sample_types)):
             r_id = f"WTR-2026-{w_idx:06d}"
             w_idx += 1
-            rand_day = start_date + timedelta(days=rng.randint(0, days_total))
+            month_index, type_index = divmod(sample_index, len(sample_types))
+            rand_day = datetime(2024 + month_index // 12, month_index % 12 + 1, 15)
             date_str = rand_day.strftime("%Y-%m-%d")
 
-            stype = rng.choice(sample_types)
+            stype = sample_types[type_index]
             disinf = rng.choice(disinfections)
 
             # 96% 达标，4% 异常超标样本
-            is_over = rng.random() < 0.04
+            # August secondary-water exceptions support the registered alert demo.
+            is_over = (sample_index == 31 * len(sample_types) + 2) or rng.random() < 0.04
             turbidity = round(rng.uniform(0.15, 0.85) if not is_over else rng.uniform(1.2, 3.8), 2)
             chlorine = round(rng.uniform(0.15, 0.85) if not is_over else rng.uniform(0.01, 0.04), 2)
             cod = round(rng.uniform(0.8, 2.2) if not is_over else rng.uniform(3.2, 5.5), 2)
@@ -296,8 +295,12 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
             is_standard = 0 if (is_over or turbidity > 1.0 or total_coli > 0 or lead > 0.01 or fluoride > 1.0) else 1
             exceeded = []
             if turbidity > 1.0: exceeded.append(f"浑浊度({turbidity}NTU)")
+            if chlorine < 0.05: exceeded.append(f"游离氯({chlorine}mg/L)")
+            if cod > 3.0: exceeded.append(f"耗氧量({cod}mg/L)")
             if total_coli > 0: exceeded.append(f"总大肠菌群({total_coli}CFU)")
+            if bacterial > 100: exceeded.append(f"菌落总数({bacterial}CFU/mL)")
             if lead > 0.01: exceeded.append(f"铅({lead}mg/L)")
+            if cadmium > 0.005: exceeded.append(f"镉({cadmium}mg/L)")
             if fluoride > 1.0: exceeded.append(f"氟化物({fluoride}mg/L)")
 
             cr = round(rng.uniform(1.2e-7, 8.5e-6) * (3.5 if is_over else 1.0), 8)
@@ -313,7 +316,8 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
     cur.executemany("INSERT OR REPLACE INTO fact_water_monitoring VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", water_records)
     print(f"  [2/6] 成功写入 fact_water_monitoring: {len(water_records)} 条饮用水质监测记录")
 
-    # 3. 生成污水病原时序监测数据 fact_sewage_monitoring (约 3,500 条记录)
+    # 3. Weekly history plus daily June-August observations. The daily hospital
+    # series depends on concentration six calendar days earlier, not the same day.
     sewage_records = []
     swg_idx = 1
     drainage_zones = ["东区城北主排水分区", "老城中心管网集水区", "高新产业生活混排区", "滨河生态示范片区"]
@@ -322,25 +326,27 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
             continue
         s_id, s_name, s_type, city, dist, addr, lat, lon, pop, _ = stn
 
-        # 近 60 周，每周一次监测
-        for week in range(60):
+        dates = sorted({end_date - timedelta(days=week * 7) for week in range(60)} |
+                       {datetime(2026, 6, 1) + timedelta(days=day) for day in range(92)})
+        # Include preceding days as generation context, so the first displayed
+        # observation also has a valid lagged input. Context is not inserted.
+        concentrations = {}
+        for sample_date in sorted(set(dates) | {d - timedelta(days=6) for d in dates}):
+            month = sample_date.month
+            concentrations[sample_date] = (
+                round(rng.uniform(2500, 28000) if month in [11, 12, 1, 2, 3] else rng.uniform(200, 2400), 1),
+                round(rng.uniform(1500, 18000) if month in [12, 1, 7, 8] else rng.uniform(300, 3200), 1),
+                round(rng.uniform(400, 6500) if month in [6, 7, 8] else rng.uniform(100, 900), 1),
+            )
+        zone = drainage_zones[(int(s_id.rsplit('-', 1)[1]) // 3) % len(drainage_zones)]
+        for sample_date in dates:
             r_id = f"SWG-2026-{swg_idx:06d}"
             swg_idx += 1
-            sample_date = end_date - timedelta(days=week * 7)
             date_str = sample_date.strftime("%Y-%m-%d")
-
-            # 冬春诺如高发，夏秋新冠肠道波动
-            month = sample_date.month
-            is_winter_spring = month in [11, 12, 1, 2, 3]
-            is_summer = month in [6, 7, 8]
-
-            noro = round(rng.uniform(2500, 28000) if is_winter_spring else rng.uniform(200, 2400), 1)
-            sars = round(rng.uniform(1500, 18000) if (month in [12, 1, 7, 8]) else rng.uniform(300, 3200), 1)
-            entero = round(rng.uniform(400, 6500) if is_summer else rng.uniform(100, 900), 1)
-
-            # 对应哨点医院门诊就诊病例量 (呈现 5~7 天后峰值滞后)
-            clinic_cases = int((noro * 0.008 + sars * 0.004) * rng.uniform(0.85, 1.25) + rng.randint(15, 45))
-            corr = round(rng.uniform(0.78, 0.94), 3)
+            noro, sars, entero = concentrations[sample_date]
+            prior_noro = concentrations[sample_date - timedelta(days=6)][0]
+            clinic_cases = max(0, round(20 + prior_noro * 0.04 + rng.uniform(-2, 2)))
+            corr = None  # Analysis computes Pearson from these rows; never invent a coefficient.
 
             alert = "normal"
             if noro > 20000 or sars > 15000: alert = "red"
@@ -348,7 +354,7 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
             elif noro > 5000 or sars > 4000: alert = "yellow"
 
             sewage_records.append((
-                r_id, s_id, s_name, city, dist, rng.choice(drainage_zones),
+                r_id, s_id, s_name, city, dist, zone,
                 round(rng.uniform(8.5, 35.0), 1) * 10000,
                 sars, noro, entero, clinic_cases, corr,
                 f"{dist}第四片区汇水支管" if alert != "normal" else None,
@@ -360,7 +366,7 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
 
     # 4. 生成空气质量与极端气候健康暴露事实表 fact_air_climate_monitoring (近 200 天全省 18 地市监测)
     air_records = []
-    a_idx = 1
+    air_stations = {stn[3]: stn for stn in reversed(stations) if stn[2] == 'air_station'}
     for day_offset in range(200):
         cur_date = end_date - timedelta(days=day_offset)
         date_str = cur_date.strftime("%Y-%m-%d")
@@ -391,7 +397,7 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
             rr = round(1.0 + (pm25 / 100.0) * 0.18 + (0.25 if is_heatwave else 0.0), 3)
 
             air_records.append((
-                r_id, f"STN-AIR-{city_code}", city_name, districts[0], date_str,
+                r_id, air_stations[city_name][0], city_name, air_stations[city_name][4], date_str,
                 pm25, pm10, o3, no2, so2, co, aqi, level, temp_max, temp_min,
                 round(rng.uniform(40.0, 85.0), 1), extreme_flag,
                 pediatric, elderly, rr, 1 if (is_heatwave or is_cold_haze) else 0
@@ -421,7 +427,8 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
                 cancer_rate = round(rng.uniform(22.0, 38.0) if not is_polluted else rng.uniform(42.0, 68.5), 1)
 
                 river_records.append((
-                    r_id, basin_id, basin_name, f"{c}{s_name}", c, "重点辖区",
+                    r_id, basin_id, basin_name, f"{c}{s_name}", c,
+                    next(city[2][0] for city in HENAN_CITIES if city[1] == c),
                     w_pb, w_cd, soil_cd, crop_pb, enrichment, cluster, cancer_rate,
                     "2026-07-20"
                 ))
@@ -433,7 +440,7 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
     venues = []
     v_idx = 1
     v_types = ["游泳场所", "快捷宾馆", "星级酒店", "候车场所", "沐浴场所"]
-    for city_code, city_name, districts, c_lat, c_lon in HENAN_CITIES[:8]:
+    for city_code, city_name, districts, c_lat, c_lon in HENAN_CITIES:
         for dist in districts[:2]:
             for vt in v_types:
                 v_id = f"VEN-{city_code}-{v_idx:04d}"
@@ -443,7 +450,7 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
                 venues.append((
                     v_id, f"{city_name}{dist}康乐健{vt}", vt, city_name, dist,
                     round(rng.uniform(0.35, 0.85) if vt == "游泳场所" else 0.0, 2),
-                    0 if score >= 80 else rng.randint(1, 4),
+                    0 if score >= 80 else 1,
                     round(rng.uniform(80.0, 98.0), 1),
                     score, rating, "2026-08-15"
                 ))
@@ -451,7 +458,36 @@ def generate_mock_data(db_conn: sqlite3.Connection, seed: int = 42):
     cur.executemany("INSERT OR REPLACE INTO fact_public_venue_inspection VALUES (?,?,?,?,?,?,?,?,?,?,?)", venues)
     print(f"  [6/6] 成功写入 fact_public_venue_inspection: {len(venues)} 条公共场所动态卫生评级记录")
 
+    # Registered examples are facts, not persisted business alerts or tickets.
+    alerts = []
+    for idx, stn in enumerate(s for s in stations if s[2] == 'water_plant'):
+        status = ['pending', 'in_progress', 'resolved'][idx % 3]
+        value = next(r[7] for r in water_records if r[1] == stn[0] and r[5] == '二次供水' and r[-1] == '2026-08-15')
+        alerts.append((f'ENV-DEMO-{idx + 1:04d}', f'{stn[3]}{stn[4]}二次供水浊度异常示例',
+                       'orange', '饮用水水质', stn[3], stn[4], stn[5], stn[6], stn[7],
+                       '模拟采样登记浊度超过生成器示例阈值', f'{value} NTU', '1.0 NTU', stn[8],
+                       '复采并人工核对示例记录', status,
+                       '2026-08-17 10:00:00' if status == 'resolved' else None, '2026-08-15 16:00:00'))
+    cur.executemany('INSERT INTO fact_env_alerts VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', alerts)
+
     db_conn.commit()
+
+
+def generate_mock_data(db_conn, seed=42, *, audit_dir=None, retention_days=7):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from analytics_engine.mock_lifecycle import generation
+    external = isinstance(db_conn, sqlite3.Connection)
+    output = db_conn.execute('PRAGMA database_list').fetchone()[2] if external else str(db_conn)
+    with generation(output, 'env', seed, __file__, audit_dir, retention_days, allow_empty=external):
+        if external:
+            init_database(db_conn)
+            _populate(db_conn, seed)
+        else:
+            with closing(sqlite3.connect(output)) as conn:
+                init_database(conn)
+                _populate(conn, seed)
 
 
 def main():
@@ -460,24 +496,14 @@ def main():
     parser = argparse.ArgumentParser(description='Generate an isolated, seeded mock dataset; existing files are protected.')
     parser.add_argument('--output', type=Path, default=Path(DB_PATH))
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--audit-dir', type=Path, help='Persistent Mock audit/registry directory')
+    parser.add_argument('--retention-days', type=int, default=7)
     parser.add_argument('--export-dir', type=Path, help='Optional explicit mirror destination; no automatic external writes')
     args = parser.parse_args()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        # Reserve exclusively before opening SQLite; never delete an existing dataset.
-        with args.output.open('xb'):
-            pass
-    except FileExistsError:
-        parser.error(f'Dataset already exists: {args.output}; choose a new --output')
-    with closing(sqlite3.connect(args.output)) as conn:
-        init_database(conn)
-        generate_mock_data(conn, args.seed)
-
     if args.export_dir:
-        import shutil
-        args.export_dir.mkdir(parents=True, exist_ok=True)
-        with args.output.open('rb') as source, (args.export_dir / args.output.name).open('xb') as target:
-            shutil.copyfileobj(source, target)
+        parser.error('Unaudited mirrors are disabled; generate a new snapshot at the intended output')
+    generate_mock_data(str(args.output), args.seed, audit_dir=args.audit_dir, retention_days=args.retention_days)
+
     print(f'Mock dataset generated: {args.output} (seed={args.seed})')
 
 if __name__ == '__main__':

@@ -1,3 +1,6 @@
+import {workflowDataset} from '@/application/jobs/workflow-provenance';
+import {assertResultSources} from '@/infrastructure/db/dataset-policy';
+import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
 import {authorizeHistoryView,publicHistoryBase} from '@/application/agent/history-authorization';
 import {approveStructuredIntent} from '@/application/agent/structured-intent';
 import {authorizeScope} from '@/infrastructure/auth/authorization';
@@ -48,6 +51,7 @@ async function sessionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecut
 const samplingSchema={type:'object',additionalProperties:false,required:['city','district','category','speciesName','captureCount'],properties:{city:str,district:str,category:str,speciesName:str,captureCount:{type:'integer',minimum:0},weatherTemp:{type:'number',minimum:-80,maximum:70},weatherHumidity:{type:'number',minimum:0,maximum:100},latitude:{type:'number',minimum:-90,maximum:90},longitude:{type:'number',minimum:-180,maximum:180},street:str,habitatType:str,methodName:str}};
 async function collectionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  if(args.action==='form')return {status:'SUCCESS',payload:{type:'COLLECTION_FORM',inputSchema:samplingSchema,defaults:{city:ctx.principal.jurisdiction.city,district:ctx.principal.jurisdiction.district}},datasets:[]};
+ if(args.action==='submit')workflowDataset(ctx);
  const record=args.record;approveStructuredIntent(record,{...ctx,approvedIntent:undefined},'other');authorizeScope(record,ctx);
  const rules=[{id:'low-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp<10&&record.captureCount>30)},{id:'extreme-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp>42&&record.captureCount>60)},{id:'indoor-high-count',passed:!(record.habitatType==='高层办公室'&&record.speciesName.includes('白纹伊蚊')&&record.captureCount>50)}];
  const evaluation={rules,totalRulesCount:rules.length,passedRulesCount:rules.filter(r=>r.passed).length,warnings:rules.filter(r=>!r.passed).map(r=>r.id)};
@@ -70,14 +74,15 @@ async function artifactExecute(args:any,ctx:ExecutionContext):Promise<SkillExecu
  if(args.format==='csv'){
   if(sourceRequired&&!original)throw new Error('QUERY_SOURCE_REQUIRED: 当前会话导出必须引用选中的实际查询结果');
   if(original&&original.payload.sql!==args.sql)throw new Error('QUERY_SOURCE_MISMATCH');
-  const rows=original?original.payload.data:getDomainRepository(ctx.domain).query(args.sql,[],scope);if(original)provenance=original.datasets;if(!rows.length)return {status:'NO_DATA',payload:null};const columns=Object.keys(rows[0]);
+  const rows=original?original.payload.data:getDomainRepository(ctx.domain).query(args.sql,[],scope);if(original)provenance=original.datasets;if(!rows.length)return {status:'NO_DATA',payload:null};provenance??=loadDatasetManifest().filter(d=>d.domain===ctx.domain);assertResultSources(provenance,ctx.deploymentTier);const isMock=provenance.some(d=>d.origin==='mock');const columns=Object.keys(rows[0]);let originColumn='__cdc_data_origin';while(columns.includes(originColumn))originColumn+='_' ;if(isMock)columns.push(originColumn);
   const escape=(value:unknown)=>{let text=String(value ?? '');if(typeof value==='string'&&/^[=+\-@\t\r]/.test(text))text="'"+text;return `"${text.replaceAll('"','""')}"`;};
-  content=Buffer.from('\uFEFF'+[columns.map(escape).join(','),...rows.map((row:Record<string,unknown>)=>columns.map(c=>escape(row[c])).join(','))].join('\r\n'));source={sql:args.sql,scope:original?original.approved.effectiveDataScope:scope,rowCount:rows.length,...(original?{sourceRunId:args.sourceRunId,sourceCallId:args.sourceCallId,scopeFingerprint:original.approved.fingerprint}: {})};fileName+='.csv';mimeType='text/csv; charset=utf-8';
+  content=Buffer.from('\uFEFF'+[columns.map(escape).join(','),...rows.map((row:Record<string,unknown>)=>columns.map(c=>escape(isMock&&c===originColumn?'mock':row[c])).join(','))].join('\r\n'));source={sql:args.sql,scope:original?original.approved.effectiveDataScope:scope,rowCount:rows.length,...(original?{sourceRunId:args.sourceRunId,sourceCallId:args.sourceCallId,scopeFingerprint:original.approved.fingerprint}: {})};fileName+='.csv';mimeType='text/csv; charset=utf-8';
  }else{
   const report=withBusinessDb(db=>db.prepare('SELECT * FROM biz_generated_reports WHERE report_id=?').get(args.reportId)) as any;if(!report)return {status:'NO_DATA',payload:null};
-  const metadata=JSON.parse(report.metadata_json ?? '{}');provenance=metadata.datasets ?? [];if(report.author!==ctx.principal.userId||metadata.domain!==ctx.domain)throw new Error('Report owner/domain access denied');if((scope.city&&report.city!==scope.city)||(scope.district&&report.district!==scope.district))throw new Error('Report geographic access denied');
-  content=Buffer.from(`# ${report.title}\n\n${report.summary}\n\n${report.content_markdown}`);source={reportId:report.report_id,metadata};fileName+='.md';mimeType='text/markdown; charset=utf-8';
+  const metadata=JSON.parse(report.metadata_json ?? '{}');provenance=metadata.datasets ?? [];assertResultSources(provenance,ctx.deploymentTier);if(report.author!==ctx.principal.userId||metadata.domain!==ctx.domain)throw new Error('Report owner/domain access denied');if((scope.city&&report.city!==scope.city)||(scope.district&&report.district!==scope.district))throw new Error('Report geographic access denied');
+  content=Buffer.from(`${(provenance??[]).some(d=>d.origin==='mock')?'> 模拟数据（Mock），仅供演示。\n\n':''}# ${report.title}\n\n${report.summary}\n\n${report.content_markdown}`);source={reportId:report.report_id,metadata};fileName+='.md';mimeType='text/markdown; charset=utf-8';
  }
+ provenance??=loadDatasetManifest().filter(d=>d.domain===ctx.domain);assertResultSources(provenance,ctx.deploymentTier);source={...source,datasets:provenance,purpose:provenance.some(d=>d.origin==='mock')?'simulation':'source'};if(provenance.some(d=>d.origin==='mock'))fileName='模拟数据-'+fileName;
  return {status:'SUCCESS',payload:{type:'ARTIFACT_DOWNLOAD',...saveArtifact({fileName,mimeType,content,source,city:scope.city,district:scope.district},ctx)},...(provenance?{datasets:provenance}:{})};
 }
 export function interactionSkills(domain:AgentDomain):SkillDefinition[]{

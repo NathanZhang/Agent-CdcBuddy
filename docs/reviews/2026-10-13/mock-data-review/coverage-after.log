@@ -1,0 +1,18 @@
+test_chronic_candidates_and_quality_controls (test_mock_demo_coverage.MockDemoCoverageTests.test_chronic_candidates_and_quality_controls) ... ok
+test_database_integrity_and_manifest_bindings (test_mock_demo_coverage.MockDemoCoverageTests.test_database_integrity_and_manifest_bindings) ... ok
+test_demo_entrypoint_enforces_tier_and_protects_existing_bundle (test_mock_demo_coverage.MockDemoCoverageTests.test_demo_entrypoint_enforces_tier_and_protects_existing_bundle) ... ok
+test_environment_alerts_are_backed_by_measurements (test_mock_demo_coverage.MockDemoCoverageTests.test_environment_alerts_are_backed_by_measurements) ... ok
+test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) ... ok
+test_points_belong_to_their_declared_administration (test_mock_demo_coverage.MockDemoCoverageTests.test_points_belong_to_their_declared_administration) ... ok
+test_recommendation_sql_scenes_have_data (test_mock_demo_coverage.MockDemoCoverageTests.test_recommendation_sql_scenes_have_data) ... ok
+test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) ... ok
+test_vector_comparisons_have_multiple_locations_species_and_pesticides (test_mock_demo_coverage.MockDemoCoverageTests.test_vector_comparisons_have_multiple_locations_species_and_pesticides) ... ok
+test_water_months_and_station_references (test_mock_demo_coverage.MockDemoCoverageTests.test_water_months_and_station_references) ... ok
+test_explicit_output_isolated_and_seeded (test_fixture_isolation.FixtureIsolationTests.test_explicit_output_isolated_and_seeded) ... ok
+test_import_has_no_filesystem_side_effects (test_fixture_isolation.FixtureIsolationTests.test_import_has_no_filesystem_side_effects) ... ok
+test_orchestrators_import_without_parsing_arguments_or_creating_files (test_fixture_isolation.FixtureIsolationTests.test_orchestrators_import_without_parsing_arguments_or_creating_files) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 26.319s
+
+OK

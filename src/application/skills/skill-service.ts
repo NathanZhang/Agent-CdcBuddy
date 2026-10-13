@@ -15,7 +15,8 @@ import type { SkillDefinition } from '@/contracts/skill-definition';
 import type { AgentDomain } from '@/contracts/dataset';
 import type { ExecutionContext } from '@/contracts/execution-context';
 import { validateSkillResult,type SkillResult } from '@/contracts/skill-result';
-import { loadDatasetManifest } from '@/infrastructure/db/dataset-manifest';
+import { loadDatasetManifest,resolveDatasetLocation } from '@/infrastructure/db/dataset-manifest';
+import {assertDatasetReadable,assertResultSources,DatasetPolicyError} from '@/infrastructure/db/dataset-policy';
 import { getDomainRepository } from '@/infrastructure/db/domain-repository';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 import { vectorSkills } from '@/domains/vector/skills';
@@ -53,14 +54,16 @@ export function createSkillService(definitions:SkillDefinition[]){
       datasets=['local-administrative-map-v1','verified-map-annotation-v1'].includes(definition.method)?[]:loadDatasetManifest().filter(d=>d.domain===ctx.domain);
       stage='INVALID_INPUT';const input=ajv.compile(definition.inputSchema);if(!input(args))return fail(stage,`Skill input rejected: ${ajv.errorsText(input.errors)}`);
       authorizeSkill(definition,args,ctx);
+      if(!['local-administrative-map-v1','verified-map-annotation-v1','persistent-evidence-workflow-v1','skill_session_manage-v1','skill_session_journal-v1','skill_catalog_manage-v1','skill_collection_manage-v1'].includes(definition.method))assertDatasetReadable(resolveDatasetLocation(ctx.domain),ctx.deploymentTier);
       stage='EXECUTION_FAILED';const execution=await definition.execute(args,ctx);
       stage='INVALID_OUTPUT';
       if(execution.payload!==null){const output=ajv.compile(definition.outputSchema);if(!output(execution.payload))return fail(stage,`Skill output rejected: ${ajv.errorsText(output.errors)}`);}
       datasets=execution.datasets ?? datasets;
+      if(datasets.length)assertResultSources(datasets,ctx.deploymentTier);
       const validated=validateSkillResult({schemaVersion:'1',runId:ctx.runId,domain:ctx.domain,status:execution.status,method:definition.method,datasets,payload:execution.payload,metrics:execution.metrics ?? {},qualityFlags:execution.qualityFlags ?? [],...(execution.error?{error:execution.error}:{})});
       if(validated.payload&&ctx.callId&&['DATA_TABLE_VIEW','ANALYTICS_RESULT','MAP_ANNOTATION'].includes((validated.payload as any).type)){try{const bindings=definition.method==='verified-map-annotation-v1'?{sourceCRS:'EPSG:4326' as const}:loadDatasetRegionBindings(ctx.domain,datasets[0]?.version??loadDatasetManifest().find(d=>d.domain===ctx.domain)!.version);const outputs=publishSpatialOutputs({callId:ctx.callId,skillId:definition.id,skillName:definition.name,args,result:validated},{runId:ctx.runId,callId:ctx.callId,skillId:definition.id,method:definition.method,datasetRefs:validated.datasets,scopeFingerprint:ctx.approvedIntent?.fingerprint??createHash('sha256').update(JSON.stringify(scopeFromArgs({},ctx))).digest('hex'),sourceCRS:bindings.sourceCRS});if(outputs.length){(validated.payload as any).spatialOutputs=outputs;saveSpatialOutputs(outputs,ctx);}}catch(error){(validated.payload as any).spatialIssue={code:error instanceof ScopeError?error.code:error instanceof Error?error.message:'SPATIAL_OUTPUT_INVALID',message:error instanceof Error?error.message:'空间输出校验失败'};}}
       saveQuerySource(validated,ctx);return validated;
-    }catch(error){return fail(error instanceof AuthorizationError||error instanceof ScopeError?error.code:stage,error instanceof Error?error.message:'Execution failed');}
+    }catch(error){return fail(error instanceof AuthorizationError||error instanceof ScopeError||error instanceof DatasetPolicyError?error.code:stage,error instanceof Error?error.message:'Execution failed');}
   }};
 }
 export async function executeSkill(id:string,args:Record<string,any>,ctx:ExecutionContext):Promise<SkillResult>{return createSkillService(listSkillDefinitions(ctx.domain,{includeInternal:true})).executeSkill(id,args,ctx);}

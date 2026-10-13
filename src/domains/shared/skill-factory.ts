@@ -1,3 +1,4 @@
+import {workflowDataset} from '@/application/jobs/workflow-provenance';
 import {approveStructuredIntent} from '@/application/agent/structured-intent';
 import {searchRegionCandidates} from '@/infrastructure/geo/region-catalog';
 import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
@@ -49,6 +50,7 @@ async function executeBuilder(args:Record<string,any>,ctx:ExecutionContext):Prom
 }
 async function executeReport(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const scope=scopeFromArgs(args,ctx);
+  workflowDataset(ctx);
   const rows=getDomainRepository(ctx.domain).query(`SELECT COUNT(*) AS sampleCount FROM ${table[ctx.domain]}`,[],scope);
   const count=Number(rows[0]?.sampleCount ?? 0);
   if(count===0)return {status:'NO_DATA',payload:null};

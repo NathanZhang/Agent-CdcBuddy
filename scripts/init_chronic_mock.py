@@ -21,7 +21,6 @@ from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "chronic_monitoring.db")
-DATAMOCK_DIR = os.path.join(BASE_DIR, "../Agent-CdcBuddy-DataMock/data/chronic")
 
 # 河南省 18 地级市及重点区县基准数据
 HENAN_CITIES = {
@@ -112,7 +111,7 @@ HENAN_CITIES = {
     },
     "济源市": {
         "coords": [35.0904, 112.5900],
-        "districts": ["济源市直辖"],
+        "districts": ["济源产城融合示范区"],
         "population": 730000
     }
 }
@@ -177,7 +176,7 @@ CAUSE_TEMPLATES = [
     },
     {
         "underlying_cause": "老年性骨质疏松居家跌倒致硬膜下血肿",
-        "icd10": "V01.1",
+        "icd10": "W01.9",
         "category": "伤害/意外",
         "chain": ("中枢性呼吸骤停", "急性重型颅内血肿伴脑疝", "湿滑地面滑倒头部撞击", "重度骨质疏松"),
         "weight": 8,
@@ -193,7 +192,11 @@ CAUSE_TEMPLATES = [
     }
 ]
 
-def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
+def _populate(db_path: str = DB_PATH, seed: int = 42):
+    if __package__:
+        from .mock_geography import point_in_region
+    else:
+        from mock_geography import point_in_region
     rng = random.Random(seed)
     os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
     conn = sqlite3.connect(db_path)
@@ -295,23 +298,20 @@ def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
     );
     """)
 
-    # 清空旧数据
-    cur.execute("DELETE FROM dim_districts;")
-    cur.execute("DELETE FROM fact_death_registry;")
-    cur.execute("DELETE FROM fact_chronic_cases;")
-    cur.execute("DELETE FROM fact_injury_surveillance;")
-    cur.execute("DELETE FROM fact_chronic_alerts;")
+    # Direct callers must also preserve existing data, not just the CLI guard.
+    if any(cur.execute(f'SELECT 1 FROM {table} LIMIT 1').fetchone() for table in
+           ['dim_districts', 'fact_death_registry', 'fact_chronic_cases', 'fact_injury_surveillance', 'fact_chronic_alerts']):
+        conn.close()
+        raise ValueError('Dataset already contains records; choose a new output')
 
     # 插入区县维度
     dist_records = []
     for city, info in HENAN_CITIES.items():
-        base_lat, base_lon = info["coords"]
         d_pop = int(info["population"] / len(info["districts"]))
         for dist in info["districts"]:
-            offset_lat = (rng.random() - 0.5) * 0.4
-            offset_lon = (rng.random() - 0.5) * 0.4
+            lat, lon = point_in_region(city, dist)
             dist_records.append((
-                city, dist, round(base_lat + offset_lat, 4), round(base_lon + offset_lon, 4), d_pop
+                city, dist, lat, lon, d_pop
             ))
     cur.executemany("INSERT INTO dim_districts (city, district, latitude, longitude, population) VALUES (?, ?, ?, ?, ?)", dist_records)
 
@@ -369,6 +369,8 @@ def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
         # 年龄分布：慢病死因多在 45~88 岁之间
         age = int(rng.gauss(71, 12))
         age = max(18, min(98, age))
+        if tpl['icd10'] == 'G30.9':
+            age = max(65, age)  # Keep unlabelled QC failures out of ordinary records.
         gender = "男" if rng.random() < 0.54 else "女"
         
         city = rng.choice(list(HENAN_CITIES.keys()))
@@ -434,7 +436,7 @@ def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
         smoke = rng.choice(["吸烟 (≥20支/天)", "偶有吸烟", "已戒烟", "从不吸烟"])
         fam = rng.choice(["直系亲属心梗早发史", "直系亲属高血压病史", "无明显家族遗传史", "直系亲属恶性肿瘤史"])
         
-        # 10年心脑血管发病风险 (China-PAR 风险模型模拟)
+        # Synthetic stored value, not an implementation of the China-PAR model.
         cvd_risk = round(min(0.65, max(0.03, (sbp - 110) * 0.003 + (bmi - 22) * 0.01 + (age - 40) * 0.006 + (0.08 if "≥20支" in smoke else 0))), 3)
         screening_roi = round(rng.uniform(2.4, 6.8), 2)
         comp = rng.choice(dis_info["comp"]) if rng.random() < 0.45 else "暂无严重靶器官损害"
@@ -585,14 +587,14 @@ def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
         ),
         (
             "ALERT-CHR-202608-03",
-            "安阳市林州市 食管癌 30~70 岁重大慢病早死率超标预警",
+            "安阳市林州市 食管癌重大慢病早死记录数量复核示例",
             "yellow",
             "肿瘤防制",
             "安阳市",
             "林州市",
-            "林州市 30~70 岁恶性肿瘤过早死亡概率达 18.6% (全省基线 13.8%)，需强化内镜早癌筛查下沉。",
-            18.6,
-            13.8,
+            "模拟登记的食管癌死亡数量达到示例复核阈值；不是人口死亡率或过早死亡概率。",
+            float(sum(r[4] == '安阳市' and r[5] == '林州市' and r[12] == 'C15.9' and r[15] == 1 for r in death_records)),
+            1.0,
             "resolved",
             "2026-08-12 10:00:00"
         )
@@ -608,28 +610,29 @@ def init_chronic_database(db_path: str = DB_PATH, seed: int = 42):
     conn.close()
 
 
+def init_chronic_database(db_path, seed=42, *, audit_dir=None, retention_days=7):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from analytics_engine.mock_lifecycle import generation
+    with generation(db_path, 'chronic', seed, __file__, audit_dir, retention_days):
+        _populate(str(db_path), seed)
+
+
 def main():
     import argparse
     from pathlib import Path
     parser = argparse.ArgumentParser(description='Generate an isolated, seeded mock dataset; existing files are protected.')
     parser.add_argument('--output', type=Path, default=Path(DB_PATH))
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--audit-dir', type=Path, help='Persistent Mock audit/registry directory')
+    parser.add_argument('--retention-days', type=int, default=7)
     parser.add_argument('--export-dir', type=Path, help='Optional explicit mirror destination; no automatic external writes')
     args = parser.parse_args()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        # Reserve exclusively before opening SQLite; never delete an existing dataset.
-        with args.output.open('xb'):
-            pass
-    except FileExistsError:
-        parser.error(f'Dataset already exists: {args.output}; choose a new --output')
-    init_chronic_database(str(args.output), args.seed)
-
     if args.export_dir:
-        import shutil
-        args.export_dir.mkdir(parents=True, exist_ok=True)
-        with args.output.open('rb') as source, (args.export_dir / args.output.name).open('xb') as target:
-            shutil.copyfileobj(source, target)
+        parser.error('Unaudited mirrors are disabled; generate a new snapshot at the intended output')
+    init_chronic_database(str(args.output), args.seed, audit_dir=args.audit_dir, retention_days=args.retention_days)
+
     print(f'Mock dataset generated: {args.output} (seed={args.seed})')
 
 if __name__ == '__main__':

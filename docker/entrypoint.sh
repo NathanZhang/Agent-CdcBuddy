@@ -15,7 +15,11 @@ const manifest=process.env.DATASET_MANIFEST_PATH || path.join(process.cwd(),'con
 const matches=JSON.parse(fs.readFileSync(manifest,'utf8')).filter(item=>item.domain===domain);
 if(matches.length!==1)throw new Error('Expected one configured dataset for '+domain);
 const selected=process.env['DATASET_'+domain.toUpperCase()+'_PATH'] || matches[0].path;
-console.log(path.resolve(path.dirname(manifest),selected));
+if(!['observed','mock'].includes(matches[0].origin))throw new Error('Invalid dataset origin');
+const file=path.resolve(path.dirname(manifest),selected);
+const check=require('child_process').spawnSync('python3',['-c','import sys; from analytics_engine.mock_lifecycle import assert_read_allowed; assert_read_allowed(sys.argv[1],sys.argv[2])',file,matches[0].origin],{stdio:['ignore','ignore','inherit']});
+if(check.status!==0)throw new Error('Dataset production policy rejected the configured source');
+console.log(file);
 JS
 )"
 if [ ! -s "$FACT_DATABASE" ]; then

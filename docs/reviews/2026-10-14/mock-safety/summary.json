@@ -1,0 +1,45 @@
+{
+  "verifiedOn": "2026-10-14",
+  "implemented": {
+    "production": "Pilot and production builds without explicit demo reject Mock at startup/readiness/SQL/Python/skills/workers; copied or relabelled generated snapshots are rejected by database markers.",
+    "workflow": "Current source and persisted evidence are validated at submission, schedules, completion, review, outbox delivery and retest; legacy unverified workflows are disabled.",
+    "historyAndExports": "Mock or unknown-provenance historical data is rejected in formal views/downloads; demo CSV has an origin column and watermark filename.",
+    "collection": "Additive migration 008 records observed provenance atomically with submissions; legacy samples are not backfilled or accepted for retest.",
+    "audit": "Durable SQLite events capture generation parameters, operator, UID, source script hash, timestamps, expiry, counts, content hash and failures; read-only JSON/JSONL inspection CLI.",
+    "cleanup": "Preview by default; only registered snapshots with matching marker/hash/device/inode may be removed. Active sources/leases/live PIDs/unknown remote leases, symlinks, hardlinks, file replacement, changed content and SQLite sidecars are protected. Durable intent and quarantine verification support interrupted cleanup recovery."
+  },
+  "checks": {
+    "refactor": {
+      "passed": 416,
+      "total": 416,
+      "log": "refactor.log"
+    },
+    "integration": {
+      "passed": 51,
+      "total": 51,
+      "log": "integration.log"
+    },
+    "scientific": {
+      "passed": 32,
+      "total": 32,
+      "log": "scientific.log"
+    },
+    "typescript": "passed",
+    "lint": "passed",
+    "productionBuild": "passed",
+    "originalFactDatabasesUnchanged": true
+  },
+  "migration": "migrations/sqlite/008_collection_provenance.sql",
+  "operations": {
+    "audit": "scripts/mock-audit.py --audit-dir <directory> [--jsonl]",
+    "preview": "scripts/cleanup-mock.py --audit-dir <directory> --expired --active-manifest <active manifest>",
+    "apply": "Same preview command plus --apply; or select the audit generation UUID with --dataset-id"
+  },
+  "deploymentNotes": [
+    "Default foodborne/env/chronic snapshots remain Mock; pilot requires genuinely observed replacement snapshots and matching region bindings.",
+    "Unregistered legacy Mock databases are not automatically deleted.",
+    "Historical jobs/samples lacking provenance require new execution/submission; no automatic observed backfill.",
+    "Audit and business history are preserved; no actual source datasets were cleaned during implementation.",
+    "Read-only demo scenarios remain covered; these engineering tests do not certify professional efficacy."
+  ]
+}

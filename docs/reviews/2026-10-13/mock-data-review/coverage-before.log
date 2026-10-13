@@ -1,0 +1,220 @@
+test_chronic_candidates_and_quality_controls (test_mock_demo_coverage.MockDemoCoverageTests.test_chronic_candidates_and_quality_controls) ... FAIL
+test_database_integrity_and_manifest_bindings (test_mock_demo_coverage.MockDemoCoverageTests.test_database_integrity_and_manifest_bindings) ... ok
+test_environment_alerts_are_backed_by_measurements (test_mock_demo_coverage.MockDemoCoverageTests.test_environment_alerts_are_backed_by_measurements) ... FAIL
+test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) ... 
+  test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-01') ... FAIL
+  test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-02') ... FAIL
+  test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202607-03') ... FAIL
+  test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-04') ... FAIL
+test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) ... FAIL
+test_recommendation_sql_scenes_have_data (test_mock_demo_coverage.MockDemoCoverageTests.test_recommendation_sql_scenes_have_data) ... ok
+test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) ... 
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0002') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0005') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0008') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0011') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0014') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0017') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0020') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0023') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0026') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0029') ... FAIL
+  test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0032') ... FAIL
+test_vector_comparisons_have_multiple_locations_species_and_pesticides (test_mock_demo_coverage.MockDemoCoverageTests.test_vector_comparisons_have_multiple_locations_species_and_pesticides) ... FAIL
+test_water_months_and_station_references (test_mock_demo_coverage.MockDemoCoverageTests.test_water_months_and_station_references) ... FAIL
+
+======================================================================
+FAIL: test_chronic_candidates_and_quality_controls (test_mock_demo_coverage.MockDemoCoverageTests.test_chronic_candidates_and_quality_controls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 103, in test_chronic_candidates_and_quality_controls
+    self.assertEqual(conn.execute("SELECT COUNT(*) FROM fact_death_registry WHERE qc_status='VALID' AND age<40 AND underlying_cause LIKE '%阿尔茨海默%'").fetchone()[0], 0)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 4 != 0
+
+======================================================================
+FAIL: test_environment_alerts_are_backed_by_measurements (test_mock_demo_coverage.MockDemoCoverageTests.test_environment_alerts_are_backed_by_measurements)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 67, in test_environment_alerts_are_backed_by_measurements
+    self.assertEqual(set(r[0] for r in conn.execute('SELECT DISTINCT status FROM fact_env_alerts')),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     {'pending', 'in_progress', 'resolved'})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+'pending'
+'resolved'
+'in_progress'
+
+======================================================================
+FAIL: test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-01')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 80, in test_foodborne_events_and_molecular_records_are_consistent
+    self.assertGreaterEqual(first, start)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: '2026-08-17 22:35:18' not greater than or equal to '2026-08-18 11:30:00'
+
+======================================================================
+FAIL: test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-02')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 80, in test_foodborne_events_and_molecular_records_are_consistent
+    self.assertGreaterEqual(first, start)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: '2026-08-21 15:35:45' not greater than or equal to '2026-08-21 18:30:00'
+
+======================================================================
+FAIL: test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202607-03')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 80, in test_foodborne_events_and_molecular_records_are_consistent
+    self.assertGreaterEqual(first, start)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: '2026-07-05 00:50:04' not greater than or equal to '2026-07-05 08:30:00'
+
+======================================================================
+FAIL: test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent) (cluster='OUTBREAK-202608-04')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 80, in test_foodborne_events_and_molecular_records_are_consistent
+    self.assertGreaterEqual(first, start)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: '2026-08-09 18:36:59' not greater than or equal to '2026-08-10 10:00:00'
+
+======================================================================
+FAIL: test_foodborne_events_and_molecular_records_are_consistent (test_mock_demo_coverage.MockDemoCoverageTests.test_foodborne_events_and_molecular_records_are_consistent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 82, in test_foodborne_events_and_molecular_records_are_consistent
+    self.assertEqual(conn.execute('''SELECT COUNT(*) FROM fact_pathogen_molecular m
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        LEFT JOIN fact_foodborne_case c ON m.case_id=c.case_id JOIN dim_pathogen_type p ON m.pathogen_id=p.pathogen_id
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        WHERE c.case_id IS NULL OR c.is_pathogen_positive!=1 OR p.category!='细菌'
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        OR m.pathogen_id!=c.pathogen_id OR m.city!=c.city OR m.district!=c.district''').fetchone()[0], 0)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 209 != 0
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0002')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0005')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0008')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0011')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0014')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0017')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0020')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0023')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0026')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0029')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_sewage_daily_series_has_computed_six_day_lag (test_mock_demo_coverage.MockDemoCoverageTests.test_sewage_daily_series_has_computed_six_day_lag) (plant='STN-SWG-0032')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 60, in test_sewage_daily_series_has_computed_six_day_lag
+    self.assertEqual(plant['observedDates'], 62)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 9 != 62
+
+======================================================================
+FAIL: test_vector_comparisons_have_multiple_locations_species_and_pesticides (test_mock_demo_coverage.MockDemoCoverageTests.test_vector_comparisons_have_multiple_locations_species_and_pesticides)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 108, in test_vector_comparisons_have_multiple_locations_species_and_pesticides
+    self.assertEqual(conn.execute('SELECT COUNT(DISTINCT city) FROM dim_location').fetchone()[0], 18)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 18
+
+======================================================================
+FAIL: test_water_months_and_station_references (test_mock_demo_coverage.MockDemoCoverageTests.test_water_months_and_station_references)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/tests/integration/test_mock_demo_coverage.py", line 43, in test_water_months_and_station_references
+    self.assertEqual(len(months), 32)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 31 != 32
+
+----------------------------------------------------------------------
+Ran 8 tests in 5.342s
+
+FAILED (failures=20)

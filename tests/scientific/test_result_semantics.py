@@ -34,7 +34,7 @@ class ResultSemanticsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             db = Path(temp) / 'vector.db'
             with closing(sqlite3.connect(db)) as conn, conn:
-                conn.executescript((ROOT / 'tests/fixtures/vector-schema.sql').read_text())
+                conn.executescript((ROOT / 'analytics_engine/mock_schemas/vector.sql').read_text())
                 conn.execute("INSERT INTO dim_location(location_id,city) VALUES('one','Mock城市')")
                 conn.execute("INSERT INTO dim_species(species_id,category) VALUES('species','蚊')")
                 conn.execute("INSERT INTO dim_method VALUES('method','Mock方法')")

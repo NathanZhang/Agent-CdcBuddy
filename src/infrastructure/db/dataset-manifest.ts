@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { AGENT_DOMAINS, type DatasetRef } from '@/contracts/dataset';
+import {assertDatasetReadable} from './dataset-policy';
 
 export interface DatasetLocation extends DatasetRef { path: string }
 
@@ -33,5 +34,7 @@ export function resolveDatasetLocation(domain: DatasetRef['domain'], datasetId?:
   const location = matches[0];
   const manifest = process.env.DATASET_MANIFEST_PATH ?? path.join(process.cwd(),'config/datasets.json');
   const configured = process.env[`DATASET_${domain.toUpperCase()}_PATH`] ?? location.path;
-  return {...location,path:path.resolve(path.dirname(manifest),configured)};
+  const selected={...location,path:path.resolve(path.dirname(manifest),configured)};
+  assertDatasetReadable(selected);
+  return selected;
 }

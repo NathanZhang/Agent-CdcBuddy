@@ -4,9 +4,9 @@ from pathlib import Path
 from contextvars import ContextVar
 ACTIVE_SCOPE=ContextVar('approved_scope',default=None)
 DATE_COLUMNS={'fact_monitoring':'date_id','fact_pathogen_detection':'date_id','fact_insecticide_resistance':'date_id','fact_foodborne_case':'visit_date','fact_pathogen_molecular':'isolation_date','fact_food_sampling':'sample_date','fact_outbreak_event':'start_time','fact_water_monitoring':'monitoring_date','fact_sewage_monitoring':'monitoring_date','fact_air_climate_monitoring':'date','fact_river_basin_monitoring':'monitoring_date','fact_public_venue_inspection':'inspection_date','fact_env_alerts':'created_at','fact_death_registry':'death_date','fact_chronic_cases':'diagnosed_date','fact_injury_surveillance':'injury_time','fact_chronic_alerts':'created_at'}
-def connect_scoped_readonly(path,scope):
+def connect_scoped_readonly(path,scope,connection_factory=sqlite3.Connection):
  if not isinstance(scope,dict) or not scope.get('scopeFingerprint') or scope.get('domain') not in ('vector','foodborne','env','chronic') or not isinstance(scope.get('regionPaths'),list):raise ValueError('APPROVED_SCOPE_INVALID')
- connection=sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True)
+ connection=sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True,factory=connection_factory)
  try:
   tables=[r[0] for r in connection.execute("SELECT name FROM sqlite_master WHERE type='table' AND (name GLOB 'fact_*' OR name GLOB 'dim_*')")]
   schemas={t:[r[1] for r in connection.execute(f'PRAGMA main.table_info("{t}")')] for t in tables}

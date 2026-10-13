@@ -17,7 +17,6 @@
 """
 
 import os
-import sys
 import sqlite3
 import random
 import json
@@ -25,8 +24,6 @@ from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "foodborne_monitoring.db")
-DATAMOCK_DIR = os.path.abspath(os.path.join(BASE_DIR, "../Agent-CdcBuddy-DataMock/data/foodborne"))
-DATAMOCK_DB_PATH = os.path.join(DATAMOCK_DIR, "foodborne_monitoring.db")
 
 HENAN_CITIES = [
     ("410100", "郑州市", ["金水区", "二七区", "中原区", "管城回族区", "惠济区", "中牟县", "巩义市", "新郑市", "新密市", "登封市", "荥阳市"]),
@@ -85,6 +82,12 @@ SENTINEL_HOSPITALS = [
     ("HOSP_11", "信阳市中心医院", "信阳市", "浉河区", "三甲综合"),
     ("HOSP_12", "周口市中心医院", "周口市", "川汇区", "三甲综合"),
     ("HOSP_13", "驻马店市中心医院", "驻马店市", "驿城区", "三甲综合")
+]
+# Fill unrepresented cities with explicitly fictional sentinel facilities.
+SENTINEL_HOSPITALS += [
+    (f'HOSP-MOCK-{code}', f'{city}模拟哨点医院', city, districts[0], '模拟哨点')
+    for code, city, districts in HENAN_CITIES
+    if not any(hospital[2] == city for hospital in SENTINEL_HOSPITALS)
 ]
 
 def init_db(db_path: str):
@@ -229,8 +232,10 @@ def init_db(db_path: str):
     conn.commit()
     conn.close()
 
-def generate_mock_data(db_path: str, seed: int = 42):
+def _populate(db_path: str, seed: int = 42):
     rng = random.Random(seed)
+    hospitals_by_city = {city: [h[0] for h in SENTINEL_HOSPITALS if h[2] == city]
+                         for _, city, _ in HENAN_CITIES}
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
@@ -277,35 +282,40 @@ def generate_mock_data(db_path: str, seed: int = 42):
         district = ob[3]
         case_count = ob[8]
         suspected_food = ob[12]
-        seed, path_id, path_name, sero, st, pfge = base_seeds[cluster_id]
+        allele_seed, path_id, path_name, sero, st, pfge = base_seeds[cluster_id]
 
         start_dt = datetime.strptime(ob[6], "%Y-%m-%d %H:%M:%S")
+        end_dt = datetime.strptime(ob[7], "%Y-%m-%d %H:%M:%S")
 
         for i in range(case_count):
             c_id = f"CASE-OB-{cluster_id[-4:]}-{outbreak_case_idx:03d}"
             outbreak_case_idx += 1
-            visit_dt = start_dt + timedelta(hours=rng.uniform(2, 48))
-            onset_dt = visit_dt - timedelta(hours=rng.uniform(3, 18))
-            incubation = round((visit_dt - onset_dt).total_seconds() / 3600.0, 1)
+            # Event bounds describe onset, rather than randomly preceding visits.
+            onset_dt = start_dt + (end_dt - start_dt) * (i / (case_count - 1))
+            visit_dt = onset_dt + timedelta(hours=rng.uniform(2, 12))
+            incubation = round(rng.uniform(6, 36), 1)  # Synthetic exposure-to-onset interval.
+            age_range = (3, 6) if '幼儿园' in ob[1] else (18, 25) if '高校' in ob[1] else (65, 85) if path_id == 'PATH_03' else (18, 65)
+            category_id = {'PATH_01': 'FOOD_CAT_01', 'PATH_02': 'FOOD_CAT_03',
+                           'PATH_03': 'FOOD_CAT_02', 'PATH_04': 'FOOD_CAT_07'}[path_id]
 
             main_sym = "腹痛、水样便腹泻、低热" if "副溶血" in path_name else ("剧烈恶心、喷射状呕吐、发热" if "诺如" in path_name else "发热、黏液脓血便、里急后重")
 
             case_rows.append((
                 c_id, f"张*患者{outbreak_case_idx}", rng.choice(["男", "女"]),
-                rng.randint(18, 55), "学生/教工" if "高校" in ob[1] else "宾客/市民",
-                "HOSP_01" if city == "郑州市" else "HOSP_05",
+                rng.randint(*age_range), "学龄前儿童" if '幼儿园' in ob[1] else "学生/教工" if "高校" in ob[1] else "宾客/市民",
+                rng.choice(hospitals_by_city[city]),
                 visit_dt.strftime("%Y-%m-%d"), onset_dt.strftime("%Y-%m-%d %H:%M:%S"),
                 incubation, main_sym, "水样便" if "副溶血" in path_name else "稀糊便",
-                ob[4], suspected_food, "FOOD_CAT_01" if "副溶血" in path_name else "FOOD_CAT_02",
+                ob[4], suspected_food, category_id,
                 path_id, 1, city, district, cluster_id
             ))
 
             # 采集部分病例生成菌株分离 (有高度相似的 cgMLST)
-            if i < 8:
+            if i < 8 and path_id != 'PATH_04':  # Viral typing is not bacterial cgMLST.
                 iso_id = f"ISO-2026-{outbreak_isolate_idx:04d}"
                 outbreak_isolate_idx += 1
                 # 变异位点差异 0 ~ 2 个，保证差异位点 Δ ≤ 3，属于同一克隆株暴发
-                cg_vec = make_cgmlst_vector(seed, mutation_count=rng.choice([0, 0, 1, 2]))
+                cg_vec = make_cgmlst_vector(allele_seed + seed * 100000, mutation_count=rng.choice([0, 0, 1, 2]))
                 molecular_rows.append((
                     iso_id, c_id, None, path_id, path_name, sero, pfge, st, cg_vec,
                     f"病例粪便标本-{i+1}", visit_dt.strftime("%Y-%m-%d"), city, district, 1, cluster_id
@@ -325,12 +335,17 @@ def generate_mock_data(db_path: str, seed: int = 42):
 
     for case_no in range(1, 3201):
         c_id = f"CASE-SP-{case_no:05d}"
-        city_code, city_name, districts = rng.choice(HENAN_CITIES)
+        coverage_index = case_no - 1
+        # First 576 rows guarantee every city in every displayed month.
+        city_code, city_name, districts = HENAN_CITIES[coverage_index % 18] if coverage_index < 32 * 18 else rng.choice(HENAN_CITIES)
         district = rng.choice(districts)
 
         # 随机日期
-        day_offset = rng.randint(0, total_days)
-        visit_dt = base_date + timedelta(days=day_offset, hours=rng.randint(8, 20))
+        if coverage_index < 32 * 18:
+            month_index = coverage_index // 18
+            visit_dt = datetime(2024 + month_index // 12, month_index % 12 + 1, 15, rng.randint(8, 20))
+        else:
+            visit_dt = base_date + timedelta(days=rng.randint(0, total_days), hours=rng.randint(8, 20))
         month = visit_dt.month
 
         # 夏秋季 (6~9月) 水产和沙门氏菌权重增大
@@ -350,23 +365,24 @@ def generate_mock_data(db_path: str, seed: int = 42):
 
         onset_hours = rng.uniform(2, 48)
         onset_dt = visit_dt - timedelta(hours=onset_hours)
+        is_positive = 1 if rng.random() < 0.65 else 0
 
         case_rows.append((
             c_id, f"患者_{case_no:04d}", rng.choice(["男", "女"]),
             rng.randint(2, 85), rng.choice(occupations),
-            rng.choice(SENTINEL_HOSPITALS)[0],
+            rng.choice(hospitals_by_city[city_name]),
             visit_dt.strftime("%Y-%m-%d"), onset_dt.strftime("%Y-%m-%d %H:%M:%S"),
-            round(onset_hours, 1), rng.choice(symptom_pool),
+            round(rng.uniform(2, 48), 1), rng.choice(symptom_pool),
             rng.choice(["水样便", "黄色稀便", "黏液血便", "正常成型便"]),
             rng.choice(dining_places), suspected_food_name, food_cat_id,
-            path_id, 1 if rng.random() < 0.65 else 0, city_name, district, None
+            path_id if is_positive else None, is_positive, city_name, district, None
         ))
 
         # 每 8 个病例生成一个独立散发基因指纹
-        if case_no % 8 == 0:
+        if case_no % 8 == 0 and is_positive and path_tuple[2] == '细菌':
             iso_id = f"ISO-SP-{case_no:05d}"
             # 独立随机 seed，不具有同源聚类特征 (距离远)
-            cg_vec = make_cgmlst_vector(rng.randint(10000, 99999))
+            cg_vec = make_cgmlst_vector(seed * 100000 + case_no + 10000)
             molecular_rows.append((
                 iso_id, c_id, None, path_id, path_name, rng.choice(path_tuple[5]),
                 f"PFGE-RAND-{case_no}", rng.choice(path_tuple[6]), cg_vec,
@@ -379,8 +395,13 @@ def generate_mock_data(db_path: str, seed: int = 42):
         s_id = f"SMP-2026-{s_no:05d}"
         city_code, city_name, districts = rng.choice(HENAN_CITIES)
         district = rng.choice(districts)
-        food_cat = rng.choice(FOOD_CATEGORIES)
-        s_date = (base_date + timedelta(days=rng.randint(0, total_days))).strftime("%Y-%m-%d")
+        sample_index = s_no - 1
+        food_cat = FOOD_CATEGORIES[sample_index % len(FOOD_CATEGORIES)] if sample_index < 32 * len(FOOD_CATEGORIES) else rng.choice(FOOD_CATEGORIES)
+        if sample_index < 32 * len(FOOD_CATEGORIES):
+            month_index = sample_index // len(FOOD_CATEGORIES)
+            s_date = datetime(2024 + month_index // 12, month_index % 12 + 1, 15).strftime('%Y-%m-%d')
+        else:
+            s_date = (base_date + timedelta(days=rng.randint(0, total_days))).strftime("%Y-%m-%d")
         stage = rng.choice(["流通环节 (商超批发)", "餐饮服务环节 (餐馆食堂)", "生产加工环节 (食品企业)"])
 
         is_unqualified = rng.random() < 0.08  # 8% 超标检出
@@ -390,7 +411,7 @@ def generate_mock_data(db_path: str, seed: int = 42):
         std_limit = "不得检出"
 
         if is_unqualified:
-            p_tuple = rng.choice(PATHOGENS)
+            p_tuple = rng.choice([p for p in PATHOGENS if p[2] == '细菌'])
             detected_p = p_tuple[0]
             count_cfu = round(rng.uniform(10, 1500), 1)
             conclusion = "不合格 (检出致病菌)"
@@ -417,29 +438,30 @@ def generate_mock_data(db_path: str, seed: int = 42):
     print(f"   - 食品抽检数: {len(sampling_rows):,}")
 
 
+def generate_mock_data(db_path, seed=42, *, audit_dir=None, retention_days=7):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from analytics_engine.mock_lifecycle import generation
+    with generation(db_path, 'foodborne', seed, __file__, audit_dir, retention_days):
+        init_db(str(db_path))
+        _populate(str(db_path), seed)
+
+
 def main():
     import argparse
     from pathlib import Path
     parser = argparse.ArgumentParser(description='Generate an isolated, seeded mock dataset; existing files are protected.')
     parser.add_argument('--output', type=Path, default=Path(DB_PATH))
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--audit-dir', type=Path, help='Persistent Mock audit/registry directory')
+    parser.add_argument('--retention-days', type=int, default=7)
     parser.add_argument('--export-dir', type=Path, help='Optional explicit mirror destination; no automatic external writes')
     args = parser.parse_args()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        # Reserve exclusively before opening SQLite; never delete an existing dataset.
-        with args.output.open('xb'):
-            pass
-    except FileExistsError:
-        parser.error(f'Dataset already exists: {args.output}; choose a new --output')
-    init_db(str(args.output))
-    generate_mock_data(str(args.output), args.seed)
-
     if args.export_dir:
-        import shutil
-        args.export_dir.mkdir(parents=True, exist_ok=True)
-        with args.output.open('rb') as source, (args.export_dir / args.output.name).open('xb') as target:
-            shutil.copyfileobj(source, target)
+        parser.error('Unaudited mirrors are disabled; generate a new snapshot at the intended output')
+    generate_mock_data(str(args.output), args.seed, audit_dir=args.audit_dir, retention_days=args.retention_days)
+
     print(f'Mock dataset generated: {args.output} (seed={args.seed})')
 
 if __name__ == '__main__':

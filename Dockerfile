@@ -21,6 +21,7 @@ COPY --from=builder --chown=app:app /app/public ./public
 COPY --from=builder --chown=app:app /app/job-worker.cjs /app/migrate.cjs /app/create-user.cjs ./
 COPY --chown=app:app analytics_engine ./analytics_engine
 COPY --chown=app:app config ./config
+COPY --chown=app:app ["henan city border.geojson", "henan county border.geojson", "henan province border.geojson", "./"]
 COPY --chown=app:app migrations ./migrations
 COPY --chown=app:app scripts ./scripts
 COPY --chown=app:app docker/entrypoint.sh ./docker/entrypoint.sh
