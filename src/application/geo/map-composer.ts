@@ -12,6 +12,9 @@ export function composeMap(base:MapView,requests:MapLayerRequest[],outputs:Spati
  if(!output){reject('geometry-required','SPATIAL_GEOMETRY_REQUIRED','技能尚未提供所需空间几何');continue;}validateSpatialOutput(output);
  if(output.source.scopeFingerprint!==request.scopeFingerprint){reject('rejected','SCOPE_MISMATCH','图层来源范围不一致','FAILED');continue;}
  if(!output.renderings.includes(request.rendering)){reject('incompatible','MAP_RENDERING_INCOMPATIBLE','该来源不支持请求的图层');continue;}
+ if(request.pointSize!==undefined&&(request.rendering!=='points'||!['fixed','value'].includes(request.pointSize)))throw Error('MAP_STYLE_INVALID');
+ if(request.pointSize==='value'&&(!output.channels.value||!output.geometry.features.some(f=>typeof f.properties?.value==='number'&&Number.isFinite(f.properties.value)))){reject('incompatible','SPATIAL_METRIC_VALUES_REQUIRED','圆点大小映射缺少有效数值');continue;}
+ if(request.pointSize==='value'&&output.geometry.features.some(f=>typeof f.properties?.value==='number'&&f.properties.value<0)){reject('incompatible','SPATIAL_SIZE_VALUE_INVALID','圆点大小映射仅支持非负数值');continue;}
  if(request.rendering==='heatmap'&&output.channels.value&&!output.geometry.features.some(f=>typeof f.properties?.value==='number'&&Number.isFinite(f.properties.value))){reject('incompatible','SPATIAL_METRIC_VALUES_REQUIRED','数量热力图缺少有效数值');continue;}
  if(!output.geometry.features.length){layerOutcomes.push({requestId:request.id,state:'empty',status:'NO_DATA'});continue;}
  if(output.geometry.features.length>(ctx.maxLayerFeatures??10000))throw Error('MAP_DATA_LIMIT');

@@ -1,5 +1,5 @@
 'use client';
-import {emitMapFeature,type MapFeatureRef} from '@/lib/geo/map-interaction';
+import {emitMapFeature,mapFeatureForRow,type MapFeatureRef} from '@/lib/geo/map-interaction';
 import type { QueryVisualization } from '@/contracts/query-visualization';
 import { QueryResultVisualization } from './QueryResultVisualization';
 import {fieldLabel,formatValue} from '@/features/workbench/result-presentation';
@@ -11,6 +11,7 @@ import { Table, Download, Search, Code2, Copy, Check, Sparkles, Clock, Database 
 
 interface DataTableProps {
   featureRefs?:Record<string,MapFeatureRef>;
+  featureIdKey?:string;
   sourceRunId?:string;
   sourceCallId?:string;
   visualization?: QueryVisualization;
@@ -24,7 +25,7 @@ interface DataTableProps {
 }
 
 export const DataTableComponent: React.FC<DataTableProps> = ({ 
-  featureRefs,sourceRunId,sourceCallId,
+  featureRefs,featureIdKey,sourceRunId,sourceCallId,
   title = '监测明细数据表',
   scope,
   visualization,
@@ -170,7 +171,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
             {paginatedData.map((row, rIdx) => (
-              <tr onClick={()=>{const ref=featureRefs?.[String(data.indexOf(row))];if(ref)emitMapFeature(ref);}} key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+              <tr onClick={()=>{const ref=mapFeatureForRow(row,data.indexOf(row),visualization,featureRefs,featureIdKey);if(ref)emitMapFeature(ref);}} key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                 {columns.map((col, cIdx) => (
                   <td key={cIdx} className="p-2.5 whitespace-nowrap font-mono text-xs">
                     {formatValue(row[col],col)}

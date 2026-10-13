@@ -1,0 +1,22 @@
+{
+  "runId": "c1e6d290-7cd0-4d6d-b539-69db26ac484a",
+  "status": "SUCCESS",
+  "expectedUniqueSites": 143,
+  "returnedSites": 143,
+  "renderedFeatures": 143,
+  "records": 1875,
+  "zeroSites": 2,
+  "allMetricsCountsDatesMatchReadOnlySource": true,
+  "pointSize": "value",
+  "visualization": {
+    "kind": "map",
+    "latKey": "纬度",
+    "lonKey": "经度",
+    "labelKey": "街道",
+    "idKey": "点位ID",
+    "valueKey": "平均捕获量",
+    "unit": "只/记录",
+    "sourceCRS": "EPSG:4326"
+  },
+  "executedSql": "SELECT f.location_id AS \"点位ID\", l.latitude AS \"纬度\", l.longitude AS \"经度\", l.district AS \"区县\", l.street AS \"街道\", ROUND(AVG(f.capture_count), 2) AS \"平均捕获量\", COUNT(*) AS \"监测次数\", MIN(f.date_id) AS \"最早日期\", MAX(f.date_id) AS \"最晚日期\" FROM fact_monitoring f JOIN dim_location l ON f.location_id = l.location_id GROUP BY f.location_id, l.latitude, l.longitude, l.district, l.street ORDER BY \"平均捕获量\" DESC LIMIT 200"
+}

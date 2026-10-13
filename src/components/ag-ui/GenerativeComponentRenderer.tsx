@@ -161,6 +161,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
             scope={view.scope}
           explanation={view.explanation}
           data={view.data}
+          featureIdKey={view.visualization?.kind==='map'?view.visualization.idKey:undefined}
           visualization={view.suppressSpatialMap&&view.visualization?.kind==='map'?undefined:view.visualization}
         />
       )}

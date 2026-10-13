@@ -1,7 +1,7 @@
 export type QueryVisualization =
   | { kind: 'bar' | 'line'; xKey: string; yKey: string; unit: string }
   | { kind:'map'; regionCodeKey:string;labelKey:string;valueKey?:string;unit?:string }
-  | { kind: 'map'; latKey: string; lonKey: string; labelKey: string; valueKey?: string; unit?: string; sourceCRS?:'EPSG:4326'|'EPSG:4490' };
+  | { kind: 'map'; latKey: string; lonKey: string; labelKey: string; idKey?:string; valueKey?: string; unit?: string; sourceCRS?:'EPSG:4326'|'EPSG:4490' };
 
 const key = { type: 'string', minLength: 1, maxLength: 100 };
 export const queryVisualizationSchema = {
@@ -9,6 +9,6 @@ export const queryVisualizationSchema = {
   oneOf: [
     {type:'object',additionalProperties:false,required:['kind','regionCodeKey','labelKey'],properties:{kind:{const:'map'},regionCodeKey:key,labelKey:key,valueKey:key,unit:key}},
     { type: 'object', additionalProperties: false, required: ['kind', 'xKey', 'yKey', 'unit'], properties: { kind: { enum: ['bar', 'line'] }, xKey: key, yKey: key, unit: key } },
-    { type: 'object', additionalProperties: false, required: ['kind', 'latKey', 'lonKey', 'labelKey'], properties: { kind: { const: 'map' }, latKey: key, lonKey: key, labelKey: key, valueKey: key, unit: key, sourceCRS:{enum:['EPSG:4326','EPSG:4490']} } },
+    { type: 'object', additionalProperties: false, required: ['kind', 'latKey', 'lonKey', 'labelKey'], properties: { kind: { const: 'map' }, latKey: key, lonKey: key, labelKey: key, idKey:{...key,description:'本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。'}, valueKey: key, unit: key, sourceCRS:{enum:['EPSG:4326','EPSG:4490']} } },
   ],
 };

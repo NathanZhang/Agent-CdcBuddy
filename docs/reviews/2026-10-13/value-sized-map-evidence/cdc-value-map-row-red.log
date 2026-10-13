@@ -1,0 +1,33 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (7 tests | 1 failed | 6 skipped) 7ms
+   ↓ accepts a complete metric-sized point request without treating presentation as a scope filter
+   ↓ carries approved value sizing through actual grouped query output and preserves its details
+   ↓ renders larger measured values with larger bounded circles and retains zero and missing distinctions
+   ↓ refuses metric-sized circles with no usable values instead of silently rendering fixed circles
+   ↓ rejects a value-size request attached to a heatmap before execution
+   ↓ identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it
+   × links a detail row by its real point identity and never falls back to another indexed feature 6ms
+     → expected { …(2), [Symbol(Symbol.toStringTag)]: '…' } to have property "mapFeatureForRow"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > links a detail row by its real point identity and never falls back to another indexed feature
+AssertionError: expected { …(2), [Symbol(Symbol.toStringTag)]: '…' } to have property "mapFeatureForRow"
+ ❯ tests/refactor/value-sized-map.test.ts:57:62
+     55| });
+     56| it('links a detail row by its real point identity and never falls back…
+     57|  const m=await import('@/lib/geo/map-interaction');expect(m).toHavePro…
+       |                                                              ^
+     58|  const ref={mapId:'map',surfaceId:'web',layerId:'sites',featureId:'sit…
+     59|  const visualization={kind:'map' as const,latKey:'lat',lonKey:'lon',la…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+   Start at  21:10:51
+   Duration  667ms (transform 233ms, setup 0ms, collect 523ms, tests 7ms, environment 0ms, prepare 34ms)
+

@@ -1,0 +1,20 @@
+{
+  "result": {
+    "status": "CLARIFICATION",
+    "questions": [
+      "“以圆点大小表示平均捕获量”需要按点位聚合平均捕获量并映射圆点大小；当前已登记地图能力只能提供 points/labels/heatmap/grid/area/circle 等固定渲染，不能自定义圆点大小映射。是否接受用 points 展示点位、用 labels 展示监测次数和日期范围，且不使用圆点大小表示平均捕获量？",
+      "“附点位、监测次数和日期范围明细”是否要求同时输出明细表/文字列表？当前地图图层只能展示 points 和 labels，不能直接展示完整明细表；是否接受仅用 labels 展示点位名称/监测次数/日期范围摘要？",
+      "“最多展示200个点位”是否作为查询结果截断条件？当前可登记查询能力未提供该截断参数；是否接受由实际查询技能按默认或可用上限返回，不保证严格最多200个？"
+    ]
+  },
+  "attempts": [
+    {
+      "raw": "{\n  \"task\": \"map_with_data\",\n  \"relation\": \"new\",\n  \"displayRegion\": {\n    \"op\": \"set\",\n    \"value\": {\n      \"includeCandidateIds\": [\n        \"410000\"\n      ],\n      \"excludeCandidateIds\": []\n    },\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 0,\n      \"end\": 3,\n      \"quote\": \"河南省\"\n    }\n  },\n  \"dataRegion\": {\n    \"op\": \"set\",\n    \"value\": {\n      \"includeCandidateIds\": [\n        \"410000\"\n      ],\n      \"excludeCandidateIds\": []\n    },\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 0,\n      \"end\": 3,\n      \"quote\": \"河南省\"\n    }\n  },\n  \"time\": {\n    \"op\": \"set\",\n    \"value\": {\n      \"from\": \"2024-01-01\",\n      \"to\": \"2024-12-31\"\n    },\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 3,\n      \"end\": 7,\n      \"quote\": \"2024年\"\n    }\n  },\n  \"filters\": {\n    \"category\": {\n      \"op\": \"set\",\n      \"value\": {\n        \"field\": \"category\",\n        \"operator\": \"eq\",\n        \"values\": [\n          \"蚊\"\n        ]\n      },\n      \"evidence\": {\n        \"source\": \"current\",\n        \"start\": 10,\n        \"end\": 12,\n        \"quote\": \"蚊类\"\n      }\n    },\n    \"methodName\": {\n      \"op\": \"set\",\n      \"value\": {\n        \"field\": \"methodName\",\n        \"operator\": \"eq\",\n        \"values\": [\n          \"诱蚊灯法\"\n        ]\n      },\n      \"evidence\": {\n        \"source\": \"current\",\n        \"start\": 7,\n        \"end\": 11,\n        \"quote\": \"诱蚊灯法\"\n      }\n    }\n  },\n  \"layerRequests\": [\n    {\n      \"id\": \"mosquito_sites\",\n      \"skillId\": \"skill_monitoring_data_table\",\n      \"rendering\": \"points\"\n    },\n    {\n      \"id\": \"mosquito_labels\",\n      \"skillId\": \"skill_monitoring_data_table\",\n      \"rendering\": \"labels\"\n    }\n  ],\n  \"mapOperations\": [],\n  \"mapOptions\": {\n    \"basemap\": \"vec\"\n  }\n}",
+      "errors": null
+    },
+    {
+      "raw": "{\n  \"task\": \"clarification\",\n  \"relation\": \"new\",\n  \"displayRegion\": {\n    \"op\": \"clear\",\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 0,\n      \"end\": 55,\n      \"quote\": \"展示河南省2024年诱蚊灯法蚊类监测点位地图，以圆点大小表示平均捕获量（只/记录），附点位、监测次数和日期范围明细，最多展示200个点位。\"\n    }\n  },\n  \"dataRegion\": {\n    \"op\": \"clear\",\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 0,\n      \"end\": 55,\n      \"quote\": \"展示河南省2024年诱蚊灯法蚊类监测点位地图，以圆点大小表示平均捕获量（只/记录），附点位、监测次数和日期范围明细，最多展示200个点位。\"\n    }\n  },\n  \"time\": {\n    \"op\": \"clear\",\n    \"evidence\": {\n      \"source\": \"current\",\n      \"start\": 0,\n      \"end\": 55,\n      \"quote\": \"展示河南省2024年诱蚊灯法蚊类监测点位地图，以圆点大小表示平均捕获量（只/记录），附点位、监测次数和日期范围明细，最多展示200个点位。\"\n    }\n  },\n  \"filters\": {},\n  \"layerRequests\": [],\n  \"mapOperations\": [],\n  \"mapOptions\": {\n    \"basemap\": \"vec\"\n  },\n  \"questions\": [\n    \"“以圆点大小表示平均捕获量”需要按点位聚合平均捕获量并映射圆点大小；当前已登记地图能力只能提供 points/labels/heatmap/grid/area/circle 等固定渲染，不能自定义圆点大小映射。是否接受用 points 展示点位、用 labels 展示监测次数和日期范围，且不使用圆点大小表示平均捕获量？\",\n    \"“附点位、监测次数和日期范围明细”是否要求同时输出明细表/文字列表？当前地图图层只能展示 points 和 labels，不能直接展示完整明细表；是否接受仅用 labels 展示点位名称/监测次数/日期范围摘要？\",\n    \"“最多展示200个点位”是否作为查询结果截断条件？当前可登记查询能力未提供该截断参数；是否接受由实际查询技能按默认或可用上限返回，不保证严格最多200个？\"\n  ]\n}",
+      "errors": null
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/.codex/worktrees/region-map-collaboration/Agent-CdcBuddy
+
+ ❯ tests/refactor/value-sized-map.test.ts (6 tests | 1 failed | 5 skipped) 60ms
+   ↓ accepts a complete metric-sized point request without treating presentation as a scope filter
+   × carries approved value sizing through actual grouped query output and preserves its details 58ms
+     → expected 'FAILED' to be 'SUCCESS' // Object.is equality
+   ↓ renders larger measured values with larger bounded circles and retains zero and missing distinctions
+   ↓ refuses metric-sized circles with no usable values instead of silently rendering fixed circles
+   ↓ rejects a value-size request attached to a heatmap before execution
+   ↓ identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/value-sized-map.test.ts > carries approved value sizing through actual grouped query output and preserves its details
+AssertionError: expected 'FAILED' to be 'SUCCESS' // Object.is equality
+
+Expected: "SUCCESS"
+Received: "FAILED"
+
+ ❯ tests/refactor/value-sized-map.test.ts:22:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  21:09:07
+   Duration  939ms (transform 254ms, setup 0ms, collect 558ms, tests 60ms, environment 0ms, prepare 41ms)
+
