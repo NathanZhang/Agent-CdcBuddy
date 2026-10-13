@@ -1,0 +1,579 @@
+engineering	Set up job	﻿2026-10-13T14:06:08.9806530Z Current runner version: '2.337.0'
+engineering	Set up job	2026-10-13T14:06:08.9831612Z ##[group]Runner Image Provisioner
+engineering	Set up job	2026-10-13T14:06:08.9832476Z Hosted Compute Agent
+engineering	Set up job	2026-10-13T14:06:08.9833081Z Version: 20261002.596
+engineering	Set up job	2026-10-13T14:06:08.9833647Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+engineering	Set up job	2026-10-13T14:06:08.9834319Z Build Date: 2026-10-02T22:28:27Z
+engineering	Set up job	2026-10-13T14:06:08.9834946Z Worker ID: {e4a73a6a-d5f6-41b4-bc1c-e72357896694}
+engineering	Set up job	2026-10-13T14:06:08.9835819Z Region: westus3
+engineering	Set up job	2026-10-13T14:06:08.9836342Z Cloud: Azure
+engineering	Set up job	2026-10-13T14:06:08.9836827Z ##[endgroup]
+engineering	Set up job	2026-10-13T14:06:08.9838314Z ##[group]Operating System
+engineering	Set up job	2026-10-13T14:06:08.9838903Z Ubuntu
+engineering	Set up job	2026-10-13T14:06:08.9839360Z 24.04.5
+engineering	Set up job	2026-10-13T14:06:08.9839837Z LTS
+engineering	Set up job	2026-10-13T14:06:08.9840296Z ##[endgroup]
+engineering	Set up job	2026-10-13T14:06:08.9840769Z ##[group]Runner Image
+engineering	Set up job	2026-10-13T14:06:08.9841443Z Image: ubuntu-24.04
+engineering	Set up job	2026-10-13T14:06:08.9841957Z Version: 20261004.327.1
+engineering	Set up job	2026-10-13T14:06:08.9843264Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+engineering	Set up job	2026-10-13T14:06:08.9844769Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+engineering	Set up job	2026-10-13T14:06:08.9845884Z ##[endgroup]
+engineering	Set up job	2026-10-13T14:06:08.9846933Z ##[group]GITHUB_TOKEN Permissions
+engineering	Set up job	2026-10-13T14:06:08.9849147Z Contents: read
+engineering	Set up job	2026-10-13T14:06:08.9849706Z Metadata: read
+engineering	Set up job	2026-10-13T14:06:08.9850271Z Packages: read
+engineering	Set up job	2026-10-13T14:06:08.9850763Z ##[endgroup]
+engineering	Set up job	2026-10-13T14:06:08.9852701Z Secret source: Actions
+engineering	Set up job	2026-10-13T14:06:08.9853611Z Cache mode: write
+engineering	Set up job	2026-10-13T14:06:08.9854206Z Prepare workflow directory
+engineering	Set up job	2026-10-13T14:06:09.0237032Z Prepare all required actions
+engineering	Set up job	2026-10-13T14:06:09.0284540Z Getting action download info
+engineering	Set up job	2026-10-13T14:06:09.3733531Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+engineering	Set up job	2026-10-13T14:06:09.4763740Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+engineering	Set up job	2026-10-13T14:06:09.5838163Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+engineering	Set up job	2026-10-13T14:06:09.6800078Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+engineering	Set up job	2026-10-13T14:06:09.9372971Z Complete job name: engineering
+engineering	Run actions/checkout@v4	﻿2026-10-13T14:06:10.1589124Z ##[group]Run actions/checkout@v4
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1589920Z with:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1590331Z   repository: NathanZhang/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1594226Z   token: ***
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1594613Z   ssh-strict: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1595220Z   ssh-user: git
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1595639Z   persist-credentials: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1596070Z   clean: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1596491Z   sparse-checkout-cone-mode: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1596952Z   fetch-depth: 1
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1597330Z   fetch-tags: false
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1597718Z   show-progress: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1598105Z   lfs: false
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1598474Z   submodules: false
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1598878Z   set-safe-directory: true
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1599346Z   allow-unsafe-pr-checkout: false
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.1600047Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.2564840Z Syncing repository: NathanZhang/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.2566690Z ##[group]Getting Git version info
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.2567389Z Working directory is '/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy'
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.2568444Z [command]/usr/bin/git version
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.4936397Z git version 2.55.0
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.4958647Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.4972934Z Temporarily overriding HOME='/home/runner/work/_temp/d833708e-a431-455d-ac70-c760bdd8a42a' before making global git config changes
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.4974875Z Adding repository directory to the temporary git global config as a safe directory
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.4977782Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.7929497Z Deleting the contents of '/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy'
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.7933356Z ##[group]Initializing the repository
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.7938417Z [command]/usr/bin/git init /home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8373327Z hint: Using 'master' as the name for the initial branch. This default branch name
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8377083Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8380493Z hint: to use in all of your new repositories, which will suppress this warning,
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8383282Z hint: call:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8384698Z hint:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8386673Z hint: 	git config --global init.defaultBranch <name>
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8388894Z hint:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8390990Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8394181Z hint: 'development'. The just-created branch can be renamed via this command:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8396090Z hint:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8397396Z hint: 	git branch -m <name>
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8398757Z hint:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8400133Z hint: Disable this message with "git config set advice.defaultBranchName false"
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8402931Z Initialized empty Git repository in /home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy/.git/
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8408140Z [command]/usr/bin/git remote add origin https://github.com/NathanZhang/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8486285Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8489376Z ##[group]Disabling automatic garbage collection
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8491756Z [command]/usr/bin/git config --local gc.auto 0
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8837493Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8839454Z ##[group]Setting up auth
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8843659Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+engineering	Run actions/checkout@v4	2026-10-13T14:06:10.8882516Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.3548105Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.3578158Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.3750002Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.3776267Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.3948747Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.4415696Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.4416631Z ##[group]Fetching the repository
+engineering	Run actions/checkout@v4	2026-10-13T14:06:11.4426165Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +dc47957bb5ce55170525c342771d67b21774aa5f:refs/remotes/origin/main
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8981783Z From https://github.com/NathanZhang/Agent-CdcBuddy
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8982809Z  * [new ref]         dc47957bb5ce55170525c342771d67b21774aa5f -> origin/main
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8993853Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8994713Z ##[group]Determining the checkout info
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8995767Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.8996248Z [command]/usr/bin/git sparse-checkout disable
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9052343Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9076882Z ##[group]Checking out the ref
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9080731Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9539698Z Switched to a new branch 'main'
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9543096Z branch 'main' set up to track 'origin/main'.
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9549680Z ##[endgroup]
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9584509Z [command]/usr/bin/git log -1 --format=%H
+engineering	Run actions/checkout@v4	2026-10-13T14:06:12.9604218Z dc47957bb5ce55170525c342771d67b21774aa5f
+engineering	Run actions/setup-node@v4	﻿2026-10-13T14:06:12.9849078Z ##[group]Run actions/setup-node@v4
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9849655Z with:
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9849896Z   node-version: 22
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9850137Z   cache: npm
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9850376Z   always-auth: false
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9850641Z   check-latest: false
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9853295Z   token: ***
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:12.9853542Z ##[endgroup]
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:13.1529074Z Found in cache @ /opt/hostedtoolcache/node/22.23.3/x64
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:13.1533342Z (node:2236) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:13.1534539Z (Use `node --trace-deprecation ...` to show where the warning was created)
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:13.1536351Z ##[group]Environment details
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:15.9276772Z node: v22.23.3
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:15.9277206Z npm: 10.9.9
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:15.9277465Z yarn: 1.22.22
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:15.9278383Z ##[endgroup]
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:15.9301080Z [command]/opt/hostedtoolcache/node/22.23.3/x64/bin/npm config get cache
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:16.1761499Z /home/runner/.npm
+engineering	Run actions/setup-node@v4	2026-10-13T14:06:16.4284198Z npm cache is not found
+engineering	Run actions/setup-python@v5	﻿2026-10-13T14:06:16.4440051Z ##[group]Run actions/setup-python@v5
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4440340Z with:
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4440542Z   python-version: 3.14
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4440761Z   check-latest: false
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4443456Z   token: ***
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4443657Z   update-environment: true
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4443891Z   allow-prereleases: false
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4444116Z   freethreaded: false
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.4444324Z ##[endgroup]
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.5804130Z ##[group]Installed versions
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.6272470Z (node:2279) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.6273714Z Successfully set up CPython (3.14.8)
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.6274454Z ##[endgroup]
+engineering	Run actions/setup-python@v5	2026-10-13T14:06:16.6280298Z (Use `node --trace-deprecation ...` to show where the warning was created)
+engineering	Run npm ci --no-audit --no-fund	﻿2026-10-13T14:06:16.6427088Z ##[group]Run npm ci --no-audit --no-fund
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6427736Z ^[[36;1mnpm ci --no-audit --no-fund^[[0m
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6927104Z shell: /usr/bin/bash -e {0}
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6927407Z env:
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6927685Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6928109Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6928518Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6928875Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6929241Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6929603Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:16.6929908Z ##[endgroup]
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:42.4341633Z 
+engineering	Run npm ci --no-audit --no-fund	2026-10-13T14:06:42.4342523Z added 358 packages in 26s
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	﻿2026-10-13T14:06:42.4616533Z ##[group]Run python -m venv .venv && .venv/bin/pip install -r requirements.lock
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4617273Z ^[[36;1mpython -m venv .venv && .venv/bin/pip install -r requirements.lock^[[0m
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4659110Z shell: /usr/bin/bash -e {0}
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4659376Z env:
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4659644Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4660058Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4660474Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4660836Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4661186Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4661550Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:42.4661858Z ##[endgroup]
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:47.9378488Z Collecting aiosqlite==0.22.1 (from -r requirements.lock (line 2))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0067286Z   Downloading aiosqlite-0.22.1-py3-none-any.whl.metadata (4.3 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0236647Z Collecting annotated-doc==0.0.5 (from -r requirements.lock (line 3))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0341088Z   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0501716Z Collecting annotated-types==0.7.0 (from -r requirements.lock (line 4))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0604699Z   Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0875258Z Collecting anyio==4.13.0 (from -r requirements.lock (line 5))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.0974916Z   Downloading anyio-4.13.0-py3-none-any.whl.metadata (4.5 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.1201206Z Collecting certifi==2026.4.22 (from -r requirements.lock (line 6))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.1301896Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.2547101Z Collecting charset-normalizer==3.4.7 (from -r requirements.lock (line 7))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.2651116Z   Downloading charset_normalizer-3.4.7-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.2933665Z Collecting click==8.4.2 (from -r requirements.lock (line 8))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3038341Z   Downloading click-8.4.2-py3-none-any.whl.metadata (2.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3208445Z Collecting distro==1.9.0 (from -r requirements.lock (line 9))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3310491Z   Downloading distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3677829Z Collecting fastapi==0.141.1 (from -r requirements.lock (line 10))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3778392Z   Downloading fastapi-0.141.1-py3-none-any.whl.metadata (27 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.3994128Z Collecting h11==0.16.0 (from -r requirements.lock (line 11))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4094676Z   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4292947Z Collecting httpcore==1.0.9 (from -r requirements.lock (line 12))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4397200Z   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4608425Z Collecting httpx==0.28.1 (from -r requirements.lock (line 13))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4707732Z   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4889604Z Collecting idna==3.15 (from -r requirements.lock (line 14))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.4990218Z   Downloading idna-3.15-py3-none-any.whl.metadata (7.7 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5203550Z Collecting joblib==1.5.3 (from -r requirements.lock (line 15))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5303827Z   Downloading joblib-1.5.3-py3-none-any.whl.metadata (5.5 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5483719Z Collecting jsonpatch==1.33 (from -r requirements.lock (line 16))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5586568Z   Downloading jsonpatch-1.33-py2.py3-none-any.whl.metadata (3.0 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5765877Z Collecting jsonpointer==3.1.1 (from -r requirements.lock (line 17))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.5868195Z   Downloading jsonpointer-3.1.1-py3-none-any.whl.metadata (2.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.6230422Z Collecting langchain-core==1.5.3 (from -r requirements.lock (line 18))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.6338222Z   Downloading langchain_core-1.5.3-py3-none-any.whl.metadata (4.7 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.6505935Z Collecting langchain-protocol==0.0.18 (from -r requirements.lock (line 19))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.6607157Z   Downloading langchain_protocol-0.0.18-py3-none-any.whl.metadata (2.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.6941186Z Collecting langgraph==1.2.10 (from -r requirements.lock (line 20))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7055747Z   Downloading langgraph-1.2.10-py3-none-any.whl.metadata (4.9 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7254443Z Collecting langgraph-checkpoint==4.2.0 (from -r requirements.lock (line 21))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7355473Z   Downloading langgraph_checkpoint-4.2.0-py3-none-any.whl.metadata (6.7 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7549821Z Collecting langgraph-checkpoint-sqlite==3.1.1 (from -r requirements.lock (line 22))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7652766Z   Downloading langgraph_checkpoint_sqlite-3.1.1-py3-none-any.whl.metadata (5.1 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7829820Z Collecting langgraph-prebuilt==1.1.0 (from -r requirements.lock (line 23))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.7929525Z   Downloading langgraph_prebuilt-1.1.0-py3-none-any.whl.metadata (5.2 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.8149730Z Collecting langgraph-sdk==0.4.2 (from -r requirements.lock (line 24))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.8262534Z   Downloading langgraph_sdk-0.4.2-py3-none-any.whl.metadata (3.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.8776767Z Collecting langsmith==0.10.17 (from -r requirements.lock (line 25))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.8888141Z   Downloading langsmith-0.10.17-py3-none-any.whl.metadata (22 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.9244376Z Collecting narwhals==2.24.0 (from -r requirements.lock (line 26))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:48.9342668Z   Downloading narwhals-2.24.0-py3-none-any.whl.metadata (15 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.1100720Z Collecting numpy==2.4.6 (from -r requirements.lock (line 27))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.1205625Z   Downloading numpy-2.4.6-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.3129293Z Collecting orjson==3.11.9 (from -r requirements.lock (line 28))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.3236947Z   Downloading orjson-3.11.9-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (41 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.3737026Z Collecting ormsgpack==1.12.2 (from -r requirements.lock (line 29))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.3843405Z   Downloading ormsgpack-1.12.2-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.2 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.4030818Z Collecting packaging==26.3 (from -r requirements.lock (line 30))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.4132310Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.5105908Z Collecting pandas==3.0.3 (from -r requirements.lock (line 31))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.5213584Z   Downloading pandas-3.0.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.6249482Z Collecting pydantic==2.13.4 (from -r requirements.lock (line 32))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:49.6352678Z   Downloading pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2065325Z Collecting pydantic_core==2.46.4 (from -r requirements.lock (line 33))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2170323Z   Downloading pydantic_core-2.46.4-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2342299Z Collecting python-dateutil==2.9.0.post0 (from -r requirements.lock (line 34))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2443684Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2618683Z Collecting python-multipart==0.0.32 (from -r requirements.lock (line 35))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.2719535Z   Downloading python_multipart-0.0.32-py3-none-any.whl.metadata (2.1 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3076322Z Collecting pyyaml==6.0.3 (from -r requirements.lock (line 36))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3181030Z   Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3407797Z Collecting requests==2.34.2 (from -r requirements.lock (line 37))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3509640Z   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3680699Z Collecting requests-toolbelt==1.0.0 (from -r requirements.lock (line 38))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.3781544Z   Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl.metadata (14 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.4484266Z Collecting scikit-learn==1.9.0 (from -r requirements.lock (line 39))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.4594707Z   Downloading scikit_learn-1.9.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (11 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.5708266Z Collecting scipy==1.18.0 (from -r requirements.lock (line 40))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.5816370Z   Downloading scipy-1.18.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6056441Z Collecting six==1.17.0 (from -r requirements.lock (line 41))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6160404Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6315173Z Collecting sniffio==1.3.1 (from -r requirements.lock (line 42))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6416745Z   Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6690765Z Collecting sqlite-vec==0.1.9 (from -r requirements.lock (line 43))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.6792367Z   Downloading sqlite_vec-0.1.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux1_x86_64.whl.metadata (198 bytes)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7037366Z Collecting starlette==1.6.0 (from -r requirements.lock (line 44))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7138899Z   Downloading starlette-1.6.0-py3-none-any.whl.metadata (6.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7330981Z Collecting tenacity==9.1.4 (from -r requirements.lock (line 45))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7431747Z   Downloading tenacity-9.1.4-py3-none-any.whl.metadata (1.2 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7590306Z Collecting threadpoolctl==3.6.0 (from -r requirements.lock (line 46))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7692249Z   Downloading threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7857466Z Collecting typing-inspection==0.4.2 (from -r requirements.lock (line 47))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.7958579Z   Downloading typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.8152439Z Collecting typing_extensions==4.15.0 (from -r requirements.lock (line 48))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.8253318Z   Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.8494645Z Collecting urllib3==2.7.0 (from -r requirements.lock (line 49))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.8599877Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.9572171Z Collecting uuid_utils==0.17.0 (from -r requirements.lock (line 50))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.9679519Z   Downloading uuid_utils-0.17.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.4 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:50.9919289Z Collecting uvicorn==0.52.1 (from -r requirements.lock (line 51))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.0019494Z   Downloading uvicorn-0.52.1-py3-none-any.whl.metadata (6.6 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.1001154Z Collecting websockets==15.0.1 (from -r requirements.lock (line 52))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.1103989Z   Downloading websockets-15.0.1-py3-none-any.whl.metadata (6.8 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.2220570Z Collecting xxhash==3.8.1 (from -r requirements.lock (line 53))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.2330163Z   Downloading xxhash-3.8.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (15 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.2913236Z Collecting zstandard==0.25.0 (from -r requirements.lock (line 54))
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.3021114Z   Downloading zstandard-0.25.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.3836269Z Downloading aiosqlite-0.22.1-py3-none-any.whl (17 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.3955432Z Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4070108Z Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4185187Z Downloading anyio-4.13.0-py3-none-any.whl (114 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4317080Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4448321Z Downloading charset_normalizer-3.4.7-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (215 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4667405Z Downloading click-8.4.2-py3-none-any.whl (119 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4786457Z Downloading distro-1.9.0-py3-none-any.whl (20 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.4903486Z Downloading fastapi-0.141.1-py3-none-any.whl (131 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5026275Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5143116Z Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5261031Z Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5381018Z Downloading idna-3.15-py3-none-any.whl (72 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5499495Z Downloading joblib-1.5.3-py3-none-any.whl (309 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5640157Z Downloading jsonpatch-1.33-py2.py3-none-any.whl (12 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5755993Z Downloading jsonpointer-3.1.1-py3-none-any.whl (7.7 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5879105Z Downloading langchain_core-1.5.3-py3-none-any.whl (561 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.5997962Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 561.7/561.7 kB 32.2 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6105697Z Downloading langsmith-0.10.17-py3-none-any.whl (734 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6165606Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 734.5/734.5 kB 129.0 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6268751Z Downloading pydantic-2.13.4-py3-none-any.whl (472 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6396655Z Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (794 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6465611Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 794.2/794.2 kB 203.3 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6541928Z Downloading tenacity-9.1.4-py3-none-any.whl (28 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6659351Z Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6783344Z Downloading uuid_utils-0.17.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (323 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.6906737Z Downloading langchain_protocol-0.0.18-py3-none-any.whl (7.2 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7029782Z Downloading langgraph-1.2.10-py3-none-any.whl (247 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7149113Z Downloading langgraph_checkpoint-4.2.0-py3-none-any.whl (56 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7265926Z Downloading langgraph_prebuilt-1.1.0-py3-none-any.whl (41 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7381890Z Downloading langgraph_sdk-0.4.2-py3-none-any.whl (160 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7499221Z Downloading websockets-15.0.1-py3-none-any.whl (169 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7615970Z Downloading langgraph_checkpoint_sqlite-3.1.1-py3-none-any.whl (40 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7731846Z Downloading narwhals-2.24.0-py3-none-any.whl (461 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.7860604Z Downloading numpy-2.4.6-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.8477833Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 274.3 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.8581586Z Downloading orjson-3.11.9-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (134 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.8712227Z Downloading ormsgpack-1.12.2-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (212 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.8830292Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.8960976Z Downloading pandas-3.0.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.9 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9250479Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.9/10.9 MB 396.3 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9355840Z Downloading pydantic_core-2.46.4-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9430461Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 329.0 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9532240Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9657010Z Downloading python_multipart-0.0.32-py3-none-any.whl (30 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9772467Z Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:51.9890090Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.0009568Z Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.0138628Z Downloading scikit_learn-1.9.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (9.1 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.0393823Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.1/9.1 MB 376.7 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.0503858Z Downloading scipy-1.18.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1324883Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 437.0 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1429668Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1547250Z Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1663201Z Downloading sqlite_vec-0.1.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux1_x86_64.whl (163 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1785680Z Downloading starlette-1.6.0-py3-none-any.whl (75 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.1902606Z Downloading threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.2019473Z Downloading typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.2132772Z Downloading uvicorn-0.52.1-py3-none-any.whl (79 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.2256748Z Downloading xxhash-3.8.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (220 kB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.2379661Z Downloading zstandard-0.25.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (5.6 MB)
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.2529594Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 416.9 MB/s  0:00:00
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:06:52.6010939Z Installing collected packages: sqlite-vec, zstandard, xxhash, websockets, uuid_utils, urllib3, typing_extensions, threadpoolctl, tenacity, sniffio, six, pyyaml, python-multipart, packaging, ormsgpack, orjson, numpy, narwhals, jsonpointer, joblib, idna, h11, distro, click, charset-normalizer, certifi, annotated-types, annotated-doc, aiosqlite, uvicorn, typing-inspection, scipy, requests, python-dateutil, pydantic_core, langchain-protocol, jsonpatch, httpcore, anyio, starlette, scikit-learn, requests-toolbelt, pydantic, pandas, httpx, langsmith, fastapi, langchain-core, langgraph-sdk, langgraph-checkpoint, langgraph-prebuilt, langgraph-checkpoint-sqlite, langgraph
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:07:11.0255131Z 
+engineering	Run python -m venv .venv && .venv/bin/pip install -r requirements.lock	2026-10-13T14:07:11.0300590Z Successfully installed aiosqlite-0.22.1 annotated-doc-0.0.5 annotated-types-0.7.0 anyio-4.13.0 certifi-2026.4.22 charset-normalizer-3.4.7 click-8.4.2 distro-1.9.0 fastapi-0.141.1 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.15 joblib-1.5.3 jsonpatch-1.33 jsonpointer-3.1.1 langchain-core-1.5.3 langchain-protocol-0.0.18 langgraph-1.2.10 langgraph-checkpoint-4.2.0 langgraph-checkpoint-sqlite-3.1.1 langgraph-prebuilt-1.1.0 langgraph-sdk-0.4.2 langsmith-0.10.17 narwhals-2.24.0 numpy-2.4.6 orjson-3.11.9 ormsgpack-1.12.2 packaging-26.3 pandas-3.0.3 pydantic-2.13.4 pydantic_core-2.46.4 python-dateutil-2.9.0.post0 python-multipart-0.0.32 pyyaml-6.0.3 requests-2.34.2 requests-toolbelt-1.0.0 scikit-learn-1.9.0 scipy-1.18.0 six-1.17.0 sniffio-1.3.1 sqlite-vec-0.1.9 starlette-1.6.0 tenacity-9.1.4 threadpoolctl-3.6.0 typing-inspection-0.4.2 typing_extensions-4.15.0 urllib3-2.7.0 uuid_utils-0.17.0 uvicorn-0.52.1 websockets-15.0.1 xxhash-3.8.1 zstandard-0.25.0
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	﻿2026-10-13T14:07:11.2159214Z ##[group]Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2159760Z ^[[36;1m.venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci^[[0m
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2197351Z shell: /usr/bin/bash -e {0}
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2197631Z env:
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2197891Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2198310Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2198711Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2199069Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2199426Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2199785Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:11.2200103Z ##[endgroup]
+engineering	Run .venv/bin/python scripts/ci-fixtures.py --output-dir /tmp/cdc-ci	2026-10-13T14:07:12.1999135Z CI fixtures generated: all origins mock
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	﻿2026-10-13T14:07:12.2129262Z ##[group]Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2130163Z ^[[36;1mnpm run lint && ./node_modules/.bin/tsc --noEmit --incremental false^[[0m
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2190200Z shell: /usr/bin/bash -e {0}
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2190607Z env:
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2191030Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2191760Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2192513Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2193199Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2193892Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2194558Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.2195320Z ##[endgroup]
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.3163290Z 
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.3163864Z > agent-cdc-buddy@2.0.1 lint
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.3164544Z > eslint src tests/refactor --max-warnings 0
+engineering	Run npm run lint && ./node_modules/.bin/tsc --noEmit --incremental false	2026-10-13T14:07:12.3165202Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	﻿2026-10-13T14:07:23.3478889Z ##[group]Run npm run test:refactor && npm run test:scientific && npm run test:integration
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3479608Z ^[[36;1mnpm run test:refactor && npm run test:scientific && npm run test:integration^[[0m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3515991Z shell: /usr/bin/bash -e {0}
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3516264Z env:
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3516530Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3516949Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3517356Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3517725Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3518073Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3518428Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3518771Z   DATASET_MANIFEST_PATH: /tmp/cdc-ci/manifest.json
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3519130Z   DATASET_REGION_BINDINGS_PATH: /tmp/cdc-ci/region-bindings.json
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.3519503Z ##[endgroup]
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.4426084Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.4426571Z > agent-cdc-buddy@2.0.1 test:refactor
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.4426921Z > vitest run
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.4427050Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.7559895Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.7586734Z ^[[1m^[[46m RUN ^[[49m^[[22m ^[[36mv3.2.4 ^[[39m^[[90m/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:23.7587211Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:25.8849924Z  ^[[32m✓^[[39m tests/refactor/dispatch.test.ts ^[[2m(^[[22m^[[2m22 tests^[[22m^[[2m)^[[22m^[[33m 590^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:27.2023675Z  ^[[32m✓^[[39m tests/refactor/interaction-skills.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[33m 662^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:27.2024729Z    ^[[33m^[[2m✓^[[22m^[[39m conversation journal stores only actual run evidence and clears NO_DATA snapshots idempotently ^[[33m 304^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:27.9224599Z  ^[[32m✓^[[39m tests/refactor/session-history.test.ts ^[[2m(^[[22m^[[2m28 tests^[[22m^[[2m)^[[22m^[[33m 2536^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:27.9226839Z    ^[[33m^[[2m✓^[[22m^[[39m restores grouped chart/table outputs and can reopen an earlier turn after a no-data reply ^[[33m 1599^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:28.2751030Z  ^[[32m✓^[[39m tests/refactor/reasoning-stream.test.ts ^[[2m(^[[22m^[[2m9 tests^[[22m^[[2m)^[[22m^[[32m 55^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:28.3290093Z  ^[[32m✓^[[39m tests/refactor/workbench.test.tsx ^[[2m(^[[22m^[[2m18 tests^[[22m^[[2m)^[[22m^[[33m 871^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:28.3291764Z    ^[[33m^[[2m✓^[[22m^[[39m legacy snapshots render their stored values read-only without live fallback metrics or actions ^[[33m 824^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:29.3178308Z  ^[[32m✓^[[39m tests/refactor/value-sized-map.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 199^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:29.9513540Z  ^[[32m✓^[[39m tests/refactor/review-scope-regressions.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[32m 164^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:34.0714289Z  ^[[32m✓^[[39m tests/refactor/final-workflow-review.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[33m 3641^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:34.0716830Z    ^[[33m^[[2m✓^[[22m^[[39m rejects unrelated category or sampling method and missing original measurement policy ^[[33m 1815^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:34.0719236Z    ^[[33m^[[2m✓^[[22m^[[39m lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence ^[[33m 1559^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:35.0286738Z  ^[[32m✓^[[39m tests/refactor/dispatch-http.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 272^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:35.8041422Z  ^[[32m✓^[[39m tests/refactor/review-intent-regressions.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 135^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:36.5085489Z  ^[[32m✓^[[39m tests/refactor/session-history-ui.test.tsx ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 29^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8693639Z  ^[[32m✓^[[39m tests/refactor/recommendations.test.tsx ^[[2m(^[[22m^[[2m52 tests^[[22m^[[2m)^[[22m^[[33m 9176^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8695676Z    ^[[33m^[[2m✓^[[22m^[[39m recommendation data coverage and AG-UI rendering against configured datasets^[[2m > ^[[22mvector: GBDT蚊媒三个月回顾性预测 ^[[33m 1425^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8697572Z    ^[[33m^[[2m✓^[[22m^[[39m recommendation data coverage and AG-UI rendering against configured datasets^[[2m > ^[[22mfoodborne: 2026年报告食品病例TOP10 ^[[33m 1292^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8698691Z    ^[[33m^[[2m✓^[[22m^[[39m recommendation data coverage and AG-UI rendering against configured datasets^[[2m > ^[[22menv: 郑州诺如病毒与门诊滞后分析 ^[[33m 1311^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8699776Z    ^[[33m^[[2m✓^[[22m^[[39m recommendation data coverage and AG-UI rendering against configured datasets^[[2m > ^[[22mchronic: 2026年死亡证明书规则复核 ^[[33m 1291^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:46.8700871Z    ^[[33m^[[2m✓^[[22m^[[39m recommendation data coverage and AG-UI rendering against configured datasets^[[2m > ^[[22mchronic: 2026年伤害类型与记录病因 ^[[33m 1323^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:47.9605723Z  ^[[32m✓^[[39m tests/refactor/scoped-entrypoints.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[33m 584^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:48.2909911Z  ^[[32m✓^[[39m tests/refactor/llm-client.test.ts ^[[2m(^[[22m^[[2m12 tests^[[22m^[[2m)^[[22m^[[32m 75^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:49.0484223Z  ^[[32m✓^[[39m tests/refactor/result-map.test.tsx ^[[2m(^[[22m^[[2m9 tests^[[22m^[[2m)^[[22m^[[32m 41^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:51.3797235Z  ^[[32m✓^[[39m tests/refactor/skill-service.test.ts ^[[2m(^[[22m^[[2m10 tests^[[22m^[[2m)^[[22m^[[33m 22508^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:51.3798985Z    ^[[33m^[[2m✓^[[22m^[[39m one execution service^[[2m > ^[[22mcanonical and legacy alias execute identical real species aggregates ^[[33m 4572^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:51.3800338Z    ^[[33m^[[2m✓^[[22m^[[39m one execution service^[[2m > ^[[22mevery registered skill has a domain, schema, unique canonical ID and explicit execution state ^[[33m 17797^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:52.2116519Z  ^[[32m✓^[[39m tests/refactor/review-map-regressions.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 166^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:52.9934920Z  ^[[32m✓^[[39m tests/refactor/workflow.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[33m 3431^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:52.9937004Z    ^[[33m^[[2m✓^[[22m^[[39m requires actual persisted Skill evidence; waiting review never dispatches; rejection closes without ticket ^[[33m 1552^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:52.9938868Z    ^[[33m^[[2m✓^[[22m^[[39m approves idempotently, rejects missing retest and cannot claim external delivery ^[[33m 1772^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:53.8908133Z  ^[[32m✓^[[39m tests/refactor/region-map-dispatch.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 229^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:54.3817617Z  ^[[32m✓^[[39m tests/refactor/intent-resolver.test.ts ^[[2m(^[[22m^[[2m8 tests^[[22m^[[2m)^[[22m^[[32m 250^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:59.0481704Z  ^[[32m✓^[[39m tests/refactor/analytics-runner.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[33m 4352^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:59.0483619Z    ^[[33m^[[2m✓^[[22m^[[39m timeout and cancellation terminate a running child and release the slot for a real next execution ^[[33m 800^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:59.0485110Z    ^[[33m^[[2m✓^[[22m^[[39m the production runner computes an actual water snapshot through strict Python SkillResult ^[[33m 1292^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:59.0486363Z    ^[[33m^[[2m✓^[[22m^[[39m timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer ^[[33m 1805^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:07:59.7762858Z  ^[[32m✓^[[39m tests/refactor/output-presentation.test.tsx ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 44^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:00.0544402Z  ^[[32m✓^[[39m tests/refactor/llm-output-limit.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 30^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:00.3260199Z  ^[[32m✓^[[39m tests/refactor/llm-idle-timeout.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 47^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:01.4911321Z  ^[[32m✓^[[39m tests/refactor/spatial-runtime-coverage.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 8758^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:01.4913958Z    ^[[33m^[[2m✓^[[22m^[[39m requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering ^[[33m 8756^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:01.4976188Z  ^[[32m✓^[[39m tests/refactor/authorization.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[33m 631^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:01.8069396Z  ^[[32m✓^[[39m tests/refactor/llm-reasoning-effort.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[32m 24^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:02.4015920Z  ^[[32m✓^[[39m tests/refactor/review-entrypoint-regressions.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 93^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:02.6814503Z  ^[[32m✓^[[39m tests/refactor/results-mobile.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 130^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:02.8897125Z  ^[[32m✓^[[39m tests/refactor/domain-repository.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 38^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:03.3456748Z  ^[[32m✓^[[39m tests/refactor/deployment.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 44^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:03.9141149Z  ^[[32m✓^[[39m tests/refactor/map-catalog-independence.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 63^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:04.1167388Z  ^[[32m✓^[[39m tests/refactor/vector-analytics.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[33m 624^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:04.1187400Z    ^[[33m^[[2m✓^[[22m^[[39m verified vector subcapabilities via actual Skills and bounded runner^[[2m > ^[[22mforecast uses explicit cutoff and sampling method with observed provenance ^[[33m 331^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:04.2032168Z  ^[[32m✓^[[39m tests/refactor/map-layers.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 12^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:04.7497315Z  ^[[32m✓^[[39m tests/refactor/intent-authorization.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 10^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:04.7844571Z  ^[[32m✓^[[39m tests/refactor/map-composer.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 12^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:05.0617315Z  ^[[32m✓^[[39m tests/refactor/spatial-adapters.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 11^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:05.2839832Z  ^[[32m✓^[[39m tests/refactor/query-gateway.test.ts ^[[2m(^[[22m^[[2m15 tests^[[22m^[[2m)^[[22m^[[32m 44^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:05.6215645Z  ^[[32m✓^[[39m tests/refactor/results.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 9^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:06.0105483Z  ^[[32m✓^[[39m tests/refactor/results-ui.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 46^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:06.2719882Z  ^[[32m✓^[[39m tests/refactor/map-display-skill.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 83^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:06.5226831Z  ^[[32m✓^[[39m tests/refactor/spatial-output.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 16^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:06.6496402Z  ^[[32m✓^[[39m tests/refactor/review-evaluation-regressions.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 15^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:06.9528011Z  ^[[32m✓^[[39m tests/refactor/agui.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 17^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:07.2120506Z  ^[[32m✓^[[39m tests/refactor/approved-scope.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 111^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:07.5423192Z  ^[[32m✓^[[39m tests/refactor/intent-state.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 18^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:07.7909640Z  ^[[32m✓^[[39m tests/refactor/region-catalog.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 12^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:07.8470009Z  ^[[32m✓^[[39m tests/refactor/map-annotation.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 43^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:08.4336584Z  ^[[32m✓^[[39m tests/refactor/results-report.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 34^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:08.4957671Z  ^[[32m✓^[[39m tests/refactor/sql-scope-guard.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 49^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:09.0493766Z  ^[[32m✓^[[39m tests/refactor/runtime-profile.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:09.1941175Z  ^[[32m✓^[[39m tests/refactor/province-query-scope.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 104^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:09.2985218Z  ^[[32m✓^[[39m tests/refactor/datasets.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:09.8530599Z  ^[[32m✓^[[39m tests/refactor/review-map-lifecycle.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 27^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:09.9847086Z  ^[[32m✓^[[39m tests/refactor/administrative-map.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 45^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:10.2267442Z  ^[[32m✓^[[39m tests/refactor/map-scene-state.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:10.4617925Z  ^[[32m✓^[[39m tests/refactor/region-evaluation-format.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 376^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:10.4625975Z    ^[[33m^[[2m✓^[[22m^[[39m rejects incomplete or duplicate evaluation cases and loads independent development and holdout suites ^[[33m 375^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.0046873Z  ^[[32m✓^[[39m tests/refactor/region-rollout.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 3^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.0473825Z  ^[[32m✓^[[39m tests/refactor/spatial-capability-coverage.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 11^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.2387724Z  ^[[32m✓^[[39m tests/refactor/map-client-transport.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.3384003Z  ^[[32m✓^[[39m tests/refactor/llm-intent-budget.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 26^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.5844074Z  ^[[32m✓^[[39m tests/refactor/map-interaction.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8532402Z  ^[[32m✓^[[39m tests/refactor/map-outcomes.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 22^[[2mms^[[22m^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8653698Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8659439Z ^[[2m Test Files ^[[22m ^[[1m^[[32m63 passed^[[39m^[[22m^[[90m (63)^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8660397Z ^[[2m      Tests ^[[22m ^[[1m^[[32m384 passed^[[39m^[[22m^[[90m (384)^[[39m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8661297Z ^[[2m   Start at ^[[22m 14:07:23
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8665445Z ^[[2m   Duration ^[[22m 48.11s^[[2m (transform 1.98s, setup 0ms, collect 20.01s, tests 61.68s, environment 15ms, prepare 5.56s)^[[22m
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:11.8666314Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:12.0567531Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:12.0568165Z > agent-cdc-buddy@2.0.1 test:scientific
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:12.0568595Z > ./.venv/bin/python tests/run_scientific.py
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:12.0568820Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2359928Z test_every_connection_enforces_region_and_time (test_approved_scope.ScopedReadonly.test_every_connection_enforces_region_and_time) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2398298Z test_pathogen_filters_apply_and_unsupported_filters_deny_selected_source (test_approved_scope.ScopedReadonly.test_pathogen_filters_apply_and_unsupported_filters_deny_selected_source) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2484511Z test_calendar_lag_and_constant_undefined (test_mock_driven_methods.MockMethods.test_calendar_lag_and_constant_undefined) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2668910Z test_dbscan_moves_with_coordinates (test_mock_driven_methods.MockMethods.test_dbscan_moves_with_coordinates) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2703460Z test_invalid_or_different_species_alleles_not_joined (test_mock_driven_methods.MockMethods.test_invalid_or_different_species_alleles_not_joined) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2706373Z test_moran_formula_and_weight_change (test_mock_driven_methods.MockMethods.test_moran_formula_and_weight_change) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2720202Z test_actual_payload_and_origin_retained (test_result_contract.ResultContractTests.test_actual_payload_and_origin_retained) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2721591Z test_invalid_success_and_unvalidated_metrics_rejected (test_result_contract.ResultContractTests.test_invalid_success_and_unvalidated_metrics_rejected) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2723272Z test_nonfinite_payload_rejected (test_result_contract.ResultContractTests.test_nonfinite_payload_rejected) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2724798Z test_empty_or_mismatched_genes_rejected (test_result_semantics.ResultSemanticsTests.test_empty_or_mismatched_genes_rejected) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2727924Z test_known_dictionary_candidate_does_not_claim_validated_accuracy (test_result_semantics.ResultSemanticsTests.test_known_dictionary_candidate_does_not_claim_validated_accuracy) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2843669Z test_unknown_city_is_no_data (test_result_semantics.ResultSemanticsTests.test_unknown_city_is_no_data) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2846252Z test_unknown_death_chain_has_no_default_diagnosis (test_result_semantics.ResultSemanticsTests.test_unknown_death_chain_has_no_default_diagnosis) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2876514Z test_water_rate_and_max_derive_from_samples (test_result_semantics.ResultSemanticsTests.test_water_rate_and_max_derive_from_samples) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2915976Z test_zero_positive_remains_zero (test_result_semantics.ResultSemanticsTests.test_zero_positive_remains_zero) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.2931130Z test_actual_grid_metadata_matches_computed_samples (test_spatial_output_metadata.SpatialMetadata.test_actual_grid_metadata_matches_computed_samples) ... ERROR
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.3025943Z test_apriori_pair_support_and_confidence_are_actual_filtered_counts (test_vector_methods.VectorMethods.test_apriori_pair_support_and_confidence_are_actual_filtered_counts) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.3153798Z test_cutoff_blocks_future_records_and_keeps_real_training_window (test_vector_methods.VectorMethods.test_cutoff_blocks_future_records_and_keeps_real_training_window) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.3260601Z test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older (test_vector_methods.VectorMethods.test_future_forecasts_start_after_requested_cutoff_when_latest_records_are_older) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.3880691Z test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth (test_vector_methods.VectorMethods.test_gbdt_trains_a_real_model_and_does_not_return_fixed_weather_or_growth) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.3987227Z test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district (test_vector_methods.VectorMethods.test_idw_keeps_zero_values_and_cannot_invent_points_for_missing_district) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4090823Z test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number (test_vector_methods.VectorMethods.test_kmeans_degenerate_points_are_finite_and_not_assigned_risk_by_cluster_number) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4189757Z test_legacy_composable_graph_cannot_complete_an_unregistered_skill (test_vector_methods.VectorMethods.test_legacy_composable_graph_cannot_complete_an_unregistered_skill) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4337910Z test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts (test_vector_methods.VectorMethods.test_negative_r2_is_not_clamped_and_rolling_backtest_uses_actual_holdouts) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4443763Z test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency (test_vector_methods.VectorMethods.test_no_genotype_or_missing_bioassay_does_not_create_confidence_or_allele_frequency) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4560836Z test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts (test_vector_methods.VectorMethods.test_pcr_pairs_use_the_same_city_and_cutoff_as_descriptive_counts) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4661449Z test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles (test_vector_methods.VectorMethods.test_pipeline_with_untrained_lstm_cannot_report_success_or_synthetic_profiles) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4766789Z test_recent_daily_window_does_not_select_oldest_sixty (test_vector_methods.VectorMethods.test_recent_daily_window_does_not_select_oldest_sixty) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.4875947Z test_sampling_methods_are_separate_and_missing_effort_is_explicit (test_vector_methods.VectorMethods.test_sampling_methods_are_separate_and_missing_effort_is_explicit) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5001539Z test_scan_permutation_detects_actual_hotspot_without_forced_radius (test_vector_methods.VectorMethods.test_scan_permutation_detects_actual_hotspot_without_forced_radius) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5116278Z test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters (test_vector_methods.VectorMethods.test_spatial_scan_cannot_substitute_another_time_window_or_force_top_three_significant_clusters) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5219553Z test_untrained_lstm_returns_unavailable_without_synthetic_forecasts (test_vector_methods.VectorMethods.test_untrained_lstm_returns_unavailable_without_synthetic_forecasts) ... ok
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5220815Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5221117Z ======================================================================
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5222749Z ERROR: test_actual_grid_metadata_matches_computed_samples (test_spatial_output_metadata.SpatialMetadata.test_actual_grid_metadata_matches_computed_samples)
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5224098Z ----------------------------------------------------------------------
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5224487Z Traceback (most recent call last):
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5225734Z   File "/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy/tests/scientific/test_spatial_output_metadata.py", line 6, in test_actual_grid_metadata_matches_computed_samples
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5227196Z     result=calculate_spatial_idw(str(Path(__file__).resolve().parents[2]/'vector_monitoring.db'),city='郑州市',method_name='诱蚊灯法')
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5227882Z            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5228641Z   File "/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy/analytics_engine/spatial_interpolation.py", line 22, in calculate_spatial_idw
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5229579Z     where=['f.capture_count>=0','f.date_id<=?','l.latitude BETWEEN -90 AND 90','l.longitude BETWEEN -180 AND 180'];params=[cutoff_date(db_path,as_of)]
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5230315Z                                                                                                                            ~~~~~~~~~~~^^^^^^^^^^^^^^^
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5231009Z   File "/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy/analytics_engine/vector_methods.py", line 10, in cutoff_date
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5231752Z     with connect_readonly(db_path) as c:row=c.execute('SELECT MAX(date_id) FROM fact_monitoring').fetchone()
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5232224Z          ~~~~~~~~~~~~~~~~^^^^^^^^^
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5232817Z   File "/home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy/analytics_engine/repositories/datasets.py", line 32, in connect_readonly
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5233503Z     return sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True)
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5233950Z            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5234373Z sqlite3.OperationalError: unable to open database file
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5234603Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5234810Z ----------------------------------------------------------------------
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5235291Z Ran 32 tests in 0.298s
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5235439Z 
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.5235546Z FAILED (errors=1)
+engineering	Run npm run test:refactor && npm run test:scientific && npm run test:integration	2026-10-13T14:08:13.7465945Z ##[error]Process completed with exit code 1.
+engineering	Run actions/upload-artifact@v4	﻿2026-10-13T14:08:13.7539854Z ##[group]Run actions/upload-artifact@v4
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7540146Z with:
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7540340Z   name: engineering-logs
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7540618Z   path: docs/reviews/2026-10-12/refactor-evidence/current
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7540931Z   if-no-files-found: warn
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7541159Z   compression-level: 6
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7541366Z   overwrite: false
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7541579Z   include-hidden-files: false
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7541805Z env:
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7542040Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7542431Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib/pkgconfig
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7542820Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7543171Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7543523Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.8/x64
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7543877Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.8/x64/lib
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.7544357Z ##[endgroup]
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.9180185Z (node:3931) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.9181108Z (Use `node --trace-deprecation ...` to show where the warning was created)
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.9289481Z With the provided path, there will be 4 files uploaded
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.9290602Z Artifact name is valid!
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:13.9291092Z Root directory input is valid!
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.2912242Z Beginning upload of artifact content to blob storage
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.3150606Z (node:3931) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.5344323Z Uploaded bytes 7032
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.5972516Z Finished uploading artifact content to blob storage!
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.5973619Z SHA256 digest of uploaded artifact zip is 6e7104032e9495e07d5e91dfd53fcd7320e9332c546c1cc183cf02a1c3cd75dd
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.5974457Z Finalizing artifact upload
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.8542189Z Artifact engineering-logs.zip successfully finalized. Artifact ID 11821316409
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.8543788Z Artifact engineering-logs has been successfully uploaded! Final size is 7032 bytes. Artifact ID is 11821316409
+engineering	Run actions/upload-artifact@v4	2026-10-13T14:08:14.8550936Z Artifact download URL: https://github.com/NathanZhang/Agent-CdcBuddy/actions/runs/38410456037/artifacts/11821316409
+engineering	Post Run actions/checkout@v4	﻿2026-10-13T14:08:14.8724103Z Post job cleanup.
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9575068Z [command]/usr/bin/git version
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9621516Z git version 2.55.0
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9669058Z Temporarily overriding HOME='/home/runner/work/_temp/c61d0cc6-bddf-4884-98c6-9610316c1d33' before making global git config changes
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9669897Z Adding repository directory to the temporary git global config as a safe directory
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9675919Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Agent-CdcBuddy/Agent-CdcBuddy
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9714472Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9747369Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:14.9967779Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:15.0008967Z http.https://github.com/.extraheader
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:15.0014619Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:15.0049601Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:15.0268982Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+engineering	Post Run actions/checkout@v4	2026-10-13T14:08:15.0306234Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+engineering	Complete job	﻿2026-10-13T14:08:15.0675488Z Cleaning up orphan processes
+engineering	Complete job	2026-10-13T14:08:15.0927227Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

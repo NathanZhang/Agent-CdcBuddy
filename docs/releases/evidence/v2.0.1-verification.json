@@ -53,5 +53,17 @@
     "spatialContractChecks": "passed",
     "controlledFullSuite": "passed",
     "newGithubRun": "pending"
+  },
+  "cleanCheckoutCiVerification": {
+    "githubRun": "https://github.com/NathanZhang/Agent-CdcBuddy/actions/runs/38410456037",
+    "githubTypeScriptPassed": 384,
+    "githubFailure": "Scientific grid metadata test hardcoded ignored root vector_monitoring.db",
+    "fix": "Self-contained three-site fixture; exact 3x3 grid and bounds checks",
+    "noLocalEnvOrDatabasesInCleanCheckout": true,
+    "typescriptPassed": 384,
+    "scientificPassed": 32,
+    "integrationPassed": 24,
+    "spatialContractChecks": "passed",
+    "controlledFullSuite": "passed"
   }
 }
