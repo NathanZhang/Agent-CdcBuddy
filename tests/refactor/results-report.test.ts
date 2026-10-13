@@ -11,9 +11,6 @@ beforeAll(()=>{process.env.APP_BUSINESS_DB_PATH=file; db=new Database(file); db.
 afterAll(()=>{db.close(); if(previous===undefined) delete process.env.APP_BUSINESS_DB_PATH; else process.env.APP_BUSINESS_DB_PATH=previous; rmSync(directory,{recursive:true,force:true});});
 import { executeSkillServer } from '@/lib/skills/server-executor';
 it('does not generate or archive a successful report for a nonexistent city', async () => {
-  const result=await executeSkillServer('skill_auto_report_gen',{city:'不存在市'});
-  expect(result.status).toBe('NO_DATA');
-  expect(result.payload).toBeNull();
-  expect(result.sections).toBeUndefined();
+  await expect(executeSkillServer('skill_auto_report_gen',{city:'不存在市'})).rejects.toThrow('REGION_UNRESOLVED');
   expect((db.prepare('SELECT COUNT(*) AS n FROM biz_generated_reports').get() as {n:number}).n).toBe(0);
 },30000);

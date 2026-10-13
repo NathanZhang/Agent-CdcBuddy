@@ -1,0 +1,4531 @@
+{
+  "dev-001": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-002": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-003": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-004": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-005": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-006": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-007": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-008": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-009": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-010": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-011": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-012": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-013": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "img"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-014": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-015": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-016": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-017": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-018": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-019": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-020": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-021": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "img"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-022": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-023": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-024": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-025": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-026": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-027": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-028": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-029": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-030": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-031": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-032": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-033": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-034": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-035": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-036": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-037": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-038": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-039": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410700"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-040": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "labels",
+        "region": [
+          "410400"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-041": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-042": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-043": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410200"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-044": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-045": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410184"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-046": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "source-unavailable",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410105"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-047": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-048": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "labels",
+        "region": [
+          "410800"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-049": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "dev-050": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels",
+      "heatmap"
+    ],
+    "expectedAnyLayerRenderings": [
+      "points",
+      "heatmap"
+    ],
+    "expectedSkillIds": [
+      "skill_monitoring_data_table"
+    ]
+  },
+  "dev-051": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-052": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-053": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-054": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-055": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-056": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-057": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-058": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-059": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-060": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-061": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-062": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-063": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-064": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-065": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-066": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-067": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-068": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "source-unavailable",
+    "expectedLayerScopes": []
+  },
+  "dev-069": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-070": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-071": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-072": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-073": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-074": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410200"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410200"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-075": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411300"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-076": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-077": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "410800"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410800"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_resistance_evaluation"
+    ],
+    "optionalLayers": true
+  },
+  "dev-078": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_pathogen_risk"
+    ],
+    "optionalLayers": true
+  },
+  "dev-079": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410700"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-080": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411000"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411000"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-081": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-082": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "411200"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411200"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_pathogen_risk"
+    ],
+    "optionalLayers": true
+  },
+  "dev-083": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "410600"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410600"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_resistance_evaluation"
+    ],
+    "optionalLayers": true
+  },
+  "dev-084": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410900"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-085": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410400"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410400"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-086": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "411400"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411400"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_pathogen_risk"
+    ],
+    "optionalLayers": true
+  },
+  "dev-087": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "411500"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-088": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411600"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411600"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "dev-089": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "411700"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411700"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_resistance_evaluation"
+    ],
+    "optionalLayers": true
+  },
+  "dev-090": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410184"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "dev-091": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setBasemap",
+        "basemap": "img"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-092": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setBasemap",
+        "basemap": "vec"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-093": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-labels",
+        "visible": false
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-094": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    },
+    "expectedTask": "clarification",
+    "expectedClarification": true
+  },
+  "dev-095": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setRendering",
+        "layerId": "monitoring-points",
+        "rendering": "heatmap"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-096": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-labels",
+        "visible": false
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-097": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-points",
+        "visible": false
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-098": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-099": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setRendering",
+        "layerId": "monitoring-points",
+        "rendering": "points"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-100": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setBasemap",
+        "basemap": "img"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-101": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-points",
+        "visible": true
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": false
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-102": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "removeLayers",
+        "layerIds": [
+          "monitoring-labels"
+        ]
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-103": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setRendering",
+        "layerId": "monitoring-points",
+        "rendering": "points"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "heatmap",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-104": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "removeLayers",
+        "layerIds": [
+          "monitoring-labels"
+        ]
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-105": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setBasemap",
+        "basemap": "img"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "dev-106": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-107": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-108": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-109": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-110": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-111": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-112": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-113": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-114": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-115": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-116": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-117": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-118": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-119": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-120": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-1": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-2": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "expectedTimeWindows": [
+      {
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      },
+      {
+        "from": "2026-01-01",
+        "to": "2026-10-13"
+      }
+    ]
+  },
+  "dev-time-3": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-4": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-5": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-6": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-7": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "dev-time-8": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-001": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-002": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-003": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "img"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-004": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-005": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-006": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-007": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-008": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-009": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "img"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-010": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-011": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-012": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410700"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-013": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-014": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "heatmap"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "heatmap",
+        "region": [
+          "410300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "heatmap",
+      "points",
+      "labels"
+    ]
+  },
+  "hold-015": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411300"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-016": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "labels"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "labels",
+        "region": [
+          "410200"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-017": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "411100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-018": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410600"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-019": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410900"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-020": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [
+      "points"
+    ],
+    "expectedOperations": [],
+    "expectedAuthorization": "source-unavailable",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410105"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ]
+  },
+  "hold-021": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410100"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "hold-022": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "grid",
+        "region": [
+          "410500"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "grid"
+    ],
+    "expectedSkillIds": [
+      "skill_spatial_early_warning"
+    ],
+    "optionalLayers": true
+  },
+  "hold-023": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "points",
+        "region": [
+          "410400"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410400"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "points",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_species_composition"
+    ],
+    "optionalLayers": true
+  },
+  "hold-024": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "410700"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "410700"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_resistance_evaluation"
+    ],
+    "optionalLayers": true
+  },
+  "hold-025": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [
+      {
+        "rendering": "area",
+        "region": [
+          "411600"
+        ],
+        "time": null,
+        "filters": {}
+      },
+      {
+        "rendering": "labels",
+        "region": [
+          "411600"
+        ],
+        "time": null,
+        "filters": {}
+      }
+    ],
+    "allowedLayerRenderings": [
+      "area",
+      "labels"
+    ],
+    "expectedSkillIds": [
+      "skill_pathogen_risk"
+    ],
+    "optionalLayers": true
+  },
+  "hold-026": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setBasemap",
+        "basemap": "img"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "hold-027": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-labels",
+        "visible": false
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "hold-028": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setVisibility",
+        "layerId": "monitoring-points",
+        "visible": true
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": false
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "hold-029": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "setRendering",
+        "layerId": "monitoring-points",
+        "rendering": "points"
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "heatmap",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "hold-030": {
+    "expectedRelation": [
+      "continue",
+      "modify"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {},
+    "expectedLayerRenderings": [],
+    "expectedOperations": [
+      {
+        "type": "removeLayers",
+        "layerIds": [
+          "regional-labels"
+        ]
+      }
+    ],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": [],
+    "scene": {
+      "mapId": "eval-map",
+      "revision": 1,
+      "basemap": "vec",
+      "layers": [
+        {
+          "id": "monitoring-points",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "points",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "monitoring-labels",
+          "outputRef": {
+            "runId": "eval-run",
+            "callId": "eval-call",
+            "outputId": "points"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        },
+        {
+          "id": "regional-labels",
+          "outputRef": {
+            "runId": "region-run",
+            "callId": "region-call",
+            "outputId": "regions"
+          },
+          "rendering": "labels",
+          "scopeFingerprint": "eval-scope",
+          "visible": true
+        }
+      ]
+    }
+  },
+  "hold-031": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-032": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-033": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-034": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-035": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-036": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-037": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-038": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-039": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  },
+  "hold-040": {
+    "expectedRelation": [
+      "new",
+      "reset"
+    ],
+    "expectedExclusions": {
+      "display": [],
+      "data": []
+    },
+    "expectedMapOptions": {
+      "basemap": "vec"
+    },
+    "expectedLayerRenderings": [],
+    "expectedOperations": [],
+    "expectedAuthorization": "allowed",
+    "expectedLayerScopes": []
+  }
+}

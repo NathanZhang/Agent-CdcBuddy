@@ -12,7 +12,7 @@
 ================================================================================
 """
 
-from repositories.datasets import connect_readonly
+from analytics_engine.repositories.datasets import connect_readonly
 import sqlite3
 import json
 import math

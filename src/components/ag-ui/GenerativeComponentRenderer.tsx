@@ -1,6 +1,9 @@
 'use client';
 
-import React from 'react';
+import React,{useId} from 'react';
+import type {MapFeatureRef} from '@/lib/geo/map-interaction';
+import {MapCanvas} from './MapCanvas';
+import {AdministrativeMap} from './AdministrativeMap';
 import {AnalyticsResultCard} from './AnalyticsResultCard';
 import { VectorMapComponent } from './VectorMapComponent';
 import { DensityTrendChart } from './DensityTrendChart';
@@ -44,6 +47,8 @@ import { sourceLabels } from '@/features/workbench/result-adapter';
 interface GenerativeComponentRendererProps {
   view: any;
   isCompact?: boolean;
+  surfaceId?:string;
+  mapComposition?:import('@/contracts/map-composition').MapComposition;
 }
 
 /**
@@ -52,14 +57,18 @@ interface GenerativeComponentRendererProps {
  */
 export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererProps> = ({
   view,
-  isCompact = false
+  isCompact = false,
+  surfaceId, mapComposition
 }) => {
+  const ownSurfaceId=useId();const currentSurfaceId=surfaceId??ownSurfaceId;
   if (!view || !view.type) {
     return null;
   }
 
   if(view.qualityFlags?.includes('legacy-unverified'))return <div className="p-4 overflow-auto"><p className="text-amber-600 text-sm mb-3">历史快照：结果尚未按新执行协议验证，仅展示原始保存内容。</p><pre className="whitespace-pre-wrap text-xs">{JSON.stringify(view,null,2)}</pre></div>;
 
+  const composition=view.type==='MAP_COMPOSITION'?view:view.type==='AGUI_RESULT_GROUP'?view.views.find((v:any)=>v.type==='MAP_COMPOSITION'):mapComposition;
+  const featureRefs:Record<string,MapFeatureRef>={};if(composition&&view.spatialOutputs)for(const output of view.spatialOutputs){const layer=composition.layers.find((l:any)=>l.output.source.callId===output.source.callId&&l.output.source.runId===output.source.runId&&l.output.outputId===output.outputId);if(layer)for(const feature of output.geometry.features)featureRefs[String(feature.id)]={mapId:composition.mapId,surfaceId:currentSurfaceId,layerId:layer.id,featureId:String(feature.id)};}
   const containerClasses = isCompact 
     ? "w-full my-2 rounded-xl overflow-hidden shadow-md text-left transition-all" 
     : "w-full min-w-0 flex flex-col gap-3 rounded-xl";
@@ -67,7 +76,9 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
   return (
     <div className={containerClasses} data-run-id={view.runId}>
       <div className="flex flex-wrap gap-2 text-xs px-3 py-2 text-slate-500">{sourceLabels(view.datasets).map(label=><span key={label}>{label}</span>)}{view.qualityFlags?.includes('legacy-unverified')&&<span className="text-amber-600">历史快照：结果尚未按新执行协议验证</span>}{view.status&&view.status!=='SUCCESS'&&<span>{statusLabel(view.status)}</span>}</div>
-      {view.type==='AGUI_RESULT_GROUP'&&view.views.map((child:any,index:number)=><GenerativeComponentRenderer key={index} view={child} isCompact={isCompact}/>)}
+      {view.type==='AGUI_RESULT_GROUP'&&view.views.map((child:any,index:number)=><GenerativeComponentRenderer key={index} view={child} isCompact={isCompact} surfaceId={currentSurfaceId} mapComposition={composition}/>)}
+      {view.type==='MAP_COMPOSITION'&&<MapCanvas key={view.mapId} composition={view} surfaceId={currentSurfaceId}/>}
+      {view.type==='MAP_VIEW'&&<AdministrativeMap key={view.mapId} view={view}/>}
       {view.type==='ANALYTICS_RESULT'&&<AnalyticsResultCard data={view}/>}
       {view.type==='COLLECTION_FORM'&&<MobileSimulationModal data={view}/>}
       {view.type==='ARTIFACT_DOWNLOAD'&&<div className="p-5"><h3 className="font-semibold">导出文件</h3><a href={view.downloadUrl} className="text-sky-600 underline" download>{view.fileName}</a><p className="text-xs text-slate-500 mt-2">{view.byteLength} 字节</p></div>}
@@ -140,6 +151,9 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
 
       {view.type === 'DATA_TABLE_VIEW' && (
         <DataTableComponent
+          featureRefs={featureRefs}
+          sourceRunId={view.runId}
+          sourceCallId={view.callId??view.spatialOutputs?.[0]?.source.callId}
           title={view.title}
           query={view.query}
           sql={view.sql}
@@ -147,7 +161,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
             scope={view.scope}
           explanation={view.explanation}
           data={view.data}
-          visualization={view.visualization}
+          visualization={view.suppressSpatialMap&&view.visualization?.kind==='map'?undefined:view.visualization}
         />
       )}
 

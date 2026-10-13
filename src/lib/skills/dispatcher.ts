@@ -2,6 +2,7 @@ import {authHeaders} from '@/infrastructure/auth/client';
 import { createSseDecoder } from '@/application/dispatch/sse';
 import type { AgentDomainType } from '@/lib/config/agent-profile';
 export interface DispatchResult {
+ mapComposition?:import('@/contracts/map-composition').MapComposition;outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];intentSummary?:Record<string,unknown>;
  success:boolean;skillId:string;skillName:string;replyText:string;reasoningText?:string;reasoningDuration?:number;session?:{id:string;title:string};generativeView?:any;error?:string;
  source?:'llm_tool_calling'|'llm_direct_answer';args?:Record<string,any>;runId?:string;interactionId?:string;status?:string;agui?:any[];skillRuns?:any[];
 }

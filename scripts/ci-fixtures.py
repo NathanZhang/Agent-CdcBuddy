@@ -14,3 +14,24 @@ for domain in ['vector','foodborne','env','chronic']:
  if domain!='vector':subprocess.run([sys.executable,str(root/f'scripts/init_{domain}_mock.py'),'--output',str(output),'--seed','7'],check=True,stdout=subprocess.DEVNULL)
  manifest.append({'id':domain+'-monitoring','domain':domain,'origin':'mock','version':'synthetic-ci-v1','schemaVersion':'1','asOf':'2026-10-12','path':str(output.resolve())})
 (args.output_dir/'manifest.json').write_text(json.dumps(manifest));print('CI fixtures generated: all origins mock')
+
+# Version-specific source spellings and CRS belong to this synthetic fixture, not production snapshots.
+catalog=json.loads((root/'config/regions.json').read_text());bindings={}
+for entry in manifest:
+ domain=entry['domain'];connection=sqlite3.connect(entry['path']);pairs=set()
+ for table, in connection.execute("SELECT name FROM sqlite_master WHERE type='table' AND (name GLOB 'dim_*' OR name GLOB 'fact_*')"):
+  cols=[row[1] for row in connection.execute(f'PRAGMA table_info("{table}")')]
+  if 'city' in cols:
+   pairs.update(connection.execute(f'SELECT DISTINCT city,{"district" if "district" in cols else "NULL"} FROM "{table}"'))
+ connection.close();regions=[{'code':'410000'}]
+ for region in catalog['regions']:
+  if region['level']=='province':continue
+  if region['level']=='city':
+   names=[city for city,district in pairs if city in region['aliases']]
+   if names:regions.append({'code':region['code'],'city':sorted(set(names))[0]})
+  else:
+   parent=next((r for r in catalog['regions'] if r['code']==region['parentCode']),None)
+   matches=[(city,district) for city,district in pairs if parent and city in parent['aliases'] and district in region['aliases']]
+   if matches:city,district=sorted(matches)[0];regions.append({'code':region['code'],'city':city,'district':district})
+ bindings[domain]={'datasetVersion':entry['version'],'mappingVersion':'synthetic-ci-source-names-v1','sourceCRS':'EPSG:4326','coordinateEvidence':'Declared synthetic CI coordinates, not observed records','regions':regions}
+(args.output_dir/'region-bindings.json').write_text(json.dumps(bindings,ensure_ascii=False))

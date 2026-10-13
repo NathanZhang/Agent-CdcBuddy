@@ -40,9 +40,9 @@ it('conversation journal stores only actual run evidence and clears NO_DATA snap
  const { listSkillDefinitions }=await import('@/application/skills/skill-service');
  const ctx=createDevelopmentContext('vector');ctx.principal.userId='journal-owner';
  const created=await executeSkill('skill_session_manage',{action:'create'},ctx);const sessionId=(created.payload as any).session.sessionId;
- for(const city of [undefined,'不存在城市']){
+ for(const city of [undefined,'郑州市']){
   const runCtx={...ctx,runId:crypto.randomUUID()};let n=0;
-  const agent=createMainAgent({listSkills:listSkillDefinitions,executeSkill,llm:{complete:async()=>++n===1?{role:'assistant',content:null,tool_calls:[{id:'query',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:'SELECT capture_count FROM fact_monitoring LIMIT 2',...(city?{city}:{})})}}]}:{role:'assistant',content:JSON.stringify({mode:'answer',replyText:city?'没有数据。':'读取实际监测记录。'})}}});
+  const agent=createMainAgent({listSkills:listSkillDefinitions,executeSkill,llm:{complete:async()=>++n===1?{role:'assistant',content:null,tool_calls:[{id:'query',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:city?'SELECT capture_count FROM fact_monitoring WHERE 1=0 LIMIT 2':'SELECT capture_count FROM fact_monitoring LIMIT 2',...(city?{city}:{})})}}]}:{role:'assistant',content:JSON.stringify({mode:'answer',replyText:city?'没有数据。':'读取实际监测记录。'})}}});
   const { collectDispatch }=await import('@/application/dispatch/dispatch-service');
   const turn=await collectDispatch(agent({interactionId:'journal',kind:'conversation',userInput:'查询',resourceRef:{type:'session',id:sessionId,action:'conversation'}},runCtx));
   expect(turn.status).toBe(city?'NO_DATA':'SUCCESS');

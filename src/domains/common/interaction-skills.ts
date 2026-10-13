@@ -1,3 +1,7 @@
+import {authorizeHistoryView,publicHistoryBase} from '@/application/agent/history-authorization';
+import {approveStructuredIntent} from '@/application/agent/structured-intent';
+import {authorizeScope} from '@/infrastructure/auth/authorization';
+import {readAuthorizedQuerySource} from '@/application/geo/query-source-store';
 import { projectAguiView } from '@/contracts/agui-view';
 import { randomUUID } from 'node:crypto';
 import type { AgentDomain } from '@/contracts/dataset';
@@ -9,7 +13,10 @@ import { getRecordedTurn,saveArtifact,withBusinessDb } from '@/infrastructure/db
 import { scopeFromArgs } from '@/domains/shared/skill-factory';
 import { uiOperation } from '@/application/agent/ui-operation';
 const str={type:'string',minLength:1,maxLength:200};
-function sessionView(session:any,messages:any[]=[]){return {sessionId:session.session_id,userId:session.user_id,userName:session.user_name,userRole:session.user_role,messageCount:session.message_count,lastGenerativeViewType:session.last_generative_view?.type ?? null,title:session.title,isPinned:session.is_pinned===1,createdAt:session.created_at,updatedAt:session.updated_at,messages:messages.map(m=>({id:m.message_id,sender:m.sender,text:m.text,timestamp:m.timestamp,skillUsed:m.skill_used,reasoningText:m.reasoning_text,reasoningDuration:m.reasoning_duration,generativeViewSnapshot:m.generative_view_snapshot})),lastGenerativeView:session.last_generative_view ?? null};}
+function sessionView(session:any,messages:any[]=[],ctx?:ExecutionContext){
+ const roleChanged=!!ctx&&session.user_role!==ctx.principal.role;let denied=false;const view=(value:any)=>{if(!value)return null;if(roleChanged){denied=true;return publicHistoryBase(value);}try{return ctx?authorizeHistoryView(value,ctx):value;}catch{denied=true;return publicHistoryBase(value);}};const last=view(session.last_generative_view);const projected=messages.map(m=>{const snapshot=view(m.generative_view_snapshot);const hidden=m.sender==='agent'&&(roleChanged||denied);return {id:m.message_id,sender:m.sender,text:hidden?'历史业务结果当前无法授权，请在当前权限下重新执行。':m.text,timestamp:m.timestamp,skillUsed:m.skill_used,reasoningText:hidden?undefined:m.reasoning_text,reasoningDuration:hidden?undefined:m.reasoning_duration,generativeViewSnapshot:snapshot};});
+ return {sessionId:session.session_id,userId:session.user_id,userName:session.user_name,userRole:session.user_role,messageCount:session.message_count,lastGenerativeViewType:last?.type??null,title:roleChanged?'历史会话（权限已变更）':session.title,isPinned:session.is_pinned===1,createdAt:session.created_at,updatedAt:session.updated_at,messages:projected,lastGenerativeView:last};
+}
 async function ownedSession(id:string,ctx:ExecutionContext){const session=await getAppBusinessProvider().getChatSessionById(id);if(session && (session.user_id!==ctx.principal.userId || (session.domain ?? 'vector')!==ctx.domain))throw new Error('Session owner/domain access denied');return session;}
 async function sessionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  const provider=getAppBusinessProvider();const action=args.action;
@@ -29,19 +36,19 @@ async function sessionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecut
   else{await provider.batchAppendChatMessages(sessionId,messages,snapshot,recorded.result.sessionTitle);session=(await ownedSession(sessionId,ctx))!;}
   return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,sessionId,persistedRunId:args.sourceRunId,title:session.title},datasets:[]};
  }
- if(action==='create'){const session=await provider.createChatSession({session_id:`sess_${randomUUID()}`,user_id:ctx.principal.userId,user_name:ctx.principal.userId,user_role:ctx.principal.role,domain:ctx.domain,title:args.title ?? '新研判会话',last_generative_view:null,is_pinned:0});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(session)},datasets:[]};}
- if(action==='list'){const sessions=await provider.getChatSessions({userId:ctx.principal.userId,domain:ctx.domain,keyword:args.keyword,limit:args.limit ?? 50,offset:args.offset ?? 0});const total=await provider.getChatSessionCount({userId:ctx.principal.userId,domain:ctx.domain,keyword:args.keyword});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,sessions:sessions.map(s=>sessionView(s)),total},datasets:[]};}
+ if(action==='create'){const session=await provider.createChatSession({session_id:`sess_${randomUUID()}`,user_id:ctx.principal.userId,user_name:ctx.principal.userId,user_role:ctx.principal.role,domain:ctx.domain,title:args.title ?? '新研判会话',last_generative_view:null,is_pinned:0});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(session,[],ctx)},datasets:[]};}
+ if(action==='list'){const sessions=await provider.getChatSessions({userId:ctx.principal.userId,domain:ctx.domain,keyword:args.keyword,limit:args.limit ?? 50,offset:args.offset ?? 0});const total=await provider.getChatSessionCount({userId:ctx.principal.userId,domain:ctx.domain,keyword:args.keyword});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,sessions:sessions.map(s=>sessionView(s,[],ctx)),total},datasets:[]};}
  if(action==='clear'){await provider.clearUserChatSessions(ctx.principal.userId,ctx.domain);return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,cleared:true},datasets:[]};}
  const session=await ownedSession(args.sessionId,ctx);if(!session)return {status:'NO_DATA',payload:null,datasets:[]};
- if(action==='read')return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(session,await provider.getChatMessages(args.sessionId))},datasets:[]};
+ if(action==='read')return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(session,await provider.getChatMessages(args.sessionId),ctx)},datasets:[]};
  if(action==='delete'){await provider.deleteChatSession(args.sessionId);return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,sessionId:args.sessionId,deleted:true},datasets:[]};}
- if(action==='update'){if(args.title===undefined&&args.isPinned===undefined)throw new Error('No session metadata changes');await provider.updateChatSession(args.sessionId,{title:args.title,is_pinned:args.isPinned===undefined?undefined:args.isPinned?1:0});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(await ownedSession(args.sessionId,ctx))},datasets:[]};}
+ if(action==='update'){if(args.title===undefined&&args.isPinned===undefined)throw new Error('No session metadata changes');await provider.updateChatSession(args.sessionId,{title:args.title,is_pinned:args.isPinned===undefined?undefined:args.isPinned?1:0});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(await ownedSession(args.sessionId,ctx),[],ctx)},datasets:[]};}
  throw new Error('Unknown session operation');
 }
 const samplingSchema={type:'object',additionalProperties:false,required:['city','district','category','speciesName','captureCount'],properties:{city:str,district:str,category:str,speciesName:str,captureCount:{type:'integer',minimum:0},weatherTemp:{type:'number',minimum:-80,maximum:70},weatherHumidity:{type:'number',minimum:0,maximum:100},latitude:{type:'number',minimum:-90,maximum:90},longitude:{type:'number',minimum:-180,maximum:180},street:str,habitatType:str,methodName:str}};
 async function collectionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  if(args.action==='form')return {status:'SUCCESS',payload:{type:'COLLECTION_FORM',inputSchema:samplingSchema,defaults:{city:ctx.principal.jurisdiction.city,district:ctx.principal.jurisdiction.district}},datasets:[]};
- const record=args.record;scopeFromArgs(record,ctx);
+ const record=args.record;approveStructuredIntent(record,{...ctx,approvedIntent:undefined},'other');authorizeScope(record,ctx);
  const rules=[{id:'low-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp<10&&record.captureCount>30)},{id:'extreme-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp>42&&record.captureCount>60)},{id:'indoor-high-count',passed:!(record.habitatType==='高层办公室'&&record.speciesName.includes('白纹伊蚊')&&record.captureCount>50)}];
  const evaluation={rules,totalRulesCount:rules.length,passedRulesCount:rules.filter(r=>r.passed).length,warnings:rules.filter(r=>!r.passed).map(r=>r.id)};
  if(args.action==='validate'||evaluation.warnings.length)return {status:evaluation.warnings.length?'REVIEW_REQUIRED':'SUCCESS',payload:{type:'COLLECTION_RESULT',action:'validate',evaluation},datasets:[],qualityFlags:['heuristic-qc-rules-not-species-recognition']};
@@ -58,11 +65,14 @@ async function catalogExecute(args:any,ctx:ExecutionContext):Promise<SkillExecut
  return {status:'SUCCESS',payload:{type:'SKILL_CATALOG',action:'update',skill:await provider.getCustomSkillById(args.skillId)},datasets:[]};
 }
 async function artifactExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
- let provenance:import('@/contracts/dataset').DatasetRef[]|undefined;let content:Buffer,source:any,fileName=args.fileName ?? '监测导出',mimeType:string;const scope=scopeFromArgs(args,ctx);
+ const sourceRequired=!!ctx.approvedIntent;
+ let provenance:import('@/contracts/dataset').DatasetRef[]|undefined;let content:Buffer,source:any,fileName=args.fileName ?? '监测导出',mimeType:string;const original=args.sourceRunId&&args.sourceCallId?readAuthorizedQuerySource(args.sourceRunId,args.sourceCallId,ctx):undefined;const scope=scopeFromArgs(args,original?{...ctx,approvedIntent:original.approved}:ctx);
  if(args.format==='csv'){
-  const rows=getDomainRepository(ctx.domain).query(args.sql,[],scope);if(!rows.length)return {status:'NO_DATA',payload:null};const columns=Object.keys(rows[0]);
+  if(sourceRequired&&!original)throw new Error('QUERY_SOURCE_REQUIRED: 当前会话导出必须引用选中的实际查询结果');
+  if(original&&original.payload.sql!==args.sql)throw new Error('QUERY_SOURCE_MISMATCH');
+  const rows=original?original.payload.data:getDomainRepository(ctx.domain).query(args.sql,[],scope);if(original)provenance=original.datasets;if(!rows.length)return {status:'NO_DATA',payload:null};const columns=Object.keys(rows[0]);
   const escape=(value:unknown)=>{let text=String(value ?? '');if(typeof value==='string'&&/^[=+\-@\t\r]/.test(text))text="'"+text;return `"${text.replaceAll('"','""')}"`;};
-  content=Buffer.from('\uFEFF'+[columns.map(escape).join(','),...rows.map(row=>columns.map(c=>escape(row[c])).join(','))].join('\r\n'));source={sql:args.sql,scope,rowCount:rows.length};fileName+='.csv';mimeType='text/csv; charset=utf-8';
+  content=Buffer.from('\uFEFF'+[columns.map(escape).join(','),...rows.map((row:Record<string,unknown>)=>columns.map(c=>escape(row[c])).join(','))].join('\r\n'));source={sql:args.sql,scope:original?original.approved.effectiveDataScope:scope,rowCount:rows.length,...(original?{sourceRunId:args.sourceRunId,sourceCallId:args.sourceCallId,scopeFingerprint:original.approved.fingerprint}: {})};fileName+='.csv';mimeType='text/csv; charset=utf-8';
  }else{
   const report=withBusinessDb(db=>db.prepare('SELECT * FROM biz_generated_reports WHERE report_id=?').get(args.reportId)) as any;if(!report)return {status:'NO_DATA',payload:null};
   const metadata=JSON.parse(report.metadata_json ?? '{}');provenance=metadata.datasets ?? [];if(report.author!==ctx.principal.userId||metadata.domain!==ctx.domain)throw new Error('Report owner/domain access denied');if((scope.city&&report.city!==scope.city)||(scope.district&&report.district!==scope.district))throw new Error('Report geographic access denied');
@@ -77,6 +87,6 @@ export function interactionSkills(domain:AgentDomain):SkillDefinition[]{
   {...make('skill_session_journal','内部会话运行记录',{type:'object',additionalProperties:false,required:['sourceRunId'],properties:{sessionId:str,sourceRunId:str}},'SESSION_RESULT',(args,ctx)=>sessionExecute({...args,action:'append'},ctx),['write']),visibility:'internal' as const},
   make('skill_collection_manage','现场采集质控与提交（人工物种录入）',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['form','validate','submit']},record:samplingSchema},allOf:[{if:{properties:{action:{enum:['validate','submit']}}},then:{required:['record']}}]},'COLLECTION_RESULT|COLLECTION_FORM',collectionExecute,['read','write']),
   make('skill_catalog_manage','技能列表、编辑与删除',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['list','update','delete']},skillId:str,name:str,description:{type:'string',maxLength:2000},sqlQuery:{type:'string',maxLength:20000},chartType:{enum:['table','trend','bar','pie','map']},visibility:{enum:['public','private']},recommendedPrompts:{type:'array',items:str}},allOf:[{if:{properties:{action:{enum:['update','delete']}}},then:{required:['skillId']}}]},'SKILL_CATALOG',catalogExecute,['read','write']),
-  make('skill_artifact_export','导出真实查询 CSV 或已归档报告 Markdown',{type:'object',additionalProperties:false,required:['format'],properties:{format:{enum:['csv','markdown']},sql:{type:'string',minLength:1,maxLength:20000},reportId:str,fileName:str,city:str,district:str,from:{type:'string'},to:{type:'string'}},allOf:[{if:{properties:{format:{const:'csv'}}},then:{required:['sql']}},{if:{properties:{format:{const:'markdown'}}},then:{required:['reportId']}}]},'ARTIFACT_DOWNLOAD',artifactExecute,['read','export'])
+  make('skill_artifact_export','导出真实查询 CSV 或已归档报告 Markdown',{type:'object',additionalProperties:false,required:['format'],properties:{format:{enum:['csv','markdown']},sql:{type:'string',minLength:1,maxLength:20000},reportId:str,fileName:str,sourceRunId:str,sourceCallId:str,city:str,district:str,from:{type:'string'},to:{type:'string'}},allOf:[{if:{properties:{format:{const:'csv'}}},then:{required:['sql']}},{if:{properties:{format:{const:'markdown'}}},then:{required:['reportId']}}]},'ARTIFACT_DOWNLOAD',artifactExecute,['read','export'])
  ].filter(skill=>skill.id!=='skill_collection_manage' || domain==='vector');
 }

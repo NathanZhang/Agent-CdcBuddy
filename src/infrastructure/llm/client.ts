@@ -3,7 +3,7 @@ import {readLLMStream} from './stream';
 export interface LLMToolCall {id:string;type:'function';function:{name:string;arguments:string};}
 export interface LLMMessage {role:'system'|'user'|'assistant'|'tool';content:string|null;tool_calls?:LLMToolCall[];tool_call_id?:string;}
 export interface LLMStreamDelta {type:'reasoning'|'content'|'reset';text:string;}
-export interface LLMRequest {messages:LLMMessage[];tools?:unknown[];toolChoice?:'auto'|'none';signal?:AbortSignal;onDelta?:(delta:LLMStreamDelta)=>void;}
+export interface LLMRequest {phase?:'intent'|'tool-selection'|'synthesis';temperature?:number;attemptBudget?:{remaining:number};deadlineAt?:number;messages:LLMMessage[];tools?:unknown[];toolChoice?:'auto'|'none';signal?:AbortSignal;onDelta?:(delta:LLMStreamDelta)=>void;}
 export interface LLMClient {complete(request:LLMRequest):Promise<LLMMessage>;}
 export class LLMError extends Error {constructor(public code:string,message:string){super(message);}}
 export function validateLLMFinishReason(reason:unknown):void{
@@ -45,6 +45,8 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
       // Regenerate from the original context, never continue an incomplete JSON/tool call.
       const messages=outputRecovery?[...request.messages,{role:'user' as const,content:'上次输出达到长度上限，未完成。请根据已有上下文和真实工具结果重新生成精简完整的响应；只保留核心结论和必要限制，完整明细留在工作台，不逐行复述。需要工具时只生成完整的原生工具调用；最终答复仍严格遵守要求的 JSON 格式。'}]:request.messages;
       request.signal?.throwIfAborted();
+      if(request.attemptBudget&&request.attemptBudget.remaining<=0)throw new LLMError('INTENT_REQUEST_BUDGET_EXCEEDED','地域识别请求预算已耗尽');
+      if(request.deadlineAt&&Date.now()>=request.deadlineAt)throw new LLMError('LLM_TIMEOUT','执行总时限已到');
       // Qwen3.8 defaults to xhigh; pass effort to the API and directly to compatible templates.
       const effort=attemptThinking&&templateThinking&&/qwen3\.8(?:[-/]|$)/i.test(model)?env.SILICONFLOW_REASONING_EFFORT?.trim() || 'medium':undefined;
       if(effort&&!['low','medium','xhigh'].includes(effort))throw new LLMError('LLM_UNAVAILABLE','SILICONFLOW_REASONING_EFFORT 仅支持 low、medium 或 xhigh');
@@ -57,13 +59,13 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
       const refreshDeadline=()=>{
         if(controller.signal.aborted)return;
         clearTimeout(timer);
-        timer=setTimeout(()=>{timedOut=true;controller.abort(new Error('LLM timeout'));},timeoutMs);
+        timer=setTimeout(()=>{timedOut=true;controller.abort(new Error('LLM timeout'));},Math.min(timeoutMs,request.deadlineAt?Math.max(1,request.deadlineAt-Date.now()):timeoutMs));
       };
       refreshDeadline();
       try{
         request.onDelta?.({type:'reset',text:''});
-        requestAttempts++;
-        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),...(streaming?{stream:true}:{}),enable_thinking:attemptThinking,...reasoningOptions,...(attemptThinking&&!templateThinking?{thinking_budget:1024}:{}),...(templateThinking?{chat_template_kwargs:{enable_thinking:attemptThinking,...reasoningOptions}}:{}),max_tokens:outputRecovery||attemptThinking&&templateThinking?8192:4096,temperature:0.7,top_p:0.8,top_k:20})});
+        requestAttempts++;if(request.attemptBudget)request.attemptBudget.remaining--;
+        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),...(streaming?{stream:true}:{}),enable_thinking:attemptThinking,...reasoningOptions,...(attemptThinking&&!templateThinking?{thinking_budget:1024}:{}),...(templateThinking?{chat_template_kwargs:{enable_thinking:attemptThinking,...reasoningOptions}}:{}),max_tokens:outputRecovery||attemptThinking&&templateThinking?8192:4096,temperature:request.temperature??(request.phase==='intent'?.1:.7),top_p:0.8,top_k:20})});
         if(!response.ok){await response.body?.cancel();if(response.status!==429 && response.status<500)throw new LLMError('LLM_REJECTED',`大模型服务拒绝请求 (${response.status})`);throw new Error(`LLM HTTP ${response.status}`);}
         isStream=Boolean(response.headers.get('content-type')?.includes('text/event-stream'));
         if(isStream)return await readLLMStream(response,request,refreshDeadline);

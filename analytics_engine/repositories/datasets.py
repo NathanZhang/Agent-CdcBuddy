@@ -24,7 +24,11 @@ def resolve_dataset_path(domain, dataset_id=None):
     configured = os.environ.get(f'DATASET_{domain.upper()}_PATH',matches[0]['path'])
     return (manifest.parent / configured).resolve()
 
+from analytics_engine.repositories.scoped import ACTIVE_SCOPE,connect_scoped_readonly
+
 def connect_readonly(path):
+    scope=ACTIVE_SCOPE.get()
+    if scope is not None:return connect_scoped_readonly(path,scope)
     return sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True)
 
 def connect_dataset(domain,dataset_id=None):

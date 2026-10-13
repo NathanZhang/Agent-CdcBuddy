@@ -3,7 +3,7 @@ import type { FeatureCollection, Point } from 'geojson';
 import type { QueryVisualization } from '@/contracts/query-visualization';
 
 export type MapSpec = Extract<QueryVisualization, {kind:'map'}>;
-export interface ResultMapPoint {label:string;lat:number;lon:number;value:number}
+export interface ResultMapPoint {label:string;lat:number;lon:number;value?:number}
 export function syncResultMap(map:Pick<LibreMap,'getSource'|'getLayer'|'setLayoutProperty'>,points:ResultMapPoint[],boundaries:boolean):boolean {
  const source=map.getSource('result-points') as GeoJSONSource|undefined;
  if(!source)return false;
@@ -16,14 +16,15 @@ export function syncResultMap(map:Pick<LibreMap,'getSource'|'getLayer'|'setLayou
 }
 export function pointDescription(point:ResultMapPoint,unit:string):string {
  const format=(value:number)=>value.toLocaleString('zh-CN',{maximumFractionDigits:5});
- return `${point.label}：${format(point.value)} ${unit}；经度 ${format(point.lon)}，纬度 ${format(point.lat)}`;
+ return `${point.label}${point.value===undefined?'':`：${format(point.value)} ${unit}`}；经度 ${format(point.lon)}，纬度 ${format(point.lat)}`;
 }
 const finite = (value:unknown):value is number => typeof value==='number' && Number.isFinite(value);
 export function mapPoints(rows:Record<string,unknown>[],spec:MapSpec):ResultMapPoint[] {
+ if(!("latKey" in spec))return [];
  return rows.flatMap(row=>{
-  const lat=row[spec.latKey],lon=row[spec.lonKey],value=row[spec.valueKey];
-  return finite(lat)&&finite(lon)&&finite(value)&&Math.abs(lat)<=90&&Math.abs(lon)<=180
-   ? [{lat,lon,value,label:String(row[spec.labelKey]??'未命名点位')}] : [];
+  const lat=row[spec.latKey],lon=row[spec.lonKey],value=spec.valueKey?row[spec.valueKey]:undefined;
+  return finite(lat)&&finite(lon)&&(spec.valueKey?finite(value):true)&&Math.abs(lat)<=90&&Math.abs(lon)<=180
+   ? [{lat,lon,...(finite(value)?{value}:{}),label:String(row[spec.labelKey]??'未命名点位')}] : [];
  });
 }
 export function pointCollection(points:ResultMapPoint[]):FeatureCollection<Point,ResultMapPoint> {
@@ -50,7 +51,7 @@ export function resultMapStyle({isDark,basemap,key,points,boundaries}:{isDark:bo
    {id:'tianditu-base-layer',type:'raster',source:'tianditu-base',paint:{'raster-saturation':isDark?(basemap==='vec'?-0.7:-0.2):0.05,'raster-contrast':isDark?0.25:0.05,'raster-brightness-min':isDark?0.15:0,'raster-brightness-max':isDark?0.75:1,'raster-opacity':isDark?0.88:0.98}},
    ...administrative,
    {id:'tianditu-anno-layer',type:'raster',source:'tianditu-anno',paint:{'raster-opacity':0.95}},
-   {id:'result-points',type:'circle',source:'result-points',paint:{'circle-radius':['interpolate',['linear'],['sqrt',['abs',['get','value']]],0,4,10,12,100,20],'circle-color':isDark?'#38bdf8':'#0284c7','circle-opacity':0.8,'circle-stroke-color':isDark?'#e0f2fe':'#ffffff','circle-stroke-width':1.5}},
+   {id:'result-points',type:'circle',source:'result-points',paint:{'circle-radius':['interpolate',['linear'],['sqrt',['abs',['coalesce',['get','value'],0]]],0,4,10,12,100,20],'circle-color':isDark?'#38bdf8':'#0284c7','circle-opacity':0.8,'circle-stroke-color':isDark?'#e0f2fe':'#ffffff','circle-stroke-width':1.5}},
   ],
  };
 }

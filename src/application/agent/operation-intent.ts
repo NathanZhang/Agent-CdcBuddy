@@ -13,7 +13,7 @@ export function bindOperationInput(interaction:AgentInteraction,name:string,args
  else if(ref.type==='skill'){if(ref.action==='execute')expected=[canonical(ref.id)];else{expected=['skill_catalog_manage'];action=ref.action;}}
  else if(ref.type==='collection'){if(['form','validate','submit'].includes(ref.action ?? '')){expected=['skill_collection_manage'];action=ref.action;}else throw new IntentError('CAPABILITY_UNAVAILABLE','该采集能力尚未实现，不能返回模拟识别结果');}
  else if(ref.type==='report'){expected=ref.action==='export'?['skill_artifact_export']:['skill_auto_report_gen','skill_foodborne_report_export','skill_chronic_death_report'];}
- else if(ref.type==='map'){expected=[{vector:'skill_monitoring_data_table',foodborne:'skill_foodborne_case_table',env:'skill_env_monitoring_table',chronic:'skill_chronic_monitoring_table'}[domain],'skill_spatial_early_warning'];}
+ else if(ref.type==='map'){expected=ref.action==='display'?['skill_map_display']:[{vector:'skill_monitoring_data_table',foodborne:'skill_foodborne_case_table',env:'skill_env_monitoring_table',chronic:'skill_chronic_monitoring_table'}[domain],'skill_spatial_early_warning'];}
  else if(ref.type==='approval'){expected=['skill_approval_decision'];}
  else if(ref.type==='workflow'){expected=['skill_job_manage','skill_retest_submit','skill_inbox_read','skill_daemon_surveillance','skill_disposal_workflow','skill_env_early_warning_disposal','skill_chronic_early_warning_disposal'];}
  if(expected.length && !expected.includes(canonical(name)))throw new IntentError('OPERATION_INTENT_MISMATCH','模型选择的技能与请求操作不一致');

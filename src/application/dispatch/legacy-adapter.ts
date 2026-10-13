@@ -33,7 +33,7 @@ export function toLegacyEvents(event:RunEvent):LegacyEvent[]{
   if(event.type==='tool_started')return [{event:'tool_call_start',data:{...meta,toolId:event.data.skillId,toolName:event.data.skillName,args:event.data.args}}];
   if(event.type==='tool_completed'){
     const frames:LegacyEvent[]=[{event:'tool_call_result',data:{...meta,toolId:event.data.skillId,success:!['FAILED','CANCELLED'].includes(event.data.result.status),status:event.data.result.status,summary:event.data.result.method}}];
-    if(event.data.agui?.length)frames.push({event:'generative_view',data:{...meta,view:projectAguiView({runId:event.runId,interactionId:'',status:'SUCCESS',replyText:'',skillRuns:[],agui:event.data.agui})}});
+    if(event.data.agui?.length)frames.push({event:'generative_view',data:{...meta,view:projectAguiView({runId:event.runId,interactionId:'',status:'SUCCESS',replyText:'',skillRuns:[],agui:event.data.agui,mapComposition:event.data.mapComposition})}});
     return frames;
   }
   if(event.type==='failed')return [{event:'error',data:{...meta,...event.data}}];

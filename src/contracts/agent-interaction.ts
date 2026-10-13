@@ -22,5 +22,8 @@ export interface AgentTurnResult {
   session?:{id:string;title:string};
   agui:AguiResult[];
   skillRuns:SkillRun[];
+  mapComposition?:import('./map-composition').MapComposition;
+  outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];
+  intentSummary?:Record<string,unknown>;
   error?:{code:string;message:string};
 }

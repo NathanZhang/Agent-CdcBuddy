@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "outputVersion": 1,
+  "methods": {
+    "death-certificate-rule-candidates-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "district-centroid-dbscan-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "injury-observed-counts-v1": {
+      "disposition": "region-summary",
+      "renderings": [
+        "area",
+        "labels"
+      ],
+      "reason": "Actual city/district candidates; no precise incident coordinates or geographical propagation."
+    },
+    "allele-distance-single-link-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "food-exposure-window-candidates-v1": {
+      "disposition": "region-summary",
+      "renderings": [
+        "area",
+        "labels"
+      ],
+      "reason": "Actual city/district window candidates; empty candidates stay empty, no venue or patient coordinates."
+    },
+    "recorded-food-case-summary-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "observed-water-summary-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels",
+        "heatmap"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "calendar-aligned-pearson-v1": {
+      "disposition": "region-summary",
+      "renderings": [
+        "labels"
+      ],
+      "reason": "No actual pipe topology; regional groups only."
+    },
+    "descriptive-metals-moran-v1": {
+      "disposition": "unavailable",
+      "renderings": [],
+      "reason": "No verified section geometry or river topology."
+    },
+    "autoregression-seasonal-capture-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "gradient-boosting-capture-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "observed-capture-idw-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels",
+        "heatmap",
+        "grid"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "observed-bioassay-records-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "area",
+        "labels"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "pcr-record-pair-association-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "area",
+        "labels"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "observed-transmission-inputs-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "conditional-poisson-circular-scan-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "circle",
+        "points",
+        "labels"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "method-separated-kmeans-capture-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels"
+      ],
+      "reason": "Actual output adapter; missing geometry remains explicit."
+    },
+    "rolling-past-origin-capture-backtest-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Temporal/descriptive output: region summaries only when actually present."
+    },
+    "bounded-domain-query-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels",
+        "heatmap",
+        "area"
+      ],
+      "reason": "Controlled field binding; actual coordinates or regional keys required."
+    },
+    "stored-domain-query-v1": {
+      "disposition": "adapter",
+      "renderings": [
+        "points",
+        "labels",
+        "heatmap",
+        "area"
+      ],
+      "reason": "Controlled field binding; actual coordinates or regional keys required."
+    },
+    "validated-custom-skill-create-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial management/report/base output; authorized records need explicit geometry adapter."
+    },
+    "persisted-descriptive-report-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial management/report/base output; authorized records need explicit geometry adapter."
+    },
+    "persistent-evidence-workflow-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial management/report/base output; authorized records need explicit geometry adapter."
+    },
+    "local-administrative-map-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial management/report/base output; authorized records need explicit geometry adapter."
+    },
+    "skill_session_manage-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial operation."
+    },
+    "skill_catalog_manage-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial operation."
+    },
+    "skill_collection_manage-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial operation."
+    },
+    "skill_artifact_export-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial operation."
+    },
+    "skill_session_journal-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Non-spatial operation."
+    },
+    "verified-map-annotation-v1": {
+      "disposition": "producer",
+      "renderings": [
+        "labels",
+        "points"
+      ],
+      "reason": "Only authorized feature/region or user-evidenced coordinates."
+    },
+    "icd10-dictionary-candidate-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Dictionary coding candidates contain no geographical observations."
+    }
+  }
+}

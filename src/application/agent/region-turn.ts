@@ -1,0 +1,54 @@
+import type {AgentInteraction,SkillRun} from '@/contracts/agent-interaction';
+import type {ExecutionContext} from '@/contracts/execution-context';
+import type {LLMClient} from '@/infrastructure/llm/client';
+import type {SkillDefinition} from '@/contracts/skill-definition';
+import type {ApprovedMapPlan,ApprovedIntent} from '@/contracts/approved-intent';
+import type {IntentState} from '@/contracts/interaction-intent';
+import type {MapView} from '@/contracts/map-view';
+import type {MapSceneState,MapComposition,MapLayerRequest} from '@/contracts/map-composition';
+import type {SpatialOutput} from '@/contracts/spatial-output';
+import {resolveInteractionIntent} from './intent-resolver';
+import {approveMapPlan} from './intent-guard';
+import {readIntentState,readMapScene,commitIntentState,savePendingIntent,loadPendingIntent} from './intent-state';
+import {spatialCapabilityFor} from '@/application/geo/spatial-capabilities';
+import {readAuthorizedSpatialOutput,listAuthorizedSpatialReferences} from '@/application/geo/spatial-store';
+import {composeMap} from '@/application/geo/map-composer';
+import {applyMapSceneOperation} from '@/application/geo/map-scene-state';
+import type {OutputOutcome} from './output-outcomes';
+export class RegionTurnError extends Error{constructor(public code:string,message:string){super(message);}}
+export interface RegionTurn {sessionId:string;previous:IntentState|null;scene:MapSceneState|null;plan:ApprovedMapPlan;outputs:SpatialOutput[];requests:MapLayerRequest[];deniedData?:{code:string;message:string};composition?:MapComposition;}
+export async function prepareRegionTurn(interaction:AgentInteraction,ctx:ExecutionContext,llm:LLMClient,definitions:SkillDefinition[]):Promise<RegionTurn|{clarification:string[]}>{
+ const sessionId=interaction.sessionRef?.id??`sess_${ctx.runId}`,previous=readIntentState(sessionId,ctx),scene=readMapScene(sessionId,ctx),pending=loadPendingIntent(sessionId,ctx);
+ const pendingInput=pending&&pending.revision===(previous?.revision??0)?`${pending.input}\n澄清回答：${interaction.userInput}`:interaction.userInput;if(pendingInput.length>12000)return {clarification:['原请求和补充信息过长，请用一条完整指令重新说明地域与数据需求。']};
+ const resolution=await resolveInteractionIntent({text:interaction.userInput,domain:ctx.domain,now:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),previous,scene:scene?{mapId:scene.mapId,revision:scene.revision,layers:scene.layers,basemap:scene.basemap}:null,availableSources:listAuthorizedSpatialReferences(ctx),capabilities:definitions.map(spatialCapabilityFor),signal:ctx.signal,deadlineAt:ctx.deadlineAt,...(pending?{pending}: {})},llm);
+ if(resolution.status==='FAILED')throw new RegionTurnError(resolution.error.code,resolution.error.message);
+ if(resolution.status==='CLARIFICATION'){savePendingIntent({sessionId,input:pendingInput,questions:resolution.questions,createdAt:Date.now(),expiresAt:Date.now()+15*60000,revision:previous?.revision??0},ctx);return {clarification:resolution.questions};}
+ let plan:ApprovedMapPlan,deniedData:RegionTurn['deniedData'];try{plan=approveMapPlan(resolution.intent,scene,ctx,previous);}catch(error){if(resolution.intent.task!=='map_with_data'||!(error instanceof Error))throw error;deniedData={code:'code' in error?String(error.code):error.message.split(':')[0],message:error.message};const e={source:'current' as const,start:0,end:interaction.userInput.length,quote:interaction.userInput},clear={op:'clear' as const,evidence:e};plan=approveMapPlan({...resolution.intent,task:'map_display',dataRegion:clear,time:clear,filters:{},layerRequests:[],mapOperations:[]},scene,ctx,previous);}
+
+ for(const layer of plan.layerPlans){if(layer.request.skillId){const skill=definitions.find(s=>s.id===layer.request.skillId||s.aliases.includes(layer.request.skillId!));if(!skill||!spatialCapabilityFor(skill).renderings.includes(layer.request.rendering))throw new RegionTurnError('MAP_RENDERING_INCOMPATIBLE','技能不支持所请求的空间图层');}}
+ const preserve=plan.base.draft.task!=='map_display'&&(plan.base.draft.task==='map_edit'||plan.base.draft.relation==='continue'||plan.base.draft.relation==='modify');const requests=preserve?structuredClone(scene?.layers??[]):[];const refs=requests.map(r=>r.outputRef);for(const l of plan.layerPlans)if(l.request.outputRef)refs.push(l.request.outputRef);
+ const outputs:SpatialOutput[]=[];for(const ref of refs)if(!outputs.some(o=>o.source.runId===ref.runId&&o.source.callId===ref.callId&&o.outputId===ref.outputId))try{outputs.push(readAuthorizedSpatialOutput(ref,ctx));}catch(error){deniedData={code:error instanceof Error&&'code' in error?String(error.code):error instanceof Error?error.message:'FORBIDDEN_SOURCE',message:error instanceof Error?error.message:'历史来源已无法授权'};outputs.length=0;requests.length=0;plan={...plan,layerPlans:[]};break;}
+ for(const l of plan.layerPlans){const source=l.request.outputRef?outputs.find(o=>o.source.runId===l.request.outputRef!.runId&&o.source.callId===l.request.outputRef!.callId&&o.outputId===l.request.outputRef!.outputId):undefined;requests.push({id:l.layerRequestId,outputRef:l.request.outputRef??{runId:ctx.runId,callId:'pending-'+l.layerRequestId,outputId:'missing'},rendering:l.request.rendering,scopeFingerprint:source?.source.scopeFingerprint??l.scopeFingerprint,...(!source?{sourceOutcome:{status:'REVIEW_REQUIRED',error:{code:'LAYER_NOT_EXECUTED',message:'批准图层尚未执行'}}}: {})});}
+ if(plan.base.draft.task==='map_edit'&&!scene)throw new RegionTurnError('MAP_SCENE_REQUIRED','当前会话还没有可修改的地图');
+ return {sessionId,previous,scene,plan,outputs,requests,...(deniedData?{deniedData}:{})};
+}
+export function approvedForSkill(turn:RegionTurn,skillId:string,layerRequestId?:string):ApprovedIntent{
+ const matching=turn.plan.layerPlans.filter(l=>l.request.skillId===skillId&&(!layerRequestId||l.layerRequestId===layerRequestId));if(layerRequestId&&!matching.length)throw new RegionTurnError('LAYER_SCOPE_SELECTION_REQUIRED','图层请求与来源技能不一致');if(matching.length&&new Set(matching.map(l=>l.scopeFingerprint)).size===1)return matching[0].approved;if(matching.length>1)throw new RegionTurnError('LAYER_SCOPE_SELECTION_REQUIRED','同一技能的多个图层必须明确layerRequestId');return turn.plan.base;
+}
+export function registerSpatialRun(turn:RegionTurn,run:SkillRun):void{
+ const payload=run.result.payload as any;if(payload?.spatialOutputs){for(const o of payload.spatialOutputs as SpatialOutput[])if(!turn.outputs.some(x=>x.source.runId===o.source.runId&&x.source.callId===o.source.callId&&x.outputId===o.outputId))turn.outputs.push(o);}
+ const selected=turn.plan.layerPlans.find(l=>l.request.skillId===run.skillId&&l.layerRequestId===run.args.layerRequestId);const plans=turn.plan.layerPlans.filter(l=>l.request.skillId===run.skillId&&(!selected||l.scopeFingerprint===selected.scopeFingerprint));
+ for(const plan of plans){const output=(payload?.spatialOutputs as SpatialOutput[]|undefined)?.find(o=>o.renderings.includes(plan.request.rendering));if(output){turn.requests=turn.requests.filter(r=>r.id!==plan.layerRequestId);turn.requests.push({id:plan.layerRequestId,outputRef:{runId:output.source.runId,callId:output.source.callId,outputId:output.outputId},rendering:plan.request.rendering,scopeFingerprint:output.source.scopeFingerprint});}else{turn.requests=turn.requests.filter(r=>r.id!==plan.layerRequestId);turn.requests.push({id:plan.layerRequestId,outputRef:{runId:run.result.runId,callId:run.callId,outputId:'missing'},rendering:plan.request.rendering,scopeFingerprint:plan.scopeFingerprint,sourceOutcome:{status:run.result.status,error:run.result.error??payload?.spatialIssue}});}}
+ if(!plans.length&&!payload?.spatialOutputs&&turn.plan.base.draft.task==='map_with_data'&&run.skillId!=='skill_map_display'){turn.requests.push({id:`${run.callId}-missing-spatial`,outputRef:{runId:run.result.runId,callId:run.callId,outputId:'missing'},rendering:'points',scopeFingerprint:turn.plan.base.fingerprint,sourceOutcome:{status:run.result.status,error:run.result.error??payload?.spatialIssue}});}
+ if(!plans.length&&payload?.spatialOutputs)for(const output of payload.spatialOutputs as SpatialOutput[]){const rendering=output.renderings.includes('grid')?'grid':output.renderings.includes('circle')?'circle':output.renderings.includes('points')?'points':output.renderings.includes('area')?'area':'labels';turn.requests.push({id:`${run.callId}-${output.outputId}`,outputRef:{runId:output.source.runId,callId:output.source.callId,outputId:output.outputId},rendering,scopeFingerprint:output.source.scopeFingerprint});}
+}
+export function refreshMapComposition(turn:RegionTurn,base:MapView):MapComposition{
+ let scene:MapSceneState={mapId:turn.plan.base.draft.relation==='new'||turn.plan.base.draft.relation==='reset'?base.mapId:turn.scene?.mapId??base.mapId,revision:turn.composition?.revision??turn.scene?.revision??0,basemap:base.basemap,layers:turn.requests,base};
+ if(turn.plan.base.draft.task==='map_edit')for(const operation of turn.plan.base.draft.mapOperations)scene=applyMapSceneOperation(scene,operation,scene.revision);
+ const composedBase={...base,mapId:scene.mapId,basemap:scene.basemap};const composition=composeMap(composedBase,scene.layers,turn.outputs,{authorizedRunIds:[...new Set([base.mapId.replace(/-map$/,''),...turn.outputs.map(o=>o.source.runId),...scene.layers.map(l=>l.outputRef.runId)])],revision:scene.revision+1,cameraPolicy:turn.plan.base.draft.mapOptions.cameraPolicy??(turn.plan.base.draft.relation==='new'?'fitDisplayRegion':'preserve')});turn.requests=scene.layers;turn.composition=composition;return composition;
+}
+export function commitRegionTurn(turn:RegionTurn,outcomes:OutputOutcome[],ctx:ExecutionContext):void{
+ const base=turn.composition?.base;const scene=base?{mapId:turn.composition!.mapId,revision:turn.composition!.revision,basemap:base.basemap,base,layers:turn.requests}:turn.plan.base.draft.task==='map_display'?{mapId:`${ctx.runId}-map`,revision:1,basemap:turn.plan.base.draft.mapOptions.basemap,layers:[]}:undefined;
+ commitIntentState(turn.sessionId,turn.previous?.revision??0,turn.plan.base,outcomes,ctx,scene);
+}
+export function publicIntentSummary(turn:RegionTurn){return {task:turn.plan.base.draft.task,displayRegion:turn.plan.base.displayScope.region,dataRegion:turn.plan.base.effectiveDataScope.region,time:turn.plan.base.effectiveDataScope.time,filters:turn.plan.base.effectiveDataScope.filters,scopeFingerprint:turn.plan.base.fingerprint,layerScopes:turn.plan.layerPlans.map(l=>({id:l.layerRequestId,skillId:l.request.skillId,outputRef:l.request.outputRef,rendering:l.request.rendering,scopeFingerprint:l.scopeFingerprint,region:l.approved.effectiveDataScope.region,time:l.approved.effectiveDataScope.time,filters:l.approved.effectiveDataScope.filters}))};}

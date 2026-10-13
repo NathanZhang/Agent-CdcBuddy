@@ -1,0 +1,69 @@
+{
+  "development": {
+    "cases": 128,
+    "repeats": 3,
+    "total": 384,
+    "passed": 380,
+    "accuracy": 0.9895833333333334,
+    "p50Ms": 15621,
+    "p95Ms": 21843,
+    "model": "qwen3.8-27b",
+    "failures": [
+      {
+        "id": "dev-028",
+        "repeat": 1,
+        "reasons": [
+          "not resolved"
+        ]
+      },
+      {
+        "id": "dev-058",
+        "repeat": 0,
+        "reasons": [
+          "not resolved"
+        ]
+      },
+      {
+        "id": "dev-060",
+        "repeat": 2,
+        "reasons": [
+          "not resolved"
+        ]
+      },
+      {
+        "id": "dev-time-4",
+        "repeat": 2,
+        "reasons": [
+          "not resolved"
+        ]
+      }
+    ]
+  },
+  "holdout": {
+    "cases": 40,
+    "repeats": 3,
+    "total": 120,
+    "passed": 119,
+    "accuracy": 0.9916666666666667,
+    "p50Ms": 17565,
+    "p95Ms": 29773,
+    "model": "qwen3.8-27b",
+    "failures": [
+      {
+        "id": "hold-016",
+        "repeat": 1,
+        "reasons": [
+          "not resolved"
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "refactorFiles": 62,
+    "refactorTests": 376,
+    "scientific": 32,
+    "integration": 24,
+    "baseline": 44,
+    "sourcesUnchanged": true
+  }
+}

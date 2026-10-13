@@ -10,7 +10,9 @@ import { POST as skillPost } from '@/app/api/skills/route';
 import { createSseDecoder } from '@/application/dispatch/sse';
 import { EventSchemas } from '@ag-ui/core';
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
-function llmFixture(){let calls=0;vi.stubEnv('SILICONFLOW_API_KEY','test-only');vi.stubEnv('AGENT_DOMAIN','vector');vi.stubGlobal('fetch',vi.fn(async(_url:RequestInfo|URL,init?:RequestInit)=>{if(JSON.parse(init!.body as string).messages[0].content.includes('你负责提炼会话标题'))return Response.json({choices:[{message:{role:'assistant',content:'{"title":"监测记录查询"}'}}]});calls++;return Response.json({choices:[{message:calls%2?{role:'assistant',content:null,tool_calls:[{id:`call-${calls}`,type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]}:{role:'assistant',content:'{"mode":"answer","replyText":"已读取病媒实测记录，数量见表。"}'}}]});}));return ()=>calls;}
+
+function intentResponse(input:string){const evidence={source:'current',start:0,end:input.length,quote:input};return Response.json({choices:[{message:{role:'assistant',content:JSON.stringify({task:'data_query',relation:'new',displayRegion:{op:'clear',evidence},dataRegion:{op:'clear',evidence},time:{op:'clear',evidence},filters:{},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec'}})}}]});}
+function llmFixture(){let calls=0;vi.stubEnv('SILICONFLOW_API_KEY','test-only');vi.stubEnv('AGENT_DOMAIN','vector');vi.stubGlobal('fetch',vi.fn(async(_url:RequestInfo|URL,init?:RequestInit)=>{if(JSON.parse(init!.body as string).messages[0].content.includes('你负责识别本轮任务和范围'))return intentResponse(JSON.parse(init!.body as string).messages.at(-1).content);if(JSON.parse(init!.body as string).messages[0].content.includes('你负责提炼会话标题'))return Response.json({choices:[{message:{role:'assistant',content:'{"title":"监测记录查询"}'}}]});calls++;return Response.json({choices:[{message:calls%2?{role:'assistant',content:null,tool_calls:[{id:`call-${calls}`,type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]}:{role:'assistant',content:'{"mode":"answer","replyText":"已读取病媒实测记录，数量见表。"}'}}]});}));return ()=>calls;}
 const traceDirectory=mkdtempSync(join(tmpdir(),'cdc-dispatch-trace-'));
 const previousBusinessPath=process.env.APP_BUSINESS_DB_PATH;
 beforeAll(()=>{process.env.APP_BUSINESS_DB_PATH=join(traceDirectory,'business.db');});
@@ -25,9 +27,9 @@ it('HTTP and SSE APIs use server-bound domain and publish real Skill plus AG-UI'
  expect(second.generativeView.data).toEqual(first.generativeView.data);expect(second.agui[0].result.payload.data).toEqual(first.generativeView.data);
  const agui=frames.filter(f=>f.event==='ag_ui');expect(agui.length).toBeGreaterThan(7);for(const frame of agui)expect(()=>EventSchemas.parse(frame.data)).not.toThrow();
 });
-it('legacy skill POST calls the main LLM rather than directly executing a skill',async()=>{
+it('legacy structured skill POST executes its bounded main dispatch without the LLM',async()=>{
  const calls=llmFixture();const result=await (await skillPost(request('/api/skills',{skillId:'skill_monitoring_data_table',args:{sql:'SELECT COUNT(*) AS n FROM fact_monitoring'}}))).json();
- expect(calls()).toBe(2);expect(result.success).toBe(true);expect(result.data.data[0].n).toBeGreaterThan(0);expect(result.replyText).toContain('实测');expect(result.agui).toHaveLength(1);
+ expect(calls()).toBe(0);expect(result.success).toBe(true);expect(result.data.data[0].n).toBeGreaterThan(0);expect(result.agui).toHaveLength(1);
 });
 it('LLM failure returns failure without a successful old view through either API',async()=>{
  vi.stubEnv('SILICONFLOW_API_KEY','');const body={promptText:'查询数据',context:{currentView:{type:'OLD_SUCCESS'}}};
@@ -49,7 +51,7 @@ it.each([false,true])('keeps one real query result when length recovery fails=%s
  vi.stubEnv('SILICONFLOW_API_KEY','test-only');vi.stubEnv('AGENT_DOMAIN','vector');
  let calls=0;const frame=(delta:unknown,finish_reason:string)=>`data: ${JSON.stringify({choices:[{delta,finish_reason}]})}\n\n`;
  vi.stubGlobal('fetch',async(_url:RequestInfo|URL,init?:RequestInit)=>{
-  if(JSON.parse(init!.body as string).messages[0].content.includes('你负责提炼会话标题'))return Response.json({choices:[{message:{role:'assistant',content:'{"title":"监测记录查询"}'}}]});
+  if(JSON.parse(init!.body as string).messages[0].content.includes('你负责识别本轮任务和范围'))return intentResponse(JSON.parse(init!.body as string).messages.at(-1).content);if(JSON.parse(init!.body as string).messages[0].content.includes('你负责提炼会话标题'))return Response.json({choices:[{message:{role:'assistant',content:'{"title":"监测记录查询"}'}}]});
   calls++;
   const wire=calls===1?frame({tool_calls:[{index:0,id:'query',type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}]},'tool_calls')
    :calls===2||recoveryFails?frame({reasoning_content:'长篇总结未结束'},'length')

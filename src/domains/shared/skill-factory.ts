@@ -1,3 +1,7 @@
+import {approveStructuredIntent} from '@/application/agent/structured-intent';
+import {searchRegionCandidates} from '@/infrastructure/geo/region-catalog';
+import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
+import {assertSkillMatchesIntent,compileScopedFilters,assertSqlMatchesIntent} from '@/application/agent/scope-guard';
 import { queryVisualizationSchema } from '@/contracts/query-visualization';
 import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
 import { loadDatasetManifest } from '@/infrastructure/db/dataset-manifest';
@@ -20,16 +24,21 @@ export function normalizeProvinceCity(city?:string):string|undefined {
   return ['河南','河南省','全省','全域','全省全景','河南省全域'].includes(city?.trim() ?? '')?undefined:city;
 }
 export function scopeFromArgs(args:Record<string,any>,ctx:ExecutionContext) {
-  authorizeScope(args,ctx);
-  // Authorize the original request first; province labels must never widen a city role.
-  const city=normalizeProvinceCity(args.city);
-  const allowedColumns=ctx.principal.role==='PUBLIC_VIEWER'?restrictColumns(getDomainRepository(ctx.domain).getSchema(),ctx.principal):undefined;
-  return {principal:ctx.principal,allowedColumns,domain:ctx.domain,city:ctx.principal.jurisdiction.city ?? city,district:ctx.principal.jurisdiction.district ?? args.district,from:args.from,to:args.to};
+  if(!ctx.approvedIntent)ctx.approvedIntent=approveStructuredIntent(args,ctx);
+  if(ctx.approvedIntent.domain!==ctx.domain||ctx.approvedIntent.owner.userId!==ctx.principal.userId||ctx.approvedIntent.owner.organizationId!==ctx.principal.organizationId)throw new Error('FORBIDDEN_INTENT_OWNER');
+  const candidates=args.city?searchRegionCandidates(args.city).candidates:[];
+  const canonical:Record<string,any>=candidates.length===1&&candidates[0].level==='city'?{...args,city:candidates[0].name}:{...args};
+  if(candidates.length===1&&candidates[0].level==='county'){canonical.city=undefined;canonical.district=candidates[0].name;}
+  if(candidates.length===1&&candidates[0].level==='province')canonical.city=undefined;
+  if(args.district){const parent=candidates[0]?.level==='city'?candidates[0].code:ctx.principal.jurisdiction.city?searchRegionCandidates(ctx.principal.jurisdiction.city).candidates[0]?.code:undefined;const districts=searchRegionCandidates(args.district,parent).candidates;if(districts.length!==1)throw new Error('REGION_UNRESOLVED');canonical.district=loadDatasetRegionBindings(ctx.domain,ctx.approvedIntent.datasetVersion).regions.find(r=>r.code===districts[0].code)?.district??districts[0].name;}
+  authorizeScope(canonical,ctx);
+  if(ctx.approvedIntent){const bindings=loadDatasetRegionBindings(ctx.domain,ctx.approvedIntent.datasetVersion);assertSkillMatchesIntent(canonical,ctx.approvedIntent,bindings);if(args.sql)assertSqlMatchesIntent(args.sql,ctx.approvedIntent,bindings);if(args.sqlQuery)assertSqlMatchesIntent(args.sqlQuery,ctx.approvedIntent,bindings);const scoped=compileScopedFilters(ctx.approvedIntent,bindings);const single=scoped.regionPaths.length===1?scoped.regionPaths[0]:{};return {...scoped,...single,approvedIntent:ctx.approvedIntent,principal:ctx.principal,domain:ctx.domain,allowedColumns:ctx.principal.role==='PUBLIC_VIEWER'?restrictColumns(getDomainRepository(ctx.domain).getSchema(),ctx.principal):undefined};}
+  throw new Error('FORBIDDEN_INTENT');
 }
 async function executeQuery(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const started=Date.now();
   const data=getDomainRepository(ctx.domain).query(args.sql,[],scopeFromArgs(args,ctx));
-  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,scope:scopeFromArgs(args,ctx),executionTimeMs:Date.now()-started,data,...(args.visualization?{visualization:args.visualization}:{})}:null};
+  return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:'监测数据查询',query:args.query ?? args.sql,sql:args.sql,scope:Object.fromEntries(Object.entries(scopeFromArgs(args,ctx)).filter(([key])=>!['principal','allowedColumns','approvedIntent'].includes(key))),executionTimeMs:Date.now()-started,data,...(args.visualization?{visualization:args.visualization}:{})}:null};
 }
 async function executeBuilder(args:Record<string,any>,ctx:ExecutionContext):Promise<SkillExecution> {
   const data=getDomainRepository(ctx.domain).query(args.sqlQuery,[],scopeFromArgs(args,ctx));

@@ -1,0 +1,3229 @@
+{
+  "vector": {
+    "datasetVersion": "existing-snapshot-2026-10-12",
+    "mappingVersion": "source-names-2026-10-13-v1",
+    "sourceCRS": "EPSG:4326",
+    "coordinateEvidence": "user-confirmed-2026-10-13",
+    "regions": [
+      {
+        "code": "410000"
+      },
+      {
+        "code": "411100",
+        "city": "漯河市"
+      },
+      {
+        "code": "411000",
+        "city": "许昌市"
+      },
+      {
+        "code": "410900",
+        "city": "濮阳市"
+      },
+      {
+        "code": "419001",
+        "city": "济源市"
+      },
+      {
+        "code": "410600",
+        "city": "鹤壁市"
+      },
+      {
+        "code": "411700",
+        "city": "驻马店市"
+      },
+      {
+        "code": "410500",
+        "city": "安阳市"
+      },
+      {
+        "code": "411600",
+        "city": "周口市"
+      },
+      {
+        "code": "410800",
+        "city": "焦作市"
+      },
+      {
+        "code": "410700",
+        "city": "新乡市"
+      },
+      {
+        "code": "410200",
+        "city": "开封市"
+      },
+      {
+        "code": "411300",
+        "city": "南阳市"
+      },
+      {
+        "code": "410100",
+        "city": "郑州市"
+      },
+      {
+        "code": "411200",
+        "city": "三门峡市"
+      },
+      {
+        "code": "410400",
+        "city": "平顶山市"
+      },
+      {
+        "code": "411500",
+        "city": "信阳市"
+      },
+      {
+        "code": "410300",
+        "city": "洛阳市"
+      },
+      {
+        "code": "411400",
+        "city": "商丘市"
+      },
+      {
+        "code": "410581",
+        "city": "安阳市",
+        "district": "林州市"
+      },
+      {
+        "code": "410185",
+        "city": "郑州市",
+        "district": "登封市"
+      },
+      {
+        "code": "410184",
+        "city": "郑州市",
+        "district": "新郑市"
+      },
+      {
+        "code": "410183",
+        "city": "郑州市",
+        "district": "新密市"
+      },
+      {
+        "code": "410182",
+        "city": "郑州市",
+        "district": "荥阳市"
+      },
+      {
+        "code": "410505",
+        "city": "安阳市",
+        "district": "殷都区"
+      },
+      {
+        "code": "410108",
+        "city": "郑州市",
+        "district": "惠济区"
+      },
+      {
+        "code": "410902",
+        "city": "濮阳市",
+        "district": "华龙区"
+      },
+      {
+        "code": "410506",
+        "city": "安阳市",
+        "district": "龙安区"
+      },
+      {
+        "code": "410622",
+        "city": "鹤壁市",
+        "district": "淇县"
+      },
+      {
+        "code": "410621",
+        "city": "鹤壁市",
+        "district": "浚县"
+      },
+      {
+        "code": "410503",
+        "city": "安阳市",
+        "district": "北关区"
+      },
+      {
+        "code": "410502",
+        "city": "安阳市",
+        "district": "文峰区"
+      },
+      {
+        "code": "410222",
+        "city": "开封市",
+        "district": "通许县"
+      },
+      {
+        "code": "410221",
+        "city": "开封市",
+        "district": "杞县"
+      },
+      {
+        "code": "410103",
+        "city": "郑州市",
+        "district": "二七区"
+      },
+      {
+        "code": "410102",
+        "city": "郑州市",
+        "district": "中原区"
+      },
+      {
+        "code": "411681",
+        "city": "周口市",
+        "district": "项城市"
+      },
+      {
+        "code": "411281",
+        "city": "三门峡市",
+        "district": "义马市"
+      },
+      {
+        "code": "411282",
+        "city": "三门峡市",
+        "district": "灵宝市"
+      },
+      {
+        "code": "411729",
+        "city": "驻马店市",
+        "district": "新蔡县"
+      },
+      {
+        "code": "411329",
+        "city": "南阳市",
+        "district": "新野县"
+      },
+      {
+        "code": "411727",
+        "city": "驻马店市",
+        "district": "汝南县"
+      },
+      {
+        "code": "411326",
+        "city": "南阳市",
+        "district": "淅川县"
+      },
+      {
+        "code": "411325",
+        "city": "南阳市",
+        "district": "内乡县"
+      },
+      {
+        "code": "411724",
+        "city": "驻马店市",
+        "district": "正阳县"
+      },
+      {
+        "code": "411603",
+        "city": "周口市",
+        "district": "淮阳区"
+      },
+      {
+        "code": "411328",
+        "city": "南阳市",
+        "district": "唐河县"
+      },
+      {
+        "code": "411602",
+        "city": "周口市",
+        "district": "川汇区"
+      },
+      {
+        "code": "411322",
+        "city": "南阳市",
+        "district": "方城县"
+      },
+      {
+        "code": "411321",
+        "city": "南阳市",
+        "district": "南召县"
+      },
+      {
+        "code": "411324",
+        "city": "南阳市",
+        "district": "镇平县"
+      },
+      {
+        "code": "411203",
+        "city": "三门峡市",
+        "district": "陕州区"
+      },
+      {
+        "code": "411323",
+        "city": "南阳市",
+        "district": "西峡县"
+      },
+      {
+        "code": "411202",
+        "city": "三门峡市",
+        "district": "湖滨区"
+      },
+      {
+        "code": "410329",
+        "city": "洛阳市",
+        "district": "伊川县"
+      },
+      {
+        "code": "410603",
+        "city": "鹤壁市",
+        "district": "山城区"
+      },
+      {
+        "code": "410724",
+        "city": "新乡市",
+        "district": "获嘉县"
+      },
+      {
+        "code": "410328",
+        "city": "洛阳市",
+        "district": "洛宁县"
+      },
+      {
+        "code": "410727",
+        "city": "新乡市",
+        "district": "封丘县"
+      },
+      {
+        "code": "410721",
+        "city": "新乡市",
+        "district": "新乡县"
+      },
+      {
+        "code": "410204",
+        "city": "开封市",
+        "district": "鼓楼区"
+      },
+      {
+        "code": "410325",
+        "city": "洛阳市",
+        "district": "嵩县"
+      },
+      {
+        "code": "410203",
+        "city": "开封市",
+        "district": "顺河回族区"
+      },
+      {
+        "code": "410324",
+        "city": "洛阳市",
+        "district": "栾川县"
+      },
+      {
+        "code": "410602",
+        "city": "鹤壁市",
+        "district": "鹤山区"
+      },
+      {
+        "code": "410327",
+        "city": "洛阳市",
+        "district": "宜阳县"
+      },
+      {
+        "code": "410205",
+        "city": "开封市",
+        "district": "禹王台区"
+      },
+      {
+        "code": "410326",
+        "city": "洛阳市",
+        "district": "汝阳县"
+      },
+      {
+        "code": "410202",
+        "city": "开封市",
+        "district": "龙亭区"
+      },
+      {
+        "code": "410323",
+        "city": "洛阳市",
+        "district": "新安县"
+      },
+      {
+        "code": "411381",
+        "city": "南阳市",
+        "district": "邓州市"
+      },
+      {
+        "code": "410611",
+        "city": "鹤壁市",
+        "district": "淇滨区"
+      },
+      {
+        "code": "411303",
+        "city": "南阳市",
+        "district": "卧龙区"
+      },
+      {
+        "code": "411702",
+        "city": "驻马店市",
+        "district": "驿城区"
+      },
+      {
+        "code": "411025",
+        "city": "许昌市",
+        "district": "襄城县"
+      },
+      {
+        "code": "411024",
+        "city": "许昌市",
+        "district": "鄢陵县"
+      },
+      {
+        "code": "411302",
+        "city": "南阳市",
+        "district": "宛城区"
+      },
+      {
+        "code": "410212",
+        "city": "开封市",
+        "district": "祥符区"
+      },
+      {
+        "code": "411422",
+        "city": "商丘市",
+        "district": "睢县"
+      },
+      {
+        "code": "410781",
+        "city": "新乡市",
+        "district": "卫辉市"
+      },
+      {
+        "code": "410307",
+        "city": "洛阳市",
+        "district": "偃师区"
+      },
+      {
+        "code": "410823",
+        "city": "焦作市",
+        "district": "武陟县"
+      },
+      {
+        "code": "410702",
+        "city": "新乡市",
+        "district": "红旗区"
+      },
+      {
+        "code": "410825",
+        "city": "焦作市",
+        "district": "温县"
+      },
+      {
+        "code": "410704",
+        "city": "新乡市",
+        "district": "凤泉区"
+      },
+      {
+        "code": "410308",
+        "city": "洛阳市",
+        "district": "孟津区"
+      },
+      {
+        "code": "410303",
+        "city": "洛阳市",
+        "district": "西工区"
+      },
+      {
+        "code": "410302",
+        "city": "洛阳市",
+        "district": "老城区"
+      },
+      {
+        "code": "410822",
+        "city": "焦作市",
+        "district": "博爱县"
+      },
+      {
+        "code": "410305",
+        "city": "洛阳市",
+        "district": "涧西区"
+      },
+      {
+        "code": "410821",
+        "city": "焦作市",
+        "district": "修武县"
+      },
+      {
+        "code": "410304",
+        "city": "洛阳市",
+        "district": "瀍河回族区"
+      },
+      {
+        "code": "410783",
+        "city": "新乡市",
+        "district": "长垣市"
+      },
+      {
+        "code": "410782",
+        "city": "新乡市",
+        "district": "辉县"
+      },
+      {
+        "code": "410422",
+        "city": "平顶山市",
+        "district": "叶县"
+      },
+      {
+        "code": "411122",
+        "city": "漯河市",
+        "district": "临颍县"
+      },
+      {
+        "code": "411121",
+        "city": "漯河市",
+        "district": "舞阳县"
+      },
+      {
+        "code": "411082",
+        "city": "许昌市",
+        "district": "长葛市"
+      },
+      {
+        "code": "411481",
+        "city": "商丘市",
+        "district": "永城市"
+      },
+      {
+        "code": "411081",
+        "city": "许昌市",
+        "district": "禹州市"
+      },
+      {
+        "code": "411528",
+        "city": "信阳市",
+        "district": "息县"
+      },
+      {
+        "code": "411527",
+        "city": "信阳市",
+        "district": "淮滨县"
+      },
+      {
+        "code": "411524",
+        "city": "信阳市",
+        "district": "商城县"
+      },
+      {
+        "code": "411523",
+        "city": "信阳市",
+        "district": "新县"
+      },
+      {
+        "code": "411402",
+        "city": "商丘市",
+        "district": "梁园区"
+      },
+      {
+        "code": "410711",
+        "city": "新乡市",
+        "district": "牧野区"
+      },
+      {
+        "code": "411525",
+        "city": "信阳市",
+        "district": "固始县"
+      },
+      {
+        "code": "411003",
+        "city": "许昌市",
+        "district": "建安区"
+      },
+      {
+        "code": "411002",
+        "city": "许昌市",
+        "district": "魏都区"
+      },
+      {
+        "code": "411522",
+        "city": "信阳市",
+        "district": "光山县"
+      },
+      {
+        "code": "411521",
+        "city": "信阳市",
+        "district": "罗山县"
+      },
+      {
+        "code": "410311",
+        "city": "洛阳市",
+        "district": "洛龙区"
+      },
+      {
+        "code": "411330",
+        "city": "南阳市",
+        "district": "桐柏县"
+      },
+      {
+        "code": "410927",
+        "city": "濮阳市",
+        "district": "台前县"
+      },
+      {
+        "code": "410928",
+        "city": "濮阳市",
+        "district": "濮阳县"
+      },
+      {
+        "code": "410923",
+        "city": "濮阳市",
+        "district": "南乐县"
+      },
+      {
+        "code": "410527",
+        "city": "安阳市",
+        "district": "内黄县"
+      },
+      {
+        "code": "410802",
+        "city": "焦作市",
+        "district": "解放区"
+      },
+      {
+        "code": "410922",
+        "city": "濮阳市",
+        "district": "清丰县"
+      },
+      {
+        "code": "410526",
+        "city": "安阳市",
+        "district": "滑县"
+      },
+      {
+        "code": "410804",
+        "city": "焦作市",
+        "district": "马村区"
+      },
+      {
+        "code": "410803",
+        "city": "焦作市",
+        "district": "中站区"
+      },
+      {
+        "code": "410523",
+        "city": "安阳市",
+        "district": "汤阴县"
+      },
+      {
+        "code": "410522",
+        "city": "安阳市",
+        "district": "安阳县"
+      },
+      {
+        "code": "410882",
+        "city": "焦作市",
+        "district": "沁阳市"
+      },
+      {
+        "code": "410122",
+        "city": "郑州市",
+        "district": "中牟县"
+      },
+      {
+        "code": "410883",
+        "city": "焦作市",
+        "district": "孟州市"
+      },
+      {
+        "code": "411221",
+        "city": "三门峡市",
+        "district": "渑池县"
+      },
+      {
+        "code": "411502",
+        "city": "信阳市",
+        "district": "浉河区"
+      },
+      {
+        "code": "410811",
+        "city": "焦作市",
+        "district": "山阳区"
+      },
+      {
+        "code": "411624",
+        "city": "周口市",
+        "district": "沈丘县"
+      },
+      {
+        "code": "411503",
+        "city": "信阳市",
+        "district": "平桥区"
+      },
+      {
+        "code": "411102",
+        "city": "漯河市",
+        "district": "源汇区"
+      },
+      {
+        "code": "411104",
+        "city": "漯河市",
+        "district": "召陵区"
+      },
+      {
+        "code": "411103",
+        "city": "漯河市",
+        "district": "郾城区"
+      },
+      {
+        "code": "411224",
+        "city": "三门峡市",
+        "district": "卢氏县"
+      }
+    ]
+  },
+  "foodborne": {
+    "datasetVersion": "existing-snapshot-2026-10-12",
+    "mappingVersion": "source-names-2026-10-13-v1",
+    "sourceCRS": "EPSG:4326",
+    "coordinateEvidence": "user-confirmed-2026-10-13",
+    "regions": [
+      {
+        "code": "410000"
+      },
+      {
+        "code": "411100",
+        "city": "漯河市"
+      },
+      {
+        "code": "411000",
+        "city": "许昌市"
+      },
+      {
+        "code": "410900",
+        "city": "濮阳市"
+      },
+      {
+        "code": "419001",
+        "city": "济源市"
+      },
+      {
+        "code": "410600",
+        "city": "鹤壁市"
+      },
+      {
+        "code": "411700",
+        "city": "驻马店市"
+      },
+      {
+        "code": "410500",
+        "city": "安阳市"
+      },
+      {
+        "code": "411600",
+        "city": "周口市"
+      },
+      {
+        "code": "410800",
+        "city": "焦作市"
+      },
+      {
+        "code": "410700",
+        "city": "新乡市"
+      },
+      {
+        "code": "410200",
+        "city": "开封市"
+      },
+      {
+        "code": "411300",
+        "city": "南阳市"
+      },
+      {
+        "code": "410100",
+        "city": "郑州市"
+      },
+      {
+        "code": "411200",
+        "city": "三门峡市"
+      },
+      {
+        "code": "410400",
+        "city": "平顶山市"
+      },
+      {
+        "code": "411500",
+        "city": "信阳市"
+      },
+      {
+        "code": "410300",
+        "city": "洛阳市"
+      },
+      {
+        "code": "411400",
+        "city": "商丘市"
+      },
+      {
+        "code": "410581",
+        "city": "安阳市",
+        "district": "林州市"
+      },
+      {
+        "code": "410185",
+        "city": "郑州市",
+        "district": "登封市"
+      },
+      {
+        "code": "410184",
+        "city": "郑州市",
+        "district": "新郑市"
+      },
+      {
+        "code": "410181",
+        "city": "郑州市",
+        "district": "巩义市"
+      },
+      {
+        "code": "410183",
+        "city": "郑州市",
+        "district": "新密市"
+      },
+      {
+        "code": "410182",
+        "city": "郑州市",
+        "district": "荥阳市"
+      },
+      {
+        "code": "410505",
+        "city": "安阳市",
+        "district": "殷都区"
+      },
+      {
+        "code": "410108",
+        "city": "郑州市",
+        "district": "惠济区"
+      },
+      {
+        "code": "410902",
+        "city": "濮阳市",
+        "district": "华龙区"
+      },
+      {
+        "code": "410506",
+        "city": "安阳市",
+        "district": "龙安区"
+      },
+      {
+        "code": "410622",
+        "city": "鹤壁市",
+        "district": "淇县"
+      },
+      {
+        "code": "410105",
+        "city": "郑州市",
+        "district": "金水区"
+      },
+      {
+        "code": "410621",
+        "city": "鹤壁市",
+        "district": "浚县"
+      },
+      {
+        "code": "410225",
+        "city": "开封市",
+        "district": "兰考县"
+      },
+      {
+        "code": "410104",
+        "city": "郑州市",
+        "district": "管城回族区"
+      },
+      {
+        "code": "410503",
+        "city": "安阳市",
+        "district": "北关区"
+      },
+      {
+        "code": "410502",
+        "city": "安阳市",
+        "district": "文峰区"
+      },
+      {
+        "code": "410222",
+        "city": "开封市",
+        "district": "通许县"
+      },
+      {
+        "code": "410221",
+        "city": "开封市",
+        "district": "杞县"
+      },
+      {
+        "code": "410103",
+        "city": "郑州市",
+        "district": "二七区"
+      },
+      {
+        "code": "410223",
+        "city": "开封市",
+        "district": "尉氏县"
+      },
+      {
+        "code": "410102",
+        "city": "郑州市",
+        "district": "中原区"
+      },
+      {
+        "code": "411681",
+        "city": "周口市",
+        "district": "项城市"
+      },
+      {
+        "code": "411281",
+        "city": "三门峡市",
+        "district": "义马市"
+      },
+      {
+        "code": "411282",
+        "city": "三门峡市",
+        "district": "灵宝市"
+      },
+      {
+        "code": "411729",
+        "city": "驻马店市",
+        "district": "新蔡县"
+      },
+      {
+        "code": "411726",
+        "city": "驻马店市",
+        "district": "泌阳县"
+      },
+      {
+        "code": "411725",
+        "city": "驻马店市",
+        "district": "确山县"
+      },
+      {
+        "code": "411329",
+        "city": "南阳市",
+        "district": "新野县"
+      },
+      {
+        "code": "411728",
+        "city": "驻马店市",
+        "district": "遂平县"
+      },
+      {
+        "code": "411727",
+        "city": "驻马店市",
+        "district": "汝南县"
+      },
+      {
+        "code": "411722",
+        "city": "驻马店市",
+        "district": "上蔡县"
+      },
+      {
+        "code": "411326",
+        "city": "南阳市",
+        "district": "淅川县"
+      },
+      {
+        "code": "411721",
+        "city": "驻马店市",
+        "district": "西平县"
+      },
+      {
+        "code": "411325",
+        "city": "南阳市",
+        "district": "内乡县"
+      },
+      {
+        "code": "411724",
+        "city": "驻马店市",
+        "district": "正阳县"
+      },
+      {
+        "code": "411603",
+        "city": "周口市",
+        "district": "淮阳区"
+      },
+      {
+        "code": "411328",
+        "city": "南阳市",
+        "district": "唐河县"
+      },
+      {
+        "code": "411723",
+        "city": "驻马店市",
+        "district": "平舆县"
+      },
+      {
+        "code": "411602",
+        "city": "周口市",
+        "district": "川汇区"
+      },
+      {
+        "code": "411327",
+        "city": "南阳市",
+        "district": "社旗县"
+      },
+      {
+        "code": "411322",
+        "city": "南阳市",
+        "district": "方城县"
+      },
+      {
+        "code": "411321",
+        "city": "南阳市",
+        "district": "南召县"
+      },
+      {
+        "code": "411324",
+        "city": "南阳市",
+        "district": "镇平县"
+      },
+      {
+        "code": "411203",
+        "city": "三门峡市",
+        "district": "陕州区"
+      },
+      {
+        "code": "411323",
+        "city": "南阳市",
+        "district": "西峡县"
+      },
+      {
+        "code": "411202",
+        "city": "三门峡市",
+        "district": "湖滨区"
+      },
+      {
+        "code": "410725",
+        "city": "新乡市",
+        "district": "原阳县"
+      },
+      {
+        "code": "410329",
+        "city": "洛阳市",
+        "district": "伊川县"
+      },
+      {
+        "code": "410603",
+        "city": "鹤壁市",
+        "district": "山城区"
+      },
+      {
+        "code": "410724",
+        "city": "新乡市",
+        "district": "获嘉县"
+      },
+      {
+        "code": "410328",
+        "city": "洛阳市",
+        "district": "洛宁县"
+      },
+      {
+        "code": "410727",
+        "city": "新乡市",
+        "district": "封丘县"
+      },
+      {
+        "code": "410726",
+        "city": "新乡市",
+        "district": "延津县"
+      },
+      {
+        "code": "410721",
+        "city": "新乡市",
+        "district": "新乡县"
+      },
+      {
+        "code": "410204",
+        "city": "开封市",
+        "district": "鼓楼区"
+      },
+      {
+        "code": "410325",
+        "city": "洛阳市",
+        "district": "嵩县"
+      },
+      {
+        "code": "410203",
+        "city": "开封市",
+        "district": "顺河回族区"
+      },
+      {
+        "code": "410324",
+        "city": "洛阳市",
+        "district": "栾川县"
+      },
+      {
+        "code": "410602",
+        "city": "鹤壁市",
+        "district": "鹤山区"
+      },
+      {
+        "code": "410327",
+        "city": "洛阳市",
+        "district": "宜阳县"
+      },
+      {
+        "code": "410205",
+        "city": "开封市",
+        "district": "禹王台区"
+      },
+      {
+        "code": "410326",
+        "city": "洛阳市",
+        "district": "汝阳县"
+      },
+      {
+        "code": "410202",
+        "city": "开封市",
+        "district": "龙亭区"
+      },
+      {
+        "code": "410323",
+        "city": "洛阳市",
+        "district": "新安县"
+      },
+      {
+        "code": "411381",
+        "city": "南阳市",
+        "district": "邓州市"
+      },
+      {
+        "code": "410611",
+        "city": "鹤壁市",
+        "district": "淇滨区"
+      },
+      {
+        "code": "411425",
+        "city": "商丘市",
+        "district": "虞城县"
+      },
+      {
+        "code": "411303",
+        "city": "南阳市",
+        "district": "卧龙区"
+      },
+      {
+        "code": "411424",
+        "city": "商丘市",
+        "district": "柘城县"
+      },
+      {
+        "code": "411702",
+        "city": "驻马店市",
+        "district": "驿城区"
+      },
+      {
+        "code": "411426",
+        "city": "商丘市",
+        "district": "夏邑县"
+      },
+      {
+        "code": "411025",
+        "city": "许昌市",
+        "district": "襄城县"
+      },
+      {
+        "code": "411421",
+        "city": "商丘市",
+        "district": "民权县"
+      },
+      {
+        "code": "411024",
+        "city": "许昌市",
+        "district": "鄢陵县"
+      },
+      {
+        "code": "411302",
+        "city": "南阳市",
+        "district": "宛城区"
+      },
+      {
+        "code": "411423",
+        "city": "商丘市",
+        "district": "宁陵县"
+      },
+      {
+        "code": "410212",
+        "city": "开封市",
+        "district": "祥符区"
+      },
+      {
+        "code": "411422",
+        "city": "商丘市",
+        "district": "睢县"
+      },
+      {
+        "code": "410781",
+        "city": "新乡市",
+        "district": "卫辉市"
+      },
+      {
+        "code": "410703",
+        "city": "新乡市",
+        "district": "卫滨区"
+      },
+      {
+        "code": "410307",
+        "city": "洛阳市",
+        "district": "偃师区"
+      },
+      {
+        "code": "410823",
+        "city": "焦作市",
+        "district": "武陟县"
+      },
+      {
+        "code": "410702",
+        "city": "新乡市",
+        "district": "红旗区"
+      },
+      {
+        "code": "410825",
+        "city": "焦作市",
+        "district": "温县"
+      },
+      {
+        "code": "410704",
+        "city": "新乡市",
+        "district": "凤泉区"
+      },
+      {
+        "code": "410308",
+        "city": "洛阳市",
+        "district": "孟津区"
+      },
+      {
+        "code": "410303",
+        "city": "洛阳市",
+        "district": "西工区"
+      },
+      {
+        "code": "410423",
+        "city": "平顶山市",
+        "district": "鲁山县"
+      },
+      {
+        "code": "410302",
+        "city": "洛阳市",
+        "district": "老城区"
+      },
+      {
+        "code": "410822",
+        "city": "焦作市",
+        "district": "博爱县"
+      },
+      {
+        "code": "410305",
+        "city": "洛阳市",
+        "district": "涧西区"
+      },
+      {
+        "code": "410821",
+        "city": "焦作市",
+        "district": "修武县"
+      },
+      {
+        "code": "410425",
+        "city": "平顶山市",
+        "district": "郏县"
+      },
+      {
+        "code": "410304",
+        "city": "洛阳市",
+        "district": "瀍河回族区"
+      },
+      {
+        "code": "410782",
+        "city": "新乡市",
+        "district": "辉县市"
+      },
+      {
+        "code": "410422",
+        "city": "平顶山市",
+        "district": "叶县"
+      },
+      {
+        "code": "410421",
+        "city": "平顶山市",
+        "district": "宝丰县"
+      },
+      {
+        "code": "411122",
+        "city": "漯河市",
+        "district": "临颍县"
+      },
+      {
+        "code": "411121",
+        "city": "漯河市",
+        "district": "舞阳县"
+      },
+      {
+        "code": "411082",
+        "city": "许昌市",
+        "district": "长葛市"
+      },
+      {
+        "code": "411481",
+        "city": "商丘市",
+        "district": "永城市"
+      },
+      {
+        "code": "411081",
+        "city": "许昌市",
+        "district": "禹州市"
+      },
+      {
+        "code": "411528",
+        "city": "信阳市",
+        "district": "息县"
+      },
+      {
+        "code": "411527",
+        "city": "信阳市",
+        "district": "淮滨县"
+      },
+      {
+        "code": "411524",
+        "city": "信阳市",
+        "district": "商城县"
+      },
+      {
+        "code": "411403",
+        "city": "商丘市",
+        "district": "睢阳区"
+      },
+      {
+        "code": "411523",
+        "city": "信阳市",
+        "district": "新县"
+      },
+      {
+        "code": "411402",
+        "city": "商丘市",
+        "district": "梁园区"
+      },
+      {
+        "code": "411526",
+        "city": "信阳市",
+        "district": "潢川县"
+      },
+      {
+        "code": "410711",
+        "city": "新乡市",
+        "district": "牧野区"
+      },
+      {
+        "code": "411525",
+        "city": "信阳市",
+        "district": "固始县"
+      },
+      {
+        "code": "411003",
+        "city": "许昌市",
+        "district": "建安区"
+      },
+      {
+        "code": "411002",
+        "city": "许昌市",
+        "district": "魏都区"
+      },
+      {
+        "code": "411522",
+        "city": "信阳市",
+        "district": "光山县"
+      },
+      {
+        "code": "411521",
+        "city": "信阳市",
+        "district": "罗山县"
+      },
+      {
+        "code": "410311",
+        "city": "洛阳市",
+        "district": "洛龙区"
+      },
+      {
+        "code": "410482",
+        "city": "平顶山市",
+        "district": "汝州市"
+      },
+      {
+        "code": "410481",
+        "city": "平顶山市",
+        "district": "舞钢市"
+      },
+      {
+        "code": "411330",
+        "city": "南阳市",
+        "district": "桐柏县"
+      },
+      {
+        "code": "410927",
+        "city": "濮阳市",
+        "district": "台前县"
+      },
+      {
+        "code": "410926",
+        "city": "濮阳市",
+        "district": "范县"
+      },
+      {
+        "code": "410928",
+        "city": "濮阳市",
+        "district": "濮阳县"
+      },
+      {
+        "code": "410923",
+        "city": "濮阳市",
+        "district": "南乐县"
+      },
+      {
+        "code": "410527",
+        "city": "安阳市",
+        "district": "内黄县"
+      },
+      {
+        "code": "410802",
+        "city": "焦作市",
+        "district": "解放区"
+      },
+      {
+        "code": "410922",
+        "city": "濮阳市",
+        "district": "清丰县"
+      },
+      {
+        "code": "410526",
+        "city": "安阳市",
+        "district": "滑县"
+      },
+      {
+        "code": "410804",
+        "city": "焦作市",
+        "district": "马村区"
+      },
+      {
+        "code": "410803",
+        "city": "焦作市",
+        "district": "中站区"
+      },
+      {
+        "code": "410523",
+        "city": "安阳市",
+        "district": "汤阴县"
+      },
+      {
+        "code": "410402",
+        "city": "平顶山市",
+        "district": "新华区"
+      },
+      {
+        "code": "410522",
+        "city": "安阳市",
+        "district": "安阳县"
+      },
+      {
+        "code": "410404",
+        "city": "平顶山市",
+        "district": "石龙区"
+      },
+      {
+        "code": "410403",
+        "city": "平顶山市",
+        "district": "卫东区"
+      },
+      {
+        "code": "410882",
+        "city": "焦作市",
+        "district": "沁阳市"
+      },
+      {
+        "code": "410122",
+        "city": "郑州市",
+        "district": "中牟县"
+      },
+      {
+        "code": "410883",
+        "city": "焦作市",
+        "district": "孟州市"
+      },
+      {
+        "code": "411221",
+        "city": "三门峡市",
+        "district": "渑池县"
+      },
+      {
+        "code": "411627",
+        "city": "周口市",
+        "district": "太康县"
+      },
+      {
+        "code": "411628",
+        "city": "周口市",
+        "district": "鹿邑县"
+      },
+      {
+        "code": "411623",
+        "city": "周口市",
+        "district": "商水县"
+      },
+      {
+        "code": "411502",
+        "city": "信阳市",
+        "district": "浉河区"
+      },
+      {
+        "code": "411622",
+        "city": "周口市",
+        "district": "西华县"
+      },
+      {
+        "code": "411625",
+        "city": "周口市",
+        "district": "郸城县"
+      },
+      {
+        "code": "410811",
+        "city": "焦作市",
+        "district": "山阳区"
+      },
+      {
+        "code": "411624",
+        "city": "周口市",
+        "district": "沈丘县"
+      },
+      {
+        "code": "411503",
+        "city": "信阳市",
+        "district": "平桥区"
+      },
+      {
+        "code": "411102",
+        "city": "漯河市",
+        "district": "源汇区"
+      },
+      {
+        "code": "411104",
+        "city": "漯河市",
+        "district": "召陵区"
+      },
+      {
+        "code": "411621",
+        "city": "周口市",
+        "district": "扶沟县"
+      },
+      {
+        "code": "410411",
+        "city": "平顶山市",
+        "district": "湛河区"
+      },
+      {
+        "code": "411103",
+        "city": "漯河市",
+        "district": "郾城区"
+      },
+      {
+        "code": "411224",
+        "city": "三门峡市",
+        "district": "卢氏县"
+      }
+    ]
+  },
+  "env": {
+    "datasetVersion": "existing-snapshot-2026-10-12",
+    "mappingVersion": "source-names-2026-10-13-v1",
+    "sourceCRS": "EPSG:4326",
+    "coordinateEvidence": "user-confirmed-2026-10-13",
+    "regions": [
+      {
+        "code": "410000"
+      },
+      {
+        "code": "411100",
+        "city": "漯河市"
+      },
+      {
+        "code": "411000",
+        "city": "许昌市"
+      },
+      {
+        "code": "410900",
+        "city": "濮阳市"
+      },
+      {
+        "code": "419001",
+        "city": "济源市"
+      },
+      {
+        "code": "410600",
+        "city": "鹤壁市"
+      },
+      {
+        "code": "411700",
+        "city": "驻马店市"
+      },
+      {
+        "code": "410500",
+        "city": "安阳市"
+      },
+      {
+        "code": "411600",
+        "city": "周口市"
+      },
+      {
+        "code": "410800",
+        "city": "焦作市"
+      },
+      {
+        "code": "410700",
+        "city": "新乡市"
+      },
+      {
+        "code": "410200",
+        "city": "开封市"
+      },
+      {
+        "code": "411300",
+        "city": "南阳市"
+      },
+      {
+        "code": "410100",
+        "city": "郑州市"
+      },
+      {
+        "code": "411200",
+        "city": "三门峡市"
+      },
+      {
+        "code": "410400",
+        "city": "平顶山市"
+      },
+      {
+        "code": "411500",
+        "city": "信阳市"
+      },
+      {
+        "code": "410300",
+        "city": "洛阳市"
+      },
+      {
+        "code": "411400",
+        "city": "商丘市"
+      },
+      {
+        "code": "410581",
+        "city": "安阳市",
+        "district": "林州市"
+      },
+      {
+        "code": "410185",
+        "city": "郑州市",
+        "district": "登封市"
+      },
+      {
+        "code": "410184",
+        "city": "郑州市",
+        "district": "新郑市"
+      },
+      {
+        "code": "410181",
+        "city": "郑州市",
+        "district": "巩义市"
+      },
+      {
+        "code": "410183",
+        "city": "郑州市",
+        "district": "新密市"
+      },
+      {
+        "code": "410182",
+        "city": "郑州市",
+        "district": "荥阳市"
+      },
+      {
+        "code": "410505",
+        "city": "安阳市",
+        "district": "殷都区"
+      },
+      {
+        "code": "410108",
+        "city": "郑州市",
+        "district": "惠济区"
+      },
+      {
+        "code": "410902",
+        "city": "濮阳市",
+        "district": "华龙区"
+      },
+      {
+        "code": "410506",
+        "city": "安阳市",
+        "district": "龙安区"
+      },
+      {
+        "code": "410622",
+        "city": "鹤壁市",
+        "district": "淇县"
+      },
+      {
+        "code": "410105",
+        "city": "郑州市",
+        "district": "金水区"
+      },
+      {
+        "code": "410621",
+        "city": "鹤壁市",
+        "district": "浚县"
+      },
+      {
+        "code": "410225",
+        "city": "开封市",
+        "district": "兰考县"
+      },
+      {
+        "code": "410104",
+        "city": "郑州市",
+        "district": "管城回族区"
+      },
+      {
+        "code": "410503",
+        "city": "安阳市",
+        "district": "北关区"
+      },
+      {
+        "code": "410502",
+        "city": "安阳市",
+        "district": "文峰区"
+      },
+      {
+        "code": "410222",
+        "city": "开封市",
+        "district": "通许县"
+      },
+      {
+        "code": "410221",
+        "city": "开封市",
+        "district": "杞县"
+      },
+      {
+        "code": "410103",
+        "city": "郑州市",
+        "district": "二七区"
+      },
+      {
+        "code": "410223",
+        "city": "开封市",
+        "district": "尉氏县"
+      },
+      {
+        "code": "410102",
+        "city": "郑州市",
+        "district": "中原区"
+      },
+      {
+        "code": "411681",
+        "city": "周口市",
+        "district": "项城市"
+      },
+      {
+        "code": "411281",
+        "city": "三门峡市",
+        "district": "义马市"
+      },
+      {
+        "code": "411282",
+        "city": "三门峡市",
+        "district": "灵宝市"
+      },
+      {
+        "code": "411729",
+        "city": "驻马店市",
+        "district": "新蔡县"
+      },
+      {
+        "code": "411726",
+        "city": "驻马店市",
+        "district": "泌阳县"
+      },
+      {
+        "code": "411725",
+        "city": "驻马店市",
+        "district": "确山县"
+      },
+      {
+        "code": "411329",
+        "city": "南阳市",
+        "district": "新野县"
+      },
+      {
+        "code": "411728",
+        "city": "驻马店市",
+        "district": "遂平县"
+      },
+      {
+        "code": "411727",
+        "city": "驻马店市",
+        "district": "汝南县"
+      },
+      {
+        "code": "411722",
+        "city": "驻马店市",
+        "district": "上蔡县"
+      },
+      {
+        "code": "411326",
+        "city": "南阳市",
+        "district": "淅川县"
+      },
+      {
+        "code": "411721",
+        "city": "驻马店市",
+        "district": "西平县"
+      },
+      {
+        "code": "411325",
+        "city": "南阳市",
+        "district": "内乡县"
+      },
+      {
+        "code": "411724",
+        "city": "驻马店市",
+        "district": "正阳县"
+      },
+      {
+        "code": "411603",
+        "city": "周口市",
+        "district": "淮阳区"
+      },
+      {
+        "code": "411328",
+        "city": "南阳市",
+        "district": "唐河县"
+      },
+      {
+        "code": "411723",
+        "city": "驻马店市",
+        "district": "平舆县"
+      },
+      {
+        "code": "411602",
+        "city": "周口市",
+        "district": "川汇区"
+      },
+      {
+        "code": "411327",
+        "city": "南阳市",
+        "district": "社旗县"
+      },
+      {
+        "code": "411322",
+        "city": "南阳市",
+        "district": "方城县"
+      },
+      {
+        "code": "411321",
+        "city": "南阳市",
+        "district": "南召县"
+      },
+      {
+        "code": "411324",
+        "city": "南阳市",
+        "district": "镇平县"
+      },
+      {
+        "code": "411203",
+        "city": "三门峡市",
+        "district": "陕州区"
+      },
+      {
+        "code": "411323",
+        "city": "南阳市",
+        "district": "西峡县"
+      },
+      {
+        "code": "411202",
+        "city": "三门峡市",
+        "district": "湖滨区"
+      },
+      {
+        "code": "410725",
+        "city": "新乡市",
+        "district": "原阳县"
+      },
+      {
+        "code": "410329",
+        "city": "洛阳市",
+        "district": "伊川县"
+      },
+      {
+        "code": "410603",
+        "city": "鹤壁市",
+        "district": "山城区"
+      },
+      {
+        "code": "410724",
+        "city": "新乡市",
+        "district": "获嘉县"
+      },
+      {
+        "code": "410328",
+        "city": "洛阳市",
+        "district": "洛宁县"
+      },
+      {
+        "code": "410727",
+        "city": "新乡市",
+        "district": "封丘县"
+      },
+      {
+        "code": "410726",
+        "city": "新乡市",
+        "district": "延津县"
+      },
+      {
+        "code": "410721",
+        "city": "新乡市",
+        "district": "新乡县"
+      },
+      {
+        "code": "410204",
+        "city": "开封市",
+        "district": "鼓楼区"
+      },
+      {
+        "code": "410325",
+        "city": "洛阳市",
+        "district": "嵩县"
+      },
+      {
+        "code": "410203",
+        "city": "开封市",
+        "district": "顺河回族区"
+      },
+      {
+        "code": "410324",
+        "city": "洛阳市",
+        "district": "栾川县"
+      },
+      {
+        "code": "410602",
+        "city": "鹤壁市",
+        "district": "鹤山区"
+      },
+      {
+        "code": "410327",
+        "city": "洛阳市",
+        "district": "宜阳县"
+      },
+      {
+        "code": "410205",
+        "city": "开封市",
+        "district": "禹王台区"
+      },
+      {
+        "code": "410326",
+        "city": "洛阳市",
+        "district": "汝阳县"
+      },
+      {
+        "code": "410202",
+        "city": "开封市",
+        "district": "龙亭区"
+      },
+      {
+        "code": "410323",
+        "city": "洛阳市",
+        "district": "新安县"
+      },
+      {
+        "code": "411381",
+        "city": "南阳市",
+        "district": "邓州市"
+      },
+      {
+        "code": "410611",
+        "city": "鹤壁市",
+        "district": "淇滨区"
+      },
+      {
+        "code": "411425",
+        "city": "商丘市",
+        "district": "虞城县"
+      },
+      {
+        "code": "411303",
+        "city": "南阳市",
+        "district": "卧龙区"
+      },
+      {
+        "code": "411424",
+        "city": "商丘市",
+        "district": "柘城县"
+      },
+      {
+        "code": "411702",
+        "city": "驻马店市",
+        "district": "驿城区"
+      },
+      {
+        "code": "411426",
+        "city": "商丘市",
+        "district": "夏邑县"
+      },
+      {
+        "code": "411025",
+        "city": "许昌市",
+        "district": "襄城县"
+      },
+      {
+        "code": "411421",
+        "city": "商丘市",
+        "district": "民权县"
+      },
+      {
+        "code": "411024",
+        "city": "许昌市",
+        "district": "鄢陵县"
+      },
+      {
+        "code": "411302",
+        "city": "南阳市",
+        "district": "宛城区"
+      },
+      {
+        "code": "411423",
+        "city": "商丘市",
+        "district": "宁陵县"
+      },
+      {
+        "code": "410212",
+        "city": "开封市",
+        "district": "祥符区"
+      },
+      {
+        "code": "411422",
+        "city": "商丘市",
+        "district": "睢县"
+      },
+      {
+        "code": "410781",
+        "city": "新乡市",
+        "district": "卫辉市"
+      },
+      {
+        "code": "410703",
+        "city": "新乡市",
+        "district": "卫滨区"
+      },
+      {
+        "code": "410307",
+        "city": "洛阳市",
+        "district": "偃师区"
+      },
+      {
+        "code": "410823",
+        "city": "焦作市",
+        "district": "武陟县"
+      },
+      {
+        "code": "410702",
+        "city": "新乡市",
+        "district": "红旗区"
+      },
+      {
+        "code": "410825",
+        "city": "焦作市",
+        "district": "温县"
+      },
+      {
+        "code": "410704",
+        "city": "新乡市",
+        "district": "凤泉区"
+      },
+      {
+        "code": "410308",
+        "city": "洛阳市",
+        "district": "孟津区"
+      },
+      {
+        "code": "410303",
+        "city": "洛阳市",
+        "district": "西工区"
+      },
+      {
+        "code": "410423",
+        "city": "平顶山市",
+        "district": "鲁山县"
+      },
+      {
+        "code": "410302",
+        "city": "洛阳市",
+        "district": "老城区"
+      },
+      {
+        "code": "410822",
+        "city": "焦作市",
+        "district": "博爱县"
+      },
+      {
+        "code": "410305",
+        "city": "洛阳市",
+        "district": "涧西区"
+      },
+      {
+        "code": "410821",
+        "city": "焦作市",
+        "district": "修武县"
+      },
+      {
+        "code": "410425",
+        "city": "平顶山市",
+        "district": "郏县"
+      },
+      {
+        "code": "410304",
+        "city": "洛阳市",
+        "district": "瀍河回族区"
+      },
+      {
+        "code": "410782",
+        "city": "新乡市",
+        "district": "辉县市"
+      },
+      {
+        "code": "410422",
+        "city": "平顶山市",
+        "district": "叶县"
+      },
+      {
+        "code": "410421",
+        "city": "平顶山市",
+        "district": "宝丰县"
+      },
+      {
+        "code": "411122",
+        "city": "漯河市",
+        "district": "临颍县"
+      },
+      {
+        "code": "411121",
+        "city": "漯河市",
+        "district": "舞阳县"
+      },
+      {
+        "code": "411082",
+        "city": "许昌市",
+        "district": "长葛市"
+      },
+      {
+        "code": "411481",
+        "city": "商丘市",
+        "district": "永城市"
+      },
+      {
+        "code": "411081",
+        "city": "许昌市",
+        "district": "禹州市"
+      },
+      {
+        "code": "411528",
+        "city": "信阳市",
+        "district": "息县"
+      },
+      {
+        "code": "411527",
+        "city": "信阳市",
+        "district": "淮滨县"
+      },
+      {
+        "code": "411524",
+        "city": "信阳市",
+        "district": "商城县"
+      },
+      {
+        "code": "411403",
+        "city": "商丘市",
+        "district": "睢阳区"
+      },
+      {
+        "code": "411523",
+        "city": "信阳市",
+        "district": "新县"
+      },
+      {
+        "code": "411402",
+        "city": "商丘市",
+        "district": "梁园区"
+      },
+      {
+        "code": "411526",
+        "city": "信阳市",
+        "district": "潢川县"
+      },
+      {
+        "code": "410711",
+        "city": "新乡市",
+        "district": "牧野区"
+      },
+      {
+        "code": "411525",
+        "city": "信阳市",
+        "district": "固始县"
+      },
+      {
+        "code": "411003",
+        "city": "许昌市",
+        "district": "建安区"
+      },
+      {
+        "code": "411002",
+        "city": "许昌市",
+        "district": "魏都区"
+      },
+      {
+        "code": "411522",
+        "city": "信阳市",
+        "district": "光山县"
+      },
+      {
+        "code": "411521",
+        "city": "信阳市",
+        "district": "罗山县"
+      },
+      {
+        "code": "410311",
+        "city": "洛阳市",
+        "district": "洛龙区"
+      },
+      {
+        "code": "410482",
+        "city": "平顶山市",
+        "district": "汝州市"
+      },
+      {
+        "code": "410481",
+        "city": "平顶山市",
+        "district": "舞钢市"
+      },
+      {
+        "code": "411330",
+        "city": "南阳市",
+        "district": "桐柏县"
+      },
+      {
+        "code": "410927",
+        "city": "濮阳市",
+        "district": "台前县"
+      },
+      {
+        "code": "410926",
+        "city": "濮阳市",
+        "district": "范县"
+      },
+      {
+        "code": "410928",
+        "city": "濮阳市",
+        "district": "濮阳县"
+      },
+      {
+        "code": "410923",
+        "city": "濮阳市",
+        "district": "南乐县"
+      },
+      {
+        "code": "410527",
+        "city": "安阳市",
+        "district": "内黄县"
+      },
+      {
+        "code": "410802",
+        "city": "焦作市",
+        "district": "解放区"
+      },
+      {
+        "code": "410922",
+        "city": "濮阳市",
+        "district": "清丰县"
+      },
+      {
+        "code": "410526",
+        "city": "安阳市",
+        "district": "滑县"
+      },
+      {
+        "code": "410804",
+        "city": "焦作市",
+        "district": "马村区"
+      },
+      {
+        "code": "410803",
+        "city": "焦作市",
+        "district": "中站区"
+      },
+      {
+        "code": "410523",
+        "city": "安阳市",
+        "district": "汤阴县"
+      },
+      {
+        "code": "410402",
+        "city": "平顶山市",
+        "district": "新华区"
+      },
+      {
+        "code": "410522",
+        "city": "安阳市",
+        "district": "安阳县"
+      },
+      {
+        "code": "410404",
+        "city": "平顶山市",
+        "district": "石龙区"
+      },
+      {
+        "code": "410403",
+        "city": "平顶山市",
+        "district": "卫东区"
+      },
+      {
+        "code": "410882",
+        "city": "焦作市",
+        "district": "沁阳市"
+      },
+      {
+        "code": "410122",
+        "city": "郑州市",
+        "district": "中牟县"
+      },
+      {
+        "code": "410883",
+        "city": "焦作市",
+        "district": "孟州市"
+      },
+      {
+        "code": "411221",
+        "city": "三门峡市",
+        "district": "渑池县"
+      },
+      {
+        "code": "411627",
+        "city": "周口市",
+        "district": "太康县"
+      },
+      {
+        "code": "411628",
+        "city": "周口市",
+        "district": "鹿邑县"
+      },
+      {
+        "code": "411623",
+        "city": "周口市",
+        "district": "商水县"
+      },
+      {
+        "code": "411502",
+        "city": "信阳市",
+        "district": "浉河区"
+      },
+      {
+        "code": "411622",
+        "city": "周口市",
+        "district": "西华县"
+      },
+      {
+        "code": "411625",
+        "city": "周口市",
+        "district": "郸城县"
+      },
+      {
+        "code": "410811",
+        "city": "焦作市",
+        "district": "山阳区"
+      },
+      {
+        "code": "411624",
+        "city": "周口市",
+        "district": "沈丘县"
+      },
+      {
+        "code": "411503",
+        "city": "信阳市",
+        "district": "平桥区"
+      },
+      {
+        "code": "411102",
+        "city": "漯河市",
+        "district": "源汇区"
+      },
+      {
+        "code": "411104",
+        "city": "漯河市",
+        "district": "召陵区"
+      },
+      {
+        "code": "411621",
+        "city": "周口市",
+        "district": "扶沟县"
+      },
+      {
+        "code": "410411",
+        "city": "平顶山市",
+        "district": "湛河区"
+      },
+      {
+        "code": "411103",
+        "city": "漯河市",
+        "district": "郾城区"
+      },
+      {
+        "code": "411224",
+        "city": "三门峡市",
+        "district": "卢氏县"
+      }
+    ]
+  },
+  "chronic": {
+    "datasetVersion": "existing-snapshot-2026-10-12",
+    "mappingVersion": "source-names-2026-10-13-v1",
+    "sourceCRS": "EPSG:4326",
+    "coordinateEvidence": "user-confirmed-2026-10-13",
+    "regions": [
+      {
+        "code": "410000"
+      },
+      {
+        "code": "411100",
+        "city": "漯河市"
+      },
+      {
+        "code": "411000",
+        "city": "许昌市"
+      },
+      {
+        "code": "410900",
+        "city": "濮阳市"
+      },
+      {
+        "code": "419001",
+        "city": "济源市"
+      },
+      {
+        "code": "410600",
+        "city": "鹤壁市"
+      },
+      {
+        "code": "411700",
+        "city": "驻马店市"
+      },
+      {
+        "code": "410500",
+        "city": "安阳市"
+      },
+      {
+        "code": "411600",
+        "city": "周口市"
+      },
+      {
+        "code": "410800",
+        "city": "焦作市"
+      },
+      {
+        "code": "410700",
+        "city": "新乡市"
+      },
+      {
+        "code": "410200",
+        "city": "开封市"
+      },
+      {
+        "code": "411300",
+        "city": "南阳市"
+      },
+      {
+        "code": "410100",
+        "city": "郑州市"
+      },
+      {
+        "code": "411200",
+        "city": "三门峡市"
+      },
+      {
+        "code": "410400",
+        "city": "平顶山市"
+      },
+      {
+        "code": "411500",
+        "city": "信阳市"
+      },
+      {
+        "code": "410300",
+        "city": "洛阳市"
+      },
+      {
+        "code": "411400",
+        "city": "商丘市"
+      },
+      {
+        "code": "410581",
+        "city": "安阳市",
+        "district": "林州市"
+      },
+      {
+        "code": "410185",
+        "city": "郑州市",
+        "district": "登封市"
+      },
+      {
+        "code": "410184",
+        "city": "郑州市",
+        "district": "新郑市"
+      },
+      {
+        "code": "410181",
+        "city": "郑州市",
+        "district": "巩义市"
+      },
+      {
+        "code": "410183",
+        "city": "郑州市",
+        "district": "新密市"
+      },
+      {
+        "code": "410182",
+        "city": "郑州市",
+        "district": "荥阳市"
+      },
+      {
+        "code": "410505",
+        "city": "安阳市",
+        "district": "殷都区"
+      },
+      {
+        "code": "410108",
+        "city": "郑州市",
+        "district": "惠济区"
+      },
+      {
+        "code": "410902",
+        "city": "濮阳市",
+        "district": "华龙区"
+      },
+      {
+        "code": "410506",
+        "city": "安阳市",
+        "district": "龙安区"
+      },
+      {
+        "code": "410622",
+        "city": "鹤壁市",
+        "district": "淇县"
+      },
+      {
+        "code": "410105",
+        "city": "郑州市",
+        "district": "金水区"
+      },
+      {
+        "code": "410621",
+        "city": "鹤壁市",
+        "district": "浚县"
+      },
+      {
+        "code": "410225",
+        "city": "开封市",
+        "district": "兰考县"
+      },
+      {
+        "code": "410104",
+        "city": "郑州市",
+        "district": "管城回族区"
+      },
+      {
+        "code": "410503",
+        "city": "安阳市",
+        "district": "北关区"
+      },
+      {
+        "code": "410502",
+        "city": "安阳市",
+        "district": "文峰区"
+      },
+      {
+        "code": "410222",
+        "city": "开封市",
+        "district": "通许县"
+      },
+      {
+        "code": "410221",
+        "city": "开封市",
+        "district": "杞县"
+      },
+      {
+        "code": "410103",
+        "city": "郑州市",
+        "district": "二七区"
+      },
+      {
+        "code": "410223",
+        "city": "开封市",
+        "district": "尉氏县"
+      },
+      {
+        "code": "410102",
+        "city": "郑州市",
+        "district": "中原区"
+      },
+      {
+        "code": "411681",
+        "city": "周口市",
+        "district": "项城市"
+      },
+      {
+        "code": "411281",
+        "city": "三门峡市",
+        "district": "义马市"
+      },
+      {
+        "code": "411282",
+        "city": "三门峡市",
+        "district": "灵宝市"
+      },
+      {
+        "code": "411729",
+        "city": "驻马店市",
+        "district": "新蔡县"
+      },
+      {
+        "code": "411726",
+        "city": "驻马店市",
+        "district": "泌阳县"
+      },
+      {
+        "code": "411725",
+        "city": "驻马店市",
+        "district": "确山县"
+      },
+      {
+        "code": "411329",
+        "city": "南阳市",
+        "district": "新野县"
+      },
+      {
+        "code": "411728",
+        "city": "驻马店市",
+        "district": "遂平县"
+      },
+      {
+        "code": "411727",
+        "city": "驻马店市",
+        "district": "汝南县"
+      },
+      {
+        "code": "411722",
+        "city": "驻马店市",
+        "district": "上蔡县"
+      },
+      {
+        "code": "411326",
+        "city": "南阳市",
+        "district": "淅川县"
+      },
+      {
+        "code": "411721",
+        "city": "驻马店市",
+        "district": "西平县"
+      },
+      {
+        "code": "411325",
+        "city": "南阳市",
+        "district": "内乡县"
+      },
+      {
+        "code": "411724",
+        "city": "驻马店市",
+        "district": "正阳县"
+      },
+      {
+        "code": "411603",
+        "city": "周口市",
+        "district": "淮阳区"
+      },
+      {
+        "code": "411328",
+        "city": "南阳市",
+        "district": "唐河县"
+      },
+      {
+        "code": "411723",
+        "city": "驻马店市",
+        "district": "平舆县"
+      },
+      {
+        "code": "411602",
+        "city": "周口市",
+        "district": "川汇区"
+      },
+      {
+        "code": "411327",
+        "city": "南阳市",
+        "district": "社旗县"
+      },
+      {
+        "code": "411322",
+        "city": "南阳市",
+        "district": "方城县"
+      },
+      {
+        "code": "411321",
+        "city": "南阳市",
+        "district": "南召县"
+      },
+      {
+        "code": "411324",
+        "city": "南阳市",
+        "district": "镇平县"
+      },
+      {
+        "code": "411203",
+        "city": "三门峡市",
+        "district": "陕州区"
+      },
+      {
+        "code": "411323",
+        "city": "南阳市",
+        "district": "西峡县"
+      },
+      {
+        "code": "411202",
+        "city": "三门峡市",
+        "district": "湖滨区"
+      },
+      {
+        "code": "410725",
+        "city": "新乡市",
+        "district": "原阳县"
+      },
+      {
+        "code": "410329",
+        "city": "洛阳市",
+        "district": "伊川县"
+      },
+      {
+        "code": "410603",
+        "city": "鹤壁市",
+        "district": "山城区"
+      },
+      {
+        "code": "410724",
+        "city": "新乡市",
+        "district": "获嘉县"
+      },
+      {
+        "code": "410328",
+        "city": "洛阳市",
+        "district": "洛宁县"
+      },
+      {
+        "code": "410727",
+        "city": "新乡市",
+        "district": "封丘县"
+      },
+      {
+        "code": "410726",
+        "city": "新乡市",
+        "district": "延津县"
+      },
+      {
+        "code": "410721",
+        "city": "新乡市",
+        "district": "新乡县"
+      },
+      {
+        "code": "410204",
+        "city": "开封市",
+        "district": "鼓楼区"
+      },
+      {
+        "code": "410325",
+        "city": "洛阳市",
+        "district": "嵩县"
+      },
+      {
+        "code": "410203",
+        "city": "开封市",
+        "district": "顺河回族区"
+      },
+      {
+        "code": "410324",
+        "city": "洛阳市",
+        "district": "栾川县"
+      },
+      {
+        "code": "410602",
+        "city": "鹤壁市",
+        "district": "鹤山区"
+      },
+      {
+        "code": "410327",
+        "city": "洛阳市",
+        "district": "宜阳县"
+      },
+      {
+        "code": "410205",
+        "city": "开封市",
+        "district": "禹王台区"
+      },
+      {
+        "code": "410326",
+        "city": "洛阳市",
+        "district": "汝阳县"
+      },
+      {
+        "code": "410202",
+        "city": "开封市",
+        "district": "龙亭区"
+      },
+      {
+        "code": "410323",
+        "city": "洛阳市",
+        "district": "新安县"
+      },
+      {
+        "code": "411381",
+        "city": "南阳市",
+        "district": "邓州市"
+      },
+      {
+        "code": "410611",
+        "city": "鹤壁市",
+        "district": "淇滨区"
+      },
+      {
+        "code": "411425",
+        "city": "商丘市",
+        "district": "虞城县"
+      },
+      {
+        "code": "411303",
+        "city": "南阳市",
+        "district": "卧龙区"
+      },
+      {
+        "code": "411424",
+        "city": "商丘市",
+        "district": "柘城县"
+      },
+      {
+        "code": "411702",
+        "city": "驻马店市",
+        "district": "驿城区"
+      },
+      {
+        "code": "411426",
+        "city": "商丘市",
+        "district": "夏邑县"
+      },
+      {
+        "code": "411025",
+        "city": "许昌市",
+        "district": "襄城县"
+      },
+      {
+        "code": "411421",
+        "city": "商丘市",
+        "district": "民权县"
+      },
+      {
+        "code": "411024",
+        "city": "许昌市",
+        "district": "鄢陵县"
+      },
+      {
+        "code": "411302",
+        "city": "南阳市",
+        "district": "宛城区"
+      },
+      {
+        "code": "411423",
+        "city": "商丘市",
+        "district": "宁陵县"
+      },
+      {
+        "code": "410212",
+        "city": "开封市",
+        "district": "祥符区"
+      },
+      {
+        "code": "411422",
+        "city": "商丘市",
+        "district": "睢县"
+      },
+      {
+        "code": "410781",
+        "city": "新乡市",
+        "district": "卫辉市"
+      },
+      {
+        "code": "410703",
+        "city": "新乡市",
+        "district": "卫滨区"
+      },
+      {
+        "code": "410307",
+        "city": "洛阳市",
+        "district": "偃师区"
+      },
+      {
+        "code": "410823",
+        "city": "焦作市",
+        "district": "武陟县"
+      },
+      {
+        "code": "410702",
+        "city": "新乡市",
+        "district": "红旗区"
+      },
+      {
+        "code": "410825",
+        "city": "焦作市",
+        "district": "温县"
+      },
+      {
+        "code": "410704",
+        "city": "新乡市",
+        "district": "凤泉区"
+      },
+      {
+        "code": "410308",
+        "city": "洛阳市",
+        "district": "孟津区"
+      },
+      {
+        "code": "410303",
+        "city": "洛阳市",
+        "district": "西工区"
+      },
+      {
+        "code": "410423",
+        "city": "平顶山市",
+        "district": "鲁山县"
+      },
+      {
+        "code": "410302",
+        "city": "洛阳市",
+        "district": "老城区"
+      },
+      {
+        "code": "410822",
+        "city": "焦作市",
+        "district": "博爱县"
+      },
+      {
+        "code": "410305",
+        "city": "洛阳市",
+        "district": "涧西区"
+      },
+      {
+        "code": "410821",
+        "city": "焦作市",
+        "district": "修武县"
+      },
+      {
+        "code": "410425",
+        "city": "平顶山市",
+        "district": "郏县"
+      },
+      {
+        "code": "410304",
+        "city": "洛阳市",
+        "district": "瀍河回族区"
+      },
+      {
+        "code": "410782",
+        "city": "新乡市",
+        "district": "辉县市"
+      },
+      {
+        "code": "410422",
+        "city": "平顶山市",
+        "district": "叶县"
+      },
+      {
+        "code": "410421",
+        "city": "平顶山市",
+        "district": "宝丰县"
+      },
+      {
+        "code": "411122",
+        "city": "漯河市",
+        "district": "临颍县"
+      },
+      {
+        "code": "411121",
+        "city": "漯河市",
+        "district": "舞阳县"
+      },
+      {
+        "code": "411082",
+        "city": "许昌市",
+        "district": "长葛市"
+      },
+      {
+        "code": "411481",
+        "city": "商丘市",
+        "district": "永城市"
+      },
+      {
+        "code": "411081",
+        "city": "许昌市",
+        "district": "禹州市"
+      },
+      {
+        "code": "411528",
+        "city": "信阳市",
+        "district": "息县"
+      },
+      {
+        "code": "411527",
+        "city": "信阳市",
+        "district": "淮滨县"
+      },
+      {
+        "code": "411524",
+        "city": "信阳市",
+        "district": "商城县"
+      },
+      {
+        "code": "411403",
+        "city": "商丘市",
+        "district": "睢阳区"
+      },
+      {
+        "code": "411523",
+        "city": "信阳市",
+        "district": "新县"
+      },
+      {
+        "code": "411402",
+        "city": "商丘市",
+        "district": "梁园区"
+      },
+      {
+        "code": "411526",
+        "city": "信阳市",
+        "district": "潢川县"
+      },
+      {
+        "code": "410711",
+        "city": "新乡市",
+        "district": "牧野区"
+      },
+      {
+        "code": "411525",
+        "city": "信阳市",
+        "district": "固始县"
+      },
+      {
+        "code": "411003",
+        "city": "许昌市",
+        "district": "建安区"
+      },
+      {
+        "code": "411002",
+        "city": "许昌市",
+        "district": "魏都区"
+      },
+      {
+        "code": "411522",
+        "city": "信阳市",
+        "district": "光山县"
+      },
+      {
+        "code": "411521",
+        "city": "信阳市",
+        "district": "罗山县"
+      },
+      {
+        "code": "410311",
+        "city": "洛阳市",
+        "district": "洛龙区"
+      },
+      {
+        "code": "410482",
+        "city": "平顶山市",
+        "district": "汝州市"
+      },
+      {
+        "code": "410481",
+        "city": "平顶山市",
+        "district": "舞钢市"
+      },
+      {
+        "code": "411330",
+        "city": "南阳市",
+        "district": "桐柏县"
+      },
+      {
+        "code": "410927",
+        "city": "濮阳市",
+        "district": "台前县"
+      },
+      {
+        "code": "410926",
+        "city": "濮阳市",
+        "district": "范县"
+      },
+      {
+        "code": "410928",
+        "city": "濮阳市",
+        "district": "濮阳县"
+      },
+      {
+        "code": "410923",
+        "city": "濮阳市",
+        "district": "南乐县"
+      },
+      {
+        "code": "410527",
+        "city": "安阳市",
+        "district": "内黄县"
+      },
+      {
+        "code": "410802",
+        "city": "焦作市",
+        "district": "解放区"
+      },
+      {
+        "code": "410922",
+        "city": "濮阳市",
+        "district": "清丰县"
+      },
+      {
+        "code": "410526",
+        "city": "安阳市",
+        "district": "滑县"
+      },
+      {
+        "code": "410804",
+        "city": "焦作市",
+        "district": "马村区"
+      },
+      {
+        "code": "410803",
+        "city": "焦作市",
+        "district": "中站区"
+      },
+      {
+        "code": "410523",
+        "city": "安阳市",
+        "district": "汤阴县"
+      },
+      {
+        "code": "410402",
+        "city": "平顶山市",
+        "district": "新华区"
+      },
+      {
+        "code": "410522",
+        "city": "安阳市",
+        "district": "安阳县"
+      },
+      {
+        "code": "410404",
+        "city": "平顶山市",
+        "district": "石龙区"
+      },
+      {
+        "code": "410403",
+        "city": "平顶山市",
+        "district": "卫东区"
+      },
+      {
+        "code": "410882",
+        "city": "焦作市",
+        "district": "沁阳市"
+      },
+      {
+        "code": "410122",
+        "city": "郑州市",
+        "district": "中牟县"
+      },
+      {
+        "code": "410883",
+        "city": "焦作市",
+        "district": "孟州市"
+      },
+      {
+        "code": "411221",
+        "city": "三门峡市",
+        "district": "渑池县"
+      },
+      {
+        "code": "411627",
+        "city": "周口市",
+        "district": "太康县"
+      },
+      {
+        "code": "411628",
+        "city": "周口市",
+        "district": "鹿邑县"
+      },
+      {
+        "code": "411623",
+        "city": "周口市",
+        "district": "商水县"
+      },
+      {
+        "code": "411502",
+        "city": "信阳市",
+        "district": "浉河区"
+      },
+      {
+        "code": "411622",
+        "city": "周口市",
+        "district": "西华县"
+      },
+      {
+        "code": "411625",
+        "city": "周口市",
+        "district": "郸城县"
+      },
+      {
+        "code": "410811",
+        "city": "焦作市",
+        "district": "山阳区"
+      },
+      {
+        "code": "411624",
+        "city": "周口市",
+        "district": "沈丘县"
+      },
+      {
+        "code": "411503",
+        "city": "信阳市",
+        "district": "平桥区"
+      },
+      {
+        "code": "411102",
+        "city": "漯河市",
+        "district": "源汇区"
+      },
+      {
+        "code": "411104",
+        "city": "漯河市",
+        "district": "召陵区"
+      },
+      {
+        "code": "411621",
+        "city": "周口市",
+        "district": "扶沟县"
+      },
+      {
+        "code": "410411",
+        "city": "平顶山市",
+        "district": "湛河区"
+      },
+      {
+        "code": "411103",
+        "city": "漯河市",
+        "district": "郾城区"
+      },
+      {
+        "code": "411224",
+        "city": "三门峡市",
+        "district": "卢氏县"
+      }
+    ]
+  }
+}

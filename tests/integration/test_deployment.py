@@ -7,7 +7,7 @@ class Deployment(unittest.TestCase):
    db=Path(tmp)/'b.db';env={**os.environ,'APP_BUSINESS_DB_PATH':str(db),'DEPLOYMENT_TIER':'local'}
    processes=[subprocess.Popen(['node','scripts/migrate.cjs'],cwd=ROOT,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE) for _ in range(2)]
    for proc in processes:out,err=proc.communicate();self.assertEqual(proc.returncode,0,err.decode())
-   c=sqlite3.connect(db);self.assertEqual(c.execute('SELECT COUNT(*) FROM _cdc_migrations').fetchone()[0],4)
+   c=sqlite3.connect(db);self.assertEqual(c.execute('SELECT COUNT(*) FROM _cdc_migrations').fetchone()[0],7)
    c.execute("INSERT INTO biz_chat_sessions(session_id,user_id,user_name,user_role,domain,title,created_at,updated_at) VALUES('s','u','fixture','CITY_EXPERT','vector','fixture','2023-01-01','2023-01-01')")
    c.execute("INSERT INTO biz_jobs(job_id,user_id,domain,idempotency_key,input_json,principal_json,status,created_at) VALUES('j','u','vector','fixture','{}','{}','WAITING_REVIEW',1)")
    c.execute("INSERT INTO biz_workflow_tickets VALUES('t','j','u','vector','X','Y','OPEN','u',1,NULL)");c.commit();c.close()

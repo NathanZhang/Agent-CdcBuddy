@@ -28,7 +28,7 @@ export function QueryResultVisualization({ rows, spec }: { rows: Row[]; spec?: Q
   if (spec.kind === 'map') {
     const points = mapPoints(rows, spec);
     if (!points.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的坐标与数值，请查看明细。</p>;
-    return <QueryResultMap points={points} unit={spec.unit}/>;
+    return <QueryResultMap points={points} unit={spec.unit??'点位'}/>;
   } else {
     const valid = rows.filter(r => finite(r[spec.yKey]));
     if (!valid.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的数值，请查看明细。</p>;

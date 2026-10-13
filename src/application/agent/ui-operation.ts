@@ -14,6 +14,7 @@ export function uiOperation(input: AgentInteraction): {skillId: string; mode: 'b
   if (ref.type === 'collection') {
     return {skillId:'skill_collection_manage', mode:'view'};
   }
+  if (ref.type === 'map' && ref.action === 'display') return {skillId:'skill_map_display', mode:'view'};
   if (ref.type === 'approval' && ref.action === 'decide') return {skillId:'skill_approval_decision', mode:'view'};
   if (ref.type === 'workflow') {
     const skillId:Record<string,string>={read:'skill_job_manage',list:'skill_job_manage',configure:'skill_daemon_surveillance',retest:'skill_retest_submit'};

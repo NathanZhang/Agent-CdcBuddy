@@ -1,3 +1,9 @@
+import {Parser} from 'node-sql-parser';
+import type {ApprovedIntent} from '@/contracts/approved-intent';
+import {assertSqlMatchesIntent} from '@/application/agent/scope-guard';
+import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
+import type {FilterSpec} from '@/contracts/interaction-intent';
+import {scopedViewConstraints} from '@/infrastructure/query/scoped-view';
 import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
 import type {Principal} from '@/contracts/principal';
 import Database from 'better-sqlite3';
@@ -5,6 +11,11 @@ import type { AgentDomain } from '@/contracts/dataset';
 import { resolveDatasetLocation } from './dataset-manifest';
 import { validateReadQuery, type QuerySchema } from '../query/query-gateway';
 export interface QueryScope {
+  approvedIntent?:ApprovedIntent;
+  regionPaths?:{city?:string;district?:string}[];
+  excludePaths?:{city?:string;district?:string}[];
+  filters?:Record<string,FilterSpec>;
+  scopeFingerprint?:string;
   domain: AgentDomain;
   city?: string;
   district?: string;
@@ -35,6 +46,8 @@ export class DomainRepository {
     if (scope.domain !== this.domain) throw new Error('Domain scope mismatch');
     for (const key of ['from','to'] as const) if (scope[key] && !/^\d{4}-\d{2}-\d{2}$/.test(scope[key]!)) throw new Error('Invalid time scope');
     if (scope.from && scope.to && scope.from > scope.to) throw new Error('Invalid time scope order');
+    if(scope.approvedIntent)assertSqlMatchesIntent(select,scope.approvedIntent,loadDatasetRegionBindings(this.domain,scope.approvedIntent.datasetVersion));
+    const parsed=new Parser().astify(select,{database:'SQLite'});const selected=new Set(((Array.isArray(parsed)?parsed[0]:parsed) as any).from?.map((f:any)=>f.table));
     const location = resolveDatasetLocation(this.domain,this.datasetId);
     const db = new Database(location.path,{readonly:true,fileMustExist:true});
     try {
@@ -54,7 +67,7 @@ export class DomainRepository {
       // Each query sees constrained TEMP views. main.* access is rejected by the AST gate.
       for (const [table,allowed] of Object.entries(schema)) {
         const col = columns[table];
-        const constraints: string[] = [];
+        const constraints: string[] = scopedViewConstraints(table,col,selected.has(table)?scope:{...scope,filters:undefined},literal);
         const cityColumn = col.includes('city') ? 'city' : col.includes('city_name') ? 'city_name' : null;
         const districtColumn = col.includes('district') ? 'district' : col.includes('district_name') ? 'district_name' : null;
         if (scope.city && cityColumn) constraints.push(`${quoteIdentifier(cityColumn)}=${literal(scope.city)}`);

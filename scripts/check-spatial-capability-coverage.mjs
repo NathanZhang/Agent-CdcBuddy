@@ -1,0 +1,2 @@
+import {spawnSync} from 'node:child_process';
+const result=spawnSync(process.execPath,['node_modules/vite-node/vite-node.mjs','--config','vitest.config.ts','scripts/check-spatial-capability-coverage.ts'],{stdio:'inherit'});if(result.status!==0)process.exit(result.status??1);const contracts=spawnSync(process.execPath,['node_modules/vitest/vitest.mjs','run','tests/refactor/spatial-runtime-coverage.test.ts','tests/refactor/map-layers.test.ts','tests/refactor/spatial-capability-coverage.test.ts','--config','vitest.config.ts'],{stdio:'inherit'});process.exit(contracts.status??1);

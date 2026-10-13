@@ -136,7 +136,7 @@ it('restores grouped chart/table outputs and can reopen an earlier turn after a 
    {id:'table',type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT COUNT(*) AS n FROM fact_monitoring"}'}}
   ]};
   if(businessCalls===2)return {role:'assistant',content:'{"mode":"answer","replyText":"已查询地市记录对比与全省总数。"}'};
-  if(businessCalls===3)return {role:'assistant',content:null,tool_calls:[{id:'empty',type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT capture_count FROM fact_monitoring","city":"不存在城市"}'}}]};
+  if(businessCalls===3)return {role:'assistant',content:null,tool_calls:[{id:'empty',type:'function',function:{name:'skill_monitoring_data_table',arguments:'{"sql":"SELECT capture_count FROM fact_monitoring WHERE 1=0"}'}}]};
   return {role:'assistant',content:'{"mode":"answer","replyText":"该范围没有监测数据。"}'};
  }});
  const original=createWorkbenchController({domain:'vector',client:agentClient});await original.send('对比地市监测记录并画柱状图');const id=original.getState().sessionId!;
