@@ -1,0 +1,33 @@
+
+> agent-cdc-buddy@2.0.1 test:integration
+> ./.venv/bin/python tests/run_integration.py
+
+test_anonymous_all_business_adapters_require_identity (test_auth.HttpAuth.test_anonymous_all_business_adapters_require_identity) ... ok
+test_city_and_district_conflicts_rejected_before_llm (test_auth.HttpAuth.test_city_and_district_conflicts_rejected_before_llm) ... ok
+test_logout_invalidates_cookie_and_originless_login_denied (test_auth.HttpAuth.test_logout_invalidates_cookie_and_originless_login_denied) ... ok
+test_public_body_cannot_promote_role_and_csrf_required (test_auth.HttpAuth.test_public_body_cannot_promote_role_and_csrf_required) ... ok
+test_migrations_once_backup_restore_preserves_sessions_jobs_tickets (test_deployment.Deployment.test_migrations_once_backup_restore_preserves_sessions_jobs_tickets) ... ok
+test_pilot_never_generates_missing_fact_and_demo_generation_is_explicit (test_deployment.Deployment.test_pilot_never_generates_missing_fact_and_demo_generation_is_explicit) ... ok
+test_manifest_change_takes_effect_without_reimport (test_domain_paths.DomainPathTests.test_manifest_change_takes_effect_without_reimport) ... ok
+test_missing_dataset_is_not_created (test_domain_paths.DomainPathTests.test_missing_dataset_is_not_created) ... ok
+test_foodborne_alias_uses_foodborne_domain (test_domain_paths.TaskRoutingTests.test_foodborne_alias_uses_foodborne_domain) ... ok
+test_explicit_output_isolated_and_seeded (test_fixture_isolation.FixtureIsolationTests.test_explicit_output_isolated_and_seeded) ... ok
+test_import_has_no_filesystem_side_effects (test_fixture_isolation.FixtureIsolationTests.test_import_has_no_filesystem_side_effects) ... ok
+test_actual_cli_protocol_and_explicit_dataset (test_graph_contract.GraphContracts.test_actual_cli_protocol_and_explicit_dataset) ... ok
+test_protocol_cannot_spoof_dataset_origin (test_graph_contract.GraphContracts.test_protocol_cannot_spoof_dataset_origin) ... ok
+test_registry_has_no_duplicate_hub_and_rejects_unknown_graph (test_graph_contract.GraphContracts.test_registry_has_no_duplicate_hub_and_rejects_unknown_graph) ... ok
+test_task_arguments_reject_nonfinite_and_nonobject (test_graph_contract.GraphContracts.test_task_arguments_reject_nonfinite_and_nonobject) ... ok
+test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches (test_jobs.Jobs.test_graph_checkpoint_interrupt_survives_restart_and_reject_never_dispatches) ... ok
+test_snapshot_writes_never_reach_source (test_legacy_isolation.LegacyIsolationTests.test_snapshot_writes_never_reach_source) ... ok
+test_custom_source_path_does_not_require_other_domain_files (test_release_merge.ReleaseMerge.test_custom_source_path_does_not_require_other_domain_files) ... ok
+test_legacy_business_and_checkpoint_are_copied_with_originals_preserved (test_release_merge.ReleaseMerge.test_legacy_business_and_checkpoint_are_copied_with_originals_preserved) ... ok
+test_missing_active_source_fails_before_business_initialization (test_release_merge.ReleaseMerge.test_missing_active_source_fails_before_business_initialization) ... ok
+test_production_compose_preserves_ports_domains_and_workers (test_release_merge.ReleaseMerge.test_production_compose_preserves_ports_domains_and_workers) ... ok
+test_remote_deploy_uses_entrypoint_migration_and_public_readiness (test_release_merge.ReleaseMerge.test_remote_deploy_uses_entrypoint_migration_and_public_readiness) ... ok
+test_empty_selected_suite_fails (test_test_runners.RunnerTests.test_empty_selected_suite_fails) ... ok
+test_unknown_selection_is_not_a_success (test_test_runners.RunnerTests.test_unknown_selection_is_not_a_success) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 16.700s
+
+OK

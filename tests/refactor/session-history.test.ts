@@ -151,7 +151,7 @@ it('restores grouped chart/table outputs and can reopen an earlier turn after a 
  const React=await import('react');const {renderToStaticMarkup}=await import('react-dom/server');
  const {GenerativeComponentRenderer}=await import('@/components/ag-ui/GenerativeComponentRenderer');const {ThemeProvider}=await import('@/lib/theme/theme-context');
  const html=renderToStaticMarkup(React.createElement(ThemeProvider,null,React.createElement(GenerativeComponentRenderer,{view:fresh.getState().view})));
- expect(html).toContain('<svg');expect(html).toContain('分组对比');expect(html).toContain('实测数据');
+ expect(html).toContain('<svg');expect(html).toContain('分组对比');expect(html).toContain((await import('@/infrastructure/db/dataset-manifest')).loadDatasetManifest().find(d=>d.domain==='vector')?.origin==='mock'?'模拟数据':'实测数据');
 });
 
 it.each(['failure','cancel'] as const)('saves a turn ending in %s before returning its final result',async outcome=>{

@@ -39,5 +39,19 @@
     "originalBinaryRestored": false,
     "backupPath": ".refactor-acceptance/v2.0.1-business-test-incident/business-before-test-cleanup.db",
     "testConfigurationNowDefaultsToTemporaryBusinessDatabase": true
+  },
+  "postTagCiRepair": {
+    "originalRun": "https://github.com/NathanZhang/Agent-CdcBuddy/actions/runs/38408045829",
+    "originalFailures": 12,
+    "originalLocalReproductionFailures": 12,
+    "cause": "Synthetic CI vector fixtures omitted province, county and recommendation scene data; one UI test assumed observed origin.",
+    "productionBehaviorChanged": false,
+    "existingTagPreserved": true,
+    "mockTypeScriptPassed": 384,
+    "mockScientificPassed": 32,
+    "mockIntegrationPassed": 24,
+    "spatialContractChecks": "passed",
+    "controlledFullSuite": "passed",
+    "newGithubRun": "pending"
   }
 }
