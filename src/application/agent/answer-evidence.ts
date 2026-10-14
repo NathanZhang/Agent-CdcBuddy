@@ -21,6 +21,8 @@ const isObject = (value: unknown): value is Record<string, unknown> => value !==
 // analysis evidence. Large map geometry is rendered directly by the workbench.
 const nonAnalysisFields = new Set(['type','schemaVersion','runId','callId','domain','status','method','title','summary','replyText','reasoningText','text','content','message','reason','explanation','warnings','qualityFlags','definition','content_markdown','contentMarkdown','sql','sqlQuery','sql_query','inputSchema','outputSchema','parametersSchema','geometry','coordinates','bbox','spatialOutputs','statistics','generativeViewSnapshot','generative_view_snapshot','last_generative_view']);
 const namedValueFields = new Set(['label','name','speciesName','species_name','diseaseName','disease_name','pathogenName','pathogen_name','pathogen','pesticideName','pesticide_name','methodName','method_name','foodName','food_name','category','injuryType','injury_type']);
+const groupingFields = new Set([...namedValueFields,'city','district','date','date_id','month','year','period','月份','年月','日期','地市','区县','物种','物种名称','采样方法','药剂']);
+const escapeMarkdown = (text:string):string => text.replace(/[\\`*_{}[\]<>|]/g,'\\$&').replace(/[\r\n]+/g,' ');
 
 export const PROGRAMMATIC_ANALYSIS_INSTRUCTION = '统计分析执行规则：LLM 仅负责理解需求、选择/调用已登记程序或技能以及解释实际返回结果。禁止 LLM 自己数数、累加、求均值、算比例、差值、增长率、倍数、最值、排名或推断未执行的模型指标；这些统计和分析必须由 SQL 查询程序、Python 分析程序或对应技能实际执行。不得把自己算出的数值填进工具参数、SELECT 常量或报告，冒充程序统计。若本轮工具没有返回所需派生指标，必须继续调用能够实际计算该指标的技能（按 mode=continue 请求追加工具），不能只依据原始明细或已有数字自行计算。没有对应能力、数据不足或执行失败时明确说明，不能补造结果。程序计算的记录数、缺失值统计和全部指标由工作台与对话共同引用；数值结论必须对应实际运行、来源路径和指标定义。';
 
@@ -50,23 +52,27 @@ export function buildAnswerEvidence(runs: SkillRun[]): AnswerEvidence {
       table.columns.forEach(column => { identifiers.add(column.field); identifiers.add(fieldLabel(column.field)); });
     });
     let valueIndex = 0;
-    const visit = (value: unknown, path: string[]): void => {
+    const visit = (value: unknown, path: string[], context:Record<string,unknown> = {}): void => {
+      const key = path.at(-1)!;
+      const groupedText = (labelledValue:string):string => {
+        const labels=Object.entries(context).filter(([field,item])=>field!==key&&groupingFields.has(field)&&(typeof item==='string'||typeof item==='number'));
+        return [...labels.map(([field,item])=>`${escapeMarkdown(fieldLabel(field))}：${escapeMarkdown(formatValue(item,field))}`),labelledValue].join('；');
+      };
       if (typeof value === 'number') {
-        const key = path.at(-1)!;
-        facts.push({id: `r${runIndex}v${valueIndex++}`, callId: run.callId, path, value, text: `${fieldLabel(key)}：${formatValue(value, key)}`});
+        if(!Number.isFinite(value))return;
+        facts.push({id: `r${runIndex}v${valueIndex++}`, callId: run.callId, path, value, text: groupedText(`${escapeMarkdown(fieldLabel(key))}：${formatValue(value, key)}`)});
       } else if (typeof value === 'string') {
         if (/^\d{4}-\d{2}(?:-\d{2}(?:[T ][\d:.Z+-]+)?)?$/.test(value)) dates.add(value.slice(0, 10));
         else if (namedValueFields.has(path.at(-1)??'') && value.length <= 100 && /\d/.test(value) && /[a-z\u4e00-\u9fff]/i.test(value)) identifiers.add(value);
         else if (/^[+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?%?$/.test(value) && Number.isFinite(Number(value.replace(/%$/,'')))) {
-          const key=path.at(-1)!;
-          facts.push({id:`r${runIndex}v${valueIndex++}`,callId:run.callId,path,text:`${fieldLabel(key)}：${formatValue(value,key)}`});
+          facts.push({id:`r${runIndex}v${valueIndex++}`,callId:run.callId,path,text:groupedText(`${escapeMarkdown(fieldLabel(key))}：${formatValue(value,key)}`)});
         }
       } else if (Array.isArray(value)) {
         // Summaries cover every returned row; numeric comparisons preview only
         // the first ten per collection, as full details belong in the workbench.
         value.slice(0, 10).forEach((item, index) => visit(item, [...path, String(index)]));
       } else if (isObject(value)) {
-        Object.entries(value).forEach(([key, item]) => {if(nonAnalysisFields.has(key))return;identifiers.add(key); identifiers.add(fieldLabel(key)); visit(item, [...path, key]);});
+        Object.entries(value).forEach(([key, item]) => {if(nonAnalysisFields.has(key))return;identifiers.add(key); identifiers.add(fieldLabel(key)); visit(item, [...path, key],value);});
       }
     };
     visit(source.data, source.path);
@@ -79,7 +85,29 @@ export function buildAnswerEvidence(runs: SkillRun[]): AnswerEvidence {
   return {requiresValidation:runs.length>0,facts, tables, dates: [...dates], identifiers: [...identifiers].filter(value => /\d/.test(value) && !/^\d+$/.test(value))};
 }
 
-export const ANSWER_EVIDENCE_INSTRUCTION = '服务器为查询和分析结果计算了统计证据。replyText 中所有业务数值（记录数、缺失数、有效数、比例、分析指标、表格数值等）必须用 {{evidence:证据id}} 引用下方 answerEvidence，或逐字引用证据 text 中带字段名的完整统计句，不得自行计数、计算或填写其他数字/中文数量。引用会由服务器展开成带字段名的真实数值；表格统计引用会展开成返回行数和各缺失字段的有效/缺失数。只引用与当前 callId 和 path 对应的证据，不跨工具混用。日期可使用工具结果/批准范围内的 YYYY-MM-DD；LC50 等字段名称保留。返回行数仅指本次返回数据，不代表全部匹配记录；聚合查询的一行不能称为一条原始监测记录。完整明细在工作台展示，对话不要逐行重写。';
+export const ANSWER_EVIDENCE_INSTRUCTION = '服务器为查询和分析结果计算了统计证据。replyText 应先回答用户要求的业务指标与分组结果，再说明数据支持的变化、差异与限制，不以返回行数或缺失值统计代替业务总结。所有业务数值（记录数、缺失数、有效数、比例、分析指标、表格数值等）必须用 {{evidence:证据id}} 引用下方 answerEvidence，或逐字引用证据 text 中带字段名的完整统计句，不得自行计数、计算或填写其他数字/中文数量。引用会由服务器展开成带字段名及分组信息的真实数值；表格统计引用会展开成返回行数和各缺失字段的有效/缺失数。只引用与当前 callId 和 path 对应的证据，不跨工具混用。日期可使用工具结果/批准范围内的 YYYY-MM-DD；LC50 等字段名称保留。返回行数仅指本次返回数据，不代表全部匹配记录；聚合查询的一行不能称为一条原始监测记录。完整明细在工作台展示，对话只引用与问题相关的关键指标，不逐行重写。证据引用、数值校验、JSON修正属于内部处理，replyText 不解释这些技术过程。';
+
+/** A model formatting failure must not replace real query data with diagnostics.
+ * This fallback only renders labelled program results; it invents no conclusions. */
+export function verifiedBusinessSummary(runs:SkillRun[],evidence:AnswerEvidence):string|undefined {
+ const sections:string[]=[];
+ for(const run of runs){
+  if(run.reusedFrom||!['SUCCESS','INSUFFICIENT_DATA','REVIEW_REQUIRED','NO_DATA'].includes(run.result.status))continue;
+  const facts=evidence.facts.filter(fact=>fact.callId===run.callId);
+  if(!facts.length)continue;
+  const values=facts.filter(fact=>!/^r\d+t\d+$/.test(fact.id)&&!/(?:^|_)(?:id|lat|lon|latitude|longitude)$/i.test(fact.path.at(-1)??''));
+  const summaries=facts.filter(fact=>/^r\d+t\d+$/.test(fact.id));
+  const selected=[...values.slice(0,12),...summaries.slice(0,2)];
+  if(!selected.length)continue;
+  const limit=run.result.status==='INSUFFICIENT_DATA'?'\n\n当前数据不足以完成所请求的全部分析。':run.result.status==='REVIEW_REQUIRED'?'\n\n结果仍需专业复核。':'';
+  // Validate business prose before adding the registered skill name: a name
+  // such as Text2SQL contains a digit but is trusted presentation metadata.
+  const body=validateAnswerEvidence(selected.map(fact=>`- {{evidence:${fact.id}}}`).join('\n')+limit,evidence);
+  sections.push(`### ${escapeMarkdown(run.skillName)}\n\n${body}`);
+ }
+ if(!sections.length)return;
+ return `查询结果如下，完整明细可在工作台查看。\n\n${sections.join('\n\n')}`;
+}
 
 export class AnswerEvidenceError extends Error {}
 

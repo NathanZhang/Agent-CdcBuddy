@@ -1,5 +1,5 @@
 import {isApprovedIntent} from './intent-guard';
-import {buildAnswerEvidence,validateAnswerEvidence,AnswerEvidenceError,ANSWER_EVIDENCE_INSTRUCTION,PROGRAMMATIC_ANALYSIS_INSTRUCTION} from './answer-evidence';
+import {buildAnswerEvidence,validateAnswerEvidence,verifiedBusinessSummary,AnswerEvidenceError,ANSWER_EVIDENCE_INSTRUCTION,PROGRAMMATIC_ANALYSIS_INSTRUCTION} from './answer-evidence';
 import {prepareRegionTurn,approvedForSkill,registerSpatialRun,refreshMapComposition,commitRegionTurn,publicIntentSummary,RegionTurnError,type RegionTurn} from './region-turn';
 import {aggregateOutputStatus,type OutputOutcome} from './output-outcomes';
 import {spatialOutputSummaries} from '@/application/geo/spatial-output-service';
@@ -32,13 +32,14 @@ export function createMainAgent(dependencies:Dependencies){
     let regionTurn:RegionTurn|undefined,mapComposition:MapComposition|undefined;const outcomes:OutputOutcome[]=[];
     let seq=0;const event=(type:RunEvent['type'],data:Record<string,any>):RunEvent=>({version:'1',runId:ctx.runId,seq:++seq,type,data});
     const skillRuns:SkillRun[]=[];const agui:AguiResult[]=[];let replyText='';
+    const answerDiagnostics:NonNullable<AgentTurnResult['answerDiagnostics']>=[];
     let reasoningText='',reasoningDuration=0,streamedReply='';
     let journalConversation=false;
     const targetSessionId=interaction.sessionRef?.id ?? (interaction.resourceRef?.type==='session'&&interaction.resourceRef.action==='conversation'?interaction.resourceRef.id:undefined);
     // Persistence finishes before the final SSE/HTTP result is published, including failures.
     const persistTurn=async(result:AgentTurnResult)=>{
       try{
-        if(mapComposition)result.mapComposition=mapComposition;if(outcomes.length)result.outcomes=outcomes;if(regionTurn)result.intentSummary=publicIntentSummary(regionTurn);
+        if(mapComposition)result.mapComposition=mapComposition;if(outcomes.length)result.outcomes=outcomes;if(regionTurn)result.intentSummary=publicIntentSummary(regionTurn);if(answerDiagnostics.length)result.answerDiagnostics=[...answerDiagnostics];
         recordAgentTurn(interaction,result,ctx);
         if(!journalConversation)return;
         const provider=getAppBusinessProvider();
@@ -155,7 +156,7 @@ export function createMainAgent(dependencies:Dependencies){
       for(let round=0;round<8;round++){
         ctx.signal?.throwIfAborted();let choice:LLMMessage;
         const answerEvidence=buildAnswerEvidence(skillRuns);
-        const completionMessages=answerEvidence.requiresValidation?[...messages,{role:'user' as const,content:PROGRAMMATIC_ANALYSIS_INSTRUCTION+'\n'+ANSWER_EVIDENCE_INSTRUCTION+`\nanswerEvidence=${JSON.stringify(answerEvidence.facts)}\n明细查询的核心统计请直接引用对应的表格统计证据；其余文字保持精简，只解释实际缺项与限制，不重复明细数值。未提供数值证据时不能声称计算已完成。`}]:messages;
+        const completionMessages=answerEvidence.requiresValidation?[...messages,{role:'user' as const,content:PROGRAMMATIC_ANALYSIS_INSTRUCTION+'\n'+ANSWER_EVIDENCE_INSTRUCTION+`\nanswerEvidence=${JSON.stringify(answerEvidence.facts)}\n请优先引用用户要求的业务指标及其分组信息，说明这些指标的含义和实际结果；仅在与问题相关时补充返回行数、缺失情况和限制。不要把数据质量统计作为业务总结的主体，不倾倒全部明细。未提供数值证据时不能声称计算已完成。`}]:messages;
         const reasoningBefore=reasoningText;let rawContent='',preview='',roundReasoning='',reasoningStarted=0;
         try{
           const stream=streamCompletion(dependencies.llm,{messages:completionMessages,...(needsTools?{tools}:{}),toolChoice:needsTools?'auto':'none',signal:ctx.signal});
@@ -198,8 +199,11 @@ export function createMainAgent(dependencies:Dependencies){
           if(final.mode==='answer' && !skillRuns.length)throw new TurnError('MISSING_SKILL_EVIDENCE','业务答复缺少真实技能执行结果');
           try{replyText=validateAnswerEvidence(final.replyText,answerEvidence);}catch(error){
             if(!(error instanceof AnswerEvidenceError))throw error;
-            if(evidenceCorrections++===0&&round<7){messages.push(choice,{role:'system',content:`答复未通过服务器数值校验：${error.message}。只依据 answerEvidence 重新生成严格 JSON，用 {{evidence:证据id}} 引用统计，不新增事实或调用工具。`});needsTools=false;continue;}
-            throw new TurnError('ANSWER_EVIDENCE_MISMATCH',`AI 文字研判未通过数值校验：${error.message}`);
+            answerDiagnostics.push({code:'ANSWER_EVIDENCE_MISMATCH',message:error.message});
+            if(evidenceCorrections++===0&&round<7){messages.push(choice,{role:'system',content:`内部修正：${error.message}。只依据 answerEvidence 重新生成严格 JSON，用 {{evidence:证据id}} 引用用户要求的业务指标，解释查询结果，不新增事实或调用工具，不向用户描述校验或修正过程。`});needsTools=false;continue;}
+            const summary=verifiedBusinessSummary(skillRuns,answerEvidence);
+            if(!summary)throw new TurnError('ANSWER_EVIDENCE_MISMATCH','当前查询未提供可用于业务总结的结果，请调整查询条件后重试。');
+            replyText=summary;final.mode='answer';
           }
           // Keep the failed attempt in the audit trail, but a corrected visualization
           // of the same read scope resolves that query failure. Diagnostic reads do not.

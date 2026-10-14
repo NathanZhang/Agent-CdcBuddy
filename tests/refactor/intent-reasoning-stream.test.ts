@@ -14,7 +14,7 @@ import type {AgentTurnResult} from '@/contracts/agent-interaction';
 const dir=mkdtempSync(path.join(tmpdir(),'cdc-intent-reasoning-')),previous=process.env.APP_BUSINESS_DB_PATH;
 beforeAll(()=>process.env.APP_BUSINESS_DB_PATH=path.join(dir,'business.db'));
 afterAll(()=>{if(previous===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previous;rmSync(dir,{recursive:true,force:true});});
-const text='显示河南省地图',evidence={source:'current',start:0,end:text.length,quote:text},clear={op:'clear',evidence};
+const text='显示河南省地图',evidence={source:'current',quote:text},clear={op:'clear',evidence};
 const intent={task:'map_display',relation:'new',displayRegion:{op:'set',value:{includeCandidateIds:['410000'],excludeCandidateIds:[]},evidence},dataRegion:clear,time:clear,filters:{},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec'}};
 const frame=(delta:unknown,finish_reason:string|null=null)=>`data: ${JSON.stringify({choices:[{delta,finish_reason}]})}\n\n`;
 

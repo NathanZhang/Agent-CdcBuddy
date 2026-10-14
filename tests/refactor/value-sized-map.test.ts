@@ -7,7 +7,7 @@ import {listSkillDefinitions,executeSkill} from '@/application/skills/skill-serv
 import {adaptQuerySpatialOutput} from '@/application/geo/spatial-adapters';import {buildMapLayers} from '@/lib/geo/map-layers';
 import {composeMap} from '@/application/geo/map-composer';import {executeMapDisplay} from '@/application/geo/map-service';
 const text='展示河南省2024年诱蚊灯法蚊类监测点位地图，以圆点大小表示平均捕获量（只/记录），附点位、监测次数和日期范围明细，最多展示200个点位。';
-const evidence={source:'current',start:0,end:text.length,quote:text};
+const evidence={source:'current',quote:text};
 const intent={task:'map_with_data',relation:'new',displayRegion:{op:'set',value:{includeCandidateIds:['410000'],excludeCandidateIds:[]},evidence},dataRegion:{op:'set',value:{includeCandidateIds:['410000'],excludeCandidateIds:[]},evidence},time:{op:'set',value:{from:'2024-01-01',to:'2024-12-31'},evidence},filters:{category:{op:'set',value:{field:'category',operator:'eq',values:['蚊']},evidence},methodName:{op:'set',value:{field:'methodName',operator:'eq',values:['诱蚊灯法']},evidence}},layerRequests:[{id:'sites',skillId:'skill_monitoring_data_table',rendering:'points',pointSize:'value'}],mapOperations:[],mapOptions:{basemap:'vec'}};
 const dir=mkdtempSync(path.join(tmpdir(),'cdc-value-map-')),previous=process.env.APP_BUSINESS_DB_PATH;
 beforeAll(()=>process.env.APP_BUSINESS_DB_PATH=path.join(dir,'business.db'));afterAll(()=>{if(previous===undefined)delete process.env.APP_BUSINESS_DB_PATH;else process.env.APP_BUSINESS_DB_PATH=previous;rmSync(dir,{recursive:true,force:true});});
@@ -50,7 +50,7 @@ it('rejects a value-size request attached to a heatmap before execution',async()
  expect((await resolveInteractionIntent({text,domain:'vector',now:'2026-10-13',previous:null},{complete:async()=>({role:'assistant',content:JSON.stringify(invalid)})})).status).not.toBe('RESOLVED');
 });
 it('identifies ambiguous repeated filter evidence so the remaining LLM attempt can repair it',async()=>{
- const ambiguous={...intent,filters:{...intent.filters,category:{...intent.filters.category,evidence:{source:'current',start:10,end:11,quote:'蚊'}}}};
+ const ambiguous={...intent,filters:{...intent.filters,category:{...intent.filters.category,evidence:{source:'current',quote:'蚊'}}}};
  const result=await resolveInteractionIntent({text,domain:'vector',now:'2026-10-13',previous:null},{complete:async request=>({role:'assistant',content:JSON.stringify(request.messages[0].content?.includes('INTENT_EVIDENCE_AMBIGUOUS')?intent:ambiguous)})});
  expect(result.status).toBe('RESOLVED');
 });

@@ -26,5 +26,6 @@ export interface AgentTurnResult {
   outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];
   intentSummary?:Record<string,unknown>;
   intentDiagnostics?:import('./interaction-intent').IntentDiagnostic[];
+  answerDiagnostics?:{code:string;message:string}[];
   error?:{code:string;message:string};
 }

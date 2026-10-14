@@ -5,7 +5,7 @@ import Database from 'better-sqlite3';
 import {computeResultStatistics, withResultStatistics} from '@/contracts/result-statistics';
 import {validateSkillResult} from '@/contracts/skill-result';
 import type {SkillRun} from '@/contracts/agent-interaction';
-import {buildAnswerEvidence, validateAnswerEvidence} from '@/application/agent/answer-evidence';
+import {buildAnswerEvidence, validateAnswerEvidence,verifiedBusinessSummary,ANSWER_EVIDENCE_INSTRUCTION} from '@/application/agent/answer-evidence';
 import {PROGRAMMATIC_ANALYSIS_INSTRUCTION} from '@/application/agent/answer-evidence';
 import {executeSkill, listSkillDefinitions} from '@/application/skills/skill-service';
 import {createMainAgent} from '@/application/agent/main-agent';
@@ -16,6 +16,8 @@ import {approveIntent} from '@/application/agent/intent-guard';
 import {GenerativeComponentRenderer} from '@/components/ag-ui/GenerativeComponentRenderer';
 import {SpeciesCompositionSummary} from '@/components/ag-ui/SpeciesCompositionSummary';
 import {RECOMMENDATION_DATA_CASES} from './fixtures/recommendation-data-cases';
+import {getRecordedTurn} from '@/infrastructure/db/business-store';
+import {getAppBusinessProvider} from '@/lib/db/app-business-provider';
 
 export const FLY_PROMPT = '查询河南省2020年7月9日至2025年11月5日家蝇抗药性生测记录，表格展示药剂、地市、日期、LC50、校正死亡率与登记抗性分类，保留缺失值。';
 const flySql = 'SELECT p.pesticide_name AS "药剂", l.city AS "地市", f.date_id AS "日期", f.lc50 AS "LC50", f.corrected_mortality AS "校正死亡率", f.resistance_level AS "登记抗性分类" FROM fact_insecticide_resistance f JOIN dim_pesticide p ON f.pesticide_id=p.pesticide_id JOIN dim_location l ON f.location_id=l.location_id ORDER BY f.date_id DESC';
@@ -148,12 +150,77 @@ it('replays the fly prompt against real rows, independently verifies COUNT/nulls
   expect(html).toContain('本次返回 73 行'); expect(html).toContain('LC50：有效 33 行，缺失 40 行');
 });
 
-it('fails a repeatedly incorrect answer, retains real data and publishes only a verified summary', async () => {
-  const context = ctx();
-  const agent = createMainAgent({listSkills:listSkillDefinitions,executeSkill,llm:{complete:async(request)=>request.tools?{role:'assistant',content:null,tool_calls:[{id:'fly',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:flySql})}}]}:{role:'assistant',content:'{"mode":"answer","replyText":"已查询到 76 条。"}'}}});
-  const turn = await collectDispatch(agent({interactionId:'bad-summary',kind:'conversation',userInput:FLY_PROMPT},context));
-  expect(turn.status).toBe('FAILED'); expect(turn.error?.code).toBe('ANSWER_EVIDENCE_MISMATCH');
-  expect(turn.agui).toHaveLength(1); expect(turn.replyText).toContain('本次返回 73 行'); expect(turn.replyText).not.toContain('76');
+it('recovers a repeatedly incorrect answer with real business values and persists no visible validation failure', async () => {
+  const context = ctx();let queries=0,attempts=0;
+  const agent = createMainAgent({listSkills:listSkillDefinitions,executeSkill:async(id,args,executionContext)=>{if(id==='skill_monitoring_data_table')queries++;return executeSkill(id,args,executionContext);},llm:{complete:async(request)=>{
+    if(request.messages[0].content?.includes('你负责提炼会话标题'))return {role:'assistant',content:'{"title":"家蝇抗药性结果"}'};
+    if(request.tools)return {role:'assistant',content:null,tool_calls:[{id:'fly',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:flySql})}}]};
+    attempts++;request.onDelta?.({type:'content',text:'{"mode":"answer","replyText":"已查询到 76 条。"}'});
+    return {role:'assistant',content:'{"mode":"answer","replyText":"已查询到 76 条。"}'};
+  }}});
+  const events:any[]=[];for await(const event of agent({interactionId:'bad-summary',kind:'conversation',userInput:FLY_PROMPT},context))events.push(event);
+  const turn=await collectDispatch(events);
+  expect(turn.status,turn.replyText).toBe('SUCCESS');expect(turn.error).toBeUndefined();expect(queries).toBe(1);expect(attempts).toBe(2);
+  expect(turn.answerDiagnostics).toHaveLength(2);expect(events.some(event=>event.type==='failed')).toBe(false);
+  expect(turn.agui).toHaveLength(1);expect(turn.replyText).toContain('LC50：');expect(turn.replyText).toContain('本次返回 73 行');
+  expect(turn.replyText).not.toMatch(/76|未通过数值校验|服务器已核验|文字总结未完成/);
+  expect(events.filter(event=>event.type==='content').map(event=>event.data.text).join('')).not.toContain('76');
+  expect(getRecordedTurn(context.runId,context).result.replyText).toBe(turn.replyText);
+  const messages=await getAppBusinessProvider().getChatMessages(turn.session!.id);
+  expect(messages.at(-1)?.text).toBe(turn.replyText);
+});
+
+it('keeps month and method context bound to business values for a monthly query summary',()=>{
+ const run=runFor([{month:'2024-06',methodName:'诱蚊灯法',平均捕获量:12.5,监测次数:4,捕获总数:50},{month:'2024-07',methodName:'诱蚊灯法',平均捕获量:15,监测次数:4,捕获总数:60}]);
+ const evidence=buildAnswerEvidence([run]);
+ const fact=evidence.facts.find(fact=>fact.path.join('.')==='data.0.平均捕获量')!;
+ expect(validateAnswerEvidence(`{{evidence:${fact.id}}}`,evidence)).toBe('月份：2024-06；采样方法：诱蚊灯法；平均捕获量：12.5');
+ const summary=verifiedBusinessSummary([run],evidence)!;
+ expect(summary).toContain('月份：2024-07；采样方法：诱蚊灯法；捕获总数：60');
+ expect(summary).not.toMatch(/未通过数值校验|增长率|排名/);
+ expect(ANSWER_EVIDENCE_INSTRUCTION).toContain('不以返回行数或缺失值统计代替业务总结');
+});
+
+it.each([false,true])('completes the screenshot monthly query with quote-only intent and a business summary (repair exhausted: %s)',async invalidSummary=>{
+ const text='按月展示河南省郑州市2024年6—8月诱蚊灯法蚊类平均捕获量（只/记录）折线图，附监测次数与捕获总数表。';
+ const evidence={source:'current',quote:text},clear={op:'clear',evidence};
+ const intent={task:'data_query',relation:'new',displayRegion:clear,dataRegion:{op:'set',value:{includeCandidateIds:['410100'],excludeCandidateIds:[]},evidence:{source:'current',quote:'河南省郑州市'}},time:{op:'set',value:{from:'2024-06-01',to:'2024-08-31'},evidence:{source:'current',quote:'2024年6—8月'}},filters:{methodName:{op:'set',value:{field:'methodName',operator:'eq',values:['诱蚊灯法']},evidence:{source:'current',quote:'诱蚊灯法'}},category:{op:'set',value:{field:'category',operator:'eq',values:['蚊']},evidence:{source:'current',quote:'蚊类'}}},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec'}};
+ const sql='SELECT SUBSTR(f.date_id,1,7) AS "月份", AVG(f.capture_count) AS "平均捕获量", COUNT(*) AS "监测次数", SUM(f.capture_count) AS "捕获总数" FROM fact_monitoring f GROUP BY "月份" ORDER BY "月份"';
+ let queries=0;
+ const agent=createMainAgent({enableRegionIntent:true,listSkills:listSkillDefinitions,executeSkill:async(id,args,context)=>{if(id==='skill_monitoring_data_table')queries++;return executeSkill(id,args,context);},llm:{complete:async request=>{
+  if(request.phase==='intent'){
+   expect(request.messages[0].content).not.toMatch(/"(?:start|end)":/);
+   return {role:'assistant',content:JSON.stringify(intent)};
+  }
+  if(request.messages[0].content?.includes('你负责提炼会话标题'))return {role:'assistant',content:'{"title":"郑州诱蚊灯月度捕获量"}'};
+  if(request.tools)return {role:'assistant',content:null,tool_calls:[{id:'monthly',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql,visualization:{kind:'line',xKey:'月份',yKey:'平均捕获量',unit:'只/记录'}})}}]};
+  expect(request.messages.at(-1)?.content).toContain('请优先引用用户要求的业务指标');
+  return {role:'assistant',content:JSON.stringify({mode:'answer',replyText:invalidSummary?'查询到999条记录。':`已按月份汇总诱蚊灯法蚊类的实测平均捕获量、监测次数和捕获总数；平均捕获量单位为只/记录。\n\n${Array.from({length:9},(_,i)=>`- {{evidence:r0v${i}}}`).join('\n')}`})};
+ }}});
+ const context=createDevelopmentContext('vector');
+ const turn=await collectDispatch(agent({interactionId:'monthly-business',kind:'conversation',userInput:text},context));
+ expect(turn.status,turn.replyText).toBe('SUCCESS');expect(turn.error).toBeUndefined();expect(queries).toBe(1);
+ const payload=turn.agui[0].result.payload as any;
+ expect(payload.visualization).toMatchObject({kind:'line',xKey:'月份',yKey:'平均捕获量'});
+ expect(payload.data).toHaveLength(3);
+ for(const row of payload.data){
+  expect(turn.replyText).toContain(`月份：${row.月份}；平均捕获量：`);
+  expect(turn.replyText).toContain(`月份：${row.月份}；监测次数：`);
+  expect(turn.replyText).toContain(`月份：${row.月份}；捕获总数：`);
+ }
+ expect(turn.replyText).not.toMatch(/999|未通过数值校验|文字总结未完成|服务器已核验/);
+ expect(turn.intentSummary).toMatchObject({time:{from:'2024-06-01',to:'2024-08-31'},dataRegion:{includeCodes:['410100']}});
+});
+
+it('keeps insufficient and empty result semantics and does not manufacture a fallback for failed or evidence-free runs',()=>{
+ const run=runFor({sampleCount:2});
+ const insufficient={...run,result:{...run.result,status:'INSUFFICIENT_DATA' as const}};
+ expect(verifiedBusinessSummary([insufficient],buildAnswerEvidence([insufficient]))).toContain('当前数据不足');
+ const empty={...run,result:{...run.result,status:'NO_DATA' as const,payload:null}};
+ expect(verifiedBusinessSummary([empty],buildAnswerEvidence([empty]))).toContain('未返回数据');
+ for(const other of [{...run,result:{...run.result,status:'FAILED' as const,payload:null}},runFor({message:'未执行指标'})]){
+  expect(verifiedBusinessSummary([other],buildAnswerEvidence([other]))).toBeUndefined();
+ }
 });
 
 it.each(['vector','foodborne','env','chronic'] as const)('adds identical statistics at the shared %s query boundary', async(domain) => {

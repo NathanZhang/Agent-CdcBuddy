@@ -20,7 +20,7 @@ let dir:string;
 const prompt='叠加显示河南省市县行政区划边界';
 const llm:LLMClient={complete:async request=>{
  if(request.phase==='intent'){
-  const evidence={source:'current',start:0,end:prompt.length,quote:prompt};
+  const evidence={source:'current',quote:prompt};
   return {role:'assistant',content:JSON.stringify({task:'map_display',relation:'new',displayRegion:{op:'set',value:{includeCandidateIds:['410000'],excludeCandidateIds:[]},evidence},dataRegion:{op:'clear',evidence},time:{op:'clear',evidence},filters:{},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec',boundaryLevels:['city','county']}})};
  }
  return {role:'assistant',content:request.messages[0].content?.includes('你负责提炼会话标题')?'{"title":"河南省市县边界"}':'{"mode":"answer","replyText":"已展示河南省市县边界。"}'};
