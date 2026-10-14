@@ -1,0 +1,15 @@
+{
+  "test": "browser-upload-real-vision-manual-confirm-submit",
+  "record": {
+    "submission_id": "SUB-acb06159-1dba-40d8-bed9-09531cdf4e78",
+    "recognition_id": "2e5fb7fa-a651-4f3c-ad3e-ed2fb46ad138",
+    "species_name": "待人工鉴定",
+    "recognized_species": null,
+    "ai_confidence": null,
+    "capture_count": 1,
+    "audit_status": "SUBMITTED",
+    "image_sha256": "eeff828053fc97bd3a6753c9eac45ff9513351fccfd467717e6840e148ac1df6",
+    "model": "qwen3.8-27b",
+    "result_json": "{\"speciesName\":null,\"category\":null,\"confidence\":null,\"reason\":\"图片为纯白背景，未包含任何可见的生物形态特征，无法识别物种。\",\"requiresReview\":true}"
+  }
+}

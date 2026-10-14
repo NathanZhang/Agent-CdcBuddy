@@ -22,10 +22,10 @@
  FAIL  tests/refactor/scientific-foundation.test.ts > rechecks the current jurisdiction and reports authorization failures at the Skill boundary
 AssertionError: expected [Function] to throw error matching /FORBIDDEN_SCOPE/ but got 'Requested geography exceeds server ju…'
 
-- Expected: 
+- Expected:
 /FORBIDDEN_SCOPE/
 
-+ Received: 
++ Received:
 "Requested geography exceeds server jurisdiction"
 
  ❯ tests/refactor/scientific-foundation.test.ts:100:194
@@ -38,4 +38,3 @@ AssertionError: expected [Function] to throw error matching /FORBIDDEN_SCOPE/ bu
       Tests  1 failed | 12 passed (13)
    Start at  13:22:28
    Duration  1.91s (transform 270ms, setup 0ms, collect 550ms, tests 914ms, environment 0ms, prepare 49ms)
-

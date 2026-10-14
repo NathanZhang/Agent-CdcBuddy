@@ -1,0 +1,17 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/scientific-dag.test.ts (14 tests) 33056ms
+   ✓ persists the genuine scan → member → matrix → K-Means → fixed history chain with effort denominators  4433ms
+   ✓ takes the explicit empty branch, persists skipped dependent nodes and never invents hotspots  1849ms
+   ✓ retries transient failures only, caps attempts, and resumes from successful checkpoints  5599ms
+   ✓ cancels queued work, aborts active work, preserves successful nodes and supports explicit resume  5997ms
+   ✓ recovers expired leases and fences stale workers instead of committing their output  4080ms
+   ✓ exposes artifact kernels and DAG as unified validated skills while LSTM stays unavailable  2980ms
+   ✓ forbids future member selection in earlier histories and keeps one selected cluster fixed  3786ms
+   ✓ runs an independent ready branch while another node waits for retry  3901ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  23:42:40
+   Duration  34.31s (transform 439ms, setup 0ms, collect 841ms, tests 33.06s, environment 0ms, prepare 60ms)

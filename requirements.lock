@@ -52,3 +52,7 @@ uvicorn==0.52.1
 websockets==15.0.1
 xxhash==3.8.1
 zstandard==0.25.0
+
+# Forecasting engines (CPU inference/training)
+statsmodels==0.14.6
+torch==2.14.1

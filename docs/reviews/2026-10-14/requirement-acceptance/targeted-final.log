@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 197ms
+ ✓ tests/refactor/results-ui.test.ts (4 tests) 272ms
+ ✓ tests/refactor/requirement-scenarios.test.tsx (3 tests) 21ms
+ ✓ tests/refactor/mobile-vision.test.ts (6 tests) 7550ms
+
+ Test Files  4 passed (4)
+      Tests  15 passed (15)
+   Start at  19:42:49
+   Duration  9.46s (transform 1.40s, setup 0ms, collect 4.06s, tests 8.04s, environment 0ms, prepare 213ms)

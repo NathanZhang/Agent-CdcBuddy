@@ -470,6 +470,11 @@ def _populate(db_conn: sqlite3.Connection, seed: int = 42):
                        '2026-08-17 10:00:00' if status == 'resolved' else None, '2026-08-15 16:00:00'))
     cur.executemany('INSERT INTO fact_env_alerts VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', alerts)
 
+    if __package__:
+        from .mock_requirement_inputs import populate as populate_requirement_inputs
+    else:
+        from mock_requirement_inputs import populate as populate_requirement_inputs
+    populate_requirement_inputs(db_conn, "env", seed)
     db_conn.commit()
 
 

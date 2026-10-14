@@ -164,7 +164,7 @@ it('replays the fly prompt against fixed fixture rows, independently verifies CO
   expect(html).toContain('本次返回 73 行'); expect(html).toContain('LC50：有效 33 行，缺失 40 行');
 });
 
-it('recovers a repeatedly incorrect answer with fixture business values and persists no visible validation failure', async () => {
+it('preserves actual business values but reports unfinished model judgement after repeated invalid answers', async () => {
   const context = ctx();let queries=0,attempts=0;
   const agent = createMainAgent({listSkills:listSkillDefinitions,executeSkill:async(id,args,executionContext)=>{if(id==='skill_monitoring_data_table')queries++;return executeSkill(id,args,executionContext);},llm:{complete:async(request)=>{
     if(request.messages[0].content?.includes('你负责提炼会话标题'))return {role:'assistant',content:'{"title":"家蝇抗药性结果"}'};
@@ -174,8 +174,8 @@ it('recovers a repeatedly incorrect answer with fixture business values and pers
   }}});
   const events:any[]=[];for await(const event of agent({interactionId:'bad-summary',kind:'conversation',userInput:FLY_PROMPT},context))events.push(event);
   const turn=await collectDispatch(events);
-  expect(turn.status,turn.replyText).toBe('SUCCESS');expect(turn.error).toBeUndefined();expect(queries).toBe(1);expect(attempts).toBe(2);
-  expect(turn.answerDiagnostics).toHaveLength(2);expect(events.some(event=>event.type==='failed')).toBe(false);
+  expect(turn.status).toBe('REVIEW_REQUIRED');expect(turn.error?.code).toBe('LLM_SUMMARY_UNAVAILABLE');expect(turn.replyText).toContain('模型研判未完成');expect(queries).toBe(1);expect(attempts).toBe(3);
+  expect(turn.answerDiagnostics).toHaveLength(3);expect(events.some(event=>event.type==='failed')).toBe(false);
   expect(turn.agui).toHaveLength(1);expect(turn.replyText).toContain('LC50：');expect(turn.replyText).toContain('本次返回 73 行');
   expect(turn.replyText).not.toMatch(/76|未通过数值校验|服务器已核验|文字总结未完成/);
   expect(events.filter(event=>event.type==='content').map(event=>event.data.text).join('')).not.toContain('76');
@@ -208,12 +208,12 @@ it.each([false,true])('completes the screenshot monthly query with quote-only in
   }
   if(request.messages[0].content?.includes('你负责提炼会话标题'))return {role:'assistant',content:'{"title":"郑州诱蚊灯月度捕获量"}'};
   if(request.tools)return {role:'assistant',content:null,tool_calls:[{id:'monthly',type:'function',function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql,visualization:{kind:'line',xKey:'月份',yKey:'平均捕获量',unit:'只/记录'}})}}]};
-  expect(request.messages.at(-1)?.content).toContain('请优先引用用户要求的业务指标');
+  expect(request.messages.at(-1)?.content).toContain('最终答复只写简短的定性研判');
   return {role:'assistant',content:JSON.stringify({mode:'answer',replyText:invalidSummary?'查询到999条记录。':`已按月份汇总诱蚊灯法蚊类的实测平均捕获量、监测次数和捕获总数；平均捕获量单位为只/记录。\n\n${Array.from({length:9},(_,i)=>`- {{evidence:r0v${i}}}`).join('\n')}`})};
  }}});
  const context=createDevelopmentContext('vector');
  const turn=await collectDispatch(agent({interactionId:'monthly-business',kind:'conversation',userInput:text},context));
- expect(turn.status,turn.replyText).toBe('SUCCESS');expect(turn.error).toBeUndefined();expect(queries).toBe(1);
+ expect(turn.status,turn.replyText).toBe(invalidSummary?'REVIEW_REQUIRED':'SUCCESS');if(invalidSummary)expect(turn.error?.code).toBe('LLM_SUMMARY_UNAVAILABLE');else expect(turn.error).toBeUndefined();expect(queries).toBe(1);
  const payload=turn.agui[0].result.payload as any;
  expect(payload.visualization).toMatchObject({kind:'line',xKey:'月份',yKey:'平均捕获量'});
  expect(payload.data).toHaveLength(3);
@@ -248,8 +248,9 @@ it.each(['vector','foodborne','env','chronic'] as const)('adds identical statist
 
 it('covers the resistance analysis skill, which uses a separate Python record-query path', async () => {
   const result = await executeSkill('skill_resistance_evaluation',{speciesName:'家蝇',asOf:'2025-11-05'},createDevelopmentContext('vector'));
-  expect(result.status).toBe('SUCCESS');
+  expect(result.status).toBe('INSUFFICIENT_DATA');
   const payload = result.payload as any;
+  expect(payload.data.reason).toContain('no predictions');
   const table = payload.statistics.tables.find((table:any)=>table.path.join('.')==='data.items');
   expect(table.rowCount).toBe(73);
   expect(table.columns.find((column:any)=>column.field==='lc50')).toEqual({field:'lc50',presentCount:33,missingCount:40});
@@ -305,4 +306,52 @@ it('uses Python-provided species totals in both the workbench and answer evidenc
   expect(html).toContain('物种数量');expect(html).toContain(data.totalCount.toLocaleString('zh-CN'));
   const legacy=renderToStaticMarkup(<SpeciesCompositionSummary data={{items:[{speciesName:'test',totalCount:7,percentage:null}]}}/>);
   expect(legacy).toContain('未提供 / 未评估');
+});
+
+
+it('allows only observed code identifiers and equivalent date labels, without freeing bare clinical numbers',()=>{
+ const evidence=buildAnswerEvidence([runFor([{date:'2026-08-01',classification:'ICD-10',candidateCodes:['I21','E11'],n:8}])]);
+ expect(validateAnswerEvidence('2026年8月的 ICD-10 类目候选 I21、E11，需复核。',evidence)).toContain('I21');
+ expect(validateAnswerEvidence('**1.** 候选需复核。',evidence)).toContain('候选');
+ for(const text of ['2025年8月结果。','C34 候选。','8条记录。'])expect(()=>validateAnswerEvidence(text,evidence)).toThrow();
+});
+
+it('retains actual timestamps and record identifiers while rejecting invented times',()=>{
+ const evidence=buildAnswerEvidence([runFor([{onset:'2026-08-21 18:30:00',case_id:'CASE-OB-039',n:8}])]);
+ expect(validateAnswerEvidence('病例 CASE-OB-039 的起始时间为 2026-08-21 18:30:00（18:30）。',evidence)).toContain('18:30');
+ expect(()=>validateAnswerEvidence('病例 CASE-OB-099 的起始时间为 19:30。',evidence)).toThrow();
+ expect(()=>validateAnswerEvidence('病例数为8。',evidence)).toThrow();
+});
+
+it('permits verbatim certificate spans without allowing invented durations or counts',()=>{
+ const evidence=buildAnswerEvidence([runFor({parsedCertificate:{rows:[{position:'part2',text:'2型糖尿病（10年）',entities:[{text:'2型糖尿病'}]}]},n:3},'mortality','ANALYTICS_RESULT')]);
+ expect(validateAnswerEvidence('原文 part2 为“2型糖尿病（10年）”，候选仍需复核。',evidence)).toContain('10年');
+ for(const text of ['原文为“2型糖尿病（20年）”。','检出3例。'])expect(()=>validateAnswerEvidence(text,evidence)).toThrow();
+});
+
+
+it('allows only durations and interval labels backed by actual model outputs', () => {
+  const evidence=buildAnswerEvidence([runFor({forecasts:[{period:'2025-01',lower95:1,upper95:4},{period:'2025-02',lower95:2,upper95:5}]},'model','ANALYTICS_RESULT')]);
+  expect(validateAnswerEvidence('预测两个月，95%置信区间见工作台。',evidence)).toContain('两个月');
+  expect(()=>validateAnswerEvidence('预测三个月。',evidence)).toThrow();
+  expect(()=>validateAnswerEvidence('病例数为2。',evidence)).toThrow();
+  expect(()=>validateAnswerEvidence('95%置信区间见工作台。',buildAnswerEvidence([runFor({forecasts:[{period:'2025-01',value:1}]},'model','ANALYTICS_RESULT')]))).toThrow();
+});
+
+
+it('binds month-range labels to known endpoints and rubric dimensions to actual weights',()=>{
+ const evidence=buildAnswerEvidence([runFor({forecasts:[{period:'2025-01',value:2},{period:'2025-02',value:3}],rule:{weights:[.5,.5]}},'model','ANALYTICS_RESULT')]);
+ expect(validateAnswerEvidence('2025年1—2月预测。两项评分与两项得分见表。',evidence)).toContain('1—2月');
+ expect(()=>validateAnswerEvidence('2025年1—3月预测。',evidence)).toThrow();
+ expect(()=>validateAnswerEvidence('2026年1—2月预测。',evidence)).toThrow();
+ expect(()=>validateAnswerEvidence('三项得分见表。',evidence)).toThrow();
+ expect(()=>validateAnswerEvidence('两项高风险。',evidence)).toThrow();
+});
+
+
+it('recognizes only the actually evaluated lag-window label, not arbitrary business numbers',()=>{
+ const evidence=buildAnswerEvidence([runFor({lagCorrelationTrend:Array.from({length:15},(_,lagDays)=>({lagDays,pearsonCorrelation:.5}))},'lag','ANALYTICS_RESULT')]);
+ expect(validateAnswerEvidence('在0—14天滞后窗口内比较。',evidence)).toContain('0—14天');
+ expect(()=>validateAnswerEvidence('在0—15天滞后窗口内比较。',evidence)).toThrow();
+ expect(()=>validateAnswerEvidence('相关系数接近1。',evidence)).toThrow();
 });

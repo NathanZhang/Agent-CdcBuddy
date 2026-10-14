@@ -1,0 +1,26 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/recommendations.test.tsx (52 tests) 15655ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 蚊媒历史趋势与三个月预测  646ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊类物种构成  1852ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: GBDT蚊媒三个月回顾性预测  585ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 家蝇抗药性生测记录  624ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 德国小蠊抗性记录明细  903ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 高校食堂事件菌株分型对比  545ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 2026年报告食品病例TOP10  1616ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > env: 郑州诺如病毒与门诊滞后分析  3894ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年死亡证明书规则复核  2232ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年伤害类型与记录病因  1704ms
+ ✓ tests/refactor/spatial-runtime-coverage.test.ts (1 test) 4447ms
+   ✓ requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering  4446ms
+ ✓ tests/refactor/phase-one-catalog.test.tsx (7 tests) 86ms
+ ✓ tests/refactor/mortality-coding.test.tsx (3 tests) 24ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 40730ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  4022ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  36592ms
+
+ Test Files  5 passed (5)
+      Tests  73 passed (73)
+   Start at  21:30:12
+   Duration  41.86s (transform 825ms, setup 0ms, collect 4.20s, tests 60.94s, environment 0ms, prepare 213ms)

@@ -1,0 +1,52 @@
+
+> agent-cdc-buddy@2.0.1 build
+> next build
+
+   ▲ Next.js 15.5.23
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.5s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13)
+   Generating static pages (6/13)
+   Generating static pages (9/13)
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                     810 kB         912 kB
+├ ƒ /_not-found                            995 B         103 kB
+├ ƒ /api/agent/dispatch                    172 B         103 kB
+├ ƒ /api/agent/stream-dispatch             172 B         103 kB
+├ ƒ /api/artifacts/[id]                    172 B         103 kB
+├ ƒ /api/auth/login                        172 B         103 kB
+├ ƒ /api/auth/logout                       172 B         103 kB
+├ ƒ /api/auth/me                           172 B         103 kB
+├ ƒ /api/copilotkit                        172 B         103 kB
+├ ƒ /api/health/live                       172 B         103 kB
+├ ƒ /api/health/ready                      172 B         103 kB
+├ ƒ /api/jobs                              172 B         103 kB
+├ ƒ /api/jobs/[id]                         172 B         103 kB
+├ ƒ /api/jobs/[id]/review                  172 B         103 kB
+├ ƒ /api/runtime-profile                   172 B         103 kB
+├ ƒ /api/sessions                          172 B         103 kB
+├ ƒ /api/sessions/[id]                     172 B         103 kB
+├ ƒ /api/skills                            172 B         103 kB
+├ ƒ /api/tickets/[id]/retests              172 B         103 kB
+├ ƒ /api/v1/mobile/detect-species          172 B         103 kB
+├ ƒ /api/v1/mobile/environment             172 B         103 kB
+├ ƒ /api/v1/mobile/record                  172 B         103 kB
+└ ƒ /api/v1/mobile/validate                172 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-3a64e17b7499099c.js       46.3 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.93 kB
+
+
+ƒ  (Dynamic)  server-rendered on demand

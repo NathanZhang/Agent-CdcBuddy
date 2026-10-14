@@ -1,0 +1,13 @@
+{
+  "version": "user-supplied-three-character-categories-v1",
+  "classification": "ICD-10",
+  "granularity": "category-only",
+  "sourceFile": "ICD-10_三位类目编码表.xlsx",
+  "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+  "sourceSheet": "ICD-10三位类目编码表",
+  "sourceEdition": "not-specified-in-workbook",
+  "limitations": [
+    "Category labels are not the Iris/MUSE decision tables.",
+    "Source chapter numbering is preserved; U/Z chapter numbering needs source review."
+  ]
+}

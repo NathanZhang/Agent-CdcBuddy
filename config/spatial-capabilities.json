@@ -198,7 +198,7 @@
       ],
       "reason": "Only authorized feature/region or user-evidenced coordinates."
     },
-    "icd10-dictionary-candidate-v1": {
+    "icd10-iris-mortality-v2": {
       "disposition": "non-spatial",
       "renderings": [],
       "reason": "Dictionary coding candidates contain no geographical observations."
@@ -217,6 +217,79 @@
       "disposition": "non-spatial",
       "renderings": [],
       "reason": "Persistent typed scientific artifacts; map publishing is a separate authorized adapter."
+    },
+    "vision-species-recognition-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Uploaded pixels produce reviewed species candidates; no geographic inference."
+    },
+    "sectioned-monitoring-report-v2": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "versioned-report-template-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "environment-offline-sampling-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "vector-validated-assessment-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "foodborne-validated-assessment-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "env-validated-assessment-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "chronic-validated-assessment-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "vector-warning-workflow-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "foodborne-warning-workflow-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "env-warning-workflow-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "chronic-warning-workflow-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Explicit domain tables, station coordinates and forecast cards render their own results; no inferred spatial precision."
+    },
+    "sourced-vector-knowledge-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Versioned sourced knowledge retrieval without geography inference."
+    },
+    "foodborne-dashboard-assessment-v1": {
+      "disposition": "producer",
+      "renderings": [
+        "area",
+        "labels"
+      ],
+      "reason": "程序计算区域病例分布，同时返回趋势、食品构成、事件与病例明细；支持区域地图。"
     }
   }
 }

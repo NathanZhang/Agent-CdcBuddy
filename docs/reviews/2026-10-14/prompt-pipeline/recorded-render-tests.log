@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/recorded-requirement-presentation.test.tsx (1 test) 975ms
+   ✓ renders all recorded real-model prompts, conclusions and outputs in both presentation modes  974ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  23:49:43
+   Duration  2.32s (transform 382ms, setup 0ms, collect 1.00s, tests 975ms, environment 0ms, prepare 41ms)

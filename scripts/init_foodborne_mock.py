@@ -427,6 +427,11 @@ def _populate(db_path: str, seed: int = 42):
     cur.executemany("INSERT OR REPLACE INTO fact_pathogen_molecular VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", molecular_rows)
     cur.executemany("INSERT OR REPLACE INTO fact_food_sampling VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", sampling_rows)
 
+    if __package__:
+        from .mock_requirement_inputs import populate as populate_requirement_inputs
+    else:
+        from mock_requirement_inputs import populate as populate_requirement_inputs
+    populate_requirement_inputs(conn, "foodborne", seed)
     conn.commit()
     conn.close()
 

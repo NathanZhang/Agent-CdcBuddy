@@ -1,0 +1,20 @@
+{
+  "test": "blank-image-real-provider-transport-not-species-accuracy",
+  "httpStatus": 200,
+  "body": {
+    "success": true,
+    "status": "SUCCESS",
+    "data": {
+      "type": "SPECIES_RECOGNITION_RESULT",
+      "recognitionId": "4f65fbc7-6775-4545-8de3-e2f4e23671e5",
+      "imageSha256": "eeff828053fc97bd3a6753c9eac45ff9513351fccfd467717e6840e148ac1df6",
+      "model": "qwen3.8-27b",
+      "speciesName": null,
+      "category": null,
+      "confidence": null,
+      "reason": "图片为纯白背景，未显示任何生物形态特征，无法进行物种识别。",
+      "requiresReview": true,
+      "expiresAt": 1792064088926
+    }
+  }
+}

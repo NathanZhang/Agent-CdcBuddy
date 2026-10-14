@@ -1,0 +1,32 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/agent-deadline.test.ts (10 tests) 2858ms
+   ✓ keeps the first abort cause and the correct partial outputs: deadline  309ms
+   ✓ preserves the real map and chart through the SSE route and workbench when a native deadline fires  2023ms
+ ✓ tests/refactor/session-history.test.ts (28 tests) 1408ms
+   ✓ restores grouped chart/table outputs and can reopen an earlier turn after a no-data reply  582ms
+ ✓ tests/refactor/intent-resolver.test.ts (15 tests) 126ms
+ ✓ tests/refactor/sql-scope-guard.test.ts (15 tests) 167ms
+ ✓ tests/refactor/dispatch.test.ts (22 tests) 609ms
+ ✓ tests/refactor/dispatch-wire.test.ts (9 tests) 395ms
+   ✓ rejects oversized dispatch events at both encoding and decoding boundaries  373ms
+ ✓ tests/refactor/region-map-dispatch.test.ts (6 tests) 240ms
+ ✓ tests/refactor/approved-scope.test.ts (3 tests) 50ms
+ ✓ tests/refactor/intent-authorization.test.ts (2 tests) 5ms
+ ✓ tests/refactor/recommendations.test.tsx (52 tests) 13564ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 蚊媒历史趋势与三个月预测  999ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊类物种构成  2230ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: GBDT蚊媒三个月回顾性预测  590ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 家蝇抗药性生测记录  592ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 德国小蠊抗性记录明细  571ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 高校食堂事件菌株分型对比  701ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 2026年报告食品病例TOP10  1631ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > env: 郑州诺如病毒与门诊滞后分析  1588ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年死亡证明书规则复核  2069ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年伤害类型与记录病因  1627ms
+
+ Test Files  10 passed (10)
+      Tests  162 passed (162)
+   Start at  22:28:11
+   Duration  15.50s (transform 873ms, setup 0ms, collect 4.19s, tests 19.42s, environment 1ms, prepare 384ms)

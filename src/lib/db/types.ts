@@ -162,6 +162,7 @@ export interface BizEarlyWarningEvent {
 }
 
 export interface BizMobileSubmission {
+  recognition_id?: string;
   submission_id: string;
   user_id: string;
   user_name: string;

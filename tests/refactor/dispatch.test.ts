@@ -52,7 +52,7 @@ describe('single main Agent dispatch',()=>{
   expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('INVALID_TOOL_ARGUMENTS');expect(calls).toBe(0);
  });
  it('failed or empty skills cannot reuse a successful old view',async()=>{
-  const unavailable={...tool(),function:{name:'skill_resistance_evolution',arguments:'{}'}};
+  const unavailable={...tool(),function:{name:'skill_monitoring_data_table',arguments:JSON.stringify({sql:'SELECT * FROM definitely_missing_table'})}};
   const turn=await collectDispatch(dispatch({...input,viewContext:{type:'OLD_SUCCESS'}},createDevelopmentContext('vector'),agent(stub([{role:'assistant',content:null,tool_calls:[unavailable]},answer]))));
   expect(turn.status).toBe('FAILED');expect(toLegacyResult(turn).success).toBe(false);expect(toLegacyResult(turn).generativeView).toBeNull();
  });
@@ -174,4 +174,15 @@ it.each(['diagnostic','different-year'])('does not mistake a %s query carrying m
  const llm=stub([{role:'assistant',content:null,tool_calls:[call('bad',bad)]},{role:'assistant',content:'{"mode":"continue","reason":"检查数据"}'},{role:'assistant',content:null,tool_calls:[call('other',other)]},answer]);
  const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(llm)));
  expect(turn.skillRuns[1].result.status).toBe('SUCCESS');expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('EXECUTION_FAILED');
+});
+
+it('keeps already authorized query evidence when a later unrequested write is blocked',async()=>{
+ const write={id:'unexpected-write',type:'function' as const,function:{name:'skill_session_manage',arguments:'{"action":"clear"}'}};
+ const turn=await collectDispatch(dispatch(input,createDevelopmentContext('vector'),agent(stub([
+  {role:'assistant',content:null,tool_calls:[tool(),write]},
+  {role:'assistant',content:'{"authorized":false,"reason":"当前用户只请求查询"}'}
+ ]))));
+ expect(turn.status).toBe('FAILED');expect(turn.error?.code).toBe('UNREQUESTED_WRITE');
+ expect(turn.skillRuns).toHaveLength(1);expect(turn.skillRuns[0].result.status).toBe('SUCCESS');
+ expect(toLegacyResult(turn).generativeView).toMatchObject({type:'DATA_TABLE_VIEW'});
 });

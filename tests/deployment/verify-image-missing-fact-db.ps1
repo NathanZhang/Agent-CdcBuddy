@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$ImageName = 'agent-cdcbuddy:2.0.1',
+    [string]$ImageName = 'agent-cdcbuddy:2.1.0',
     [ValidateSet('vector', 'foodborne', 'env', 'chronic')]
     [string]$Domain = 'env'
 )

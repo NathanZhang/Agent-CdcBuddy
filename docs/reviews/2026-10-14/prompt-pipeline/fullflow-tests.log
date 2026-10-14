@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/workflow.test.ts (5 tests) 2977ms
+   ✓ requires actual persisted Skill evidence; waiting review never dispatches; rejection closes without ticket  1628ms
+   ✓ approves idempotently, rejects missing retest and cannot claim external delivery  1234ms
+ ✓ tests/refactor/scenario-conversation.test.ts (55 tests) 1461ms
+ ✓ tests/refactor/answer-evidence.test.tsx (28 tests) 1341ms
+   ✓ covers the resistance analysis skill, which uses a separate Python record-query path  780ms
+ ✓ tests/refactor/requirement-full-flow.test.ts (1 test) 137945ms
+   ✓ runs every displayed recommendation, then exports reports, edits templates, syncs samples and resolves a reviewed ticket  137944ms
+
+ Test Files  4 passed (4)
+      Tests  89 passed (89)
+   Start at  23:44:14
+   Duration  139.61s (transform 949ms, setup 0ms, collect 3.29s, tests 143.72s, environment 0ms, prepare 187ms)

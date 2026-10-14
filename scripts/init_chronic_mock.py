@@ -606,6 +606,11 @@ def _populate(db_path: str = DB_PATH, seed: int = 42):
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, alerts)
 
+    if __package__:
+        from .mock_requirement_inputs import populate as populate_requirement_inputs
+    else:
+        from mock_requirement_inputs import populate as populate_requirement_inputs
+    populate_requirement_inputs(conn, "chronic", seed)
     conn.commit()
     conn.close()
 

@@ -1,10 +1,11 @@
+import {readRecognition} from '@/application/mobile/species-recognition';
 import {customVisualization} from '@/application/skills/custom-visualization';
 import {queryVisualizationSchema} from '@/contracts/query-visualization';
 import {workflowDataset} from '@/application/jobs/workflow-provenance';
 import {assertResultSources} from '@/infrastructure/db/dataset-policy';
 import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
 import {authorizeHistoryView,publicHistoryBase} from '@/application/agent/history-authorization';
-import {approveStructuredIntent} from '@/application/agent/structured-intent';
+import {resolveStructuredRegion} from '@/application/agent/structured-intent';
 import {authorizeScope} from '@/infrastructure/auth/authorization';
 import {readAuthorizedQuerySource} from '@/application/geo/query-source-store';
 import { projectAguiView } from '@/contracts/agui-view';
@@ -50,16 +51,17 @@ async function sessionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecut
  if(action==='update'){if(args.title===undefined&&args.isPinned===undefined)throw new Error('No session metadata changes');await provider.updateChatSession(args.sessionId,{title:args.title,is_pinned:args.isPinned===undefined?undefined:args.isPinned?1:0});return {status:'SUCCESS',payload:{type:'SESSION_RESULT',action,session:sessionView(await ownedSession(args.sessionId,ctx),[],ctx)},datasets:[]};}
  throw new Error('Unknown session operation');
 }
-const samplingSchema={type:'object',additionalProperties:false,required:['city','district','category','speciesName','captureCount'],properties:{city:str,district:str,category:str,speciesName:str,captureCount:{type:'integer',minimum:0},weatherTemp:{type:'number',minimum:-80,maximum:70},weatherHumidity:{type:'number',minimum:0,maximum:100},latitude:{type:'number',minimum:-90,maximum:90},longitude:{type:'number',minimum:-180,maximum:180},street:str,habitatType:str,methodName:str}};
+const samplingSchema={type:'object',additionalProperties:false,required:['city','district','category','speciesName','captureCount'],properties:{city:str,district:str,recognitionId:{type:'string',minLength:1,maxLength:100},category:str,speciesName:str,captureCount:{type:'integer',minimum:0},weatherTemp:{type:'number',minimum:-80,maximum:70},weatherHumidity:{type:'number',minimum:0,maximum:100},latitude:{type:'number',minimum:-90,maximum:90},longitude:{type:'number',minimum:-180,maximum:180},street:str,habitatType:str,methodName:str}};
 async function collectionExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  if(args.action==='form')return {status:'SUCCESS',payload:{type:'COLLECTION_FORM',inputSchema:samplingSchema,defaults:{city:ctx.principal.jurisdiction.city,district:ctx.principal.jurisdiction.district}},datasets:[]};
- if(args.action==='submit')workflowDataset(ctx);
- const record=args.record;approveStructuredIntent(record,{...ctx,approvedIntent:undefined},'other');authorizeScope(record,ctx);
+ const source=args.action==='submit'?workflowDataset(ctx):undefined;
+ const record=args.record;resolveStructuredRegion(record,ctx);authorizeScope(record,ctx);
+ const recognition=record.recognitionId?readRecognition(record.recognitionId,ctx):undefined;
  const rules=[{id:'low-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp<10&&record.captureCount>30)},{id:'extreme-temperature-high-count',passed:!(record.weatherTemp!==undefined&&record.weatherTemp>42&&record.captureCount>60)},{id:'indoor-high-count',passed:!(record.habitatType==='高层办公室'&&record.speciesName.includes('白纹伊蚊')&&record.captureCount>50)}];
  const evaluation={rules,totalRulesCount:rules.length,passedRulesCount:rules.filter(r=>r.passed).length,warnings:rules.filter(r=>!r.passed).map(r=>r.id)};
  if(args.action==='validate'||evaluation.warnings.length)return {status:evaluation.warnings.length?'REVIEW_REQUIRED':'SUCCESS',payload:{type:'COLLECTION_RESULT',action:'validate',evaluation},datasets:[],qualityFlags:['heuristic-qc-rules-not-species-recognition']};
- const saved=await getAppBusinessProvider().submitMobileRecord({user_id:ctx.principal.userId,user_name:ctx.principal.userId,city:record.city,district:record.district,street:record.street,category:record.category,species_name:record.speciesName,capture_count:record.captureCount,weather_temp:record.weatherTemp,weather_humidity:record.weatherHumidity,latitude:record.latitude,longitude:record.longitude,habitat_type:record.habitatType,method_name:record.methodName});
- return {status:'SUCCESS',payload:{type:'COLLECTION_RESULT',action:'submit',record:saved,evaluation,syncToSpatialMap:false},datasets:[],qualityFlags:['awaiting-review','not-added-to-observed-dataset']};
+ const saved=await getAppBusinessProvider().submitMobileRecord({recognition_id:record.recognitionId,recognized_species:recognition?.speciesName??undefined,ai_confidence:recognition?.confidence??undefined,user_id:ctx.principal.userId,user_name:ctx.principal.userId,city:record.city,district:record.district,street:record.street,category:record.category,species_name:record.speciesName,capture_count:record.captureCount,weather_temp:record.weatherTemp,weather_humidity:record.weatherHumidity,latitude:record.latitude,longitude:record.longitude,habitat_type:record.habitatType,method_name:record.methodName});
+ return {status:'SUCCESS',payload:{type:'COLLECTION_RESULT',action:'submit',record:saved,evaluation,syncToSpatialMap:false},datasets:source?[source]:[],qualityFlags:['awaiting-review','not-added-to-observed-dataset']};
 }
 async function catalogExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  const provider=getAppBusinessProvider();

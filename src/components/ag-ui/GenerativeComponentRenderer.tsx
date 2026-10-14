@@ -1,4 +1,6 @@
 'use client';
+import {EnvironmentSamplingForm} from './EnvironmentSamplingForm';
+import {ReportTemplateEditor} from './ReportTemplateEditor';
 import {implementationLabels,validationLabels} from '@/contracts/skill-capability';
 
 import React,{useId} from 'react';
@@ -80,12 +82,15 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
       {view.type==='AGUI_RESULT_GROUP'&&view.views.map((child:any,index:number)=><GenerativeComponentRenderer key={index} view={child} isCompact={isCompact} surfaceId={currentSurfaceId} mapComposition={composition}/>)}
       {view.type==='MAP_COMPOSITION'&&<MapCanvas key={view.mapId} composition={view} surfaceId={currentSurfaceId}/>}
       {view.type==='MAP_VIEW'&&<AdministrativeMap key={view.mapId} view={view}/>}
+      {view.type==='ENVIRONMENT_SAMPLING_FORM'&&<EnvironmentSamplingForm data={view}/>}
+      {view.type==='REPORT_TEMPLATE_EDITOR'&&<ReportTemplateEditor data={view}/>}
       {view.type==='ANALYTICS_RESULT'&&<AnalyticsResultCard data={view}/>}
+      {view.type==='SPECIES_RECOGNITION_RESULT'&&<div className="p-5"><h3 className="font-semibold">图片识别候选（需人工复核）</h3><p>{view.speciesName??'无法判断'}</p><p>{view.reason}</p><p>模型自评置信度：{view.confidence===null?'未提供':`${Math.round(view.confidence*100)}%`}</p><p>识别编号：{view.recognitionId}</p></div>}
       {view.type==='COLLECTION_FORM'&&<MobileSimulationModal data={view}/>}
       {view.type==='ARTIFACT_DOWNLOAD'&&<div className="p-5"><h3 className="font-semibold">导出文件</h3><a href={view.downloadUrl} className="text-sky-600 underline" download>{view.fileName}</a><p className="text-xs text-slate-500 mt-2">{view.byteLength} 字节</p></div>}
       {view.type==='SESSION_RESULT'&&<div className="p-5"><h3 className="font-semibold">会话管理</h3>{view.sessions?.map((session:any)=><p key={session.sessionId}>{session.title} · {session.messageCount} 条消息</p>)}{view.session&&<p>{view.session.title}</p>}</div>}
       {view.type==='SKILL_CATALOG'&&<div className="p-5"><h3 className="font-semibold">技能列表</h3>{view.standardSkills?.map((skill:any)=><p key={skill.id} className="text-sm mt-2">{skill.name} · {implementationLabels[skill.implementationStatus as keyof typeof implementationLabels]??'尚未实现'} · {validationLabels[skill.validationStatus as keyof typeof validationLabels]??'尚未验证'}</p>)}{view.customSkills?.map((skill:any)=><p key={skill.skill_id}>{skill.name}</p>)}</div>}
-      {view.type==='COLLECTION_RESULT'&&<div className="p-5"><h3 className="font-semibold">现场采集结果</h3>{view.record&&<p>记录编号：{view.record.submission_id}；审核状态：{statusLabel(view.record.audit_status)}</p>}{view.evaluation&&<p>经验质控规则：{view.evaluation.passedRulesCount}/{view.evaluation.totalRulesCount} 未触发异常；{view.evaluation.warnings.length} 项需复核。</p>}</div>}
+      {view.type==='COLLECTION_RESULT'&&<div className="p-5"><h3 className="font-semibold">现场采集结果</h3>{view.record&&<p>记录编号：{view.record.submission_id}；审核状态：{statusLabel(view.record.audit_status)}</p>}{view.record?.recognition_id&&<p>识别编号：{view.record.recognition_id}；模型候选：{view.record.recognized_species??'无法判断'}；人工确认：{view.record.species_name}</p>}{view.evaluation&&<p>经验质控规则：{view.evaluation.passedRulesCount}/{view.evaluation.totalRulesCount} 未触发异常；{view.evaluation.warnings.length} 项需复核。</p>}</div>}
       {view.type === 'SPATIAL_EARLY_WARNING_MAP' && (
         <div className={isCompact ? "w-full h-[380px] rounded-xl overflow-hidden relative" : "w-full h-[560px] shrink-0 relative"}>
           <VectorMapComponent

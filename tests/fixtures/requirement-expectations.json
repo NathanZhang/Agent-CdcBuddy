@@ -1,0 +1,786 @@
+[
+  {
+    "requirementId": 23,
+    "steps": [
+      {
+        "skillId": "skill_population_dynamics",
+        "args": {
+          "asOf": "2024-12-31",
+          "forecastMonths": 3
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 24,
+    "steps": [
+      {
+        "skillId": "skill_species_composition",
+        "args": {
+          "category": "蚊",
+          "year": 2024,
+          "methodName": "诱蚊灯法"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 25,
+    "steps": [
+      {
+        "skillId": "skill_resistance_evaluation",
+        "args": {
+          "asOf": "2025-11-05"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 26,
+    "steps": [
+      {
+        "skillId": "skill_pathogen_risk",
+        "args": {
+          "pathogenName": "登革病毒",
+          "from": "2024-01-01",
+          "asOf": "2024-12-31",
+          "category": "蚊"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 27,
+    "steps": [
+      {
+        "skillId": "skill_spatial_early_warning",
+        "args": {
+          "category": "蚊",
+          "methodName": "诱蚊灯法",
+          "from": "2024-06-01",
+          "asOf": "2024-06-30"
+        }
+      },
+      {
+        "skillId": "skill_alert_push_dispatch",
+        "args": {
+          "from": "2024-06-01",
+          "to": "2024-06-30",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 28,
+    "steps": [
+      {
+        "skillId": "skill_alert_push_dispatch",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2024-12-31",
+          "createTask": true
+        }
+      },
+      {
+        "skillId": "skill_inbox_read",
+        "args": {}
+      }
+    ]
+  },
+  {
+    "requirementId": 29,
+    "steps": [
+      {
+        "skillId": "skill_disposal_workflow",
+        "args": {
+          "city": "郑州市",
+          "district": "金水区",
+          "from": "2024-01-01",
+          "to": "2024-12-31",
+          "createTask": true
+        }
+      },
+      {
+        "skillId": "skill_job_manage",
+        "args": {
+          "action": "list"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 30,
+    "steps": [
+      {
+        "skillId": "skill_density_forecast",
+        "args": {
+          "asOf": "2024-12-31",
+          "forecastMonths": 2
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 31,
+    "steps": [
+      {
+        "skillId": "skill_transmission_risk",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2024-12-31",
+          "category": "蚊",
+          "methodName": "诱蚊灯法",
+          "pathogenName": "登革病毒"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 32,
+    "steps": [
+      {
+        "skillId": "skill_resistance_evolution",
+        "args": {
+          "asOf": "2025-11-05"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 33,
+    "steps": [
+      {
+        "skillId": "skill_monitoring_data_table",
+        "args": {
+          "sql": "SELECT s.species_name,s.latin_name,m.method_name,SUM(f.capture_count) AS captures FROM fact_monitoring f JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id WHERE s.category='蚊' GROUP BY s.species_name,s.latin_name,m.method_name ORDER BY captures DESC",
+          "from": "2024-01-01",
+          "to": "2024-12-31"
+        }
+      },
+      {
+        "skillId": "skill_vector_nlq",
+        "args": {
+          "question": "白纹伊蚊与淡色库蚊的鉴别和监测方法"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 34,
+    "steps": [
+      {
+        "skillId": "skill_auto_report_gen",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2024-12-31",
+          "reportTitle": "病媒监测专题报告"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 35,
+    "steps": [
+      {
+        "skillId": "skill_mobile_assistant_api",
+        "args": {
+          "action": "form"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 36,
+    "steps": [
+      {
+        "skillId": "skill_foodborne_cluster_detect",
+        "args": {
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "minCases": 3,
+          "windowHours": 48
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 37,
+    "steps": [
+      {
+        "skillId": "skill_foodborne_risk_forecast",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 38,
+    "steps": [
+      {
+        "skillId": "skill_molecular_trace",
+        "args": {
+          "city": "郑州市",
+          "district": "金水区",
+          "from": "2026-08-17",
+          "to": "2026-08-31",
+          "threshold": 5
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 39,
+    "steps": [
+      {
+        "skillId": "skill_outbreak_disposal_advice",
+        "args": {
+          "city": "郑州市",
+          "district": "金水区",
+          "from": "2020-01-01",
+          "to": "2026-08-18",
+          "createTask": true,
+          "eventDate": "2026-08-18"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 40,
+    "steps": [
+      {
+        "skillId": "skill_foodborne_dashboard",
+        "args": {
+          "from": "2026-07-01",
+          "to": "2026-08-31",
+          "drilldownCity": "郑州市"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 41,
+    "steps": [
+      {
+        "skillId": "skill_foodborne_report_export",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "reportTitle": "食源性监测月报及聚集事件简报"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 42,
+    "steps": [
+      {
+        "skillId": "skill_catalog_manage",
+        "args": {
+          "action": "list"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 43,
+    "steps": [
+      {
+        "skillId": "skill_env_standardize",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 44,
+    "steps": [
+      {
+        "skillId": "skill_water_safety_eval",
+        "args": {
+          "analysis": "water_risk",
+          "city": "郑州市",
+          "from": "2026-01-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 45,
+    "steps": [
+      {
+        "skillId": "skill_water_safety_eval",
+        "args": {
+          "analysis": "water_trend",
+          "city": "郑州市",
+          "from": "2024-01-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 46,
+    "steps": [
+      {
+        "skillId": "skill_sewage_pathogen_trace",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-07-01",
+          "asOf": "2026-08-31",
+          "pathogen": "诺如病毒",
+          "maxLag": 14
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 47,
+    "steps": [
+      {
+        "skillId": "skill_sewage_source",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-07-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 48,
+    "steps": [
+      {
+        "skillId": "skill_env_venue",
+        "args": {
+          "analysis": "venue_risk",
+          "city": "郑州市",
+          "from": "2026-08-15",
+          "to": "2026-08-15"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 49,
+    "steps": [
+      {
+        "skillId": "skill_env_venue",
+        "args": {
+          "analysis": "venue_grade",
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 50,
+    "steps": [
+      {
+        "skillId": "skill_air_climate_health_risk",
+        "args": {
+          "analysis": "exposure",
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 51,
+    "steps": [
+      {
+        "skillId": "skill_air_climate_health_risk",
+        "args": {
+          "analysis": "heat",
+          "city": "郑州市",
+          "from": "2026-06-01",
+          "to": "2026-08-28"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 52,
+    "steps": [
+      {
+        "skillId": "skill_river_basin_pollution_chain",
+        "args": {
+          "analysis": "cross_media",
+          "from": "2026-07-20",
+          "to": "2026-07-20"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 53,
+    "steps": [
+      {
+        "skillId": "skill_river_basin_pollution_chain",
+        "args": {
+          "analysis": "river_health",
+          "from": "2026-07-20",
+          "to": "2026-07-20",
+          "diseaseName": "肝癌"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 54,
+    "steps": [
+      {
+        "skillId": "skill_env_early_warning_disposal",
+        "args": {
+          "city": "郑州市",
+          "from": "2019-01-01",
+          "to": "2026-08-31",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 55,
+    "steps": [
+      {
+        "skillId": "skill_env_early_warning_disposal",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "analysis": "advice",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 56,
+    "steps": [
+      {
+        "skillId": "skill_auto_report_gen",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "reportTitle": "环境健康监测月报"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 57,
+    "steps": [
+      {
+        "skillId": "skill_env_scenario_simulation",
+        "args": {
+          "city": "郑州市",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "reductionPercentage": 100,
+          "sourceShare": 0.2
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 58,
+    "steps": [
+      {
+        "skillId": "skill_env_mobile_sampling",
+        "args": {
+          "action": "assign",
+          "city": "郑州市",
+          "district": "金水区"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 59,
+    "steps": [
+      {
+        "skillId": "skill_death_cert_qc",
+        "args": {
+          "from": "2026-01-01",
+          "to": "2026-08-19"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 60,
+    "steps": [
+      {
+        "skillId": "skill_icd10_nlp_inference",
+        "args": {
+          "text": "a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）",
+          "mode": "dictionary"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 61,
+    "steps": [
+      {
+        "skillId": "skill_icd10_nlp_inference",
+        "args": {
+          "inputChain": {
+            "a": "呼吸衰竭",
+            "b": "肺癌"
+          },
+          "mode": "graph",
+          "demographics": {
+            "sex": "1",
+            "age": {
+              "value": 68,
+              "unit": "Y"
+            },
+            "mannerOfDeath": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 62,
+    "steps": [
+      {
+        "skillId": "skill_mortality_cluster_rare",
+        "args": {
+          "analysis": "mortality",
+          "from": "2023-01-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 63,
+    "steps": [
+      {
+        "skillId": "skill_mortality_cluster_rare",
+        "args": {
+          "analysis": "rare",
+          "from": "2026-08-01",
+          "to": "2026-08-19",
+          "city": "郑州市",
+          "district": "金水区"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 64,
+    "steps": [
+      {
+        "skillId": "skill_chronic_risk_forecast",
+        "args": {
+          "analysis": "risk",
+          "from": "2024-01-01",
+          "to": "2026-08-08"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 65,
+    "steps": [
+      {
+        "skillId": "skill_chronic_risk_forecast",
+        "args": {
+          "analysis": "complications",
+          "from": "2024-01-01",
+          "to": "2026-08-08"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 66,
+    "steps": [
+      {
+        "skillId": "skill_chronic_screening_roi",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 67,
+    "steps": [
+      {
+        "skillId": "skill_injury_attribution_tree",
+        "args": {
+          "analysis": "injury_clusters",
+          "from": "2026-01-01",
+          "to": "2026-08-18"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 68,
+    "steps": [
+      {
+        "skillId": "skill_injury_attribution_tree",
+        "args": {
+          "analysis": "injury_tree",
+          "from": "2026-01-01",
+          "to": "2026-08-18"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 69,
+    "steps": [
+      {
+        "skillId": "skill_injury_attribution_tree",
+        "args": {
+          "analysis": "injury_events",
+          "from": "2026-08-01",
+          "to": "2026-08-31"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 70,
+    "steps": [
+      {
+        "skillId": "skill_chronic_early_warning_disposal",
+        "args": {
+          "from": "2024-01-01",
+          "to": "2026-08-31",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 71,
+    "steps": [
+      {
+        "skillId": "skill_chronic_early_warning_disposal",
+        "args": {
+          "from": "2026-08-01",
+          "to": "2026-08-31"
+        }
+      },
+      {
+        "skillId": "skill_inbox_read",
+        "args": {}
+      }
+    ]
+  },
+  {
+    "requirementId": 72,
+    "steps": [
+      {
+        "skillId": "skill_chronic_death_report",
+        "args": {
+          "from": "2026-01-01",
+          "to": "2026-08-31",
+          "reportTitle": "死因慢病伤害综合报告"
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 73,
+    "steps": [
+      {
+        "skillId": "skill_report_templates",
+        "args": {
+          "action": "form"
+        }
+      },
+      {
+        "skillId": "skill_chronic_death_report",
+        "args": {
+          "period": "month"
+        }
+      }
+    ],
+    "scope": {
+      "from": "2026-01-01",
+      "to": "2026-08-31"
+    }
+  },
+  {
+    "requirementId": 74,
+    "steps": [
+      {
+        "skillId": "skill_chronic_early_warning_disposal",
+        "args": {
+          "analysis": "advice",
+          "city": "郑州市",
+          "district": "金水区",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 75,
+    "steps": [
+      {
+        "skillId": "skill_chronic_risk_forecast",
+        "args": {
+          "analysis": "risk",
+          "from": "2024-01-01",
+          "to": "2026-08-31"
+        }
+      },
+      {
+        "skillId": "skill_chronic_early_warning_disposal",
+        "args": {
+          "analysis": "advice",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "createTask": true
+        }
+      }
+    ]
+  },
+  {
+    "requirementId": 76,
+    "steps": [
+      {
+        "skillId": "skill_injury_attribution_tree",
+        "args": {
+          "analysis": "injury_clusters",
+          "from": "2026-01-01",
+          "to": "2026-08-31"
+        }
+      },
+      {
+        "skillId": "skill_chronic_early_warning_disposal",
+        "args": {
+          "analysis": "advice",
+          "from": "2026-08-01",
+          "to": "2026-08-31",
+          "createTask": true
+        }
+      }
+    ]
+  }
+]

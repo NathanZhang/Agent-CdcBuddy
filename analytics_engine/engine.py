@@ -31,6 +31,9 @@ import contextlib
 
 def execute_task(task,args,db_path):
     result = {}
+    if task.endswith('_assessment'):
+        from analytics_engine.assessments import execute
+        return execute(TASK_DOMAINS[task], db_path, args)
     if task in GRAPH_TASKS:
         return invoke_graph(task,db_path,args,os.environ.get("APP_BUSINESS_DB_PATH") or os.path.join(ROOT,"app_business.db"))
     if task in ('population_dynamics','density_gbdt'):
@@ -119,7 +122,7 @@ def execute_task(task,args,db_path):
         result = validate_death_certificate_quality(db_path=db_path, city=args.get("city"),district=args.get("district"),from_date=args.get("from"),as_of=args.get("asOf"))
     elif task in ["icd10_nlp_inference", "icd10_inference"]:
         from chronic.icd10_nlp_inference import infer_underlying_cause_and_icd10
-        result = infer_underlying_cause_and_icd10(db_path=db_path, cert_id=args.get("certId"), input_chain=args.get("inputChain"))
+        result = infer_underlying_cause_and_icd10(db_path=db_path, cert_id=args.get("certId"), input_chain=args.get("inputChain"), mode=args.get("mode", "dictionary"), text=args.get("text"), demographics=args.get("demographics"), entry_mode=args.get("entryMode", "text"))
     elif task in ["mortality_cluster_dbscan", "mortality_cluster_rare"]:
         from chronic.mortality_cluster_dbscan import detect_mortality_patterns_and_rare_clusters
         result = detect_mortality_patterns_and_rare_clusters(db_path=db_path, target_city=args.get("city"),district=args.get("district"),from_date=args.get("from"),as_of=args.get("asOf"),eps_km=float(args.get("epsKm",5)),min_samples=int(args.get("minSamples",2)))

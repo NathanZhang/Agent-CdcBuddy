@@ -47,6 +47,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
   onSelectPrompt,
   defaultExpanded = false 
 }) => {
+  const [search,setSearch]=useState('');
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const containerRef = useRef<HTMLDivElement>(null);
   const profile = getCurrentAgentProfile();
@@ -74,6 +75,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
     prompts: cat.prompts
   }));
 
+  const filteredCategories=categories.map(c=>({...c,prompts:c.prompts.filter(p=>!search.trim()||`${p.title} ${p.prompt}`.includes(search.trim()))})).filter(c=>c.prompts.length);
   const totalPromptsCount = categories.reduce((sum, c) => sum + c.prompts.length, 0);
 
   const handleSelect = (p: string) => {
@@ -96,10 +98,10 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">
-              常用业务场景和推荐功能对话提示词
+              功能需求验收场景
             </h2>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              {categories.length} 大类 · 共 {totalPromptsCount} 条
+              {categories.length} 大类 · 共 {totalPromptsCount} 项需求
             </span>
           </div>
         </div>
@@ -140,7 +142,7 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
         <div className="absolute top-full left-0 right-0 mt-1.5 p-4 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-sky-500/30 shadow-2xl shadow-slate-900/20 dark:shadow-sky-950/50 animate-in fade-in slide-in-from-top-1 duration-150 z-40 max-h-[80vh] overflow-y-auto">
           <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800/80 pb-2.5 mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">💡 点击场景标题，发送完整分析指令</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">点击发送场景提示词，由智能体分析、执行并研判；编号用于验收核对</span>
             </div>
             <button
               onClick={() => setIsExpanded(false)}
@@ -151,13 +153,15 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {categories.map((cat, idx) => {
+          <input aria-label="按需求编号或名称筛选" value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索需求编号、功能名称或场景" className="w-full p-2 mb-3 border rounded bg-transparent text-sm"/>
+          {!filteredCategories.length&&<p className="text-sm">没有匹配的需求场景</p>}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {filteredCategories.map((cat, idx) => {
               const IconComp = cat.icon;
               return (
                 <div
                   key={idx}
-                  className={`p-3.5 rounded-xl ${cat.color} border backdrop-blur-sm flex flex-col justify-between gap-2.5 shadow-sm dark:shadow-md hover:border-sky-400/60 transition-all`}
+                  className={`p-3.5 rounded-xl ${cat.color} border backdrop-blur-sm flex flex-col gap-2.5 shadow-sm dark:shadow-md hover:border-sky-400/60 transition-all`}
                 >
                   <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800/80 pb-2">
                     <IconComp className={`w-4 h-4 ${cat.iconColor}`} />
@@ -167,13 +171,14 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
                   <div className="flex flex-col gap-1.5">
                     {cat.prompts.map((p) => (
                       <button
-                        key={p.title}
+                        key={p.requirementId??p.title}
+                        title={p.prompt}
                         type="button"
                         onClick={() => handleSelect(p.prompt)}
                         className="text-left text-xs text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-white bg-white/90 dark:bg-slate-950/70 hover:bg-sky-50 dark:hover:bg-sky-950/70 p-2 rounded-lg border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-500/50 transition-all leading-snug group flex items-start gap-1.5 shadow-2xs cursor-pointer"
                       >
                         <span className="text-sky-600 dark:text-sky-400 text-[10px] mt-0.5 group-hover:translate-x-0.5 transition-transform shrink-0">▸</span>
-                        <span>{p.title}</span>
+                        <span><strong className="block">{p.title}{p.deferred?' · 暂缓':''}</strong><span className="block mt-1 text-slate-500">核对：{p.acceptance}</span><span className="block mt-1 text-amber-700 dark:text-amber-400">{p.limitation}</span></span>
                       </button>
                     ))}
                   </div>

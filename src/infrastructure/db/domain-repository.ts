@@ -5,7 +5,7 @@ import type {ApprovedIntent} from '@/contracts/approved-intent';
 import {assertSqlMatchesIntent} from '@/application/agent/scope-guard';
 import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
 import type {FilterSpec} from '@/contracts/interaction-intent';
-import {scopedViewConstraints} from '@/infrastructure/query/scoped-view';
+import {scopedViewConstraints,scopeDateColumns as dateColumns} from '@/infrastructure/query/scoped-view';
 import {authorizeScope,restrictColumns} from '@/infrastructure/auth/authorization';
 import type {Principal} from '@/contracts/principal';
 import Database from 'better-sqlite3';
@@ -29,12 +29,11 @@ export interface QueryScope {
   allowedColumns?: Record<string,string[]>;
 }
 const domainTables: Record<AgentDomain,readonly string[]> = {
-  vector:['dim_date','dim_location','dim_species','dim_method','dim_environment','dim_audit','dim_pathogen','dim_pesticide','fact_monitoring','fact_pathogen_detection','fact_insecticide_resistance'],
-  foodborne:['dim_food_category','dim_pathogen_type','dim_hospital','dim_location','fact_foodborne_case','fact_pathogen_molecular','fact_food_sampling','fact_outbreak_event'],
-  env:['dim_env_stations','fact_water_monitoring','fact_sewage_monitoring','fact_air_climate_monitoring','fact_river_basin_monitoring','fact_public_venue_inspection','fact_env_alerts'],
-  chronic:['dim_districts','fact_death_registry','fact_chronic_cases','fact_injury_surveillance','fact_chronic_alerts']
+  vector:['fact_vector_exposure','dim_date','dim_location','dim_species','dim_method','dim_environment','dim_audit','dim_pathogen','dim_pesticide','fact_monitoring','fact_pathogen_detection','fact_insecticide_resistance'],
+  foodborne:['fact_food_exposure','fact_food_forecast_inputs','dim_food_category','dim_pathogen_type','dim_hospital','dim_location','fact_foodborne_case','fact_pathogen_molecular','fact_food_sampling','fact_outbreak_event'],
+  env:['fact_river_adjacency','fact_env_raw_samples','fact_venue_scores','fact_env_activity','fact_sewage_network','fact_env_mobile_tasks','fact_env_intervention_inputs','dim_env_stations','fact_water_monitoring','fact_sewage_monitoring','fact_air_climate_monitoring','fact_river_basin_monitoring','fact_public_venue_inspection','fact_env_alerts'],
+  chronic:['fact_chronic_followup','fact_injury_risk_inputs','dim_districts','fact_death_registry','fact_chronic_cases','fact_injury_surveillance','fact_chronic_alerts']
 };
-const dateColumns: Record<string,string> = {fact_monitoring:'date_id',fact_pathogen_detection:'date_id',fact_insecticide_resistance:'date_id',fact_foodborne_case:'visit_date',fact_pathogen_molecular:'isolation_date',fact_food_sampling:'sample_date',fact_outbreak_event:'start_time',fact_water_monitoring:'monitoring_date',fact_sewage_monitoring:'monitoring_date',fact_air_climate_monitoring:'date',fact_river_basin_monitoring:'monitoring_date',fact_public_venue_inspection:'inspection_date',fact_env_alerts:'created_at',fact_death_registry:'death_date',fact_chronic_cases:'diagnosed_date',fact_injury_surveillance:'injury_time',fact_chronic_alerts:'created_at'};
 function quoteIdentifier(name: string): string { return `"${name.replaceAll('"','""')}"`; }
 export class DomainRepository {
   constructor(readonly domain: AgentDomain, private datasetId?: string) {
@@ -86,6 +85,7 @@ export class DomainRepository {
       const literal = (value: string): string => (db.prepare('SELECT quote(?) AS value').get(value) as {value:string}).value;
       // Each query sees constrained TEMP views. main.* access is rejected by the AST gate.
       for (const [table,allowed] of Object.entries(schema)) {
+        if (!selected.has(table)) continue; // SQL gate forbids unselected tables, subqueries and main.* access.
         const col = columns[table];
         const constraints: string[] = scopedViewConstraints(table,col,selected.has(table)?scope:{...scope,filters:undefined},literal);
         const cityColumn = col.includes('city') ? 'city' : col.includes('city_name') ? 'city_name' : null;

@@ -1,3 +1,4 @@
+import {isolatedSimulationSources} from './simulation-policy';
 import fs from 'node:fs';
 import path from 'node:path';
 import {hostname} from 'node:os';
@@ -32,7 +33,7 @@ export function assertDatasetReadable(dataset:DatasetRef&{path:string},tier?:Dep
   if(marker&&formalRuntime(tier))deny('MOCK_PRODUCTION_FORBIDDEN','正式运行禁止读取模拟数据');
 }
 export function assertResultSources(refs:DatasetRef[]|undefined,tier?:DeploymentTier,requireObserved=false):void {
-  if(!formalRuntime(tier)&&!requireObserved)return;
+  if(!formalRuntime(tier)&&(!requireObserved||isolatedSimulationSources(refs)))return;
   if(!Array.isArray(refs)||!refs.length||refs.some(r=>!r||r.origin!=='observed'||!r.id||!r.version||!r.domain||!r.schemaVersion||!r.asOf))deny('MOCK_BUSINESS_FORBIDDEN','正式业务只接受带有完整真实来源的证据；模拟或来源不明的结果不能继续处理');
 }
 export function acquireDatasetLease(dataset:DatasetRef&{path:string},tier?:DeploymentTier):()=>void {

@@ -1,0 +1,25 @@
+{
+  "executedAt": "2026-10-14T12:55:39.661Z",
+  "requirements": 54,
+  "statuses": {
+    "SUCCESS": 51,
+    "REVIEW_REQUIRED": 3
+  },
+  "domains": {
+    "vector": 13,
+    "foodborne": 6,
+    "env": 17,
+    "chronic": 18
+  },
+  "semanticChecks": 220,
+  "businessFlowChecks": 7,
+  "allChecksPassed": true,
+  "deferredRequirements": [
+    42
+  ],
+  "professionalReviewRequired": [
+    60,
+    61
+  ],
+  "purpose": "mock-business-flow-not-external-scientific-validation"
+}

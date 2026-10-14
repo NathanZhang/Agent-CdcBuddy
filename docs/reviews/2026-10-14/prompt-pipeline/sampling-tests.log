@@ -1,0 +1,9 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/environment-sampling.test.ts (2 tests) 8631ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  23:48:29
+   Duration  14.08s (transform 1.80s, setup 0ms, collect 3.67s, tests 8.63s, environment 1ms, prepare 236ms)

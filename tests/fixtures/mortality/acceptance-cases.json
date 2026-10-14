@@ -1,0 +1,243 @@
+{
+  "classification": "ICD-10",
+  "purpose": "Synthetic functional cases; not a clinical accuracy benchmark or recorded Iris responses",
+  "cases": [
+    {
+      "id": "parse-multipart",
+      "text": "a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）",
+      "expectedCategories": [
+        "R57",
+        "I21",
+        "E11"
+      ],
+      "expectedPositions": [
+        "a",
+        "b",
+        "part2"
+      ]
+    },
+    {
+      "id": "multiple-per-line",
+      "inputChain": {
+        "a": "急性心肌梗死、2型糖尿病"
+      },
+      "expectedCategories": [
+        "I21",
+        "E11"
+      ],
+      "expectedPositions": [
+        "a"
+      ]
+    },
+    {
+      "id": "negation",
+      "inputChain": {
+        "a": "否认肺癌，疑似肺炎"
+      },
+      "expectedAssertions": [
+        "negated",
+        "uncertain"
+      ],
+      "blockedIssue": "non-affirmed-diagnosis"
+    },
+    {
+      "id": "cannot-exclude",
+      "inputChain": {
+        "a": "未排除肺癌"
+      },
+      "expectedAssertions": [
+        "uncertain"
+      ],
+      "blockedIssue": "non-affirmed-diagnosis"
+    },
+    {
+      "id": "ambiguous-diabetes",
+      "inputChain": {
+        "a": "糖尿病"
+      },
+      "expectedCategories": [
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14"
+      ]
+    },
+    {
+      "id": "unknown-disease",
+      "inputChain": {
+        "a": "待查罕见病甲"
+      },
+      "expectedCategories": [],
+      "expectedIssue": "unmapped-diagnosis"
+    },
+    {
+      "id": "national-extension",
+      "inputChain": {
+        "a": "I21.900"
+      },
+      "blockedIssue": "unsupported-code-or-national-extension"
+    },
+    {
+      "id": "missing-line",
+      "inputChain": {
+        "a": "呼吸衰竭",
+        "c": "肺癌"
+      },
+      "blockedIssue": "gap-in-part-one"
+    },
+    {
+      "id": "part-two-only",
+      "inputChain": {
+        "part2": "2型糖尿病"
+      },
+      "blockedIssue": "missing-part-one"
+    },
+    {
+      "id": "narrative-order",
+      "text": "因肺癌导致呼吸衰竭死亡",
+      "blockedIssue": "unstructured-causal-order-requires-review"
+    },
+    {
+      "id": "duplicate-position",
+      "text": "a: 肺炎\na: 肺癌",
+      "blockedIssue": "duplicate-certificate-position"
+    }
+  ],
+  "nativeCases": [
+    {
+      "id": "single-acute-mi",
+      "inputChain": {
+        "a": "I21.9"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "I21.9",
+      "rationale": "Single reported condition; provisional synthetic expectation to verify on the pinned release."
+    },
+    {
+      "id": "single-lung-cancer",
+      "inputChain": {
+        "a": "C34.9"
+      },
+      "demographics": {
+        "sex": "2",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "C34.9",
+      "rationale": "Single reported condition; provisional synthetic expectation to verify on the pinned release."
+    },
+    {
+      "id": "respiratory-cancer-chain",
+      "inputChain": {
+        "a": "J96.9",
+        "b": "C34.9"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "C34.9",
+      "rationale": "Synthetic terminal-to-origin chain; native engine and coder must verify."
+    },
+    {
+      "id": "sp5-reversed-chain",
+      "inputChain": {
+        "a": "C34.9",
+        "b": "J96.9"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "C34.9",
+      "rationale": "Iris V5.8.1S1 manual section 5.5.10 (SP5): reversed sequence must not select the last line."
+    },
+    {
+      "id": "sp6-part-two",
+      "inputChain": {
+        "a": "J18.9",
+        "part2": "I63.9"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "I63.9",
+      "rationale": "Iris V5.8.1S1 manual section 5.5.11 (SP6): Part II obvious cause must be considered."
+    },
+    {
+      "id": "m3-recheck",
+      "inputChain": {
+        "a": "A41.9",
+        "b": "I77.9 I74.3",
+        "part2": "C64"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedCode": "C64",
+      "rationale": "Iris V5.8.1S1 manual section 5.5.19 (M3): source example selects malignant neoplasm of kidney after modification and recheck."
+    },
+    {
+      "id": "sex-conflict",
+      "inputChain": {
+        "a": "C53.9"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedSelectionStatus": "ENGINE_REJECTED",
+      "rationale": "Institutional age/sex checks must reject the incompatible certificate."
+    },
+    {
+      "id": "invalid-code",
+      "inputChain": {
+        "a": "Z99.6"
+      },
+      "demographics": {
+        "sex": "1",
+        "age": {
+          "value": 68,
+          "unit": "Y"
+        },
+        "mannerOfDeath": 0
+      },
+      "expectedSelectionStatus": "ENGINE_REJECTED",
+      "rationale": "Invalid terminal code must not be accepted as a successful classification."
+    }
+  ],
+  "nativeReference": "https://salute.regione.emilia-romagna.it/siseps/sanita/rem/files/manuale-di-codifica-automatica-iris-v5-8-1s1.pdf/@@download/file/Manuale%20di%20codifica%20automatica%20Iris%20v5.8.1s1.pdf"
+}

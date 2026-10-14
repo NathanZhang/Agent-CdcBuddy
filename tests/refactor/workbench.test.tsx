@@ -133,3 +133,19 @@ it.each(['clear','delete'])('a delayed answer cannot restore a session removed b
  expect(controller.getState().sessionId).toBeNull();expect(controller.getState().busy).toBe(false);
  expect(controller.getState().messages.at(-1)?.text).toBe('实际结果。');
 });
+
+it('scenario clicks immediately display the exact prompt, stream the answer, and retain session history',async()=>{
+ let finish!:(r:AgentTurnResult)=>void;let callbacks:any;let submitted:AgentInteraction|undefined;
+ const controller=createWorkbenchController({domain:'vector',client:{interact:async(input,options)=>{submitted=input;callbacks=options;return new Promise(resolve=>finish=resolve);}}});
+ const prompt='展示病媒监测空间分布，并给出研判依据。';
+ const pending=controller.send(prompt);
+ expect(controller.getState().messages.map(m=>m.text)).toEqual([prompt]);
+ callbacks.onReasoningChunk('核对结果','核对结果');callbacks.onContentChunk('研判结论','研判结论');
+ expect(controller.getState().messages.at(-1)).toMatchObject({text:'研判结论',reasoningText:'核对结果',streaming:true});
+ finish({...turn(),session:{id:'scenario-session',title:'监测空间分布'}});await pending;
+ expect(controller.getState().messages.map(m=>m.text)).toEqual([prompt,'实际结果。']);
+ expect(controller.getState()).toMatchObject({sessionId:'scenario-session',title:'监测空间分布',busy:false});
+ const next=controller.send('继续查看预警');
+ expect(submitted?.sessionRef?.id).toBe('scenario-session');expect(submitted?.history).toHaveLength(2);
+ finish({...turn('next'),session:{id:'scenario-session',title:'监测空间分布'}});await next;
+});

@@ -1,0 +1,65 @@
+{
+  "purpose": "mock-engineering-demo-not-professional-acceptance",
+  "outputs": [
+    {
+      "domain": "vector",
+      "jobId": "53d26be2-b06f-4bd6-9fe8-e83e3a8ec590",
+      "status": "APPROVED",
+      "reportId": "report_d2b5354b-bf04-43ab-b63a-0c36e141bed5",
+      "artifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "48bfdc04-aa2a-4d25-bdae-a6d65ffbfe90",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 380,
+        "sha256": "94701c550d7152b0bc3cd4be72b22ca69bfc8f8c584710f2d96a77a54a9a03af",
+        "downloadUrl": "/api/artifacts/48bfdc04-aa2a-4d25-bdae-a6d65ffbfe90"
+      }
+    },
+    {
+      "domain": "foodborne",
+      "jobId": "bc108630-ad9e-407c-ae89-4975db0e14d6",
+      "status": "APPROVED",
+      "reportId": "report_5a0ca46c-9ee4-4ac1-8a7c-0ae4316b6e1c",
+      "artifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "7e395d6b-96f9-436e-bec3-2f9b6859633b",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 384,
+        "sha256": "a44f2a62551732c43f086b8498cbf149d4324aecd7f6b3fb59b2d5f0ffa2d2af",
+        "downloadUrl": "/api/artifacts/7e395d6b-96f9-436e-bec3-2f9b6859633b"
+      }
+    },
+    {
+      "domain": "env",
+      "jobId": "6fc323e0-c364-4df7-ae6f-f9e4726b3f06",
+      "status": "APPROVED",
+      "reportId": "report_b30a21c6-84c5-4ea4-9833-1905818932df",
+      "artifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "3434595c-1588-4fce-8163-0817e1bbf6bb",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 374,
+        "sha256": "5eed091a813835a3b43c381d31e82ebac3fc7bc73ddc587f11a8de4ff0256818",
+        "downloadUrl": "/api/artifacts/3434595c-1588-4fce-8163-0817e1bbf6bb"
+      }
+    },
+    {
+      "domain": "chronic",
+      "jobId": "2450b2e5-3401-4f3b-83c7-4aa7b749ea74",
+      "status": "APPROVED",
+      "reportId": "report_d62accf3-6f3b-48a8-a2f3-03f2063dbf0b",
+      "artifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "ed6346fe-42da-4961-ba4c-7a5121706066",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 380,
+        "sha256": "fbf9858f807eca54fbc0799dea38f88dc0b0a771b31ee713520c4abb922997f2",
+        "downloadUrl": "/api/artifacts/ed6346fe-42da-4961-ba4c-7a5121706066"
+      }
+    }
+  ]
+}

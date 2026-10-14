@@ -1,0 +1,5 @@
+[
+ {"id":"aedes-markings","tags":["白纹伊蚊","鉴别","物种"],"title":"白纹伊蚊的可见线索","summary":"白纹伊蚊体色黑，足部具有白色环带，体表有白色斑点。这些外观可作为现场候选线索，照片候选仍需结合检索表和专业复核。","sourceTitle":"CDC — Most (un)Wanted Mosquitoes","sourceUrl":"https://www.cdc.gov/dengue/stories/unwanted-mosquitoes.html","reviewedAt":"2026-10-14"},
+ {"id":"activity-difference","tags":["白纹伊蚊","淡色库蚊","鉴别","监测"],"title":"活动时间与监测安排","summary":"白纹伊蚊常在白天活跃；淡色库蚊等常在晚上活动。活动时间可辅助安排监测，但不能单凭叮咬时间判定物种。","sourceTitle":"中国疾控中心 — 蚊虫活动科普","sourceUrl":"https://www.chinacdc.cn/jkkp/crb/ycr/202608/t20260826_1839366.html","reviewedAt":"2026-10-14"},
+ {"id":"sampling-effort","tags":["监测","方法","密度","诱蚊灯"],"title":"采样方法与数据可比性","summary":"记录诱捕器类型、数量、采样时间和频次，并保持采样努力量可比。不同诱捕方法覆盖的蚊种和活动状态不同，不能把未经分母标准化的捕获数直接当作密度或个体感染风险。","sourceTitle":"CDC — West Nile Virus Surveillance and Control Guidelines","sourceUrl":"https://www.cdc.gov/west-nile-virus/php/surveillance-and-control-guidelines/index.html","reviewedAt":"2026-10-14"}
+]

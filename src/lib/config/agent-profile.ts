@@ -1,4 +1,4 @@
-import { VECTOR_PROMPTS, FOODBORNE_PROMPTS, ENV_PROMPTS, CHRONIC_PROMPTS, type RecommendedPrompt } from './recommended-prompts';
+import { requirementCategories, requirementPrompts, type RecommendedPrompt } from './recommended-prompts';
 import { EarlyWarningAlertItem } from '@/lib/db/data-provider';
 import { ACTIVE_ALERTS_LIST } from '@/lib/data/active-alerts';
 
@@ -78,52 +78,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     datasetDbName: 'vector_monitoring.db',
     businessDbName: 'app_business.db',
     systemPrompt: '你是河南省疾控中心消毒与媒介生物控制所的【病媒生物与宿主动物监测预警智能专家】。精通蚊、蝇、蟑螂、鼠、蜱、恙螨的种群消长预测(ARIMA/LSTM)、K-Means聚类、杀虫剂抗药性预测(Probit/ML)、Apriori病原携带风险挖掘、SaTScan时空扫描预警与应急消杀处置闭环。',
-    categories: [
-      {
-        title: '空间分布与区域对比',
-        color: 'bg-red-500/10 dark:bg-gradient-to-b dark:from-red-500/20 dark:to-orange-500/10 border-red-200 dark:border-red-500/30',
-        iconName: 'MapPin',
-        iconColor: 'text-red-600 dark:text-red-400',
-        prompts: [
-          VECTOR_PROMPTS.monitoringMap,
-          VECTOR_PROMPTS.cityMap,
-          VECTOR_PROMPTS.districtComparison
-        ]
-      },
-      {
-        title: '物种构成与历史预测',
-        color: 'bg-sky-500/10 dark:bg-gradient-to-b dark:from-sky-500/20 dark:to-cyan-500/10 border-sky-200 dark:border-sky-500/30',
-        iconName: 'TrendingUp',
-        iconColor: 'text-sky-600 dark:text-sky-400',
-        prompts: [
-          VECTOR_PROMPTS.population,
-          VECTOR_PROMPTS.composition,
-          VECTOR_PROMPTS.forecast
-        ]
-      },
-      {
-        title: '生物测定与药剂记录',
-        color: 'bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-500/20 dark:to-yellow-500/10 border-amber-200 dark:border-amber-500/30',
-        iconName: 'ShieldAlert',
-        iconColor: 'text-amber-600 dark:text-amber-400',
-        prompts: [
-          VECTOR_PROMPTS.resistance,
-          VECTOR_PROMPTS.cockroach,
-          VECTOR_PROMPTS.pesticides
-        ]
-      },
-      {
-        title: '监测明细与专题趋势',
-        color: 'bg-purple-500/10 dark:bg-gradient-to-b dark:from-purple-500/20 dark:to-pink-500/10 border-purple-200 dark:border-purple-500/30',
-        iconName: 'Activity',
-        iconColor: 'text-purple-600 dark:text-purple-400',
-        prompts: [
-          VECTOR_PROMPTS.historicalTable,
-          VECTOR_PROMPTS.pcr,
-          VECTOR_PROMPTS.summerTrend
-        ]
-      }
-    ],
+    categories: requirementCategories('vector'),
     initialGenerativeView: {
       type: 'SPATIAL_EARLY_WARNING_MAP',
       city: '河南省全域',
@@ -241,12 +196,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       badge: 'SSE Stream',
       statusText: '● 实时推演与流式交互',
       welcomeMessage: '您好！我是 **CdcBuddy 疾控病媒监测智能助手**。\n\n我已支持在对话流中直接渲染**时空态势地图、Text2SQL 数据明细表、ECharts 消长预测图及应急处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
-      quickPrompts: [
-        VECTOR_PROMPTS.monitoringMap,
-        VECTOR_PROMPTS.population,
-        VECTOR_PROMPTS.resistance,
-        VECTOR_PROMPTS.historicalTable
-      ],
+      quickPrompts: requirementPrompts('vector').filter(s=>!s.deferred).slice(0,4),
       inputPlaceholder: '输入病媒监测问题或指令 (如：显示郑州监测表)...',
       gradientClass: 'from-sky-600 to-cyan-500',
       shadowClass: 'shadow-sky-500/30',
@@ -269,52 +219,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     datasetDbName: 'foodborne_monitoring.db',
     businessDbName: 'app_business_food.db',
     systemPrompt: '你是河南省疾控中心食品安全与营养卫生所的【食源性疾病监测预警智能专家】。精通食源性病例聚集性识别(SaTScan/弹性时空扫描)、暴发风险时序预测(LSTM)、致病菌分子同源溯源(cgMLST/PFGE进化树)、高风险食品关联挖掘(Apriori)及突发公卫流调闭环处置。',
-    categories: [
-      {
-        title: '病例趋势与分布',
-        color: 'bg-red-500/10 dark:bg-gradient-to-b dark:from-red-500/20 dark:to-orange-500/10 border-red-200 dark:border-red-500/30',
-        iconName: 'AlertTriangle',
-        iconColor: 'text-red-600 dark:text-red-400',
-        prompts: [
-          FOODBORNE_PROMPTS.monthly,
-          FOODBORNE_PROMPTS.cities,
-          FOODBORNE_PROMPTS.pathogens
-        ]
-      },
-      {
-        title: '登记事件与分子分型',
-        color: 'bg-orange-500/10 dark:bg-gradient-to-b dark:from-orange-500/20 dark:to-amber-500/10 border-orange-200 dark:border-orange-500/30',
-        iconName: 'TrendingUp',
-        iconColor: 'text-orange-600 dark:text-orange-400',
-        prompts: [
-          FOODBORNE_PROMPTS.events,
-          FOODBORNE_PROMPTS.campus,
-          FOODBORNE_PROMPTS.molecular
-        ]
-      },
-      {
-        title: '食品记录与抽检统计',
-        color: 'bg-emerald-500/10 dark:bg-gradient-to-b dark:from-emerald-500/20 dark:to-teal-500/10 border-emerald-200 dark:border-emerald-500/30',
-        iconName: 'GitBranch',
-        iconColor: 'text-emerald-600 dark:text-emerald-400',
-        prompts: [
-          FOODBORNE_PROMPTS.foods,
-          FOODBORNE_PROMPTS.sampling,
-          FOODBORNE_PROMPTS.foodCategories
-        ]
-      },
-      {
-        title: '病例特征与明细',
-        color: 'bg-blue-500/10 dark:bg-gradient-to-b dark:from-blue-500/20 dark:to-indigo-500/10 border-blue-200 dark:border-blue-500/30',
-        iconName: 'FileText',
-        iconColor: 'text-blue-600 dark:text-blue-400',
-        prompts: [
-          FOODBORNE_PROMPTS.ages,
-          FOODBORNE_PROMPTS.venues,
-          FOODBORNE_PROMPTS.cases
-        ]
-      }
-    ],
+    categories: requirementCategories('foodborne'),
     initialGenerativeView: {
       type: 'FOODBORNE_CLUSTER_RADAR',
       city: '河南省全域',
@@ -480,12 +385,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       badge: 'SSE Stream',
       statusText: '● 聚集流调与分子溯源',
       welcomeMessage: '您好！我是 **CdcBuddy 食源性疾病监测智能助手**。\n\n我已支持在对话流中直接渲染**暴发聚集雷达、cgMLST 分子同源进化树、高风险食品归因排行及流调处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
-      quickPrompts: [
-        FOODBORNE_PROMPTS.monthly,
-        FOODBORNE_PROMPTS.events,
-        FOODBORNE_PROMPTS.foods,
-        FOODBORNE_PROMPTS.ages
-      ],
+      quickPrompts: requirementPrompts('foodborne').filter(s=>!s.deferred).slice(0,4),
       inputPlaceholder: '输入食源疾病监测指令 (如：排查聚集性疫情)...',
       gradientClass: 'from-orange-600 to-amber-500',
       shadowClass: 'shadow-orange-500/30',
@@ -508,52 +408,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     datasetDbName: 'env_monitoring.db',
     businessDbName: 'app_business_env.db',
     systemPrompt: '你是河南省疾控中心环境与健康所的【环境健康风险监测预警智能专家】。精通生活饮用水水质安全评估(GB 5749/随机森林/克里金空间插值)、污水管网病原监测与滞后关联溯源、公共场所卫生动态评级、空气质量与极端天气健康暴露模型(DLNM/GBDT热浪预警)、四河流域跨介质重金属污染链分析及政策情景推演。',
-    categories: [
-      {
-        title: '饮用水监测',
-        color: 'bg-cyan-500/10 dark:bg-gradient-to-b dark:from-cyan-500/20 dark:to-blue-500/10 border-cyan-200 dark:border-cyan-500/30',
-        iconName: 'Droplets',
-        iconColor: 'text-cyan-600 dark:text-cyan-400',
-        prompts: [
-          ENV_PROMPTS.waterMap,
-          ENV_PROMPTS.waterTypes,
-          ENV_PROMPTS.waterTrend
-        ]
-      },
-      {
-        title: '污水病原监测',
-        color: 'bg-teal-500/10 dark:bg-gradient-to-b dark:from-teal-500/20 dark:to-emerald-500/10 border-teal-200 dark:border-teal-500/30',
-        iconName: 'Activity',
-        iconColor: 'text-teal-600 dark:text-teal-400',
-        prompts: [
-          ENV_PROMPTS.sewageLag,
-          ENV_PROMPTS.sewageTrend,
-          ENV_PROMPTS.sewagePlants
-        ]
-      },
-      {
-        title: '空气与高温历史监测',
-        color: 'bg-sky-500/10 dark:bg-gradient-to-b dark:from-sky-500/20 dark:to-indigo-500/10 border-sky-200 dark:border-sky-500/30',
-        iconName: 'SunMedium',
-        iconColor: 'text-sky-600 dark:text-sky-400',
-        prompts: [
-          ENV_PROMPTS.airTrend,
-          ENV_PROMPTS.heat,
-          ENV_PROMPTS.airCities
-        ]
-      },
-      {
-        title: '流域与场所检查',
-        color: 'bg-indigo-500/10 dark:bg-gradient-to-b dark:from-indigo-500/20 dark:to-purple-500/10 border-indigo-200 dark:border-indigo-500/30',
-        iconName: 'SlidersHorizontal',
-        iconColor: 'text-indigo-600 dark:text-indigo-400',
-        prompts: [
-          ENV_PROMPTS.river,
-          ENV_PROMPTS.venues,
-          ENV_PROMPTS.waterRecords
-        ]
-      }
-    ],
+    categories: requirementCategories('env'),
     initialGenerativeView: {
       type: 'WATER_PIPELINE_GIS_MAP',
       city: '河南省全域',
@@ -698,12 +553,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       badge: 'SSE Stream',
       statusText: '● 水质环境与暴露推演',
       welcomeMessage: '您好！我是 **CdcBuddy 环境健康风险监测智能助手**。\n\n我已支持在对话流中直接渲染**生活饮用水管网 GIS 态势、污水病原拓扑溯源、极端气候健康风险及风险处置工单**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
-      quickPrompts: [
-        ENV_PROMPTS.waterMap,
-        ENV_PROMPTS.sewageLag,
-        ENV_PROMPTS.airTrend,
-        ENV_PROMPTS.river
-      ],
+      quickPrompts: requirementPrompts('env').filter(s=>!s.deferred).slice(0,4),
       inputPlaceholder: '输入环境健康风险指令 (如：评估水质安全)...',
       gradientClass: 'from-cyan-600 to-teal-500',
       shadowClass: 'shadow-cyan-500/30',
@@ -726,52 +576,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
     datasetDbName: 'chronic_monitoring.db',
     businessDbName: 'app_business_chronic.db',
     systemPrompt: '你是河南省疾控中心慢性非传染性疾病防制所的【死因、慢病及伤害综合监测预警智能专家】。精通人口死亡医学证明书智能逻辑质控(≥98%)、死因链NLP根本死因推断与ICD-10智能编码(≥95%)、ARIMA死亡图谱与DBSCAN高风险聚类、罕见死因短期聚集识别、重大慢病发病预测与WHO简略寿命表早死概率(4q70)测算、伤害聚类与决策树归因分析。',
-    categories: [
-      {
-        title: '死因记录与质控',
-        color: 'bg-rose-500/10 dark:bg-gradient-to-b dark:from-rose-500/20 dark:to-red-500/10 border-rose-200 dark:border-rose-500/30',
-        iconName: 'ClipboardCheck',
-        iconColor: 'text-rose-600 dark:text-rose-400',
-        prompts: [
-          CHRONIC_PROMPTS.qcSummary,
-          CHRONIC_PROMPTS.qc,
-          CHRONIC_PROMPTS.causes
-        ]
-      },
-      {
-        title: '慢病登记特征',
-        color: 'bg-pink-500/10 dark:bg-gradient-to-b dark:from-pink-500/20 dark:to-purple-500/10 border-pink-200 dark:border-pink-500/30',
-        iconName: 'HeartPulse',
-        iconColor: 'text-pink-600 dark:text-pink-400',
-        prompts: [
-          CHRONIC_PROMPTS.chronicTypes,
-          CHRONIC_PROMPTS.diabetes,
-          CHRONIC_PROMPTS.complications
-        ]
-      },
-      {
-        title: '伤害监测特征',
-        color: 'bg-amber-500/10 dark:bg-gradient-to-b dark:from-amber-500/20 dark:to-orange-500/10 border-amber-200 dark:border-amber-500/30',
-        iconName: 'Activity',
-        iconColor: 'text-amber-600 dark:text-amber-400',
-        prompts: [
-          CHRONIC_PROMPTS.injuries,
-          CHRONIC_PROMPTS.falls,
-          CHRONIC_PROMPTS.injuryTrend
-        ]
-      },
-      {
-        title: '死亡分布与明细',
-        color: 'bg-purple-500/10 dark:bg-gradient-to-b dark:from-purple-500/20 dark:to-indigo-500/10 border-purple-200 dark:border-purple-500/30',
-        iconName: 'FileCheck2',
-        iconColor: 'text-purple-600 dark:text-purple-400',
-        prompts: [
-          CHRONIC_PROMPTS.deathMap,
-          CHRONIC_PROMPTS.deathTrend,
-          CHRONIC_PROMPTS.deathRecords
-        ]
-      }
-    ],
+    categories: requirementCategories('chronic'),
     initialGenerativeView: {
       type: 'LIFE_TABLE_GAUGE',
       city: '河南省全域',
@@ -945,12 +750,7 @@ export const AGENT_PROFILES: Record<AgentDomainType, AgentProfile> = {
       badge: 'SSE Stream',
       statusText: '● 死亡证明质控与早死率测算',
       welcomeMessage: '您好！我是 **CdcBuddy 死因、慢病及伤害综合监测智能助手**。\n\n我已支持在对话流中直接渲染**简略寿命表早死率仪表盘、死因质控校验明细、伤害特征聚类树及慢病干预指南**。您可以**拖动浮窗边缘/右上角**自由缩放窗口大小：',
-      quickPrompts: [
-        CHRONIC_PROMPTS.qcSummary,
-        CHRONIC_PROMPTS.chronicTypes,
-        CHRONIC_PROMPTS.injuries,
-        CHRONIC_PROMPTS.deathMap
-      ],
+      quickPrompts: requirementPrompts('chronic').filter(s=>!s.deferred).slice(0,4),
       inputPlaceholder: '输入死因慢病监测指令 (如：测算4q70早死率)...',
       gradientClass: 'from-rose-600 to-pink-500',
       shadowClass: 'shadow-rose-500/30',

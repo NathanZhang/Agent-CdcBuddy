@@ -1,0 +1,748 @@
+[
+  {
+    "requirementId": 23,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(DISTINCT substr(date_id,1,7)) AS count FROM fact_monitoring WHERE date_id BETWEEN '2020-01-01' AND '2024-12-31'",
+        "minimum": 60,
+        "label": "完整60个月训练输入"
+      }
+    ]
+  },
+  {
+    "requirementId": 24,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 25,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_insecticide_resistance",
+        "minimum": 1,
+        "label": "fact_insecticide_resistance"
+      }
+    ]
+  },
+  {
+    "requirementId": 26,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_detection",
+        "minimum": 1,
+        "label": "fact_pathogen_detection"
+      }
+    ]
+  },
+  {
+    "requirementId": 27,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 28,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 29,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 30,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+        "minimum": 1,
+        "label": "fact_vector_exposure"
+      }
+    ]
+  },
+  {
+    "requirementId": 31,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_detection",
+        "minimum": 1,
+        "label": "fact_pathogen_detection"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+        "minimum": 1,
+        "label": "fact_vector_exposure"
+      }
+    ]
+  },
+  {
+    "requirementId": 32,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_insecticide_resistance",
+        "minimum": 1,
+        "label": "fact_insecticide_resistance"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+        "minimum": 1,
+        "label": "fact_vector_exposure"
+      }
+    ]
+  },
+  {
+    "requirementId": 33,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 34,
+    "domain": "vector",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+        "minimum": 1,
+        "label": "fact_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 35,
+    "domain": "vector",
+    "kind": "upload",
+    "checks": []
+  },
+  {
+    "requirementId": 36,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+        "minimum": 1,
+        "label": "fact_foodborne_case"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_food_exposure",
+        "minimum": 1,
+        "label": "fact_food_exposure"
+      }
+    ]
+  },
+  {
+    "requirementId": 37,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+        "minimum": 1,
+        "label": "fact_foodborne_case"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_food_forecast_inputs",
+        "minimum": 1,
+        "label": "fact_food_forecast_inputs"
+      }
+    ]
+  },
+  {
+    "requirementId": 38,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_molecular",
+        "minimum": 1,
+        "label": "fact_pathogen_molecular"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_food_exposure",
+        "minimum": 1,
+        "label": "fact_food_exposure"
+      }
+    ]
+  },
+  {
+    "requirementId": 39,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_outbreak_event",
+        "minimum": 1,
+        "label": "fact_outbreak_event"
+      }
+    ]
+  },
+  {
+    "requirementId": 40,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+        "minimum": 1,
+        "label": "fact_foodborne_case"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_outbreak_event",
+        "minimum": 1,
+        "label": "fact_outbreak_event"
+      }
+    ]
+  },
+  {
+    "requirementId": 41,
+    "domain": "foodborne",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+        "minimum": 1,
+        "label": "fact_foodborne_case"
+      }
+    ]
+  },
+  {
+    "requirementId": 42,
+    "domain": "env",
+    "kind": "deferred",
+    "checks": []
+  },
+  {
+    "requirementId": 43,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_raw_samples",
+        "minimum": 1,
+        "label": "fact_env_raw_samples"
+      },
+      {
+        "sql": "SELECT COUNT(DISTINCT quality_case) AS count FROM fact_env_raw_samples",
+        "minimum": 4,
+        "label": "正常、缺失、负值及单位差异"
+      }
+    ]
+  },
+  {
+    "requirementId": 44,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+        "minimum": 1,
+        "label": "fact_water_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 45,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+        "minimum": 1,
+        "label": "fact_water_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM dim_env_stations",
+        "minimum": 1,
+        "label": "dim_env_stations"
+      }
+    ]
+  },
+  {
+    "requirementId": 46,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_sewage_monitoring",
+        "minimum": 1,
+        "label": "fact_sewage_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 47,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_sewage_monitoring",
+        "minimum": 1,
+        "label": "fact_sewage_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_sewage_network",
+        "minimum": 1,
+        "label": "fact_sewage_network"
+      }
+    ]
+  },
+  {
+    "requirementId": 48,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_public_venue_inspection",
+        "minimum": 1,
+        "label": "fact_public_venue_inspection"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores",
+        "minimum": 1,
+        "label": "fact_venue_scores"
+      }
+    ]
+  },
+  {
+    "requirementId": 49,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores",
+        "minimum": 1,
+        "label": "fact_venue_scores"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores WHERE management IS NOT NULL AND staff IS NOT NULL AND disclosure IS NOT NULL AND testing IS NOT NULL AND smoking IS NOT NULL AND facilities IS NOT NULL",
+        "minimum": 5,
+        "label": "六维评分输入"
+      }
+    ]
+  },
+  {
+    "requirementId": 50,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_air_climate_monitoring",
+        "minimum": 1,
+        "label": "fact_air_climate_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_activity",
+        "minimum": 1,
+        "label": "fact_env_activity"
+      }
+    ]
+  },
+  {
+    "requirementId": 51,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_air_climate_monitoring",
+        "minimum": 1,
+        "label": "fact_air_climate_monitoring"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_activity",
+        "minimum": 1,
+        "label": "fact_env_activity"
+      }
+    ]
+  },
+  {
+    "requirementId": 52,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_river_basin_monitoring",
+        "minimum": 1,
+        "label": "fact_river_basin_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 53,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_river_basin_monitoring",
+        "minimum": 1,
+        "label": "fact_river_basin_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 54,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_alerts",
+        "minimum": 1,
+        "label": "fact_env_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 55,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_alerts",
+        "minimum": 1,
+        "label": "fact_env_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 56,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+        "minimum": 1,
+        "label": "fact_water_monitoring"
+      }
+    ]
+  },
+  {
+    "requirementId": 57,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_intervention_inputs",
+        "minimum": 1,
+        "label": "fact_env_intervention_inputs"
+      }
+    ]
+  },
+  {
+    "requirementId": 58,
+    "domain": "env",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_env_mobile_tasks",
+        "minimum": 1,
+        "label": "fact_env_mobile_tasks"
+      }
+    ]
+  },
+  {
+    "requirementId": 59,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      }
+    ]
+  },
+  {
+    "requirementId": 60,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      }
+    ]
+  },
+  {
+    "requirementId": 61,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      }
+    ]
+  },
+  {
+    "requirementId": 62,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+        "minimum": 1,
+        "label": "fact_chronic_followup"
+      }
+    ]
+  },
+  {
+    "requirementId": 63,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry WHERE city='郑州市' AND district='金水区' AND icd10_code='A81.0' AND death_date BETWEEN '2026-08-01' AND '2026-08-19'",
+        "minimum": 3,
+        "label": "罕见死因正例"
+      }
+    ]
+  },
+  {
+    "requirementId": 64,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_cases",
+        "minimum": 1,
+        "label": "fact_chronic_cases"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+        "minimum": 1,
+        "label": "fact_chronic_followup"
+      }
+    ]
+  },
+  {
+    "requirementId": 65,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+        "minimum": 1,
+        "label": "fact_chronic_followup"
+      }
+    ]
+  },
+  {
+    "requirementId": 66,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+        "minimum": 1,
+        "label": "fact_chronic_followup"
+      }
+    ]
+  },
+  {
+    "requirementId": 67,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+        "minimum": 1,
+        "label": "fact_injury_surveillance"
+      }
+    ]
+  },
+  {
+    "requirementId": 68,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+        "minimum": 1,
+        "label": "fact_injury_surveillance"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_risk_inputs",
+        "minimum": 1,
+        "label": "fact_injury_risk_inputs"
+      }
+    ]
+  },
+  {
+    "requirementId": 69,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+        "minimum": 1,
+        "label": "fact_injury_surveillance"
+      }
+    ]
+  },
+  {
+    "requirementId": 70,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+        "minimum": 1,
+        "label": "fact_chronic_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 71,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+        "minimum": 1,
+        "label": "fact_chronic_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 72,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_cases",
+        "minimum": 1,
+        "label": "fact_chronic_cases"
+      },
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+        "minimum": 1,
+        "label": "fact_injury_surveillance"
+      }
+    ]
+  },
+  {
+    "requirementId": 73,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+        "minimum": 1,
+        "label": "fact_death_registry"
+      }
+    ]
+  },
+  {
+    "requirementId": 74,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+        "minimum": 1,
+        "label": "fact_chronic_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 75,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+        "minimum": 1,
+        "label": "fact_chronic_alerts"
+      }
+    ]
+  },
+  {
+    "requirementId": 76,
+    "domain": "chronic",
+    "kind": "source-input",
+    "checks": [
+      {
+        "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+        "minimum": 1,
+        "label": "fact_injury_surveillance"
+      }
+    ]
+  }
+]

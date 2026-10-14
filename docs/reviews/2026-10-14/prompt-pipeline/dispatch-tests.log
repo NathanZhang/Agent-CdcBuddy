@@ -1,0 +1,9 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/dispatch.test.ts (23 tests) 777ms
+
+ Test Files  1 passed (1)
+      Tests  23 passed (23)
+   Start at  23:37:05
+   Duration  2.54s (transform 620ms, setup 0ms, collect 1.20s, tests 777ms, environment 0ms, prepare 168ms)

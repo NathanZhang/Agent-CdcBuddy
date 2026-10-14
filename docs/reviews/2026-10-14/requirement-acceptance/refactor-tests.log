@@ -1,0 +1,136 @@
+
+> agent-cdc-buddy@2.0.1 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/dispatch.test.ts (22 tests) 798ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 39844ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  3928ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  35808ms
+ ✓ tests/refactor/scientific-dag.test.ts (14 tests) 55060ms
+   ✓ persists the genuine scan → member → matrix → K-Means → fixed history chain with effort denominators  4596ms
+   ✓ takes the explicit empty branch, persists skipped dependent nodes and never invents hotspots  12539ms
+   ✓ retries transient failures only, caps attempts, and resumes from successful checkpoints  10288ms
+   ✓ cancels queued work, aborts active work, preserves successful nodes and supports explicit resume  9854ms
+   ✓ recovers expired leases and fences stale workers instead of committing their output  5206ms
+   ✓ exposes artifact kernels and DAG as unified validated skills while LSTM stays unavailable  3616ms
+   ✓ forbids future member selection in earlier histories and keeps one selected cluster fixed  4223ms
+   ✓ runs an independent ready branch while another node waits for retry  4171ms
+ ✓ tests/refactor/requirement-full-flow.test.ts (1 test) 108655ms
+   ✓ runs every displayed recommendation, then exports reports, edits templates, syncs samples and resolves a reviewed ticket  108654ms
+ ✓ tests/refactor/recommendations.test.tsx (52 tests) 12037ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊媒监测点位图  354ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 蚊媒历史趋势与三个月预测  712ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊类物种构成  1755ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: GBDT蚊媒三个月回顾性预测  539ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 家蝇抗药性生测记录  527ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 德国小蠊抗性记录明细  513ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 高校食堂事件菌株分型对比  514ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 2026年报告食品病例TOP10  1527ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > env: 郑州诺如病毒与门诊滞后分析  1534ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年死亡证明书规则复核  1758ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年伤害类型与记录病因  1570ms
+ ✓ tests/refactor/environment-sampling.test.ts (2 tests) 8036ms
+ ✓ tests/refactor/mobile-vision.test.ts (6 tests) 8064ms
+ ✓ tests/refactor/analytics-runner.test.ts (7 tests) 4604ms
+   ✓ timeout and cancellation terminate a running child and release the slot for a real next execution  794ms
+   ✓ the production runner computes an actual water snapshot through strict Python SkillResult  1577ms
+   ✓ timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer  1806ms
+ ✓ tests/refactor/final-workflow-review.test.ts (6 tests) 3519ms
+   ✓ rejects unrelated category or sampling method and missing original measurement policy  1190ms
+   ✓ lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence  1090ms
+   ✓ requires persisted observed collection provenance and never infers it for legacy records  1073ms
+ ✓ tests/refactor/spatial-runtime-coverage.test.ts (1 test) 4008ms
+   ✓ requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering  4007ms
+ ✓ tests/refactor/agent-deadline.test.ts (10 tests) 2576ms
+   ✓ preserves the real map and chart through the SSE route and workbench when a native deadline fires  2023ms
+ ✓ tests/refactor/session-history.test.ts (28 tests) 1372ms
+   ✓ restores grouped chart/table outputs and can reopen an earlier turn after a no-data reply  653ms
+ ✓ tests/refactor/workflow.test.ts (4 tests) 2357ms
+   ✓ requires actual persisted Skill evidence; waiting review never dispatches; rejection closes without ticket  1163ms
+   ✓ approves idempotently, rejects missing retest and cannot claim external delivery  1098ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 1277ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  549ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > implemented models disclose missing genotype inputs instead of fabricating evolution  512ms
+ ✓ tests/refactor/answer-evidence.test.tsx (22 tests) 1032ms
+   ✓ covers the resistance analysis skill, which uses a separate Python record-query path  516ms
+ ✓ tests/refactor/scientific-foundation.test.ts (13 tests) 1024ms
+ ✓ tests/refactor/map-sse-transport.test.ts (3 tests) 726ms
+   ✓ keeps a successful Henan city/county map after the real route is delivered in 64 KiB fragments  310ms
+   ✓ retains ordinary JSON event shapes for clients without compact-encoding negotiation  336ms
+ ✓ tests/refactor/custom-visualization.test.tsx (8 tests) 469ms
+ ✓ tests/refactor/interaction-skills.test.ts (11 tests) 483ms
+ ✓ tests/refactor/mock-production-policy.test.ts (13 tests) 351ms
+ ✓ tests/refactor/dispatch-wire.test.ts (9 tests) 329ms
+   ✓ rejects oversized dispatch events at both encoding and decoding boundaries  314ms
+ ✓ tests/refactor/scoped-entrypoints.test.ts (5 tests) 511ms
+ ✓ tests/refactor/authorization.test.ts (4 tests) 515ms
+ ✓ tests/refactor/workbench.test.tsx (18 tests) 467ms
+   ✓ legacy snapshots render their stored values read-only without live fallback metrics or actions  445ms
+ ✓ tests/refactor/value-sized-map.test.ts (9 tests) 269ms
+ ✓ tests/refactor/region-map-dispatch.test.ts (6 tests) 229ms
+ ✓ tests/refactor/dispatch-http.test.ts (6 tests) 353ms
+ ✓ tests/refactor/region-evaluation-format.test.ts (1 test) 339ms
+   ✓ rejects incomplete or duplicate evaluation cases and loads independent development and holdout suites  338ms
+ ✓ tests/refactor/sql-scope-guard.test.ts (15 tests) 648ms
+   ✓ accepts the failed mosquito map date-key join and still applies approved filters  414ms
+ ✓ tests/refactor/intent-reasoning-stream.test.ts (6 tests) 526ms
+   ✓ shows intent reasoning before completion and saves it for SUCCESS  404ms
+ ✓ tests/refactor/intent-resolver.test.ts (15 tests) 733ms
+   ✓ binds model-selected administrative candidates with verified original evidence  561ms
+ ✓ tests/refactor/review-scope-regressions.test.ts (11 tests) 243ms
+ ✓ tests/refactor/review-intent-regressions.test.ts (7 tests) 352ms
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 126ms
+ ✓ tests/refactor/phase-one-catalog.test.tsx (7 tests) 89ms
+ ✓ tests/refactor/review-map-regressions.test.ts (8 tests) 110ms
+ ✓ tests/refactor/review-entrypoint-regressions.test.ts (3 tests) 132ms
+ ✓ tests/refactor/llm-client.test.ts (12 tests) 57ms
+ ✓ tests/refactor/province-query-scope.test.ts (4 tests) 64ms
+ ✓ tests/refactor/sse-budget.test.ts (6 tests) 78ms
+ ✓ tests/refactor/approved-scope.test.ts (3 tests) 67ms
+ ✓ tests/refactor/migration-upgrade.test.ts (1 test) 41ms
+ ✓ tests/refactor/deployment.test.ts (3 tests) 42ms
+ ✓ tests/refactor/map-catalog-independence.test.ts (2 tests) 36ms
+ ✓ tests/refactor/output-presentation.test.tsx (7 tests) 34ms
+ ✓ tests/refactor/result-map.test.tsx (9 tests) 30ms
+ ✓ tests/refactor/map-display-skill.test.ts (6 tests) 30ms
+ ✓ tests/refactor/reasoning-stream.test.ts (9 tests) 29ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 24ms
+ ✓ tests/refactor/results-ui.test.ts (4 tests) 27ms
+ ✓ tests/refactor/administrative-map.test.tsx (1 test) 25ms
+ ✓ tests/refactor/map-annotation.test.ts (3 tests) 20ms
+ ✓ tests/refactor/requirement-scenarios.test.tsx (3 tests) 26ms
+ ✓ tests/refactor/query-gateway.test.ts (16 tests) 19ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 17ms
+ ✓ tests/refactor/intent-state.test.ts (1 test) 18ms
+ ✓ tests/refactor/llm-idle-timeout.test.ts (4 tests) 16ms
+ ✓ tests/refactor/session-history-ui.test.tsx (7 tests) 17ms
+ ✓ tests/refactor/llm-reasoning-effort.test.ts (11 tests) 13ms
+ ✓ tests/refactor/map-outcomes.test.tsx (1 test) 14ms
+ ✓ tests/refactor/llm-output-limit.test.ts (6 tests) 12ms
+ ✓ tests/refactor/review-evaluation-regressions.test.ts (2 tests) 11ms
+ ✓ tests/refactor/review-map-lifecycle.test.ts (1 test) 11ms
+ ✓ tests/refactor/llm-intent-budget.test.ts (1 test) 7ms
+ ✓ tests/refactor/map-composer.test.ts (2 tests) 18ms
+ ✓ tests/refactor/map-layers.test.ts (3 tests) 7ms
+ ✓ tests/refactor/spatial-adapters.test.ts (3 tests) 6ms
+ ✓ tests/refactor/spatial-output.test.ts (2 tests) 7ms
+ ✓ tests/refactor/region-catalog.test.ts (2 tests) 6ms
+ ✓ tests/refactor/agui.test.ts (1 test) 4ms
+ ✓ tests/refactor/spatial-capability-coverage.test.ts (1 test) 6ms
+ ✓ tests/refactor/intent-authorization.test.ts (2 tests) 7ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 5ms
+ ✓ tests/refactor/results.test.ts (6 tests) 4ms
+ ✓ tests/refactor/map-scene-state.test.ts (1 test) 3ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 3ms
+ ✓ tests/refactor/region-rollout.test.ts (1 test) 2ms
+ ✓ tests/refactor/map-interaction.test.ts (1 test) 2ms
+ ✓ tests/refactor/map-client-transport.test.ts (1 test) 1ms
+ ↓ tests/refactor/query-evidence-live.test.ts (1 test | 1 skipped)
+
+ Test Files  79 passed | 1 skipped (80)
+      Tests  530 passed | 1 skipped (531)
+   Start at  20:39:45
+   Duration  149.84s (transform 1.46s, setup 0ms, collect 23.82s, tests 263.13s, environment 8ms, prepare 3.32s)

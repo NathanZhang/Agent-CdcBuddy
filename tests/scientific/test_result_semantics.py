@@ -70,9 +70,10 @@ class ResultSemanticsTests(unittest.TestCase):
 
     def test_known_dictionary_candidate_does_not_claim_validated_accuracy(self):
         result=infer_underlying_cause_and_icd10(input_chain={'a':'呼吸衰竭','c':'急性大面积脑梗死'})
-        self.assertEqual(result['inferredUnderlyingCause']['standardIcd10'],'I63.9')
+        self.assertIsNone(result['inferredUnderlyingCause'])
+        self.assertTrue(any('I63' in row['candidateCodes'] for row in result['categoryCandidates']))
         self.assertIsNone(result['accuracyRate'])
-        self.assertIsNone(result['inferredUnderlyingCause']['confidenceScore'])
+        self.assertFalse(result['review']['autoFinalized'])
 
     def test_empty_or_mismatched_genes_rejected(self):
         for a,b in [([],[1,2,3]),([1],[1,2]),([None],[1]),([-1],[1])]:

@@ -50,3 +50,11 @@ it('still checks scope predicates nested inside projected arithmetic',()=>{
  expect(()=>assertSqlMatchesIntent(sql,approved,loadDatasetRegionBindings('vector',approved.datasetVersion))).toThrow();
 });
 it.each(["SELECT COUNT(*) AS n FROM dim_location WHERE city='郑州'","SELECT COUNT(*) AS n FROM fact_monitoring WHERE date_id<'2020-01-01'","SELECT COUNT(CASE WHEN city='洛阳市' THEN 1 END) AS n FROM dim_location","SELECT d.year,COUNT(*) AS n FROM fact_monitoring f JOIN dim_date d ON d.date_id=f.date_id WHERE d.year=2023 GROUP BY d.year","SELECT city,COUNT(*) AS n FROM dim_location GROUP BY city HAVING COUNT(*)>10"])('blocks hidden filtering outside the approved scope: %s',async sql=>{const ctx=createDevelopmentContext('vector');const region={includeCodes:['410100'],excludeCodes:[],catalogVersion:'local-boundaries-2026-10-13-v1'};ctx.approvedIntent=approveIntent({task:'data_query',relation:'new',displayRegion:region,dataRegion:region,time:{from:'2024-01-01',to:'2024-12-31'},filters:{},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec'}},ctx);const result=await executeSkill('skill_monitoring_data_table',{sql},ctx);expect(result.error?.code).toBe('SCOPE_MISMATCH');});
+it('binds equivalent environment pathogen names without permitting a different pathogen',async()=>{
+ const ctx=createDevelopmentContext('env');const region={includeCodes:['410100'],excludeCodes:[],catalogVersion:'local-boundaries-2026-10-13-v1'};
+ ctx.approvedIntent=approveIntent({task:'analysis',relation:'new',displayRegion:null,dataRegion:region,time:{from:'2026-07-01',to:'2026-08-31'},filters:{pathogenName:{field:'pathogenName',operator:'eq',values:['诺如病毒']}},layerRequests:[],mapOperations:[],mapOptions:{basemap:'vec'}},ctx);
+ const same=await executeSkill('skill_sewage_pathogen_trace',{pathogen:'诺如病毒',maxLag:14},ctx);
+ expect(same.error?.code).not.toBe('SCOPE_MISMATCH');expect(same.error?.code).not.toBe('ANALYTICS_FAILED');
+ const other=await executeSkill('skill_sewage_pathogen_trace',{pathogen:'新冠病毒',maxLag:14},ctx);
+ expect(other.error?.code).toBe('SCOPE_MISMATCH');
+});

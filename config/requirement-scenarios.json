@@ -1,0 +1,711 @@
+[
+  {
+    "requirementId": 23,
+    "domain": "vector",
+    "group": "种群动态分析",
+    "title": "23 · 种群动态模型",
+    "prompt": "使用当前配置数据。分析河南省诱蚊灯法蚊类种群动态，以2024年12月底为截止点、前60个月为训练窗口预测未来3个月，展示历史、预测曲线与回测误差。",
+    "skillIds": [
+      "skill_population_dynamics"
+    ],
+    "acceptance": "历史及预测表、训练截止、误差口径",
+    "limitation": "ARIMA/LSTM已计算；误差≤10%须用独立实测数据验收",
+    "deferred": false
+  },
+  {
+    "requirementId": 24,
+    "domain": "vector",
+    "group": "种群动态分析",
+    "title": "24 · 种群识别模型",
+    "prompt": "使用当前配置数据。直接分析河南省2024年诱蚊灯法蚊类优势种群：按捕获数量计算白纹伊蚊与淡色库蚊的物种构成和多样性，采用K-Means比较地市构成聚类，展示实际结果与方法限制。",
+    "skillIds": [
+      "skill_species_composition"
+    ],
+    "acceptance": "物种构成、K-Means结果及地市对比",
+    "limitation": "探索性聚类不等于风险分类",
+    "deferred": false
+  },
+  {
+    "requirementId": 25,
+    "domain": "vector",
+    "group": "抗药性评估",
+    "title": "25 · 抗药性预测模型",
+    "prompt": "使用当前配置数据。评估河南省2020年7月9日至2025年11月5日病媒对杀虫剂的抗药性，使用该范围历史生测与地理特征训练随机森林，展示药剂、预测等级与留出验证。",
+    "skillIds": [
+      "skill_resistance_evaluation"
+    ],
+    "acceptance": "药剂、地区、实测值和等级依据",
+    "limitation": "RF预测为数据集内留出验证；药剂阈值需专业确认",
+    "deferred": false
+  },
+  {
+    "requirementId": 26,
+    "domain": "vector",
+    "group": "病原携带风险分析",
+    "title": "26 · 病原携带风险评估模型",
+    "prompt": "使用当前配置数据。分析河南省2024年蚊媒登革病毒PCR检测与宿主物种分布，展示阳性记录比例及高风险组合的关联规则。",
+    "skillIds": [
+      "skill_pathogen_risk"
+    ],
+    "acceptance": "检测分母、两项关联规则、地区物种分布",
+    "limitation": "记录阳性比例不是个体感染率；尚无完整宿主关联模型",
+    "deferred": false
+  },
+  {
+    "requirementId": 27,
+    "domain": "vector",
+    "group": "动态预警响应",
+    "title": "27 · 动态预警分析",
+    "prompt": "使用当前配置数据。展示河南省2024年6月诱蚊灯法蚊类监测空间插值热力图，同时计算动态预警阈值和触发依据，说明街道下钻能力，并创建可追踪的核查任务、返回任务编号。",
+    "skillIds": [
+      "skill_spatial_early_warning",
+      "skill_alert_push_dispatch"
+    ],
+    "acceptance": "IDW图层、监测依据、预警及下钻能力状态",
+    "limitation": "演示规则生成预警；15分钟SLA及街道精度另需部署验收",
+    "deferred": false
+  },
+  {
+    "requirementId": 28,
+    "domain": "vector",
+    "group": "动态预警响应",
+    "title": "28 · 预警推送信息",
+    "prompt": "使用当前配置数据。演示河南省2024年病媒预警分级站内推送，查看我的站内通知及依据，逐项核对一般、较重、严重风险的接收层级，明确短信和APP渠道尚未接入。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_alert_push_dispatch",
+      "skill_inbox_read"
+    ],
+    "acceptance": "风险等级、接收者、通知记录及送达状态",
+    "limitation": "分级与站内通知可追踪；短信/APP网关尚未配置",
+    "deferred": false
+  },
+  {
+    "requirementId": 29,
+    "domain": "vector",
+    "group": "动态预警响应",
+    "title": "29 · 处置闭环信息",
+    "prompt": "使用当前配置数据。演示郑州市金水区2024年病媒处置闭环，查看我的分析任务、审批和工单进度，核对处置建议、复测证据及预警解除条件。创建可追踪的核查任务。审批和复测仅查看已有记录，不代替人工审批，不提交虚构复测；尚无记录时如实显示待处理。",
+    "skillIds": [
+      "skill_disposal_workflow",
+      "skill_job_manage"
+    ],
+    "acceptance": "任务→审批→工单→复测→核销证据",
+    "limitation": "真实审批与复测工单；解除只代表工单核销",
+    "deferred": false
+  },
+  {
+    "requirementId": 30,
+    "domain": "vector",
+    "group": "风险预测评估",
+    "title": "30 · 密度预测模型",
+    "prompt": "使用当前配置数据。以河南省诱蚊灯法蚊类记录开展GBDT密度预测：历史训练数据范围为2020年1月1日至2024年12月31日，共60个月；预测目标为2025年1—2月（不是历史筛选范围），展示特征权重、预测曲线和回测。",
+    "skillIds": [
+      "skill_density_forecast"
+    ],
+    "acceptance": "两个月预测、特征权重及回测",
+    "limitation": "采样分母及气象融合已计算，真实采样单位须确认",
+    "deferred": false
+  },
+  {
+    "requirementId": 31,
+    "domain": "vector",
+    "group": "风险预测评估",
+    "title": "31 · 传播风险评估模型",
+    "prompt": "使用当前配置数据。评估河南省2024年诱蚊灯法蚊类监测密度、登革病毒携带率与人群暴露关联的传播风险，展示输入、计算依据和缺失信息。",
+    "skillIds": [
+      "skill_transmission_risk"
+    ],
+    "acceptance": "病媒、PCR和人群暴露输入及模型状态",
+    "limitation": "相对暴露指数，不等于个体感染概率",
+    "deferred": false
+  },
+  {
+    "requirementId": 32,
+    "domain": "vector",
+    "group": "风险预测评估",
+    "title": "32 · 抗药性演化预测",
+    "prompt": "使用当前配置数据。根据河南省2019年1月1日至2025年11月5日抗性历史、用药频率和耐药基因频率，预测未来一年抗药性演化，展示12个月预测和可信区间。",
+    "skillIds": [
+      "skill_resistance_evolution"
+    ],
+    "acceptance": "基因频率历史、用药频率、12个月预测及区间",
+    "limitation": "条件Beta-Binomial网络；一年预测采用条件平稳假设",
+    "deferred": false
+  },
+  {
+    "requirementId": 33,
+    "domain": "vector",
+    "group": "自然语言问答（NLQ）",
+    "title": "33 · 自然语言问答",
+    "prompt": "使用当前配置数据。查询河南省2024年蚊类优势种，说明白纹伊蚊与淡色库蚊的鉴别要点及监测方法，区分数据库事实和有来源的规范知识。",
+    "skillIds": [
+      "skill_monitoring_data_table",
+      "skill_vector_nlq"
+    ],
+    "acceptance": "数据库答案、知识来源与响应耗时",
+    "limitation": "本地来源检索与数据库事实分别返回；语音依赖浏览器支持",
+    "deferred": false
+  },
+  {
+    "requirementId": 34,
+    "domain": "vector",
+    "group": "自动生成专题报告",
+    "title": "34 · 专题报告信息",
+    "prompt": "使用当前配置数据。生成河南省2024年病媒监测专题报告，包含监测概况、趋势、重点区域和建议，归档并导出文档，展示数据来源及图表。",
+    "skillIds": [
+      "skill_auto_report_gen"
+    ],
+    "acceptance": "报告编号、来源、章节及下载文件",
+    "limitation": "实际章节统计、趋势图、归档及HTML/Markdown导出",
+    "deferred": false
+  },
+  {
+    "requirementId": 35,
+    "domain": "vector",
+    "group": "移动端智能辅助（提供API）",
+    "title": "35 · AI助手信息",
+    "prompt": "打开现场图片识别与采集表单。我要上传照片识别病媒，核对自动回填的物种，再填写监测信息、运行质控并提交审核。",
+    "skillIds": [
+      "skill_mobile_assistant_api"
+    ],
+    "acceptance": "实际图片→LLM→候选回填→质控→审核记录",
+    "limitation": "图片识别闭环可验收；准确率待调试，不自动写入监测事实库",
+    "deferred": false
+  },
+  {
+    "requirementId": 36,
+    "domain": "foodborne",
+    "group": "聚集性病例识别",
+    "title": "36 · 聚集性病例识别模型",
+    "prompt": "使用当前配置数据。识别河南省2026年8月短时窗内相同地区、相似症状或共同饮食暴露的食源性聚集病例，展示候选事件、病例明细和判定规则。",
+    "skillIds": [
+      "skill_foodborne_cluster_detect"
+    ],
+    "acceptance": "短时窗共同暴露候选、病例和规则",
+    "limitation": "可配置阈值与时窗；聚集候选仍需调查",
+    "deferred": false
+  },
+  {
+    "requirementId": 37,
+    "domain": "foodborne",
+    "group": "风险预测模型",
+    "title": "37 · 风险预测模型",
+    "prompt": "使用当前配置数据。用河南省2024年1月至2026年8月病例、气象和人口资料预测下月食源性高风险地区及病原类型，评估扩散风险并展示实际预测与留出验证。",
+    "skillIds": [
+      "skill_foodborne_risk_forecast"
+    ],
+    "acceptance": "训练历史、气象人口特征、预测与风险依据",
+    "limitation": "实际LSTM留出验证；Mock效果不能替代真实验证",
+    "deferred": false
+  },
+  {
+    "requirementId": 38,
+    "domain": "foodborne",
+    "group": "病原体溯源分析",
+    "title": "38 · 病原体溯源分析",
+    "prompt": "使用当前配置数据。溯源郑州市金水区2026年8月18日高校食堂事件，查询8月17日至18日的暴露、病例与分离株，对比副溶血性弧菌cgMLST距离，以阈值5展示候选簇，关联病例、食品与供应链线索。",
+    "skillIds": [
+      "skill_molecular_trace"
+    ],
+    "acceptance": "基因距离、候选簇及传播链证据",
+    "limitation": "已关联基因、暴露与供应链；候选链不是源头确证",
+    "deferred": false
+  },
+  {
+    "requirementId": 39,
+    "domain": "foodborne",
+    "group": "自动生成处置建议",
+    "title": "39 · 处置建议信息",
+    "prompt": "使用当前配置数据。查询郑州市金水区2020年1月1日至2026年8月18日的处置资料，针对2026年8月18日高校食堂聚集事件生成处置建议，匹配此前已结案的历史案例并展示流程、任务进度和依据。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_outbreak_disposal_advice"
+    ],
+    "acceptance": "处置流程、案例来源及任务状态",
+    "limitation": "演示处置流程与历史案例；正式规范需机构维护",
+    "deferred": false
+  },
+  {
+    "requirementId": 40,
+    "domain": "foodborne",
+    "group": "动态监测大屏",
+    "title": "40 · 动态监测大屏",
+    "prompt": "使用当前配置数据。展示河南省2026年7—8月食源性监测大屏：区域病例分布地图、聚集事件趋势、高风险食品TOP10，并同时下钻查看郑州市病例明细表（不另绘制病例点地图）。",
+    "skillIds": [
+      "skill_foodborne_dashboard"
+    ],
+    "acceptance": "病例地图、事件趋势、食品TOP10及下钻",
+    "limitation": "每次执行刷新聚合与明细；非持续流式数据源",
+    "deferred": false
+  },
+  {
+    "requirementId": 41,
+    "domain": "foodborne",
+    "group": "智能报告生成",
+    "title": "41 · 专题报告信息",
+    "prompt": "使用当前配置数据。生成郑州市2026年8月食源性监测月报及高校食堂聚集事件简报，展示来源、归档编号和可下载文档。",
+    "skillIds": [
+      "skill_foodborne_report_export"
+    ],
+    "acceptance": "月报、事件信息、归档及下载",
+    "limitation": "月报和事件简报已归档并导出",
+    "deferred": false
+  },
+  {
+    "requirementId": 42,
+    "domain": "env",
+    "group": "数据智能录入",
+    "title": "42 · OCR 引擎",
+    "prompt": "查询技能集市目录，核对环境OCR能力的当前实现状态与接入要求，说明图片/PDF识别和对外API尚缺哪些能力。本项暂缓，只读取目录状态，不调用OCR技能或上传文件。",
+    "skillIds": [
+      "skill_env_ocr_entry"
+    ],
+    "acceptance": "后续接入清单",
+    "limitation": "OCR按本次要求暂缓",
+    "deferred": true
+  },
+  {
+    "requirementId": 43,
+    "domain": "env",
+    "group": "数据清洗标化",
+    "title": "43 · 数据标化模型",
+    "prompt": "使用当前配置数据。对郑州市2026年8月饮用水采样数据做标化，识别异常和缺失，统一指标单位与编码，展示修复前后对照及处理日志。",
+    "skillIds": [
+      "skill_env_standardize"
+    ],
+    "acceptance": "原始值、标化值、异常和填充审计",
+    "limitation": "保留原值与插值审计；填充值需复核",
+    "deferred": false
+  },
+  {
+    "requirementId": 44,
+    "domain": "env",
+    "group": "饮用水安全监测",
+    "title": "44 · 风险评估模型",
+    "prompt": "使用当前配置数据。评估郑州市2026年1—8月饮用水安全，比较水源、消毒方式及污染物，展示致癌和非致癌风险的输入与计算依据。",
+    "skillIds": [
+      "skill_water_safety_eval"
+    ],
+    "acceptance": "水质统计、健康风险输入及模型状态",
+    "limitation": "RF拟合剂量模型；毒理参数为显式演示假设",
+    "deferred": false
+  },
+  {
+    "requirementId": 45,
+    "domain": "env",
+    "group": "饮用水安全监测",
+    "title": "45 · 趋势分析模型",
+    "prompt": "使用当前配置数据。根据郑州市2024年1月至2026年8月出厂水指标预测未来水质变化，先完成时序预测并展示水厂分布数据和趋势，再说明乡镇风险热力图是否具备必要的数据粒度；缺少乡镇边界不阻止预测分析。",
+    "skillIds": [
+      "skill_water_safety_eval"
+    ],
+    "acceptance": "水质历史、预测及地图精度",
+    "limitation": "实际LSTM与站点坐标；乡镇精度由点位登记决定",
+    "deferred": false
+  },
+  {
+    "requirementId": 46,
+    "domain": "env",
+    "group": "污水病原监测",
+    "title": "46 · 疫情关联分析",
+    "prompt": "使用当前配置数据。分析郑州市2026年7—8月污水诺如病毒浓度与哨点门诊数的0—14天滞后相关，展示各厂站Pearson系数、配对天数及最佳滞后。",
+    "skillIds": [
+      "skill_sewage_pathogen_trace"
+    ],
+    "acceptance": "实际Pearson系数、样本对数及滞后曲线",
+    "limitation": "探索性相关不证明因果或预测效果",
+    "deferred": false
+  },
+  {
+    "requirementId": 47,
+    "domain": "env",
+    "group": "污水病原监测",
+    "title": "47 · 溯源追踪信息",
+    "prompt": "使用当前配置数据。分析郑州市2026年7—8月污水病原浓度高值区，结合排水分区和管网流向追踪潜在污染源，展示可用GIS证据和缺失项。",
+    "skillIds": [
+      "skill_sewage_source"
+    ],
+    "acceptance": "高值区、管网方向和溯源证据",
+    "limitation": "管网逆向遍历定位候选，不能认定真实污染源",
+    "deferred": false
+  },
+  {
+    "requirementId": 48,
+    "domain": "env",
+    "group": "公共场所卫生监测",
+    "title": "48 · 健康风险映射信息",
+    "prompt": "使用当前配置数据。评估郑州市2026年8月15日游泳场所与宾馆卫生指标相关健康风险，展示环境指标、健康效应映射与依据。",
+    "skillIds": [
+      "skill_env_venue"
+    ],
+    "acceptance": "场所指标、健康效应映射及证据",
+    "limitation": "环境与症状率回归映射；不推断因果",
+    "deferred": false
+  },
+  {
+    "requirementId": 49,
+    "domain": "env",
+    "group": "公共场所卫生监测",
+    "title": "49 · 动态评级信息",
+    "prompt": "使用当前配置数据。对郑州市2026年8月公共场所按卫生管理、人员卫生、公示、检测、禁烟、设施六项评分，展示分项、总分及卫生等级。",
+    "skillIds": [
+      "skill_env_venue"
+    ],
+    "acceptance": "六项评分、评级规则版本和结果",
+    "limitation": "六维等权演示规则，支持版本追溯",
+    "deferred": false
+  },
+  {
+    "requirementId": 50,
+    "domain": "env",
+    "group": "空气与气候健康影响监测",
+    "title": "50 · 污染物暴露评估",
+    "prompt": "使用当前配置数据。分析郑州市2026年8月PM2.5与人群活动，计算儿童和老年人日均暴露，关联呼吸门诊并预测就诊峰值。",
+    "skillIds": [
+      "skill_air_climate_health_risk"
+    ],
+    "acceptance": "活动加权暴露、门诊关联及预测",
+    "limitation": "活动加权暴露与LSTM门诊预测；未来协变量采用持平假设",
+    "deferred": false
+  },
+  {
+    "requirementId": 51,
+    "domain": "env",
+    "group": "空气与气候健康影响监测",
+    "title": "51 · 极端天气预警",
+    "prompt": "使用当前配置数据。分析郑州市2026年夏季热浪与心脑血管死亡率，基于截至8月28日的数据生成未来72小时脆弱人群预警。",
+    "skillIds": [
+      "skill_air_climate_health_risk"
+    ],
+    "acceptance": "气象预报、死亡分母、72小时风险与建议",
+    "limitation": "GBT与24/48/72小时预测；Mock天气不是实时预报",
+    "deferred": false
+  },
+  {
+    "requirementId": 52,
+    "domain": "env",
+    "group": "四河流域环境健康监测与风险评估",
+    "title": "52 · 跨介质风险传递",
+    "prompt": "使用当前配置数据。分析河南省2026年7月20日四河流域水体重金属、土壤镉和作物铅的关联，展示水体—土壤—作物污染链线索。",
+    "skillIds": [
+      "skill_river_basin_pollution_chain"
+    ],
+    "acceptance": "跨介质浓度、单位、关联及污染链",
+    "limitation": "浓度描述已有；不能据此认定跨介质因果传递",
+    "deferred": false
+  },
+  {
+    "requirementId": 53,
+    "domain": "env",
+    "group": "四河流域环境健康监测与风险评估",
+    "title": "53 · 生态健康响应",
+    "prompt": "使用当前配置数据。结合河南省2026年7月20日流域肝癌发病率及空间邻接权重，分析环境—健康空间自相关并定位候选集聚区。",
+    "skillIds": [
+      "skill_river_basin_pollution_chain"
+    ],
+    "acceptance": "权重来源、Moran统计及空间候选区",
+    "limitation": "实际Moran统计；Mock拓扑须替换为正式流域邻接",
+    "deferred": false
+  },
+  {
+    "requirementId": 54,
+    "domain": "env",
+    "group": "预警信号触发",
+    "title": "54 · 预警模型信息",
+    "prompt": "使用当前配置数据。演示郑州市2019年1月至2026年8月饮用水、空气与气候的阈值、趋势和联动预警，展示触发依据、综合指数及任务状态。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_env_early_warning_disposal"
+    ],
+    "acceptance": "三类预警规则、证据与任务",
+    "limitation": "阈值、ARIMA趋势和联动指数；规则需专业审批",
+    "deferred": false
+  },
+  {
+    "requirementId": 55,
+    "domain": "env",
+    "group": "精准干预建议",
+    "title": "55 · 精准干预建议",
+    "prompt": "使用当前配置数据。针对郑州市2026年8月饮用水超标、空气污染和热浪，生成对应干预建议，核对目标人群、推送记录及依据。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_env_early_warning_disposal"
+    ],
+    "acceptance": "三类干预建议、接收对象及通知",
+    "limitation": "三类干预流程与任务；正式建议需专业审核",
+    "deferred": false
+  },
+  {
+    "requirementId": 56,
+    "domain": "env",
+    "group": "智能报告生成",
+    "title": "56 · 监测报告信息",
+    "prompt": "使用当前配置数据。生成郑州市2026年8月环境监测报告，包含指标趋势、高风险区域与健康影响，核对模板设置和文档导出。",
+    "skillIds": [
+      "skill_auto_report_gen"
+    ],
+    "acceptance": "报告归档、来源、模板及导出",
+    "limitation": "报告章节、图表、模板复用与导出已实现",
+    "deferred": false
+  },
+  {
+    "requirementId": 57,
+    "domain": "env",
+    "group": "情景模拟推演",
+    "title": "57 · 情景模拟推演",
+    "prompt": "使用当前配置数据。模拟郑州市2026年8月关闭模拟污染源甲，比较干预前后PM2.5和呼吸门诊风险，展示来源贡献、健康效应参数及敏感性分析。",
+    "skillIds": [
+      "skill_env_scenario_simulation"
+    ],
+    "acceptance": "基准、干预、效应差和不确定性",
+    "limitation": "减排和健康效应使用可编辑假设，非已验证因果效应",
+    "deferred": false
+  },
+  {
+    "requirementId": 58,
+    "domain": "env",
+    "group": "移动智能助手",
+    "title": "58 · 移动智能助手",
+    "prompt": "打开环境移动采样表单并读取我的现有任务及完成进度，不分配新任务。我要扫码录入样本、上传异常点照片，填写信息后演示离线缓存和恢复联网同步。",
+    "skillIds": [
+      "skill_env_mobile_sampling"
+    ],
+    "acceptance": "扫码、图片、离线同步及任务状态",
+    "limitation": "扫码/人工码、照片、IndexedDB离线队列及幂等同步",
+    "deferred": false
+  },
+  {
+    "requirementId": 59,
+    "domain": "chronic",
+    "group": "数据质量校验",
+    "title": "59 · 数据校验模型",
+    "prompt": "使用当前配置数据。按当前质控规则直接校验河南省2026年1月1日至8月19日死亡登记，识别死因链逻辑错误、缺失和重复，展示候选异常明细及规则依据。区分程序检出的候选异常与人工确认结论；缺少的校验能力明确列出。",
+    "skillIds": [
+      "skill_death_cert_qc"
+    ],
+    "acceptance": "异常编号、规则及人工复核",
+    "limitation": "规则和IsolationForest候选；98%须独立标注集验证",
+    "deferred": false
+  },
+  {
+    "requirementId": 60,
+    "domain": "chronic",
+    "group": "数据自动解析",
+    "title": "60 · 数据解析模型",
+    "prompt": "解析模拟死因文本“a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）”，展示原文位置、病程、ICD-10三位类目候选与人工复核入口，不补造细分编码。",
+    "skillIds": [
+      "skill_icd10_nlp_inference"
+    ],
+    "acceptance": "原文分行、实体位置、病程、第二部分、类目来源及编辑复核",
+    "limitation": "已接入用户提供的2047条三位类目；不是完整编码字典，95%准确率须独立验收",
+    "deferred": false
+  },
+  {
+    "requirementId": 61,
+    "domain": "chronic",
+    "group": "死因监测分析",
+    "title": "61 · 根本死因判定模型",
+    "prompt": "对模拟男性68岁、疾病死亡的证明书调用 Iris/MUSE：第一部分a为呼吸衰竭，b为肺癌。展示根本死因候选、规则版本、退回原因并保留人工复核；未配置引擎时明确报告缺项。",
+    "skillIds": [
+      "skill_icd10_nlp_inference"
+    ],
+    "acceptance": "真实Iris调用、输入绑定、版本及规则表哈希、候选或退回、人工复核",
+    "limitation": "Iris/MUSE适配已实现；完整规则执行需获授权Windows引擎、配套决策表和机构语言字典",
+    "deferred": false
+  },
+  {
+    "requirementId": 62,
+    "domain": "chronic",
+    "group": "死因监测分析",
+    "title": "62 · 死亡图谱识别模型",
+    "prompt": "使用当前配置数据。分析河南省2023年1月至2026年8月死亡率ARIMA趋势与DBSCAN空间聚类，展示人口分母、预测、验证及高风险地区。",
+    "skillIds": [
+      "skill_mortality_cluster_rare"
+    ],
+    "acceptance": "趋势、人口分母及DBSCAN候选",
+    "limitation": "ARIMA趋势与DBSCAN；固定人口分母须核验",
+    "deferred": false
+  },
+  {
+    "requirementId": 63,
+    "domain": "chronic",
+    "group": "死因监测分析",
+    "title": "63 · 罕见死因检测模型",
+    "prompt": "使用当前配置数据。排查郑州市金水区2026年8月1—19日罕见死因，列出短期内至少3例同类死因的可疑聚集及病例依据。采用24小时滚动聚集窗口；查询日期范围不作为聚集窗口时长。",
+    "skillIds": [
+      "skill_mortality_cluster_rare"
+    ],
+    "acceptance": "不少于3例的同类候选及时间范围",
+    "limitation": "七日内同区同码≥3例产生可核对候选",
+    "deferred": false
+  },
+  {
+    "requirementId": 64,
+    "domain": "chronic",
+    "group": "慢病监测分析",
+    "title": "64 · 慢性病发病预测",
+    "prompt": "使用当前配置数据。根据河南省2024年1月至2026年8月8日慢病登记、人口特征、行为与家族史，预测个体发病概率及人群风险，说明模型验证状态与人口分母。",
+    "skillIds": [
+      "skill_chronic_risk_forecast"
+    ],
+    "acceptance": "风险特征、个体概率及人群分母",
+    "limitation": "实际GBDT与时间留出验证；80%须独立实测集验证",
+    "deferred": false
+  },
+  {
+    "requirementId": 65,
+    "domain": "chronic",
+    "group": "慢病监测分析",
+    "title": "65 · 并发症关联分析",
+    "prompt": "使用当前配置数据。挖掘河南省2024年1月至2026年8月8日高血压、糖尿病等慢病的并发症关联规则，展示支持度、置信度和提升度。",
+    "skillIds": [
+      "skill_chronic_risk_forecast"
+    ],
+    "acceptance": "并发症规则及三项指标",
+    "limitation": "实际支持度、置信度与提升度；关联不代表因果",
+    "deferred": false
+  },
+  {
+    "requirementId": 66,
+    "domain": "chronic",
+    "group": "慢病监测分析",
+    "title": "66 · 筛查精准化推荐",
+    "prompt": "使用当前配置数据。根据河南省2024年1月至2026年8月肿瘤登记和人口分布生成高风险筛查清单，计算成本效益比并说明成本、检出率及收益假设。",
+    "skillIds": [
+      "skill_chronic_screening_roi"
+    ],
+    "acceptance": "高危清单、成本效益和假设",
+    "limitation": "高风险清单与每检出病例成本；不声称已节约费用",
+    "deferred": false
+  },
+  {
+    "requirementId": 67,
+    "domain": "chronic",
+    "group": "伤害监测分析",
+    "title": "67 · 伤害类型聚类",
+    "prompt": "使用当前配置数据。分析河南省2026年1月1日至8月18日伤害病例的类型、年龄、发生时间和场所，识别老年居家跌倒与儿童交通伤害的候选特征簇。",
+    "skillIds": [
+      "skill_injury_attribution_tree"
+    ],
+    "acceptance": "类型及时空特征、聚类方法",
+    "limitation": "真实K-Means聚类与时空特征汇总",
+    "deferred": false
+  },
+  {
+    "requirementId": 68,
+    "domain": "chronic",
+    "group": "伤害监测分析",
+    "title": "68 · 风险因素归因",
+    "prompt": "使用当前配置数据。分析河南省2026年1月1日至8月18日农村机械伤害与防护装备等诱因，展示决策树、关联强度及可复核依据。",
+    "skillIds": [
+      "skill_injury_attribution_tree"
+    ],
+    "acceptance": "防护特征、决策树和验证指标",
+    "limitation": "实际决策树与留出验证；病例分类不证明诱因",
+    "deferred": false
+  },
+  {
+    "requirementId": 69,
+    "domain": "chronic",
+    "group": "伤害监测分析",
+    "title": "69 · 聚集性事件识别",
+    "prompt": "使用当前配置数据。排查河南省2026年8月同一场所24小时内至少5例同类伤害，重点核对平顶山市郏县候选聚集的病例和溯源线索。请运行已有滚动聚集检测能力，返回事件与病例依据，不仅查询明细。",
+    "skillIds": [
+      "skill_injury_attribution_tree"
+    ],
+    "acceptance": "同场所同类5例阈值、病例及时间",
+    "limitation": "同场所24小时≥5例，保留病例和原因线索",
+    "deferred": false
+  },
+  {
+    "requirementId": 70,
+    "domain": "chronic",
+    "group": "预警信号触发",
+    "title": "70 · 预警信号信息",
+    "prompt": "使用当前配置数据。基于河南省2024年1月至2026年8月的历史监测数据，实际计算死因、慢病和伤害的阈值、趋势及关联预警，展示依据、任务状态及模型验证结果。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_chronic_early_warning_disposal"
+    ],
+    "acceptance": "三类触发依据及任务状态",
+    "limitation": "阈值、LSTM与关联指数已运行；专业阈值需审批",
+    "deferred": false
+  },
+  {
+    "requirementId": 71,
+    "domain": "chronic",
+    "group": "风险分级推送",
+    "title": "71 · 风险分级信息",
+    "prompt": "使用当前配置数据。核对死因慢病预警一般、较重和严重风险的分级推送，查看基层、市级、省级接收对象与通知依据，并查询我的站内通知记录，明确实际送达状态及短信、APP尚未接入。",
+    "skillIds": [
+      "skill_chronic_early_warning_disposal",
+      "skill_inbox_read"
+    ],
+    "acceptance": "风险分级、接收层级及送达证据",
+    "limitation": "分级层级可核对；正式跨机构接收者需配置",
+    "deferred": false
+  },
+  {
+    "requirementId": 72,
+    "domain": "chronic",
+    "group": "监测报告生成",
+    "title": "72 · 监测报告信息",
+    "prompt": "使用当前配置数据。生成河南省2026年1月至8月死因慢病伤害综合监测报告，包含死因顺位、减寿年数、慢病趋势和伤害场所TOP5并导出。",
+    "skillIds": [
+      "skill_chronic_death_report"
+    ],
+    "acceptance": "三类报告、统计口径及下载",
+    "limitation": "死因顺位、重算YPLL、慢病趋势及伤害统计",
+    "deferred": false
+  },
+  {
+    "requirementId": 73,
+    "domain": "chronic",
+    "group": "监测报告生成",
+    "title": "73 · 报告模板信息",
+    "prompt": "创建名为“死因慢病伤害验收月报”的月度报告模板，包含概况、趋势、区域、专题、建议和来源章节；保存后修改名称为“死因慢病伤害验收月报修订版”，再复用模板生成河南省2026年1月至8月综合监测报告并导出固定格式文档。",
+    "skillIds": [
+      "skill_report_templates"
+    ],
+    "acceptance": "模板创建、修改、复用和导出",
+    "limitation": "模板创建、版本更新、复用、删除及报告导出",
+    "deferred": false
+  },
+  {
+    "requirementId": 74,
+    "domain": "chronic",
+    "group": "精准干预建议",
+    "title": "74 · 死因干预",
+    "prompt": "使用当前配置数据。针对郑州市金水区2026年8月罕见死因聚集生成干预建议，展示调查依据、责任方与进度。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_chronic_early_warning_disposal"
+    ],
+    "acceptance": "死因调查建议、依据和任务",
+    "limitation": "死因调查流程与任务；需专业审核",
+    "deferred": false
+  },
+  {
+    "requirementId": 75,
+    "domain": "chronic",
+    "group": "精准干预建议",
+    "title": "75 · 慢性病干预",
+    "prompt": "使用当前配置数据。针对河南省2026年肿瘤和心脑血管高风险人群生成慢病干预建议，说明适用对象、推送依据及追踪方式。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_chronic_risk_forecast",
+      "skill_chronic_early_warning_disposal"
+    ],
+    "acceptance": "目标人群、干预建议及推送",
+    "limitation": "风险名单、干预流程与任务；需专业审核",
+    "deferred": false
+  },
+  {
+    "requirementId": 76,
+    "domain": "chronic",
+    "group": "精准干预建议",
+    "title": "76 · 伤害干预",
+    "prompt": "使用当前配置数据。针对河南省2026年儿童跌倒社区与交通伤害高发场所生成伤害干预建议，展示场所证据、建议及跟踪进度。创建可追踪的核查任务。",
+    "skillIds": [
+      "skill_injury_attribution_tree",
+      "skill_chronic_early_warning_disposal"
+    ],
+    "acceptance": "场所证据、两类建议及任务",
+    "limitation": "伤害聚类证据、干预流程与任务；需专业审核",
+    "deferred": false
+  }
+]

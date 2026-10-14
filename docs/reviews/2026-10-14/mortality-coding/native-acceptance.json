@@ -1,0 +1,1328 @@
+{
+  "purpose": "Synthetic functional cases; not a clinical accuracy benchmark or recorded Iris responses",
+  "nativeEngineVerified": false,
+  "status": "BLOCKED",
+  "results": [
+    {
+      "id": "single-acute-mi",
+      "input": {
+        "id": "single-acute-mi",
+        "inputChain": {
+          "a": "I21.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "I21.9",
+        "rationale": "Single reported condition; provisional synthetic expectation to verify on the pinned release."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "I21.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "I21.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "I21.9"
+            },
+            "text": null
+          },
+          "inputSha256": "95b58edc199c615d8613307904de7a3cb154c36564957e30bc421f7b72303050",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "I21.9"
+            }
+          ],
+          "reportedEdges": [],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "I21.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-lung-cancer",
+      "input": {
+        "id": "single-lung-cancer",
+        "inputChain": {
+          "a": "C34.9"
+        },
+        "demographics": {
+          "sex": "2",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "C34.9",
+        "rationale": "Single reported condition; provisional synthetic expectation to verify on the pinned release."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "C34.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "C34.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "C34.9"
+            },
+            "text": null
+          },
+          "inputSha256": "8a9cc76e9c6e77fa72336df0837b3a6e87041f09606b3b2d8866222e531aaabe",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "C34.9"
+            }
+          ],
+          "reportedEdges": [],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "C34.9"
+        },
+        "demographics": {
+          "sex": "2",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "respiratory-cancer-chain",
+      "input": {
+        "id": "respiratory-cancer-chain",
+        "inputChain": {
+          "a": "J96.9",
+          "b": "C34.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "C34.9",
+        "rationale": "Synthetic terminal-to-origin chain; native engine and coder must verify."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "J96.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "J96.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            },
+            {
+              "position": "b",
+              "text": "C34.9",
+              "sourceStart": 0,
+              "sourceField": "b",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "C34.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "J96.9",
+              "b": "C34.9"
+            },
+            "text": null
+          },
+          "inputSha256": "bd3a5da11798590f05aa3fd76900b636da04b86fa2afc28aa6b43660ed24517d",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "J96.9"
+            },
+            {
+              "position": "b",
+              "text": "C34.9"
+            }
+          ],
+          "reportedEdges": [
+            {
+              "from": "b",
+              "to": "a",
+              "evidence": "certificate-reported-order-not-validated-causality"
+            }
+          ],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "J96.9",
+          "b": "C34.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sp5-reversed-chain",
+      "input": {
+        "id": "sp5-reversed-chain",
+        "inputChain": {
+          "a": "C34.9",
+          "b": "J96.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "C34.9",
+        "rationale": "Iris V5.8.1S1 manual section 5.5.10 (SP5): reversed sequence must not select the last line."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "C34.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "C34.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            },
+            {
+              "position": "b",
+              "text": "J96.9",
+              "sourceStart": 0,
+              "sourceField": "b",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "J96.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "C34.9",
+              "b": "J96.9"
+            },
+            "text": null
+          },
+          "inputSha256": "1e3f34c55bbe75c470d703df29aa13f407d730ec3c199900715cea880649ea66",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "C34.9"
+            },
+            {
+              "position": "b",
+              "text": "J96.9"
+            }
+          ],
+          "reportedEdges": [
+            {
+              "from": "b",
+              "to": "a",
+              "evidence": "certificate-reported-order-not-validated-causality"
+            }
+          ],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "C34.9",
+          "b": "J96.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sp6-part-two",
+      "input": {
+        "id": "sp6-part-two",
+        "inputChain": {
+          "a": "J18.9",
+          "part2": "I63.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "I63.9",
+        "rationale": "Iris V5.8.1S1 manual section 5.5.11 (SP6): Part II obvious cause must be considered."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "J18.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "J18.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            },
+            {
+              "position": "part2",
+              "text": "I63.9",
+              "sourceStart": 0,
+              "sourceField": "part2",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "I63.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "J18.9",
+              "part2": "I63.9"
+            },
+            "text": null
+          },
+          "inputSha256": "e2ef31487c237a18d97afe2a6d74d35ff9b27f793bf59044cfa95326f0b886c8",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "J18.9"
+            },
+            {
+              "position": "part2",
+              "text": "I63.9"
+            }
+          ],
+          "reportedEdges": [],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "J18.9",
+          "part2": "I63.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "m3-recheck",
+      "input": {
+        "id": "m3-recheck",
+        "inputChain": {
+          "a": "A41.9",
+          "b": "I77.9 I74.3",
+          "part2": "C64"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedCode": "C64",
+        "rationale": "Iris V5.8.1S1 manual section 5.5.19 (M3): source example selects malignant neoplasm of kidney after modification and recheck."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "A41.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "A41.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            },
+            {
+              "position": "b",
+              "text": "I77.9 I74.3",
+              "sourceStart": 0,
+              "sourceField": "b",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "I77.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                },
+                {
+                  "code": "I74.3",
+                  "start": 6,
+                  "end": 11,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            },
+            {
+              "position": "part2",
+              "text": "C64",
+              "sourceStart": 0,
+              "sourceField": "part2",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "C64",
+                  "start": 0,
+                  "end": 3,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "A41.9",
+              "b": "I77.9 I74.3",
+              "part2": "C64"
+            },
+            "text": null
+          },
+          "inputSha256": "82914af783a56ef38721fc06a36b263c978e514f320f303bd45a0d35696dcac1",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "A41.9"
+            },
+            {
+              "position": "b",
+              "text": "I77.9 I74.3"
+            },
+            {
+              "position": "part2",
+              "text": "C64"
+            }
+          ],
+          "reportedEdges": [
+            {
+              "from": "b",
+              "to": "a",
+              "evidence": "certificate-reported-order-not-validated-causality"
+            }
+          ],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "A41.9",
+          "b": "I77.9 I74.3",
+          "part2": "C64"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sex-conflict",
+      "input": {
+        "id": "sex-conflict",
+        "inputChain": {
+          "a": "C53.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedSelectionStatus": "ENGINE_REJECTED",
+        "rationale": "Institutional age/sex checks must reject the incompatible certificate."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "C53.9",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "C53.9",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "C53.9"
+            },
+            "text": null
+          },
+          "inputSha256": "ef00861fcf14d0957946d992573781523a8633b9055a06e55ea11d96bb229420",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "C53.9"
+            }
+          ],
+          "reportedEdges": [],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "C53.9"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid-code",
+      "input": {
+        "id": "invalid-code",
+        "inputChain": {
+          "a": "Z99.6"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "expectedSelectionStatus": "ENGINE_REJECTED",
+        "rationale": "Invalid terminal code must not be accepted as a successful classification."
+      },
+      "passed": false,
+      "result": {
+        "status": "REVIEW_REQUIRED",
+        "method": "icd10-iris-mortality-v2",
+        "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+        "accuracyRate": null,
+        "accuracyCompliance": "独立标注集尚未验收",
+        "metrics": {
+          "accuracy": {
+            "value": null,
+            "evaluationKind": "unvalidated",
+            "datasetIds": [],
+            "definition": "功能案例不代表独立临床编码准确率"
+          }
+        },
+        "qualityFlags": [
+          "clinical-review-required",
+          "accuracy-unvalidated",
+          "category-table-not-terminal-codes",
+          "iris-engine-not-configured"
+        ],
+        "parsedCertificate": {
+          "version": "mortality-certificate-parser-v2",
+          "rows": [
+            {
+              "position": "a",
+              "text": "Z99.6",
+              "sourceStart": 0,
+              "sourceField": "a",
+              "entities": [],
+              "explicitCodes": [
+                {
+                  "code": "Z99.6",
+                  "start": 0,
+                  "end": 5,
+                  "categoryKnown": true,
+                  "terminalCodeValidated": false
+                }
+              ],
+              "durations": []
+            }
+          ],
+          "issues": [],
+          "originalInput": {
+            "inputChain": {
+              "a": "Z99.6"
+            },
+            "text": null
+          },
+          "inputSha256": "827ac531533098cc94e63629671ebf30b48406099f8d94d811367bbb5f4a7bd0",
+          "catalogue": {
+            "version": "user-supplied-three-character-categories-v1",
+            "classification": "ICD-10",
+            "granularity": "category-only",
+            "sourceFile": "ICD-10_三位类目编码表.xlsx",
+            "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+            "sourceSheet": "ICD-10三位类目编码表",
+            "sourceEdition": "not-specified-in-workbook"
+          },
+          "categoryCount": 2047
+        },
+        "categoryCandidates": [],
+        "causeGraph": {
+          "nodes": [
+            {
+              "position": "a",
+              "text": "Z99.6"
+            }
+          ],
+          "reportedEdges": [],
+          "selectionSupported": false,
+          "ruleVersion": null,
+          "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+        },
+        "inferredUnderlyingCause": null,
+        "engineResult": {
+          "selectionStatus": "ENGINE_NOT_CONFIGURED",
+          "reviewRequired": true,
+          "candidateCode": null,
+          "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+        },
+        "inputIssues": [],
+        "inputDeathChain": {
+          "a": "Z99.6"
+        },
+        "demographics": {
+          "sex": "1",
+          "age": {
+            "value": 68,
+            "unit": "Y"
+          },
+          "mannerOfDeath": 0
+        },
+        "entryMode": "code",
+        "review": {
+          "status": "PENDING",
+          "required": true,
+          "autoFinalized": false,
+          "checks": [
+            "逐行核对原文、否定词及同一行多个疾病",
+            "核对年龄、性别、第二部分及死亡方式",
+            "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+            "确认后由有权限编码员在正式登记系统签署"
+          ]
+        },
+        "reasoningWorkflow": [
+          {
+            "step": 1,
+            "title": "提取证明书结构",
+            "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+          },
+          {
+            "step": 2,
+            "title": "检索类目候选",
+            "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+          },
+          {
+            "step": 3,
+            "title": "调用正式规则引擎",
+            "content": "ENGINE_NOT_CONFIGURED"
+          },
+          {
+            "step": 4,
+            "title": "人工复核",
+            "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+          }
+        ]
+      }
+    }
+  ]
+}

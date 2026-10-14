@@ -1,6 +1,8 @@
 'use client';
 
 import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
+import {ResultDataView} from './ResultDataView';
+import {QueryResultVisualization} from './QueryResultVisualization';
 import React, { useRef, useState } from 'react';
 import { FileText, Printer, Copy, Check } from 'lucide-react';
 
@@ -11,7 +13,8 @@ interface AutoReportProps {
     date: string;
     author: string;
     summary: string;
-    sections: { heading: string; content: string }[];
+    sections: { heading: string; content: string; rows?:any[]; chart?:any }[];
+    artifact?:{downloadUrl:string;fileName:string};
   };
 }
 
@@ -69,6 +72,7 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
             <Printer className="w-3.5 h-3.5" />
             <span>导出 Markdown 文件</span>
           </button>
+            {data.artifact&&<a href={data.artifact.downloadUrl} download className="text-xs text-sky-600 underline">下载完整图文报告</a>}
             {exportLink&&<a href={exportLink.downloadUrl} download className="text-xs text-sky-600 underline">下载 {exportLink.fileName}</a>}
             {exportError&&<span role="alert" className="text-xs text-rose-600">{exportError}</span>}
         </div>
@@ -94,9 +98,8 @@ export const AutoReportViewer: React.FC<AutoReportProps> = ({ data }) => {
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 border-l-4 border-sky-500 pl-2.5">
               {sec.heading || (sec as any).title}
             </h2>
-            <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed whitespace-pre-line pl-3">
-              {sec.content}
-            </p>
+            {sec.chart&&sec.rows&&<QueryResultVisualization rows={sec.rows} spec={sec.chart}/>}
+            {sec.rows?<details open={!sec.chart}><summary className="cursor-pointer text-xs text-sky-600">查看 {sec.rows.length} 条统计明细</summary><div className="max-h-80 overflow-auto"><ResultDataView value={sec.rows} field="items"/></div></details>:<p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed whitespace-pre-line pl-3">{sec.content}</p>}
           </div>
         ))}
       </div>

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/answer-evidence.test.tsx (28 tests) 1438ms
+   ✓ covers the resistance analysis skill, which uses a separate Python record-query path  911ms
+
+ Test Files  1 passed (1)
+      Tests  28 passed (28)
+   Start at  23:47:15
+   Duration  3.79s (transform 804ms, setup 0ms, collect 1.94s, tests 1.44s, environment 0ms, prepare 65ms)

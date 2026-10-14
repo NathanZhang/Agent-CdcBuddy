@@ -21,6 +21,7 @@ class FixtureIsolationTests(unittest.TestCase):
         engine = base / 'project/analytics_engine'
         engine.mkdir(exist_ok=True)
         (engine / 'mock_lifecycle.py').write_bytes((ROOT / 'analytics_engine/mock_lifecycle.py').read_bytes())
+        (scripts / 'mock_requirement_inputs.py').write_bytes((ROOT / 'scripts/mock_requirement_inputs.py').read_bytes())
         (scripts / 'mock_geography.py').write_bytes((ROOT / 'scripts/mock_geography.py').read_bytes())
         config = base / 'project/config'
         config.mkdir(exist_ok=True)

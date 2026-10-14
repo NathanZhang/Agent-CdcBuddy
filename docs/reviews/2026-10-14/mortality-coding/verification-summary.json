@@ -1,0 +1,34 @@
+{
+  "classification": "ICD-10",
+  "categoryCount": 2047,
+  "scientificTests": {
+    "passed": 57
+  },
+  "targetedVitest": {
+    "files": 5,
+    "passed": 73
+  },
+  "fullWorkflow": {
+    "testAssertions": 4,
+    "recommendations": 54,
+    "businessChecks": 7,
+    "notes": "Expected REVIEW_REQUIRED / ENGINE_NOT_CONFIGURED / OCR deferred branches are not clinical acceptance."
+  },
+  "baseline": {
+    "passed": 44,
+    "sourceDatabasesUnchanged": true
+  },
+  "typecheck": "passed",
+  "lint": "passed",
+  "productionBuild": "passed",
+  "nativeEngine": {
+    "status": "BLOCKED",
+    "cases": 8,
+    "reason": "No authorized Iris/MUSE runtime, decision tables or institutional dictionary configured"
+  },
+  "deferred": [
+    "OCR",
+    "SMS",
+    "APP push"
+  ]
+}

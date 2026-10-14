@@ -1,0 +1,6 @@
+import {NextRequest} from 'next/server';
+import {resolveContext,authStatus} from '@/infrastructure/auth/session';
+import {environmentTasks,submitEnvironmentSample} from '@/application/mobile/environment-sampling';
+import {IMAGE_REQUEST_BYTES} from '@/application/mobile/species-recognition';
+export async function GET(req:NextRequest){try{const ctx=resolveContext(req);return Response.json({success:true,owner:`${ctx.principal.organizationId}:${ctx.principal.userId}:env`,tasks:environmentTasks(ctx)});}catch(e){return Response.json({success:false,error:e instanceof Error?e.message:'读取失败'},{status:authStatus(e,403)});}}
+export async function POST(req:NextRequest){try{const ctx=resolveContext(req);const reader=req.body?.getReader();if(!reader)throw Error('EMPTY_BODY');let size=0;const chunks:Uint8Array[]=[];while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>IMAGE_REQUEST_BYTES+8192){await reader.cancel();return Response.json({success:false,error:'BODY_TOO_LARGE'},{status:413});}chunks.push(value);}const input=JSON.parse(Buffer.concat(chunks).toString('utf8'));return Response.json({success:true,data:submitEnvironmentSample(input,ctx)});}catch(e){const message=e instanceof Error?e.message:'提交失败';return Response.json({success:false,error:message},{status:authStatus(e,message.includes('CONFLICT')?409:400)});}}

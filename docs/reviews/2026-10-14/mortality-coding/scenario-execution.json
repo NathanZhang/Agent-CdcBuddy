@@ -1,0 +1,1714 @@
+{
+  "purpose": "mock-business-flow-not-external-scientific-validation",
+  "executedAt": "2026-10-14T13:20:32.895Z",
+  "results": [
+    {
+      "checks": [
+        {
+          "name": "all-business-steps-produced-views",
+          "passed": true
+        },
+        {
+          "name": "step-result-present",
+          "passed": true
+        },
+        {
+          "name": "auditable-category-candidates",
+          "passed": true
+        }
+      ],
+      "requirementId": 60,
+      "domain": "chronic",
+      "prompt": "解析模拟死因文本“a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）”，展示原文位置、病程、ICD-10三位类目候选与人工复核入口，不补造细分编码。",
+      "status": "REVIEW_REQUIRED",
+      "expectedStatus": "REVIEW_REQUIRED",
+      "passed": true,
+      "elapsedMs": 1754,
+      "runId": "d270790e-92a3-469a-a7f2-8b5e7b86dca4",
+      "skillRuns": [
+        {
+          "callId": "d270790e-92a3-469a-a7f2-8b5e7b86dca4-ui",
+          "skillId": "skill_requirement_scenario",
+          "skillName": "执行功能需求场景",
+          "args": {
+            "requirementId": 60
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "d270790e-92a3-469a-a7f2-8b5e7b86dca4",
+            "domain": "chronic",
+            "status": "REVIEW_REQUIRED",
+            "method": "requirement-scenario-composition-v1",
+            "datasets": [],
+            "payload": {
+              "type": "AGUI_RESULT_GROUP",
+              "views": [
+                {
+                  "type": "ANALYTICS_RESULT",
+                  "title": "60 · 数据解析模型",
+                  "data": {
+                    "acceptance": "原文分行、实体位置、病程、第二部分、类目来源及编辑复核",
+                    "limitation": "已接入用户提供的2047条三位类目；不是完整编码字典，95%准确率须独立验收",
+                    "steps": [
+                      {
+                        "skillId": "skill_icd10_nlp_inference",
+                        "args": {
+                          "text": "a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）",
+                          "mode": "dictionary"
+                        },
+                        "status": "REVIEW_REQUIRED"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "ANALYTICS_RESULT",
+                  "title": "死因文本与 ICD-10 编码复核",
+                  "data": {
+                    "status": "REVIEW_REQUIRED",
+                    "method": "icd10-iris-mortality-v2",
+                    "message": "解析完成，等待人工核对与编码细化",
+                    "accuracyRate": null,
+                    "accuracyCompliance": "独立标注集尚未验收",
+                    "metrics": {
+                      "accuracy": {
+                        "value": null,
+                        "evaluationKind": "unvalidated",
+                        "datasetIds": [],
+                        "definition": "功能案例不代表独立临床编码准确率"
+                      }
+                    },
+                    "qualityFlags": [
+                      "clinical-review-required",
+                      "accuracy-unvalidated",
+                      "category-table-not-terminal-codes"
+                    ],
+                    "parsedCertificate": {
+                      "version": "mortality-certificate-parser-v2",
+                      "rows": [
+                        {
+                          "position": "a",
+                          "text": "心源性休克（2小时）",
+                          "sourceStart": 3,
+                          "sourceField": "text",
+                          "entities": [
+                            {
+                              "text": "心源性休克",
+                              "start": 3,
+                              "end": 8,
+                              "sourceField": "text",
+                              "assertion": "reported",
+                              "candidateCodes": [
+                                "R57"
+                              ],
+                              "candidates": [
+                                {
+                                  "code": "R57",
+                                  "label": "休克,不可归类在他处者",
+                                  "sourceChapter": "XVIII",
+                                  "range": "R00-R99",
+                                  "chapterLabel": "症状、体征和临床与实验室异常所见，不可归类在他处者",
+                                  "sourceRow": 1372
+                                }
+                              ],
+                              "granularity": "three-character-category",
+                              "requiresReview": true
+                            }
+                          ],
+                          "explicitCodes": [],
+                          "durations": [
+                            {
+                              "text": "2小时",
+                              "value": 2,
+                              "unit": "小时",
+                              "start": 9,
+                              "end": 12
+                            }
+                          ]
+                        },
+                        {
+                          "position": "b",
+                          "text": "急性心肌梗死（2天）",
+                          "sourceStart": 17,
+                          "sourceField": "text",
+                          "entities": [
+                            {
+                              "text": "急性心肌梗死",
+                              "start": 17,
+                              "end": 23,
+                              "sourceField": "text",
+                              "assertion": "reported",
+                              "candidateCodes": [
+                                "I21"
+                              ],
+                              "candidates": [
+                                {
+                                  "code": "I21",
+                                  "label": "急性心肌梗死",
+                                  "sourceChapter": "IX",
+                                  "range": "I00-I99",
+                                  "chapterLabel": "循环系统疾病",
+                                  "sourceRow": 658
+                                }
+                              ],
+                              "granularity": "three-character-category",
+                              "requiresReview": true
+                            }
+                          ],
+                          "explicitCodes": [],
+                          "durations": [
+                            {
+                              "text": "2天",
+                              "value": 2,
+                              "unit": "天",
+                              "start": 24,
+                              "end": 26
+                            }
+                          ]
+                        },
+                        {
+                          "position": "part2",
+                          "text": "2型糖尿病（10年）",
+                          "sourceStart": 33,
+                          "sourceField": "text",
+                          "entities": [
+                            {
+                              "text": "2型糖尿病",
+                              "start": 33,
+                              "end": 38,
+                              "sourceField": "text",
+                              "assertion": "reported",
+                              "candidateCodes": [
+                                "E11"
+                              ],
+                              "candidates": [
+                                {
+                                  "code": "E11",
+                                  "label": "非胰岛素依赖型糖尿病",
+                                  "sourceChapter": "IV",
+                                  "range": "E00-E90",
+                                  "chapterLabel": "内分泌、营养和代谢疾病",
+                                  "sourceRow": 358
+                                }
+                              ],
+                              "granularity": "three-character-category",
+                              "requiresReview": true
+                            }
+                          ],
+                          "explicitCodes": [],
+                          "durations": [
+                            {
+                              "text": "10年",
+                              "value": 10,
+                              "unit": "年",
+                              "start": 39,
+                              "end": 42
+                            }
+                          ]
+                        }
+                      ],
+                      "issues": [],
+                      "originalInput": {
+                        "inputChain": null,
+                        "text": "a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）"
+                      },
+                      "inputSha256": "d244fabdd0d28b9557f4690672c00a125ad041c8021edb101607e8b13346dd3b",
+                      "catalogue": {
+                        "version": "user-supplied-three-character-categories-v1",
+                        "classification": "ICD-10",
+                        "granularity": "category-only",
+                        "sourceFile": "ICD-10_三位类目编码表.xlsx",
+                        "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+                        "sourceSheet": "ICD-10三位类目编码表",
+                        "sourceEdition": "not-specified-in-workbook"
+                      },
+                      "categoryCount": 2047
+                    },
+                    "categoryCandidates": [
+                      {
+                        "position": "a",
+                        "text": "心源性休克",
+                        "assertion": "reported",
+                        "candidateCodes": [
+                          "R57"
+                        ],
+                        "granularity": "three-character-category",
+                        "requiresReview": true
+                      },
+                      {
+                        "position": "b",
+                        "text": "急性心肌梗死",
+                        "assertion": "reported",
+                        "candidateCodes": [
+                          "I21"
+                        ],
+                        "granularity": "three-character-category",
+                        "requiresReview": true
+                      },
+                      {
+                        "position": "part2",
+                        "text": "2型糖尿病",
+                        "assertion": "reported",
+                        "candidateCodes": [
+                          "E11"
+                        ],
+                        "granularity": "three-character-category",
+                        "requiresReview": true
+                      }
+                    ],
+                    "causeGraph": {
+                      "nodes": [
+                        {
+                          "position": "a",
+                          "text": "心源性休克（2小时）"
+                        },
+                        {
+                          "position": "b",
+                          "text": "急性心肌梗死（2天）"
+                        },
+                        {
+                          "position": "part2",
+                          "text": "2型糖尿病（10年）"
+                        }
+                      ],
+                      "reportedEdges": [
+                        {
+                          "from": "b",
+                          "to": "a",
+                          "evidence": "certificate-reported-order-not-validated-causality"
+                        }
+                      ],
+                      "selectionSupported": false,
+                      "ruleVersion": null,
+                      "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+                    },
+                    "inferredUnderlyingCause": null,
+                    "engineResult": {
+                      "selectionStatus": "PARSING_ONLY",
+                      "candidateCode": null,
+                      "message": "本步骤提取原文与类目候选；根本死因选择通过第61项的 Iris/MUSE 执行。"
+                    },
+                    "inputIssues": [
+                      "missing-age",
+                      "missing-sex",
+                      "missing-manner-of-death"
+                    ],
+                    "inputDeathChain": {
+                      "a": "心源性休克（2小时）",
+                      "b": "急性心肌梗死（2天）",
+                      "part2": "2型糖尿病（10年）"
+                    },
+                    "demographics": {},
+                    "entryMode": "text",
+                    "review": {
+                      "status": "PENDING",
+                      "required": true,
+                      "autoFinalized": false,
+                      "checks": [
+                        "逐行核对原文、否定词及同一行多个疾病",
+                        "核对年龄、性别、第二部分及死亡方式",
+                        "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+                        "确认后由有权限编码员在正式登记系统签署"
+                      ]
+                    },
+                    "reasoningWorkflow": [
+                      {
+                        "step": 1,
+                        "title": "提取证明书结构",
+                        "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+                      },
+                      {
+                        "step": 2,
+                        "title": "检索类目候选",
+                        "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+                      },
+                      {
+                        "step": 3,
+                        "title": "调用正式规则引擎",
+                        "content": "PARSING_ONLY"
+                      },
+                      {
+                        "step": 4,
+                        "title": "人工复核",
+                        "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+                      }
+                    ]
+                  },
+                  "statistics": {
+                    "version": "1",
+                    "basis": "returned_rows",
+                    "tables": [
+                      {
+                        "path": [
+                          "data",
+                          "metrics",
+                          "accuracy",
+                          "datasetIds"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows"
+                        ],
+                        "rowCount": 3,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceStart",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "entities",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "explicitCodes",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "durations",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "entities"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidates",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "entities",
+                          "0",
+                          "candidates"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "code",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "label",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceChapter",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "range",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "chapterLabel",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceRow",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "explicitCodes"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "durations"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "value",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "unit",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "entities"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidates",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "entities",
+                          "0",
+                          "candidates"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "code",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "label",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceChapter",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "range",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "chapterLabel",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceRow",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "explicitCodes"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "durations"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "value",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "unit",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "2",
+                          "entities"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidates",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "2",
+                          "entities",
+                          "0",
+                          "candidates"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "code",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "label",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceChapter",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "range",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "chapterLabel",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceRow",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "2",
+                          "explicitCodes"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "2",
+                          "durations"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "value",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "unit",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "issues"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "categoryCandidates"
+                        ],
+                        "rowCount": 3,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "causeGraph",
+                          "nodes"
+                        ],
+                        "rowCount": 3,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 3,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "causeGraph",
+                          "reportedEdges"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "from",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "to",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "evidence",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "reasoningWorkflow"
+                        ],
+                        "rowCount": 4,
+                        "columns": [
+                          {
+                            "field": "step",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "title",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "content",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "runId": "d270790e-92a3-469a-a7f2-8b5e7b86dca4",
+                  "callId": "d270790e-92a3-469a-a7f2-8b5e7b86dca4-ui-step-0",
+                  "method": "icd10-iris-mortality-v2",
+                  "status": "REVIEW_REQUIRED",
+                  "datasets": [],
+                  "qualityFlags": [
+                    "clinical-review-required",
+                    "accuracy-unvalidated",
+                    "category-table-not-terminal-codes"
+                  ]
+                }
+              ]
+            },
+            "metrics": {},
+            "qualityFlags": []
+          }
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "name": "all-business-steps-produced-views",
+          "passed": true
+        },
+        {
+          "name": "step-result-present",
+          "passed": true
+        },
+        {
+          "name": "explicit-iris-result-or-blocker",
+          "passed": true
+        }
+      ],
+      "requirementId": 61,
+      "domain": "chronic",
+      "prompt": "对模拟男性68岁、疾病死亡的证明书调用 Iris/MUSE：第一部分a为呼吸衰竭，b为肺癌。展示根本死因候选、规则版本、退回原因并保留人工复核；未配置引擎时明确报告缺项。",
+      "status": "REVIEW_REQUIRED",
+      "expectedStatus": "REVIEW_REQUIRED",
+      "passed": true,
+      "elapsedMs": 1671,
+      "runId": "cc6e6117-2715-42a1-aa14-d445ff73a840",
+      "skillRuns": [
+        {
+          "callId": "cc6e6117-2715-42a1-aa14-d445ff73a840-ui",
+          "skillId": "skill_requirement_scenario",
+          "skillName": "执行功能需求场景",
+          "args": {
+            "requirementId": 61
+          },
+          "result": {
+            "schemaVersion": "1",
+            "runId": "cc6e6117-2715-42a1-aa14-d445ff73a840",
+            "domain": "chronic",
+            "status": "REVIEW_REQUIRED",
+            "method": "requirement-scenario-composition-v1",
+            "datasets": [],
+            "payload": {
+              "type": "AGUI_RESULT_GROUP",
+              "views": [
+                {
+                  "type": "ANALYTICS_RESULT",
+                  "title": "61 · 根本死因判定模型",
+                  "data": {
+                    "acceptance": "真实Iris调用、输入绑定、版本及规则表哈希、候选或退回、人工复核",
+                    "limitation": "Iris/MUSE适配已实现；完整规则执行需获授权Windows引擎、配套决策表和机构语言字典",
+                    "steps": [
+                      {
+                        "skillId": "skill_icd10_nlp_inference",
+                        "args": {
+                          "inputChain": {
+                            "a": "呼吸衰竭",
+                            "b": "肺癌"
+                          },
+                          "mode": "graph",
+                          "demographics": {
+                            "sex": "1",
+                            "age": {
+                              "value": 68,
+                              "unit": "Y"
+                            },
+                            "mannerOfDeath": 0
+                          }
+                        },
+                        "status": "REVIEW_REQUIRED"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "ANALYTICS_RESULT",
+                  "title": "死因文本与 ICD-10 编码复核",
+                  "data": {
+                    "status": "REVIEW_REQUIRED",
+                    "method": "icd10-iris-mortality-v2",
+                    "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。",
+                    "accuracyRate": null,
+                    "accuracyCompliance": "独立标注集尚未验收",
+                    "metrics": {
+                      "accuracy": {
+                        "value": null,
+                        "evaluationKind": "unvalidated",
+                        "datasetIds": [],
+                        "definition": "功能案例不代表独立临床编码准确率"
+                      }
+                    },
+                    "qualityFlags": [
+                      "clinical-review-required",
+                      "accuracy-unvalidated",
+                      "category-table-not-terminal-codes",
+                      "iris-engine-not-configured"
+                    ],
+                    "parsedCertificate": {
+                      "version": "mortality-certificate-parser-v2",
+                      "rows": [
+                        {
+                          "position": "a",
+                          "text": "呼吸衰竭",
+                          "sourceStart": 0,
+                          "sourceField": "a",
+                          "entities": [
+                            {
+                              "text": "呼吸衰竭",
+                              "start": 0,
+                              "end": 4,
+                              "sourceField": "a",
+                              "assertion": "reported",
+                              "candidateCodes": [
+                                "J96"
+                              ],
+                              "candidates": [
+                                {
+                                  "code": "J96",
+                                  "label": "呼吸衰竭,不可归类在他处者",
+                                  "sourceChapter": "X",
+                                  "range": "J00-J99",
+                                  "chapterLabel": "呼吸系统疾病",
+                                  "sourceRow": 783
+                                }
+                              ],
+                              "granularity": "three-character-category",
+                              "requiresReview": true
+                            }
+                          ],
+                          "explicitCodes": [],
+                          "durations": []
+                        },
+                        {
+                          "position": "b",
+                          "text": "肺癌",
+                          "sourceStart": 0,
+                          "sourceField": "b",
+                          "entities": [
+                            {
+                              "text": "肺癌",
+                              "start": 0,
+                              "end": 2,
+                              "sourceField": "b",
+                              "assertion": "reported",
+                              "candidateCodes": [
+                                "C34"
+                              ],
+                              "candidates": [
+                                {
+                                  "code": "C34",
+                                  "label": "支气管和肺恶性肿瘤",
+                                  "sourceChapter": "II",
+                                  "range": "C00-D48",
+                                  "chapterLabel": "肿瘤",
+                                  "sourceRow": 207
+                                }
+                              ],
+                              "granularity": "three-character-category",
+                              "requiresReview": true
+                            }
+                          ],
+                          "explicitCodes": [],
+                          "durations": []
+                        }
+                      ],
+                      "issues": [],
+                      "originalInput": {
+                        "inputChain": {
+                          "a": "呼吸衰竭",
+                          "b": "肺癌"
+                        },
+                        "text": null
+                      },
+                      "inputSha256": "5e190e31f08553e41e07b8d75e51d6bf84618f47103bbc781adada419d7e7292",
+                      "catalogue": {
+                        "version": "user-supplied-three-character-categories-v1",
+                        "classification": "ICD-10",
+                        "granularity": "category-only",
+                        "sourceFile": "ICD-10_三位类目编码表.xlsx",
+                        "sourceSha256": "68604558bdaaa41cf922d01e1f095946935dee26a5bd58d3cc9f202f2a22b4a0",
+                        "sourceSheet": "ICD-10三位类目编码表",
+                        "sourceEdition": "not-specified-in-workbook"
+                      },
+                      "categoryCount": 2047
+                    },
+                    "categoryCandidates": [
+                      {
+                        "position": "a",
+                        "text": "呼吸衰竭",
+                        "assertion": "reported",
+                        "candidateCodes": [
+                          "J96"
+                        ],
+                        "granularity": "three-character-category",
+                        "requiresReview": true
+                      },
+                      {
+                        "position": "b",
+                        "text": "肺癌",
+                        "assertion": "reported",
+                        "candidateCodes": [
+                          "C34"
+                        ],
+                        "granularity": "three-character-category",
+                        "requiresReview": true
+                      }
+                    ],
+                    "causeGraph": {
+                      "nodes": [
+                        {
+                          "position": "a",
+                          "text": "呼吸衰竭"
+                        },
+                        {
+                          "position": "b",
+                          "text": "肺癌"
+                        }
+                      ],
+                      "reportedEdges": [
+                        {
+                          "from": "b",
+                          "to": "a",
+                          "evidence": "certificate-reported-order-not-validated-causality"
+                        }
+                      ],
+                      "selectionSupported": false,
+                      "ruleVersion": null,
+                      "scope": "关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。"
+                    },
+                    "inferredUnderlyingCause": null,
+                    "engineResult": {
+                      "selectionStatus": "ENGINE_NOT_CONFIGURED",
+                      "reviewRequired": true,
+                      "candidateCode": null,
+                      "message": "未配置获授权的 Iris 5 / MUSE 引擎与 ICD-10 决策表。"
+                    },
+                    "inputIssues": [],
+                    "inputDeathChain": {
+                      "a": "呼吸衰竭",
+                      "b": "肺癌"
+                    },
+                    "demographics": {
+                      "sex": "1",
+                      "age": {
+                        "value": 68,
+                        "unit": "Y"
+                      },
+                      "mannerOfDeath": 0
+                    },
+                    "entryMode": "text",
+                    "review": {
+                      "status": "PENDING",
+                      "required": true,
+                      "autoFinalized": false,
+                      "checks": [
+                        "逐行核对原文、否定词及同一行多个疾病",
+                        "核对年龄、性别、第二部分及死亡方式",
+                        "核对 Iris 规则版本、退回原因、编码及原生规则日志",
+                        "确认后由有权限编码员在正式登记系统签署"
+                      ]
+                    },
+                    "reasoningWorkflow": [
+                      {
+                        "step": 1,
+                        "title": "提取证明书结构",
+                        "content": "保留第一部分、第二部分、同一行多个疾病和原文偏移。"
+                      },
+                      {
+                        "step": 2,
+                        "title": "检索类目候选",
+                        "content": "使用用户提供的 2047 条三位类目；不自动补成四位或六位编码。"
+                      },
+                      {
+                        "step": 3,
+                        "title": "调用正式规则引擎",
+                        "content": "ENGINE_NOT_CONFIGURED"
+                      },
+                      {
+                        "step": 4,
+                        "title": "人工复核",
+                        "content": "所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。"
+                      }
+                    ]
+                  },
+                  "statistics": {
+                    "version": "1",
+                    "basis": "returned_rows",
+                    "tables": [
+                      {
+                        "path": [
+                          "data",
+                          "metrics",
+                          "accuracy",
+                          "datasetIds"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows"
+                        ],
+                        "rowCount": 2,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceStart",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "entities",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "explicitCodes",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "durations",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "entities"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidates",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "entities",
+                          "0",
+                          "candidates"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "code",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "label",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceChapter",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "range",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "chapterLabel",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceRow",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "explicitCodes"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "0",
+                          "durations"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "entities"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "text",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "start",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "end",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceField",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidates",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "entities",
+                          "0",
+                          "candidates"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "code",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "label",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceChapter",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "range",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "chapterLabel",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "sourceRow",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "explicitCodes"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "rows",
+                          "1",
+                          "durations"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "parsedCertificate",
+                          "issues"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "categoryCandidates"
+                        ],
+                        "rowCount": 2,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "assertion",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "candidateCodes",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "granularity",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "requiresReview",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "causeGraph",
+                          "nodes"
+                        ],
+                        "rowCount": 2,
+                        "columns": [
+                          {
+                            "field": "position",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "text",
+                            "presentCount": 2,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "causeGraph",
+                          "reportedEdges"
+                        ],
+                        "rowCount": 1,
+                        "columns": [
+                          {
+                            "field": "from",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "to",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "evidence",
+                            "presentCount": 1,
+                            "missingCount": 0
+                          }
+                        ]
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "inputIssues"
+                        ],
+                        "rowCount": 0,
+                        "columns": []
+                      },
+                      {
+                        "path": [
+                          "data",
+                          "reasoningWorkflow"
+                        ],
+                        "rowCount": 4,
+                        "columns": [
+                          {
+                            "field": "step",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "title",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          },
+                          {
+                            "field": "content",
+                            "presentCount": 4,
+                            "missingCount": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "runId": "cc6e6117-2715-42a1-aa14-d445ff73a840",
+                  "callId": "cc6e6117-2715-42a1-aa14-d445ff73a840-ui-step-0",
+                  "method": "icd10-iris-mortality-v2",
+                  "status": "REVIEW_REQUIRED",
+                  "datasets": [],
+                  "qualityFlags": [
+                    "clinical-review-required",
+                    "accuracy-unvalidated",
+                    "category-table-not-terminal-codes",
+                    "iris-engine-not-configured"
+                  ]
+                }
+              ]
+            },
+            "metrics": {},
+            "qualityFlags": []
+          }
+        }
+      ]
+    }
+  ]
+}

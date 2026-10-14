@@ -4,6 +4,7 @@ from pathlib import Path
 from contextvars import ContextVar
 ACTIVE_SCOPE=ContextVar('approved_scope',default=None)
 DATE_COLUMNS={'fact_monitoring':'date_id','fact_pathogen_detection':'date_id','fact_insecticide_resistance':'date_id','fact_foodborne_case':'visit_date','fact_pathogen_molecular':'isolation_date','fact_food_sampling':'sample_date','fact_outbreak_event':'start_time','fact_water_monitoring':'monitoring_date','fact_sewage_monitoring':'monitoring_date','fact_air_climate_monitoring':'date','fact_river_basin_monitoring':'monitoring_date','fact_public_venue_inspection':'inspection_date','fact_env_alerts':'created_at','fact_death_registry':'death_date','fact_chronic_cases':'diagnosed_date','fact_injury_surveillance':'injury_time','fact_chronic_alerts':'created_at'}
+DATE_COLUMNS.update({'fact_vector_exposure':'monitoring_date','fact_food_exposure':'exposure_date','fact_food_forecast_inputs':'monitoring_date','fact_env_raw_samples':'monitoring_date','fact_venue_scores':'inspection_date','fact_env_activity':'monitoring_date','fact_sewage_network':'monitoring_date','fact_env_mobile_tasks':'monitoring_date','fact_env_intervention_inputs':'monitoring_date','fact_chronic_followup':'monitoring_date','fact_injury_risk_inputs':'monitoring_date','fact_river_adjacency':'monitoring_date'})
 def connect_scoped_readonly(path,scope,connection_factory=sqlite3.Connection):
  if not isinstance(scope,dict) or not scope.get('scopeFingerprint') or scope.get('domain') not in ('vector','foodborne','env','chronic') or not isinstance(scope.get('regionPaths'),list):raise ValueError('APPROVED_SCOPE_INVALID')
  connection=sqlite3.connect(f'{Path(path).resolve().as_uri()}?mode=ro',uri=True,factory=connection_factory)
@@ -18,6 +19,9 @@ def connect_scoped_readonly(path,scope,connection_factory=sqlite3.Connection):
   direct={'pathogenType':'category','pathogen':'pathogen_name','category':'category','speciesName':'species_name','methodName':'method_name','pathogenName':'pathogen_name','pesticideName':'pesticide_name','diseaseName':'disease_name','basinName':'basin_name','pathogenId':'pathogen_id','clusterId':'cluster_id'}
   def condition(column,f):
    values=[quote(v) for v in f['values']]
+   if column.strip(chr(34))=='pathogen_name':
+    values=[quote(str(v).split(' (',1)[0].strip()) for v in f['values']]
+    column=f"TRIM(SUBSTR({column},1,INSTR({column}||' (',' (')-1))"
    if f['operator']=='eq':return f'{column}={values[0]}'
    if f['operator']=='range':return f'{column} BETWEEN {values[0]} AND {values[1]}'
    if f['operator'] not in ('in','not_in'):raise ValueError('APPROVED_SCOPE_INVALID')
@@ -33,17 +37,23 @@ def connect_scoped_readonly(path,scope,connection_factory=sqlite3.Connection):
    elif city or district:
     constraints.append('('+' OR '.join('('+geo(p)+')' for p in includes)+')')
     constraints.extend('NOT ('+geo(p)+')' for p in excludes)
-   elif table.startswith('fact_') and any(p.get('city') or p.get('district') for p in includes):raise ValueError('REGION_DATASET_MAPPING_REQUIRED')
+   elif table.startswith('fact_') and any(p.get('city') or p.get('district') for p in includes):invalid_tables.add(table)
    date=DATE_COLUMNS.get(table)
    if date in columns:
     if scope.get('from'):constraints.append(f'substr("{date}",1,10)>={quote(scope["from"])}')
     if scope.get('to'):constraints.append(f'substr("{date}",1,10)<={quote(scope["to"])}')
    for field,f in scope.get('filters',{}).items():
     if field in scope.get('parameterFilters',[]):continue
+    targets=scope.get('filterTables',{}).get(field)
+    if targets is not None and table not in targets:continue
     column=direct.get(field);dimension=dimensions.get(field)
     foreign='detected_pathogen_id' if table=='fact_food_sampling' and scope['domain']=='foodborne' else dimension[1] if dimension else None
     if column in columns:constraints.append(condition('"'+column+'"',f))
     elif dimension and foreign in columns:constraints.append(f'"{foreign}" IN (SELECT "{dimension[1]}" FROM main."{dimension[0]}" WHERE '+condition('"'+dimension[2]+'"',f)+')')
+    elif table=='fact_food_exposure' and scope['domain']=='foodborne' and field in ('pathogen','pathogenName','pathogenType'):
+     constraints.append('cluster_id IN (SELECT cluster_id FROM main.fact_foodborne_case WHERE pathogen_id IN (SELECT pathogen_id FROM main.dim_pathogen_type WHERE '+condition(dimension[2],f)+'))')
+    elif scope['domain']=='vector' and field=='category' and 'species_name' in columns:
+     constraints.append('species_name IN (SELECT species_name FROM main.dim_species WHERE '+condition('category',f)+')')
     elif table.startswith('fact_'):invalid_tables.add(table)
    allowed=scope.get('allowedColumns',{}).get(table,columns)
    if not allowed:continue

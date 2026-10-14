@@ -1,82 +1,75 @@
+"""Requirements 60/61: lossless parsing, ICD-10 categories and licensed Iris selection.
+
+No local edge list or last-line heuristic may substitute for the official engine.
+"""
 from analytics_engine.repositories.datasets import resolve_dataset_path, connect_readonly
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-No. 60/61: 非结构化数据 NLP 解析与根本死因知识图谱推理判定模型
-基于知识图谱（《死因登记规范》《ICD-10 编码规则》），对死因链文本进行因果推理，自动判定根本死因，编码准确率应≥95%。
-"""
-
-import os
-import sqlite3
-import json
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from analytics_engine.chronic.mortality_parser import parse_certificate, catalogue
+from analytics_engine.chronic.iris_adapter import request_for, invoke_iris
 
 
-ICD10_KNOWLEDGE_BASE = {
-    "急性心肌梗死": {"code": "I21.9", "full_code": "I21.900", "chapter": "第九章 循环系统疾病", "block": "缺血性心脏病 (I20-I25)"},
-    "心肌梗死": {"code": "I21.1", "full_code": "I21.101", "chapter": "第九章 循环系统疾病", "block": "缺血性心脏病 (I20-I25)"},
-    "脑梗死": {"code": "I63.9", "full_code": "I63.902", "chapter": "第九章 循环系统疾病", "block": "脑血管疾病 (I60-I69)"},
-    "脑出血": {"code": "I61.9", "full_code": "I61.901", "chapter": "第九章 循环系统疾病", "block": "脑血管疾病 (I60-I69)"},
-    "肺癌": {"code": "C34.9", "full_code": "C34.901", "chapter": "第二章 肿瘤", "block": "恶性肿瘤 (C00-C97)"},
-    "食管癌": {"code": "C15.9", "full_code": "C15.901", "chapter": "第二章 肿瘤", "block": "恶性肿瘤 (C00-C97)"},
-    "胃癌": {"code": "C16.9", "full_code": "C16.901", "chapter": "第二章 肿瘤", "block": "恶性肿瘤 (C00-C97)"},
-    "慢性阻塞性肺疾病": {"code": "J44.9", "full_code": "J44.900", "chapter": "第十章 呼吸系统疾病", "block": "慢性下呼吸道疾病 (J40-J47)"},
-    "糖尿病": {"code": "E11.9", "full_code": "E11.901", "chapter": "第四章 内分泌营养代谢", "block": "糖尿病 (E10-E14)"},
-    "阿尔茨海默病": {"code": "G30.9", "full_code": "G30.901", "chapter": "第六章 神经系统疾病", "block": "神经系统其他退行性变 (G30-G32)"},
-    "克雅氏病": {"code": "A81.0", "full_code": "A81.001", "chapter": "第一章 传染病和寄生虫病", "block": "中枢神经系统非典型病毒感染 (A81)"},
-    "跌倒": {"code": "W19.9", "full_code": "W19.901", "chapter": "第二十章 疾病和死亡的外因", "block": "跌倒 (W00-W19)"}
-}
-
-def infer_underlying_cause_and_icd10(
-    db_path: str = None,
-    cert_id: str = None,
-    input_chain: dict = None
-):
-    if not db_path:
-        db_path = str(resolve_dataset_path('chronic'))
-
-    if input_chain is not None:
-        a,b,c,d = [str(input_chain.get(key) or "") for key in ["a","b","c","d"]]
-    else:
-        conn = connect_readonly(db_path)
+def infer_underlying_cause_and_icd10(db_path=None, cert_id=None, input_chain=None,
+                                    mode='dictionary', text=None, demographics=None,
+                                    entry_mode='text'):
+    if mode not in ('dictionary', 'graph'):
+        raise ValueError('UNKNOWN_CAUSE_INFERENCE_MODE')
+    if input_chain is None and text is None:
+        if not cert_id:
+            raise ValueError('A certificate identifier or explicit text is required')
+        connection = connect_readonly(db_path or str(resolve_dataset_path('chronic')))
         try:
-            cur = conn.cursor()
-            if cert_id:
-                cur.execute("SELECT cause_chain_a,cause_chain_b,cause_chain_c,cause_chain_d FROM fact_death_registry WHERE death_cert_id = ?",(cert_id,))
-            else:
-                cur.execute("SELECT cause_chain_a,cause_chain_b,cause_chain_c,cause_chain_d FROM fact_death_registry ORDER BY death_cert_id LIMIT 1")
-            row = cur.fetchone()
+            row = connection.execute('SELECT cause_chain_a,cause_chain_b,cause_chain_c,cause_chain_d,age,gender FROM fact_death_registry WHERE death_cert_id=?', (cert_id,)).fetchone()
         finally:
-            conn.close()
-        if not row:
-            return {"status":"NO_DATA","payload":None,"inferredUnderlyingCause":None,"accuracyRate":None,"message":"未查询到死亡证明书"}
-        a,b,c,d = [str(value or "") for value in row]
+            connection.close()
+        if row is None:
+            return {'status': 'NO_DATA', 'inferredUnderlyingCause': None, 'message': '未查询到死亡证明书'}
+        input_chain = dict(zip('abcd', [str(v or '') for v in row[:4]]))
+        demographics = demographics or {'sex': {'男': '1', '女': '2'}.get(row[5], '9'),
+                                        'age': {'value': int(row[4]), 'unit': 'Y'}}
+    parsed = parse_certificate(input_chain, text)
+    request, input_issues = request_for(parsed, demographics, entry_mode)
+    engine = invoke_iris(request, input_issues) if mode == 'graph' else {
+        'selectionStatus': 'PARSING_ONLY', 'candidateCode': None,
+        'message': '本步骤提取原文与类目候选；根本死因选择通过第61项的 Iris/MUSE 执行。'}
     candidate = None
-    # Prefer the earliest supplied chain item; a match only proposes a dictionary candidate.
-    for item in [d,c,b,a]:
-        for keyword in sorted(ICD10_KNOWLEDGE_BASE,key=len,reverse=True):
-            if keyword in item:
-                info = ICD10_KNOWLEDGE_BASE[keyword]
-                candidate = {"diseaseName":keyword,"standardIcd10":info["code"],"icd10ExpandedCode":info["full_code"],"chapter":info["chapter"],"block":info["block"],"confidenceScore":None}
-                break
-        if candidate: break
-    workflow = [
-        {"step":1,"title":"读取死因链","content":f"按原始输入读取 (a)={a}, (b)={b}, (c)={c}, (d)={d}"},
-        {"step":2,"title":"字典候选检索","content":f"检索结果：{candidate['diseaseName']}" if candidate else "未找到可支持编码的字典条目"},
-        {"step":3,"title":"人工复核","content":"字典匹配不能验证因果链或替代专业编码审核，需人工复核"}
-    ]
-    return {
-        "status":"REVIEW_REQUIRED","method":"icd10-dictionary-candidate-v1","message":"死因编码候选需人工复核" if candidate else "死因链未匹配，需人工复核",
-        "accuracyRate":None,"accuracyCompliance":"未评估",
-        "metrics":{"accuracy":{"value":None,"evaluationKind":"unvalidated","datasetIds":[],"definition":"未进行独立标注集编码准确率评估"}},
-        "qualityFlags":["clinical-review-required","accuracy-unvalidated"],
-        "inputDeathChain":{"part1_a":a,"part1_b":b,"part1_c":c,"part1_d":d},
-        "inferredUnderlyingCause":candidate,"reasoningWorkflow":workflow,
-        "replacementBenefit":"仅提供可追溯的字典候选，保留人工编码审核"
-    }
-
-if __name__ == "__main__":
-    res = infer_underlying_cause_and_icd10()
-    print(json.dumps(res, ensure_ascii=False, indent=2))
+    if engine.get('candidateCode'):
+        code = engine['candidateCode']
+        entry = catalogue()[1].get(code[:3])
+        candidate = {'standardIcd10': code, 'classification': 'ICD-10',
+                     'diseaseName': entry['label'] if entry else '以 Iris 安装版本的分类名称为准',
+                     'labelGranularity': 'category-only', 'confidenceScore': None,
+                     'source': 'Iris/MUSE', 'requiresReview': True}
+    categories = []
+    for row in parsed['rows']:
+        for entity in row['entities']:
+            if entity['assertion'] == 'negated':
+                continue
+            categories.append({'position': row['position'], 'text': entity['text'],
+                               'assertion': entity['assertion'], 'candidateCodes': entity['candidateCodes'],
+                               'granularity': entity['granularity'], 'requiresReview': True})
+    part_one = [r for r in parsed['rows'] if r['position'] != 'part2']
+    graph = {'nodes': [{'position': r['position'], 'text': r['text']} for r in parsed['rows']],
+             'reportedEdges': [{'from': cause['position'], 'to': effect['position'], 'evidence': 'certificate-reported-order-not-validated-causality'}
+                               for effect, cause in zip(part_one, part_one[1:])],
+             'selectionSupported': candidate is not None,
+             'ruleVersion': engine.get('provenance', {}).get('rulesVersion'),
+             'scope': '关系箭头仅反映原始填报次序；根本死因候选只接受 Iris/MUSE 实际输出。'}
+    issues = list(dict.fromkeys(parsed['issues'] + input_issues))
+    return {'status': 'REVIEW_REQUIRED', 'method': 'icd10-iris-mortality-v2',
+            'message': '解析完成，等待人工核对与编码细化' if mode == 'dictionary' else engine.get('message', 'Iris/MUSE 已返回候选，等待人工复核'),
+            'accuracyRate': None, 'accuracyCompliance': '独立标注集尚未验收',
+            'metrics': {'accuracy': {'value': None, 'evaluationKind': 'unvalidated', 'datasetIds': [],
+                                     'definition': '功能案例不代表独立临床编码准确率'}},
+            'qualityFlags': ['clinical-review-required', 'accuracy-unvalidated', 'category-table-not-terminal-codes'] +
+                            (['iris-engine-not-configured'] if engine['selectionStatus'] == 'ENGINE_NOT_CONFIGURED' else []),
+            'parsedCertificate': parsed, 'categoryCandidates': categories, 'causeGraph': graph,
+            'inferredUnderlyingCause': candidate, 'engineResult': engine, 'inputIssues': issues,
+            'inputDeathChain': {r['position']: r['text'] for r in parsed['rows']},
+            'demographics': demographics or {}, 'entryMode': entry_mode,
+            'review': {'status': 'PENDING', 'required': True, 'autoFinalized': False,
+                       'checks': ['逐行核对原文、否定词及同一行多个疾病', '核对年龄、性别、第二部分及死亡方式',
+                                  '核对 Iris 规则版本、退回原因、编码及原生规则日志', '确认后由有权限编码员在正式登记系统签署']},
+            'reasoningWorkflow': [
+                {'step': 1, 'title': '提取证明书结构', 'content': '保留第一部分、第二部分、同一行多个疾病和原文偏移。'},
+                {'step': 2, 'title': '检索类目候选', 'content': f"使用用户提供的 {parsed['categoryCount']} 条三位类目；不自动补成四位或六位编码。"},
+                {'step': 3, 'title': '调用正式规则引擎', 'content': engine.get('selectionStatus')},
+                {'step': 4, 'title': '人工复核', 'content': '所有机器结果保留为草稿；未知、冲突、引擎异常均不自动定案。'}]}

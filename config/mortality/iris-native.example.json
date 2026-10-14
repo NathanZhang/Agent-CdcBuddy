@@ -1,0 +1,18 @@
+{
+  "classification": "ICD-10",
+  "licenseConfirmedByInstitution": false,
+  "irisExe": "C:\\Iris5\\Iris.exe",
+  "certificatesDb": "C:\\CdcBuddyIris\\Certificates.mdb",
+  "odbcDriver": "Microsoft Access Driver (*.mdb, *.accdb)",
+  "codingYear": null,
+  "expectedCodingVersion": "COPY THE EXACT CodingVersion FROM YOUR APPROVED INSTALLATION",
+  "rulesVersion": "YOUR APPROVED ICD-10 DECISION TABLE RELEASE",
+  "dictionaryVersion": "YOUR APPROVED INSTITUTIONAL LANGUAGE DICTIONARY RELEASE",
+  "ageUnits": {"Y": "Years", "D": "Days"},
+  "artifacts": [
+    {"role": "iris-executable", "path": "C:\\Iris5\\Iris.exe", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+    {"role": "muse-library", "path": "REPLACE_WITH_INSTALLED_MUSE_LIBRARY_PATH", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+    {"role": "decision-tables", "path": "REPLACE_WITH_INSTALLED_SPEC_MUSE_PATH", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+    {"role": "iris-tables", "path": "REPLACE_WITH_INSTALLED_IRIS_TABLES_DB_PATH", "sha256": "REPLACE_WITH_ACTUAL_SHA256"}
+  ]
+}

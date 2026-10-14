@@ -187,8 +187,8 @@ export class AppBusinessProvider {
         submission_id, user_id, user_name, city, district, street,
         latitude, longitude, image_url_base64, recognized_species, ai_confidence,
         category, species_name, capture_count, weather_temp, weather_humidity,
-        habitat_type, method_name, audit_status, submitted_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        habitat_type, method_name, audit_status, submitted_at, recognition_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       record.submission_id,
       record.user_id,
@@ -209,7 +209,8 @@ export class AppBusinessProvider {
       record.habitat_type || null,
       record.method_name || null,
       record.audit_status,
-      record.submitted_at
+      record.submitted_at,
+      record.recognition_id ?? null
     );
     db.prepare('INSERT INTO biz_collection_evidence VALUES(?,?,?)').run(record.submission_id,JSON.stringify(sourceDataset),now);
     }).immediate();

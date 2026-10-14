@@ -94,6 +94,11 @@ def _populate(db_path, seed=42, profile='historical-demo'):
                         date_id,lc50,corrected_mortality,resistance_level,source_file) VALUES(?,?,?,?,?,?,?,?,?)''',
                         (f'resistance-{idx}-{species}-{pesticide}', species, pesticide, location[0], '2025-01-15',
                          None if missing else round(rng.uniform(.01, .5), 4), mortality, level, 'synthetic-vector-demo'))
+        if __package__:
+            from .mock_requirement_inputs import populate as populate_requirement_inputs
+        else:
+            from mock_requirement_inputs import populate as populate_requirement_inputs
+        populate_requirement_inputs(conn, "vector", seed)
         conn.commit()
         if conn.execute('PRAGMA foreign_key_check').fetchall():
             raise ValueError('Invalid synthetic vector references')

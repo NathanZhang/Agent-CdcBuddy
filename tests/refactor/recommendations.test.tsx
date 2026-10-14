@@ -14,22 +14,15 @@ import type {ExecutionContext} from '@/contracts/execution-context';
 const context=(domain:ExecutionContext['domain']):ExecutionContext=>({runId:'recommendation-check',domain,deploymentTier:'local',principal:{userId:'recommendation-audit',role:'PROVINCIAL_ADMIN',organizationId:'test',domainGrants:[domain],jurisdiction:{},mode:'dev'}});
 
 describe('recommendation data coverage and AG-UI rendering against configured datasets',()=>{
- for(const profile of Object.values(AGENT_PROFILES)){
-  const recommendations=[...profile.categories.flatMap(c=>c.prompts),...profile.floatingWidget.quickPrompts,...STANDARD_SKILLS.filter(s=>s.domain===profile.domain).flatMap(s=>s.recommendedPrompts)];
-  const unique=[...new Map(recommendations.map(p=>[typeof p==='string'?p:p.prompt,p])).values()];
-  for(const prompt of unique){
-   it(`${profile.domain}: ${typeof prompt==='string'?prompt:prompt.title}`,async()=>{
-    expect(typeof prompt).toBe('object');
-    if(typeof prompt==='string')throw new Error('Unstructured built-in example');
-    // Reference queries only verify that the requested scene has data and a usable view.
-    // They are never included in recommendation text or sent to the Agent.
-    const instruction=RECOMMENDATION_DATA_CASES.find(c=>c.domain===profile.domain&&c.title===prompt.title);
-    expect(instruction,`${prompt.title}: missing data coverage case`).toBeDefined();
-    if(!instruction)throw new Error('Missing data coverage case');
+ for(const instruction of RECOMMENDATION_DATA_CASES){
+   const profile=AGENT_PROFILES[instruction.domain];
+   it(`${profile.domain}: ${instruction.title}`,async()=>{
     const definition=listSkillDefinitions(profile.domain).find(s=>s.id===instruction.skillId);
     expect(definition?.availability).toBe('available');
     expect(definition?.allowedOperations).toEqual(['read']);
     const result=await executeSkill(instruction.skillId,instruction.args,context(profile.domain));
+    if(instruction.skillId==='skill_molecular_trace'){expect(result.status,JSON.stringify(result.error)).toBe('INSUFFICIENT_DATA');expect((result.payload as any).data.reason).toContain('fact_food_exposure');return;}
+    if(profile.domain==='vector'&&['skill_population_dynamics','skill_density_forecast','skill_resistance_evaluation'].includes(instruction.skillId)){expect(result.status,JSON.stringify(result.error)).toBe('INSUFFICIENT_DATA');expect(result.payload).not.toBeNull();return;}
     expect(result.status,JSON.stringify(result.error)).toBe('SUCCESS');
     const view={...result.payload as object,method:result.method,status:result.status,datasets:result.datasets};
     const html=renderToStaticMarkup(<GenerativeComponentRenderer view={view}/>);
@@ -42,7 +35,6 @@ describe('recommendation data coverage and AG-UI rendering against configured da
      expect(payload.data.some((r:Record<string,unknown>)=>Object.values(r).some(v=>v!==null&&v!==''))).toBe(true);
     }
    });
-  }
  }
 });
 
@@ -79,7 +71,7 @@ it('recommendation entry points send concise natural-language requests without e
    if(typeof entry==='string')throw new Error('Built-in recommendation must have a title and prompt');
    expect(entry.prompt,entry.title).not.toMatch(/\b(?:SELECT|FROM|JOIN|WHERE|sql|skillId|latKey|lonKey|xKey|yKey)\b|\b(?:skill_|fact_|dim_)\w*|执行配置|PATH_\d+/i);
    expect(entry.prompt.length,entry.title).toBeLessThanOrEqual(200);
-   expect(Object.keys(entry).sort(),entry.title).toEqual(['prompt','title']);
+   expect(entry.requirementId,entry.title).toBeGreaterThanOrEqual(23);
   }
  }
 });

@@ -49,5 +49,9 @@
   "transmission_risk": "vector",
   "water_health_risk": "env",
   "water_safety_eval": "env",
-  "vector_backtest": "vector"
+  "vector_backtest": "vector",
+  "vector_assessment": "vector",
+  "foodborne_assessment": "foodborne",
+  "env_assessment": "env",
+  "chronic_assessment": "chronic"
 }

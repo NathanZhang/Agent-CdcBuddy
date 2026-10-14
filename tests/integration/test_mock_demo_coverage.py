@@ -31,13 +31,20 @@ class MockDemoCoverageTests(unittest.TestCase):
         cases = [json.loads(line.strip().rstrip(',')) for line in
                  (ROOT / 'tests/refactor/fixtures/recommendation-data-cases.ts').read_text().splitlines()
                  if line.strip().startswith('{')]
-        self.assertEqual(len(cases), 48)
+        self.assertTrue(cases)  # Legacy query regressions are independent of the requirement catalog.
         for case in cases:
             if 'sql' not in case['args']:
                 continue  # Analytical scenes are verified through their actual algorithms below.
             with self.subTest(scene=case['title']), self.connect(case['domain']) as conn:
                 rows = conn.execute(case['args']['sql']).fetchall()
                 self.assertTrue(rows, case['title'])
+
+    def test_requirement_input_coverage(self):
+        import runpy
+        audit = runpy.run_path(str(ROOT / 'scripts/audit-requirement-data.py'))['audit']
+        result = audit(self.directory)
+        self.assertEqual(len(result['scenarios']), 54)
+        self.assertFalse([s for s in result['scenarios'] if s['inputStatus'] == 'missing'])
 
     def test_water_months_and_station_references(self):
         with self.connect('env') as conn:

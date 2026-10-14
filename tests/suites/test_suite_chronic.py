@@ -82,12 +82,11 @@ class ChronicSurveillanceTestSuite:
         res.assert_true(result.get("accuracyRate") is None, "无独立评估不能声明准确率达标")
         res.assert_true(result["metrics"]["accuracy"]["evaluationKind"] == "unvalidated", "准确率来源标记为未评估")
 
-        underlying = result.get("inferredUnderlyingCause", {})
-        res.assert_true("脑梗死" in underlying.get("diseaseName", ""), f"因果顺应性推断根本死因为脑梗死 ({underlying.get('diseaseName')})")
-        res.assert_true(underlying.get("standardIcd10") == "I63.9", f"精准匹配国家标准编码 I63.9 ({underlying.get('standardIcd10')})")
+        res.assert_true(result.get("inferredUnderlyingCause") is None, "字典解析不伪造根本死因")
+        res.assert_true(any("I63" in r["candidateCodes"] for r in result["categoryCandidates"]), "保留脑梗死三位类目候选")
 
         workflow = result.get("reasoningWorkflow", [])
-        res.assert_true(len(workflow) == 3, "输出完整的死因链剔除、因果溯源与字典匹配三级推理工作流")
+        res.assert_true(len(workflow) == 4 and result['review']['autoFinalized'] is False, "保留解析、类目检索、引擎状态和人工复核步骤")
 
     def test_62_63_mortality_cluster(self, res: TestResult):
         """Compatibility/partial or refusal only; no full capability signoff."""

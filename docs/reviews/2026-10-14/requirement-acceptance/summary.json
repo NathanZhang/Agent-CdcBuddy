@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-14",
+  "requirementCounts": {
+    "vector": 13,
+    "foodborne": 6,
+    "env": 17,
+    "chronic": 18
+  },
+  "totalRequirements": 54,
+  "mockInputReady": 52,
+  "manualImageUploadRequirement": 35,
+  "deferredOCRRequirement": 42,
+  "tests": {
+    "refactorPassed": 526,
+    "refactorSkipped": 1,
+    "finalTargetedPassed": 15,
+    "integrationPassed": 52,
+    "scientificPassed": 43,
+    "typescript": "passed",
+    "lint": "passed",
+    "productionBuild": "passed",
+    "legacyPassed": 44
+  },
+  "liveVision": "configured qwen3.8-27b accepted actual image bytes; blank image returned unknown",
+  "browserMobile": "file upload → actual vision response → manual confirmation → QC → SUBMITTED with recognition_id",
+  "limitation": "This is scenario mapping, input coverage and engineering verification, not acceptance of every professional requirement.",
+  "sourceDatabasesUnchanged": true,
+  "browserRecommendation35": "clicked numbered recommendation; actual LLM chose skill_mobile_assistant_api form and rendered upload/QC interface"
+}

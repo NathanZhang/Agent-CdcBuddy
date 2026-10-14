@@ -1,8 +1,8 @@
-# Agent-CdcBuddy 2.0
+# Agent-CdcBuddy 2.1
 
 Agent-CdcBuddy 面向病媒生物、食源性疾病、环境健康、死因慢病与伤害四个领域提供疾控监测分析工作台。2.0 将业务交互统一到主线 Agent，由实际 LLM 调用真实 Skills，根据执行证据生成中文对话与 AG-UI。
 
-当前版本为 **2.0.1**，Git 标签为 **v2.0.1**。发布范围和限制见 [2.0.1 发布说明](docs/releases/v2.0.1.md)，详细验收边界见 [重构交付与剩余能力](docs/reviews/2026-10-12/重构交付与剩余能力.md)。原54项专业功能尚未全部实现；Skill可调用表示相应受限方法可执行，不代表完整专业需求已验收。
+当前版本为 **2.1.0**，Git 标签为 **v2.1.0**。发布范围和限制见 [2.1.0 发布说明](docs/releases/v2.1.0.md)。全部54项推荐场景已统一通过提示词驱动智能体，链路验收及当前能力边界见 [逐项验证记录](docs/reviews/2026-10-14/prompt-pipeline/README.md)；链路可演示不代表专业效果或暂缓功能已验收。
 
 ## 执行架构
 
@@ -28,14 +28,14 @@ Web / Widget / 业务操作
 
 | 领域 | 默认数据来源 | 已实现的计算子集 | 主要限制 |
 |---|---|---|---|
-| 病媒 | observed，真实观测 | AR/GBDT捕获预测与滚动回测、KMeans、IDW、近似圆形Poisson扫描、PCR两项关联、生测记录摘要 | 捕获/记录不是标准密度；无完整ARIMA/LSTM、完整SaTScan、验证过的传播或基因演化模型 |
-| 食源性 | mock | SQL汇总、暴露窗口候选、cgMLST等位距离与单链接候选簇 | 无真实外部效果验收；候选不是确诊暴发或源头；无未暴露对照归因与预测模型 |
-| 环境 | mock | 实际指标汇总、日历配对滞后Pearson、明确提供权重时Moran | 不虚构管网/河网及溯源；未实现RF/Kriging、DLNM和专业场景模拟 |
-| 慢病伤害 | mock | 月死亡数、区县中心DBSCAN、罕见码/伤害聚集候选、死因经验质控与编码候选 | 不代表个体位置、真实风险或临床推断；未实现人口率、风险GBDT、寿命表与ROI |
+| 病媒 | observed，真实观测 | ARIMA/LSTM/GBDT、滞后生测RF、条件贝叶斯演化、KMeans、IDW、近似空间扫描、PCR/暴露指数 | 新模型需额外输入；无输入时不生成预测，实测专业精度未验收 |
+| 食源性 | mock | 动态暴露窗口、气象LSTM、cgMLST及供应链证据图谱、监测看板 | 候选不等于确诊或因果来源；实时外部数据接入未验收 |
+| 环境 | mock | 标化、RF剂量拟合、LSTM趋势、暴露/热浪、管网上溯、六维评级、Moran及情景敏感性 | 毒理/效应系数和拓扑为显式演示输入；专业规则与精度待验证 |
+| 慢病伤害 | mock | 规则/异常检测、ICD-10类目解析与Iris/MUSE适配、死亡率ARIMA、风险GBDT、关联规则、KMeans/决策树 | Iris/MUSE实机环境待配置，医学NLP准确率、WHO完整规则执行和因果效果未验收 |
 
-Mock只限定输入来源，查询、数学、持久化与产物必须实际执行。模拟输入不能证明真实精度。可用能力与尚未实现能力见 [能力清单](docs/reviews/2026-10-12/refactor-evidence/final-capability-inventory.json)。
+Mock只限定输入来源，查询、模型拟合、持久化与产物均实际执行。最新54项实现、复现命令及专业边界见[逐项验收说明](docs/四智能体验收场景与图片识别.md)。2026-10-12能力清单为历史快照。
 
-公共能力包括会话与技能管理、人工采集、实际CSV/Markdown导出、SQLite Job与有限重试、持久审批恢复、幂等工单及站内通知。工单流程仍需机构政策和专业验收；外部短信/APP通知、PDF、OCR、SSO及生产数据库替代驱动没有完成。
+公共能力包括会话与技能管理、图片LLM识别闭环、环境离线采样、四域图文报告及版本化模板、HTML/CSV/Markdown导出、SQLite Job与有限重试、持久审批恢复、幂等工单及站内通知。外部短信/APP、PDF、OCR、SSO及生产数据库替代驱动尚未完成。
 
 ## 安装与验证
 
@@ -62,7 +62,7 @@ npm run build
 DEPLOYMENT_TIER=demo .venv/bin/python scripts/seed-demo.py --domain all --output-dir .refactor-acceptance/demo-data --seed 7
 export DATASET_MANIFEST_PATH="$PWD/.refactor-acceptance/demo-data/manifest.json"
 export DATASET_REGION_BINDINGS_PATH="$PWD/.refactor-acceptance/demo-data/region-bindings.json"
-# 在上述环境变量下启动服务，或验收48个示例卡片的技能执行和视图渲染
+# 在上述环境变量下启动服务，或运行历史查询示例回归（54项需求验收见文末）
 ./node_modules/.bin/vitest run tests/refactor/recommendations.test.tsx
 ```
 
@@ -105,3 +105,7 @@ Mock 和来源不明的结果不能提交正式任务、周期巡检、归档报
 部署默认启用 `LLM_REGION_INTENT_ENABLED`。设为 `false` 时自由文本停止执行，显式界面操作和已冻结任务仍使用受控路径。目录由 `node scripts/build-region-catalog.mjs` 从本地行政边界构建；来源绑定使用 `config/dataset-region-bindings.json`，替换快照时必须登记对应版本的地域拼写与坐标系，可用 `DATASET_REGION_BINDINGS_PATH` 指向经过审核的绑定文件。
 
 工程覆盖检查：`node scripts/check-spatial-capability-coverage.mjs`。真实模型开发及留出评估分别运行 `node scripts/evaluate-region-intent.mjs --suite development --repeats 3` 和 `--suite holdout --repeats 3`；凭据只从运行环境读取，报告不输出密钥。测试与运行限制见 [地域地图验收记录](docs/reviews/2026-10-13/地域地图验收记录.md)。
+
+## 按需求逐项验收（2026-10-14）
+
+四域54项推荐场景、隔离Mock数据包与启动命令、手机图片识别API及剩余功能边界见[四智能体验收场景与图片识别](docs/四智能体验收场景与图片识别.md)。已补齐模型计算、环境离线采样与报告模板，并逐项执行推荐提示词及持久化流程；51项成功、2项待复核、OCR暂缓。工程通过不代表专业指标全部达标。

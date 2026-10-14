@@ -35,11 +35,12 @@ class HttpAuth(unittest.TestCase):
  def auth(self,name):
   status,headers,body=self.request('/api/auth/login',{'username':name,'password':'isolated-test-pass-12345'});self.assertEqual(status,200);cookie=headers.get('Set-Cookie') or headers.get('set-cookie');self.assertIn('HttpOnly',cookie);self.assertIn('SameSite=strict',cookie);return cookie.split(';')[0],body['csrfToken']
  def test_anonymous_all_business_adapters_require_identity(self):
-  for path,body in [('/api/sessions',{}),('/api/v1/mobile/record',{'city':'郑州市'}),('/api/jobs',{}),('/api/skills',{'skillId':'skill_monitoring_data_table','args':{}}),('/api/agent/stream-dispatch',{'promptText':'查询'})]:
+  for path,body in [('/api/v1/mobile/detect-species',{}),('/api/sessions',{}),('/api/v1/mobile/record',{'city':'郑州市'}),('/api/jobs',{}),('/api/skills',{'skillId':'skill_monitoring_data_table','args':{}}),('/api/agent/stream-dispatch',{'promptText':'查询'})]:
    with self.subTest(path=path):self.assertEqual(self.request(path,body)[0],401)
  def test_public_body_cannot_promote_role_and_csrf_required(self):
   cookie,csrf=self.auth('viewer');body={'skillId':'skill_meta_custom_builder','args':{'skillName':'bad','sqlQuery':'SELECT COUNT(*) n FROM fact_monitoring'},'userRole':'PROVINCIAL_ADMIN'}
   self.assertEqual(self.request('/api/skills',body,cookie,csrf)[0],403)
+  self.assertEqual(self.request('/api/v1/mobile/detect-species',{},cookie,csrf)[0],403)
   self.assertEqual(self.request('/api/skills',body,cookie,None)[0],403)
   self.assertEqual(self.request('/api/skills',body,cookie,csrf,False)[0],403)
  def test_city_and_district_conflicts_rejected_before_llm(self):

@@ -20,9 +20,9 @@ it('never falls back to legacy capability promises before the server profile loa
  vi.stubGlobal('window',{});const html=render();expect(html).toContain('能力目录加载中');expect(html).not.toContain('误差率≤10%');expect(html).not.toContain('LSTM');
 });
 it('keeps planned capabilities unavailable and reports limited methods accurately',()=>{
- const chronic=getRuntimeProfile('chronic');expect(chronic.capabilities.find(s=>s.id==='skill_chronic_risk_forecast')).toMatchObject({implementationStatus:'planned',validationStatus:'unvalidated',availability:'planned'});
+ const chronic=getRuntimeProfile('chronic');expect(chronic.capabilities.find(s=>s.id==='skill_chronic_risk_forecast')).toMatchObject({implementationStatus:'partial',validationStatus:'contract',availability:'available'});
  expect(chronic.capabilities.find(s=>s.id==='skill_chronic_death_report')?.name).not.toContain('4q70');
- expect(chronic.capabilities.find(s=>s.id==='skill_icd10_nlp_inference')?.name).toContain('字典编码候选');
+ expect(chronic.capabilities.find(s=>s.id==='skill_icd10_nlp_inference')?.name).toContain('Iris/MUSE');
 });
 
 it('advertises server role eligibility for the newly discoverable backtest and public map',()=>{const vector=getRuntimeProfile('vector');expect(vector.capabilities.find(s=>s.id==='skill_vector_backtest')?.requiredRoles).toContain('CITY_EXPERT');expect(vector.capabilities.find(s=>s.id==='skill_map_display')?.requiredRoles).toContain('PUBLIC_VIEWER');expect(vector.capabilities.find(s=>s.id==='skill_spatial_early_warning')?.requiredRoles).not.toContain('PUBLIC_VIEWER');});

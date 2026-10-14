@@ -33,7 +33,7 @@ it('upgrades the originally applied scientific DAG migration without changing hi
     db.close();
 
     expect(() => verifyMigrations(file)).toThrow('Business migrations not applied');
-    expect(migrateDatabase(file)).toEqual({ applied: 1 });
+    expect(migrateDatabase(file)).toEqual({ applied: 3 });
     expect(migrateDatabase(file)).toEqual({ applied: 0 });
     expect(verifyMigrations(file)).toBe(true);
     const upgraded = new Database(file, { readonly: true });

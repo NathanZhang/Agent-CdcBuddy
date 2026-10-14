@@ -11,3 +11,10 @@ it('does not normalize province arguments past server city jurisdiction authoriz
  const result=await executeSkill('skill_monitoring_data_table',{city:'河南省',sql:'SELECT COUNT(*) AS n FROM dim_location'},ctx);
  expect(result.error?.code).toBe('FORBIDDEN_SCOPE');
 });
+it('passes normalized province scope to Python analytics instead of filtering city by the province name',async()=>{
+ const args={from:'2024-01-01',asOf:'2024-12-31'};
+ const full=await executeSkill('skill_pathogen_risk',args,createDevelopmentContext('vector'));
+ const alias=await executeSkill('skill_pathogen_risk',{...args,city:'河南省'},createDevelopmentContext('vector'));
+ expect(full.status).toBe('SUCCESS');expect(alias.status).toBe('SUCCESS');
+ expect((alias.payload as any).data.items).toEqual((full.payload as any).data.items);
+},20000);
