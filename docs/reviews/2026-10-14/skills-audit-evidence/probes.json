@@ -1,0 +1,16 @@
+{
+  "waterMissing": {
+    "status": "SUCCESS",
+    "summary": {
+      "carcinogenicRiskAverage": "nan",
+      "carcinogenicThreshold": "1.00e-06 (可接受基线)",
+      "carcinogenicEvaluation": "轻度风险需要防范",
+      "nonCarcinogenicHqAverage": {
+        "nonfiniteObserved": "NaN"
+      },
+      "hazardQuotientThreshold": 1.0,
+      "nonCarcinogenicEvaluation": "超标 (HQ >= 1.0)"
+    },
+    "serializationError": "Out of range float values are not JSON compliant: nan"
+  }
+}

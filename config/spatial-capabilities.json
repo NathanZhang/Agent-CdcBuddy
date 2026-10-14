@@ -202,6 +202,21 @@
       "disposition": "non-spatial",
       "renderings": [],
       "reason": "Dictionary coding candidates contain no geographical observations."
+    },
+    "scientific-artifact-foundation-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Server scientific artifact contracts and reviewed measurement normalization; rendering is a separate adapter."
+    },
+    "persistent-scientific-dag-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Persistent typed scientific artifacts; map publishing is a separate authorized adapter."
+    },
+    "artifact-scientific-kernels-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Persistent typed scientific artifacts; map publishing is a separate authorized adapter."
     }
   }
 }

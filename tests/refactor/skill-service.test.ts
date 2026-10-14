@@ -67,6 +67,7 @@ describe('one execution service',()=>{
         expect(d.domain).toBe(domain);expect(d.inputSchema.type).toBe('object');expect(d.outputSchema.type).toBe('object');
         if(d.availability==='planned') {const result=await executeSkill(d.id,{},context(domain));expect(result.status).toBe('FAILED');expect(result.error?.code).toBe('CAPABILITY_UNAVAILABLE');}
         else {
+          if(['scientific-artifact-foundation-v1','persistent-scientific-dag-v1','artifact-scientific-kernels-v1'].includes(d.method)){const r=await executeSkill(d.id,{},context(domain));expect(r.error?.code).toBe('INVALID_INPUT');continue;}
           if(['skill_approval_decision','skill_retest_submit','skill_daemon_surveillance'].includes(d.id)){const r=await executeSkill(d.id,{},context(domain));expect(r.status).toBe('FAILED');expect(r.error?.code).toBe('INVALID_INPUT');continue;}
           const tables={vector:'fact_monitoring',env:'fact_water_monitoring',foodborne:'fact_foodborne_case',chronic:'fact_death_registry'};
           const sql=`SELECT COUNT(*) AS n FROM ${tables[domain]}`;

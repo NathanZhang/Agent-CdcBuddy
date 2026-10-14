@@ -1,0 +1,4 @@
+{
+  "monitoringSnapshotsUnchangedSincePhaseOne": true,
+  "businessDatabaseComparison": "Business database is live state; only isolated regression before/after invariance is asserted."
+}

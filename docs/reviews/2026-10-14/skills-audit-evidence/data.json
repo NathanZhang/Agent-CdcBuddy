@@ -1,0 +1,563 @@
+{
+  "vector": {
+    "dim_date": {
+      "count": 1319,
+      "columns": [
+        "date_id",
+        "year",
+        "month",
+        "day",
+        "season"
+      ],
+      "date_idRange": [
+        "2020-01-02",
+        "2025-11-11"
+      ]
+    },
+    "dim_location": {
+      "count": 2037,
+      "columns": [
+        "location_id",
+        "district_code",
+        "province",
+        "city",
+        "district",
+        "street",
+        "address",
+        "latitude",
+        "longitude"
+      ],
+      "latitudeNulls": 6,
+      "longitudeNulls": 6
+    },
+    "dim_species": {
+      "count": 109,
+      "columns": [
+        "species_id",
+        "category",
+        "species_name",
+        "latin_name"
+      ]
+    },
+    "dim_method": {
+      "count": 23,
+      "columns": [
+        "method_id",
+        "method_name"
+      ]
+    },
+    "dim_environment": {
+      "count": 967,
+      "columns": [
+        "environment_id",
+        "environment_type"
+      ]
+    },
+    "dim_audit": {
+      "count": 1057,
+      "columns": [
+        "audit_id",
+        "audit_status",
+        "city_auditor",
+        "city_opinion",
+        "city_time",
+        "provincial_auditor",
+        "provincial_opinion",
+        "provincial_time",
+        "national_auditor",
+        "national_opinion",
+        "national_time"
+      ]
+    },
+    "dim_pathogen": {
+      "count": 133,
+      "columns": [
+        "pathogen_id",
+        "pathogen_name"
+      ]
+    },
+    "dim_pesticide": {
+      "count": 31,
+      "columns": [
+        "pesticide_id",
+        "pesticide_name",
+        "english_name"
+      ]
+    },
+    "fact_monitoring": {
+      "count": 48530,
+      "columns": [
+        "monitoring_id",
+        "date_id",
+        "location_id",
+        "species_id",
+        "method_id",
+        "environment_id",
+        "audit_id",
+        "capture_count",
+        "female_count",
+        "male_count",
+        "undetermined_count",
+        "larvae_count",
+        "nymph_count",
+        "adult_count",
+        "weather_temp",
+        "weather_humidity",
+        "weather_wind",
+        "weather_condition",
+        "sampling_unit",
+        "remarks",
+        "source_file"
+      ],
+      "date_idRange": [
+        "2020-01-02",
+        "2025-11-11"
+      ],
+      "sampling_unitNulls": 15813,
+      "weather_tempNulls": 0,
+      "weather_humidityNulls": 0
+    },
+    "fact_pathogen_detection": {
+      "count": 7336,
+      "columns": [
+        "detection_id",
+        "monitoring_id",
+        "location_id",
+        "date_id",
+        "species_id",
+        "pathogen_id",
+        "pcr_result",
+        "cq_value",
+        "tested_count",
+        "positive_groups",
+        "total_groups",
+        "detection_method",
+        "remarks",
+        "source_file"
+      ],
+      "date_idRange": [
+        "2021-01-13",
+        "2025-10-23"
+      ]
+    },
+    "fact_insecticide_resistance": {
+      "count": 365,
+      "columns": [
+        "resistance_id",
+        "species_id",
+        "pesticide_id",
+        "location_id",
+        "date_id",
+        "lc50",
+        "lc50_ci",
+        "lc95",
+        "lc95_ci",
+        "slope_b",
+        "control_mortality",
+        "corrected_mortality",
+        "resistance_level",
+        "test_temp",
+        "test_humidity",
+        "source_file"
+      ],
+      "date_idRange": [
+        "2020-07-09",
+        "2025-11-05"
+      ]
+    }
+  },
+  "foodborne": {
+    "dim_food_category": {
+      "count": 9,
+      "columns": [
+        "category_id",
+        "category_name",
+        "description",
+        "risk_weight"
+      ]
+    },
+    "dim_pathogen_type": {
+      "count": 7,
+      "columns": [
+        "pathogen_id",
+        "pathogen_name",
+        "category",
+        "clinical_features",
+        "primary_vehicle"
+      ]
+    },
+    "dim_hospital": {
+      "count": 13,
+      "columns": [
+        "hospital_id",
+        "hospital_name",
+        "city",
+        "district",
+        "grade"
+      ]
+    },
+    "dim_location": {
+      "count": 155,
+      "columns": [
+        "city_code",
+        "city_name",
+        "district_name"
+      ]
+    },
+    "fact_foodborne_case": {
+      "count": 3292,
+      "columns": [
+        "case_id",
+        "patient_name",
+        "gender",
+        "age",
+        "occupation",
+        "hospital_id",
+        "visit_date",
+        "symptom_onset_time",
+        "incubation_hours",
+        "main_symptoms",
+        "stool_character",
+        "dining_place_type",
+        "suspected_food",
+        "food_category_id",
+        "pathogen_id",
+        "is_pathogen_positive",
+        "city",
+        "district",
+        "cluster_id"
+      ],
+      "visit_dateRange": [
+        "2024-01-02",
+        "2026-08-31"
+      ]
+    },
+    "fact_pathogen_molecular": {
+      "count": 432,
+      "columns": [
+        "isolate_id",
+        "case_id",
+        "sampling_id",
+        "pathogen_id",
+        "pathogen_name",
+        "serotype",
+        "pfge_pattern",
+        "mlst_st",
+        "cgmlst_vector",
+        "isolation_source",
+        "isolation_date",
+        "city",
+        "district",
+        "is_outbreak_isolate",
+        "cluster_id"
+      ],
+      "isolation_dateRange": [
+        "2024-01-05",
+        "2026-08-29"
+      ]
+    },
+    "fact_food_sampling": {
+      "count": 1200,
+      "columns": [
+        "sample_id",
+        "sample_name",
+        "food_category_id",
+        "sample_date",
+        "sampling_stage",
+        "sampling_location",
+        "city",
+        "district",
+        "detected_pathogen_id",
+        "pathogen_count_cfu_g",
+        "standard_limit",
+        "conclusion"
+      ]
+    },
+    "fact_outbreak_event": {
+      "count": 4,
+      "columns": [
+        "cluster_id",
+        "event_title",
+        "city",
+        "district",
+        "venue_type",
+        "venue_name",
+        "start_time",
+        "end_time",
+        "case_count",
+        "hospitalized_count",
+        "attack_rate",
+        "confirmed_pathogen",
+        "suspected_food",
+        "cgmlst_similarity_rate",
+        "trace_conclusion",
+        "disposal_status"
+      ]
+    }
+  },
+  "env": {
+    "dim_env_stations": {
+      "count": 465,
+      "columns": [
+        "station_id",
+        "station_name",
+        "station_type",
+        "city",
+        "district",
+        "address",
+        "latitude",
+        "longitude",
+        "coverage_population",
+        "created_at"
+      ],
+      "latitudeNulls": 0,
+      "longitudeNulls": 0
+    },
+    "fact_water_monitoring": {
+      "count": 4662,
+      "columns": [
+        "record_id",
+        "station_id",
+        "city",
+        "district",
+        "water_source",
+        "sample_type",
+        "disinfection_method",
+        "turbidity",
+        "free_chlorine",
+        "cod_mn",
+        "total_coliforms",
+        "bacterial_count",
+        "lead_val",
+        "cadmium_val",
+        "arsenic_val",
+        "fluoride_val",
+        "chloroform_val",
+        "is_standard_met",
+        "exceeded_indexes",
+        "carcinogenic_risk",
+        "hazard_quotient",
+        "monitoring_date"
+      ],
+      "monitoring_dateRange": [
+        "2024-01-01",
+        "2026-08-31"
+      ],
+      "carcinogenic_riskNulls": 0,
+      "hazard_quotientNulls": 0
+    },
+    "fact_sewage_monitoring": {
+      "count": 9300,
+      "columns": [
+        "record_id",
+        "plant_id",
+        "plant_name",
+        "city",
+        "district",
+        "drainage_zone",
+        "daily_flow_m3",
+        "sars_cov2_copies_l",
+        "norovirus_copies_l",
+        "enterovirus_copies_l",
+        "sentinel_hospital_cases",
+        "lag_days_corr",
+        "trace_suspected_subzone",
+        "alert_level",
+        "monitoring_date"
+      ],
+      "monitoring_dateRange": [
+        "2025-07-14",
+        "2026-08-31"
+      ]
+    },
+    "fact_air_climate_monitoring": {
+      "count": 3600,
+      "columns": [
+        "record_id",
+        "station_id",
+        "city",
+        "district",
+        "date",
+        "pm25",
+        "pm10",
+        "o3_8h",
+        "no2",
+        "so2",
+        "co",
+        "aqi",
+        "air_quality_level",
+        "temp_max",
+        "temp_min",
+        "humidity_avg",
+        "extreme_weather_flag",
+        "pediatric_resp_outpatient",
+        "elderly_cardio_outpatient",
+        "lag_risk_relative",
+        "early_warning_issued"
+      ]
+    },
+    "fact_river_basin_monitoring": {
+      "count": 96,
+      "columns": [
+        "record_id",
+        "basin_id",
+        "basin_name",
+        "section_name",
+        "city",
+        "district",
+        "water_pb",
+        "water_cd",
+        "soil_cd",
+        "crop_pb",
+        "enrichment_factor",
+        "spatial_autocorr_cluster",
+        "hepatic_cancer_incidence",
+        "monitoring_date"
+      ],
+      "monitoring_dateRange": [
+        "2026-07-20",
+        "2026-07-20"
+      ]
+    },
+    "fact_public_venue_inspection": {
+      "count": 80,
+      "columns": [
+        "venue_id",
+        "venue_name",
+        "venue_type",
+        "city",
+        "district",
+        "chlorine_residual",
+        "coliform_detected",
+        "microclimate_score",
+        "hygiene_manage_score",
+        "dynamic_rating",
+        "inspection_date"
+      ]
+    },
+    "fact_env_alerts": {
+      "count": 0,
+      "columns": [
+        "alert_id",
+        "title",
+        "level",
+        "category",
+        "city",
+        "district",
+        "address",
+        "latitude",
+        "longitude",
+        "trigger_reason",
+        "current_value",
+        "threshold_value",
+        "affected_population",
+        "disposal_suggestion",
+        "status",
+        "resolved_date",
+        "created_at"
+      ],
+      "latitudeNulls": 0,
+      "longitudeNulls": 0
+    }
+  },
+  "chronic": {
+    "dim_districts": {
+      "count": 155,
+      "columns": [
+        "district_id",
+        "city",
+        "district",
+        "latitude",
+        "longitude",
+        "population"
+      ],
+      "latitudeNulls": 0,
+      "longitudeNulls": 0
+    },
+    "fact_death_registry": {
+      "count": 8500,
+      "columns": [
+        "death_cert_id",
+        "patient_name",
+        "gender",
+        "age",
+        "city",
+        "district",
+        "death_date",
+        "cause_chain_a",
+        "cause_chain_b",
+        "cause_chain_c",
+        "cause_chain_d",
+        "underlying_cause",
+        "icd10_code",
+        "icd10_category",
+        "ypll",
+        "is_premature_death_4q70",
+        "qc_status"
+      ],
+      "death_dateRange": [
+        "2024-01-01",
+        "2026-08-19"
+      ]
+    },
+    "fact_chronic_cases": {
+      "count": 12000,
+      "columns": [
+        "case_id",
+        "patient_name",
+        "gender",
+        "age",
+        "city",
+        "district",
+        "disease_name",
+        "diagnosed_date",
+        "blood_pressure_systolic",
+        "blood_pressure_diastolic",
+        "fasting_glucose",
+        "bmi",
+        "smoking_status",
+        "family_history",
+        "complications",
+        "cardiovascular_10yr_risk",
+        "screening_roi"
+      ]
+    },
+    "fact_injury_surveillance": {
+      "count": 5000,
+      "columns": [
+        "injury_id",
+        "patient_name",
+        "gender",
+        "age",
+        "city",
+        "district",
+        "injury_time",
+        "injury_place",
+        "injury_type",
+        "injury_cause_factor",
+        "injury_severity",
+        "is_cluster"
+      ],
+      "injury_timeRange": [
+        "2024-01-01 10:26:00",
+        "2026-08-18 21:30:00"
+      ]
+    },
+    "fact_chronic_alerts": {
+      "count": 3,
+      "columns": [
+        "alert_id",
+        "title",
+        "level",
+        "category",
+        "city",
+        "district",
+        "trigger_reason",
+        "metrics_value",
+        "threshold",
+        "status",
+        "created_at"
+      ]
+    }
+  }
+}

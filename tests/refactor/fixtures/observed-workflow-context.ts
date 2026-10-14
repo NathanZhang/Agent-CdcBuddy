@@ -3,8 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Database from 'better-sqlite3';
 import {readDatasetLocations} from '@/infrastructure/db/dataset-manifest';
+import {loadDatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
 export function observedWorkflowFixture(directory:string):()=>void {
  const previous=process.env.DATASET_MANIFEST_PATH;
+ const previousBindings=process.env.DATASET_REGION_BINDINGS_PATH;
  const rows=readDatasetLocations();const source=rows.find(r=>r.domain==='vector')!;
  const file=path.join(directory,'observed-contract.db'),manifest=path.join(directory,'observed-contract.json');
  const db=new Database(file);
@@ -13,8 +15,12 @@ export function observedWorkflowFixture(directory:string):()=>void {
  }finally{db.close();}
  fs.writeFileSync(manifest,JSON.stringify(rows.map(row=>({...row,path:path.resolve(path.dirname(previous??path.join(process.cwd(),'config/datasets.json')),row.path),...(row.domain==='vector'?{origin:'observed',path:file}: {})}))));
  process.env.DATASET_MANIFEST_PATH=manifest;
+ const bindings=Object.fromEntries(rows.map(row=>[row.domain,loadDatasetRegionBindings(row.domain,row.version)]));
+ bindings.vector={...bindings.vector,mappingVersion:'isolated-observed-policy-v1',regions:[{code:'410000'},{code:'410100',city:'郑州市'},{code:'410105',city:'郑州市',district:'金水区'}]};
+ const bindingFile=path.join(directory,'bindings.json');fs.writeFileSync(bindingFile,JSON.stringify(bindings));
+ process.env.DATASET_REGION_BINDINGS_PATH=bindingFile;
  // The version and source spellings remain the existing binding fixture's;
  // the test source itself is entirely isolated from demo/observed deployments.
  if(!source)throw Error('Missing vector fixture metadata');
- return ()=>{if(previous===undefined)delete process.env.DATASET_MANIFEST_PATH;else process.env.DATASET_MANIFEST_PATH=previous;};
+ return ()=>{if(previous===undefined)delete process.env.DATASET_MANIFEST_PATH;else process.env.DATASET_MANIFEST_PATH=previous;if(previousBindings===undefined)delete process.env.DATASET_REGION_BINDINGS_PATH;else process.env.DATASET_REGION_BINDINGS_PATH=previousBindings;};
 }

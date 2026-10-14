@@ -218,6 +218,7 @@ export interface BizCustomSkill {
   category: string;
   sql_query: string;
   chart_type: string;
+  visualization_json?: string | null;
   recommended_prompts: string;
   visibility?: 'private' | 'public';
   created_by: string;

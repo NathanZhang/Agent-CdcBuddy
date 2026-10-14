@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/map-layers.test.ts (3 tests) 16ms
+ ✓ tests/refactor/map-composer.test.ts (2 tests) 14ms
+ ✓ tests/refactor/spatial-runtime-coverage.test.ts (1 test) 10524ms
+   ✓ requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering  10523ms
+
+ Test Files  3 passed (3)
+      Tests  6 passed (6)
+   Start at  12:21:11
+   Duration  11.12s (transform 245ms, setup 0ms, collect 697ms, tests 10.55s, environment 0ms, prepare 106ms)
+

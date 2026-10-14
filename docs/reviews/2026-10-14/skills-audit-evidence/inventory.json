@@ -1,0 +1,7138 @@
+{
+  "vector": [
+    {
+      "id": "skill_population_dynamics",
+      "aliases": [
+        "population_dynamics"
+      ],
+      "domain": "vector",
+      "name": "按采样方法的月捕获量自回归预测",
+      "description": "按采样方法的月捕获量自回归预测；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        23
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "category": {
+            "enum": [
+              "蚊",
+              "蝇",
+              "蟑螂",
+              "鼠",
+              "蜱",
+              "恙螨"
+            ]
+          },
+          "speciesName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "dataWindow": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "forecastMonths": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 24
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "autoregression-seasonal-capture-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_species_composition",
+      "aliases": [
+        "species_clustering",
+        "species_composition"
+      ],
+      "domain": "vector",
+      "name": "物种构成、多样性与探索性 K-Means",
+      "description": "物种构成、多样性与探索性 K-Means；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        24
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "蚊",
+              "蝇",
+              "蟑螂",
+              "鼠",
+              "蜱",
+              "恙螨"
+            ]
+          },
+          "year": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2100
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "methodName": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "method-separated-kmeans-capture-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_resistance_evaluation",
+      "aliases": [
+        "resistance_prediction",
+        "resistance_evaluation"
+      ],
+      "domain": "vector",
+      "name": "抗药性实测记录查询（无模型推断）",
+      "description": "抗药性实测记录查询（无模型推断）；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        25
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "speciesName": {
+            "type": "string"
+          },
+          "pesticideName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "observed-bioassay-records-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_pathogen_risk",
+      "aliases": [
+        "pathogen_apriori",
+        "pathogen_risk"
+      ],
+      "domain": "vector",
+      "name": "PCR 检测比例与两项关联规则",
+      "description": "PCR 检测比例与两项关联规则；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        26
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "speciesName": {
+            "type": "string"
+          },
+          "pathogenName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "pcr-record-pair-association-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_spatial_early_warning",
+      "aliases": [],
+      "domain": "vector",
+      "name": "监测捕获量 IDW 插值（不生成疾病预警）",
+      "description": "监测捕获量 IDW 插值（不生成疾病预警）；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        27
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "category": {
+            "enum": [
+              "蚊",
+              "蝇",
+              "蟑螂",
+              "鼠",
+              "蜱",
+              "恙螨"
+            ]
+          },
+          "methodName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "observed-capture-idw-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_alert_push_dispatch",
+      "aliases": [],
+      "domain": "vector",
+      "name": "分级预警依据与多渠道推送",
+      "description": "按照风险等级（一般/较重/严重）自动分类预警，生成标准化通知卡片与推送到对应层级单位的依据。",
+      "requirementIds": [
+        28
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "yellow",
+              "orange",
+              "red",
+              "all"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_disposal_workflow",
+      "aliases": [],
+      "domain": "vector",
+      "name": "消杀处置闭环与工单流转管理",
+      "description": "针对预警智能生成标准化处置建议与操作指南（如\"翻盆倒罐+空间喷雾\"），跟踪消杀进度并自动核销预警。",
+      "requirementIds": [
+        29
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "alertId": {
+            "type": "string",
+            "description": "预警事件ID"
+          },
+          "actionType": {
+            "type": "string",
+            "description": "处置措施类型"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_density_forecast",
+      "aliases": [],
+      "domain": "vector",
+      "name": "按采样方法的捕获量 GBDT 预测",
+      "description": "按采样方法的捕获量 GBDT 预测；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        30
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "category": {
+            "enum": [
+              "蚊",
+              "蝇",
+              "蟑螂",
+              "鼠",
+              "蜱",
+              "恙螨"
+            ]
+          },
+          "speciesName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "dataWindow": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "forecastMonths": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 24
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "gradient-boosting-capture-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_transmission_risk",
+      "aliases": [],
+      "domain": "vector",
+      "name": "传播风险输入统计（模型尚未验证）",
+      "description": "传播风险输入统计（模型尚未验证）；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        31
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "diseaseName": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "observed-transmission-inputs-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_resistance_evolution",
+      "aliases": [],
+      "domain": "vector",
+      "name": "抗药性基因演化与耐药暴发预测",
+      "description": "基于历史抗药性数据与杀虫剂年使用频次，通过贝叶斯网络模型预测未来 1 年内耐药基因频率演化，提前预警抗性暴发。",
+      "requirementIds": [
+        32
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "speciesName": {
+            "type": "string"
+          },
+          "pesticideName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_vector_nlq",
+      "aliases": [],
+      "domain": "vector",
+      "name": "CDC 专家知识库与数据智能问答 (NLQ)",
+      "description": "整合国家病媒生物监测规范 (GB/T)、病媒物种鉴别要点与数据库 Text2SQL，实现自然语言精准解答。",
+      "requirementIds": [
+        33
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "用户问答文本"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_auto_report_gen",
+      "aliases": [],
+      "domain": "vector",
+      "name": "全域监测与风险专题报告生成器",
+      "description": "自动提取全域时空监测数据、异常预警指标、生成多维图表与专家分析综述，支持病媒生物、环境健康等领域的专题公报与月度专报导出。",
+      "requirementIds": [
+        34
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_mobile_assistant_api",
+      "aliases": [],
+      "domain": "vector",
+      "name": "移动端现场采集识别与智能质控 API",
+      "description": "提供移动端 REST API：现场拍照物种识别模拟、自动填单、气温与生境数据合理性实时校验。",
+      "requirementIds": [
+        35
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "simulate_capture",
+              "validate_form",
+              "api_docs"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_meta_custom_builder",
+      "aliases": [],
+      "domain": "vector",
+      "name": "病媒对话式自定义技能构建器 (Meta-Skill Builder)",
+      "description": "根据病媒生物监测与消杀分析需求，动态构建专属 SQL 分析逻辑与 AG-UI 可视化卡片，注册至病媒技能库中即刻可用。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skillName",
+          "sqlQuery"
+        ],
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "sqlQuery": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "description": {
+            "type": "string"
+          },
+          "chartType": {
+            "enum": [
+              "trend",
+              "bar",
+              "pie",
+              "map",
+              "table"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "skill",
+          "previewData"
+        ],
+        "properties": {
+          "type": {
+            "const": "CUSTOM_SKILL_CREATED"
+          },
+          "skill": {
+            "type": "object",
+            "required": [
+              "id",
+              "domain",
+              "sqlQuery"
+            ]
+          },
+          "previewData": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "validated-custom-skill-create-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_monitoring_data_table",
+      "aliases": [],
+      "domain": "vector",
+      "name": "病媒监测明细数据表查询 (Text2SQL)",
+      "description": "支持按地市、区县、年份、病媒大类多维度检索病媒监测原始数据库并基于 Text2SQL 以交互式表格展示。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "description": "执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。",
+        "additionalProperties": false,
+        "required": [
+          "sql"
+        ],
+        "properties": {
+          "visualization": {
+            "description": "根据用户要求选择图形，字段键必须与本次SQL结果列名完全一致。bar为分组柱状图，line为按日期排序的时间折线图，map为点位地图（实际经纬度、点位标签与数值）。所有图形同时附明细表，无需重复查询。unit填写实际指标单位。",
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "regionCodeKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "regionCodeKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "xKey",
+                  "yKey",
+                  "unit"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "bar",
+                      "line"
+                    ]
+                  },
+                  "xKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "yKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "latKey",
+                  "lonKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "latKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "lonKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "idKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。"
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "sourceCRS": {
+                    "enum": [
+                      "EPSG:4326",
+                      "EPSG:4490"
+                    ],
+                    "description": "通常省略，由服务端根据数据源登记的坐标系绑定。只有明确取得该数据源的坐标系证据时才填写，不能根据行政边界或地名猜测。"
+                  }
+                }
+              }
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。病媒 fact_monitoring.date_id 是 YYYY-MM-DD 格式的日期文本，可直接 MIN(f.date_id)/MAX(f.date_id)；无需关联日期维表或拼接 year/month/day，以免未补零的文本排序导致错误日期范围。按实际点位汇总时必须按点位主键（如dim_location.location_id）GROUP BY，并SELECT该主键、在地图visualization.idKey指定；不能仅按街道和坐标合并不同点位。单位为只/记录时，COUNT(*)表示事实记录次数，应注明不能等同于独立采样访次。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "query": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "description": "只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "DATA_TABLE_VIEW"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "method": "bounded-domain-query-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_satscan_spatial",
+      "aliases": [],
+      "domain": "vector",
+      "name": "近似圆形空间扫描（非完整 SaTScan）",
+      "description": "近似圆形空间扫描（非完整 SaTScan）；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "category": {
+            "enum": [
+              "蚊",
+              "蝇",
+              "蟑螂",
+              "鼠",
+              "蜱",
+              "恙螨"
+            ]
+          },
+          "methodName": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2100
+          },
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "numSimulations": {
+            "type": "integer",
+            "minimum": 19,
+            "maximum": 999
+          },
+          "pThreshold": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 0.1
+          },
+          "maxClusterRadiusKm": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 500
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "conditional-poisson-circular-scan-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_lstm_predictor",
+      "aliases": [],
+      "domain": "vector",
+      "name": "LSTM 深度时序外推预测模型",
+      "description": "采用 4 门控递归神经网络 (LSTM) 结合历史监测序列与温湿度特征，滚动预测重点地市未来 7~14 天日级密度走势与 95% 带状置信区间扩散范围，自动识别暴发峰值并提示红线预警。",
+      "requirementIds": [],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "目标地市名称 (如 郑州市, 信阳市)"
+          },
+          "targetCities": {
+            "type": "array",
+            "description": "多地市列表"
+          },
+          "category": {
+            "type": "string",
+            "description": "病媒种类 (蚊, 蝇, 蟑螂, 鼠)",
+            "default": "蚊"
+          },
+          "forecastDays": {
+            "type": "number",
+            "description": "预测天数 (7~14 天)",
+            "default": 7
+          },
+          "startDateStr": {
+            "type": "string",
+            "description": "预测起始日期 (YYYY-MM-DD)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_satscan_kmeans_lstm",
+      "aliases": [],
+      "domain": "vector",
+      "name": "SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线",
+      "description": "采用 LangGraph 状态图执行级联计算：调用 SaTScan 泊松时空扫描识别聚集簇，经 K-Means 生态特征亚群画像后，将高危区域导入 LSTM 进行未来 7 天时序趋势与置信区间外推预测。",
+      "requirementIds": [],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "description": "分析目标年份 (默认 2022)",
+            "default": 2022
+          },
+          "month": {
+            "type": "number",
+            "description": "分析目标月份 (1~12，默认 3)",
+            "default": 3
+          },
+          "category": {
+            "type": "string",
+            "description": "病媒种类 (蚊, 蝇, 蟑螂, 鼠)",
+            "default": "蚊"
+          },
+          "forecastDays": {
+            "type": "number",
+            "description": "LSTM 预测天数 (默认 7 天)",
+            "default": 7
+          },
+          "pThreshold": {
+            "type": "number",
+            "description": "SaTScan 显著性 p 阈值 (默认 0.05)",
+            "default": 0.05
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_composable_workflow",
+      "aliases": [],
+      "domain": "vector",
+      "name": "通用多技能动态协同工作流 (LangGraph Composable)",
+      "description": "支持将系统内任意多项 Skill（如 SaTScan 扫描、病原 PCR 关联、抗药性演化、消杀派单、专题公报）通过 LangGraph 动态编排为链式协同流水线，实现上下文无缝传递与联合研判。",
+      "requirementIds": [],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "workflowName": {
+            "type": "string",
+            "description": "工作流名称"
+          },
+          "steps": {
+            "type": "array",
+            "description": "步骤定义列表"
+          },
+          "initialContext": {
+            "type": "object",
+            "description": "初始上下文参数"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_vector_backtest",
+      "aliases": [
+        "vector_backtest"
+      ],
+      "domain": "vector",
+      "requirementIds": [
+        23,
+        30
+      ],
+      "availability": "available",
+      "name": "病媒捕获量滚动回测与季节基线对照",
+      "description": "病媒捕获量滚动回测与季节基线对照；使用实际数据计算，结果与方法限制一并呈现。",
+      "method": "rolling-past-origin-capture-backtest-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "asOf": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "methodName": {
+            "type": "string"
+          },
+          "horizon": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "model": {
+            "enum": [
+              "ar",
+              "gbdt"
+            ]
+          },
+          "dataWindow": {
+            "type": "integer",
+            "minimum": 24,
+            "maximum": 120
+          }
+        },
+        "required": [
+          "asOf"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_session_manage",
+      "name": "用户对话会话管理（不是领域监测数据查询）",
+      "aliases": [],
+      "domain": "vector",
+      "description": "用户对话会话管理（不是领域监测数据查询）",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "create",
+              "list",
+              "read",
+              "update",
+              "delete",
+              "clear"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "isPinned": {
+            "type": "boolean"
+          },
+          "keyword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "read",
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sessionId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_session_journal",
+      "name": "内部会话运行记录",
+      "aliases": [],
+      "domain": "vector",
+      "description": "内部会话运行记录",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_journal-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRunId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "write"
+      ],
+      "visibility": "internal",
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_collection_manage",
+      "name": "现场采集质控与提交（人工物种录入）",
+      "aliases": [],
+      "domain": "vector",
+      "description": "现场采集质控与提交（人工物种录入）",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_collection_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "form",
+              "validate",
+              "submit"
+            ]
+          },
+          "record": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "city",
+              "district",
+              "category",
+              "speciesName",
+              "captureCount"
+            ],
+            "properties": {
+              "city": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "district": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "category": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "speciesName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "captureCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "weatherTemp": {
+                "type": "number",
+                "minimum": -80,
+                "maximum": 70
+              },
+              "weatherHumidity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "latitude": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "longitude": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "street": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "habitatType": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "methodName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "validate",
+                    "submit"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "record"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "COLLECTION_RESULT",
+              "COLLECTION_FORM"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_catalog_manage",
+      "name": "技能列表、编辑与删除",
+      "aliases": [],
+      "domain": "vector",
+      "description": "技能列表、编辑与删除",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_catalog_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "list",
+              "update",
+              "delete"
+            ]
+          },
+          "skillId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "sqlQuery": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "chartType": {
+            "enum": [
+              "table",
+              "trend",
+              "bar",
+              "pie",
+              "map"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "recommendedPrompts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "skillId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SKILL_CATALOG"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_artifact_export",
+      "name": "导出真实查询 CSV 或已归档报告 Markdown",
+      "aliases": [],
+      "domain": "vector",
+      "description": "导出真实查询 CSV 或已归档报告 Markdown",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_artifact_export-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "format"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "csv",
+              "markdown"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "reportId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "fileName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceCallId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "csv"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sql"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "markdown"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reportId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "ARTIFACT_DOWNLOAD"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "export"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_daemon_surveillance",
+      "name": "配置周期主线Agent巡检",
+      "description": "配置周期主线Agent巡检；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "vector",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "intervalSec"
+        ],
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "intervalSec": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_job_manage",
+      "name": "提交、读取持久分析任务",
+      "description": "提交、读取持久分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "vector",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "submit",
+              "read",
+              "list"
+            ]
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "submit"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "input"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "jobId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_approval_decision",
+      "name": "专业审批分析任务",
+      "description": "专业审批分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "vector",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "decision"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_retest_submit",
+      "name": "提交已采集的真实复测记录",
+      "description": "提交已采集的真实复测记录；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "vector",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write",
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "sourceRecordId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string"
+          },
+          "sourceRecordId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_inbox_read",
+      "name": "查看已投递站内通知",
+      "description": "查看已投递站内通知；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "vector",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_display",
+      "aliases": [],
+      "domain": "vector",
+      "name": "行政区划地图显示",
+      "description": "独立显示真实行政底图，无需监测数据；地域代码只能从服务器行政目录选择。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "local-administrative-map-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "regionCodes"
+        ],
+        "properties": {
+          "regionCodes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "excludeCodes": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "basemap": {
+            "enum": [
+              "vec",
+              "img"
+            ]
+          },
+          "boundaryLevels": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "province",
+                "city",
+                "county"
+              ]
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "mapId",
+          "resources",
+          "bbox"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_VIEW"
+          },
+          "mapId": {
+            "type": "string"
+          },
+          "resources": {
+            "type": "array",
+            "minItems": 1
+          },
+          "bbox": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_annotation",
+      "aliases": [],
+      "domain": "vector",
+      "name": "地图区域标注",
+      "description": "对已授权真实行政区域添加本轮纯文本标注；不修改观测、不保存持久标注。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "verified-map-annotation-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "annotations"
+        ],
+        "properties": {
+          "annotations": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ],
+              "oneOf": [
+                {
+                  "required": [
+                    "regionCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "coordinates",
+                    "evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "featureRef"
+                  ]
+                }
+              ],
+              "properties": {
+                "regionCode": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6}$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "coordinates": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "evidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "start",
+                    "end",
+                    "quote"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "featureRef": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "runId",
+                    "callId",
+                    "outputId",
+                    "featureId"
+                  ],
+                  "properties": {
+                    "runId": {
+                      "type": "string"
+                    },
+                    "callId": {
+                      "type": "string"
+                    },
+                    "outputId": {
+                      "type": "string"
+                    },
+                    "featureId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "spatialOutputs"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_ANNOTATION"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "inMarketplace": false
+    }
+  ],
+  "foodborne": [
+    {
+      "id": "skill_spatial_early_warning",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "全域时空动态多维预警与地图热力分析",
+      "description": "基于多维度阈值与极端天气触发空间预警，空间插值绘制全省风险热力图，支持病媒、食源、环境、慢病等全领域预警点位空间定位与区县街道下钻。",
+      "requirementIds": [
+        27
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "城市名称"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县名称"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "all",
+              "yellow",
+              "orange",
+              "red"
+            ],
+            "description": "预警等级过滤"
+          },
+          "category": {
+            "type": "string",
+            "description": "病媒种类"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_auto_report_gen",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "全域监测与风险专题报告生成器",
+      "description": "自动提取全域时空监测数据、异常预警指标、生成多维图表与专家分析综述，支持病媒生物、环境健康等领域的专题公报与月度专报导出。",
+      "requirementIds": [
+        41
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_foodborne_cluster_detect",
+      "aliases": [
+        "foodborne_cluster_detect"
+      ],
+      "domain": "foodborne",
+      "name": "病例短时窗共同暴露候选",
+      "description": "病例短时窗共同暴露候选；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        36
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "food-exposure-window-candidates-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_foodborne_risk_forecast",
+      "aliases": [
+        "foodborne_risk_forecast"
+      ],
+      "domain": "foodborne",
+      "name": "食源性风险预测与时序外推模型",
+      "description": "融合历史病例、气象温度与季节因素，构建 LSTM 时间序列模型，预测未来 4 周高风险区域、病原体类型及扩散风险。",
+      "requirementIds": [
+        37
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "地级市名称"
+          },
+          "pathogenType": {
+            "type": "string",
+            "description": "致病菌/病毒名称"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_molecular_trace",
+      "aliases": [
+        "molecular_trace"
+      ],
+      "domain": "foodborne",
+      "name": "cgMLST 距离与单链接候选簇",
+      "description": "cgMLST 距离与单链接候选簇；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        38
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "pathogenId": {
+            "type": "string"
+          },
+          "clusterId": {
+            "type": "string"
+          },
+          "threshold": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "sampleLimit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "allele-distance-single-link-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_food_attribution",
+      "aliases": [
+        "food_attribution"
+      ],
+      "domain": "foodborne",
+      "name": "已报告食品及阳性病例统计",
+      "description": "已报告食品及阳性病例统计；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        38,
+        40
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "topN": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "recorded-food-case-summary-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_outbreak_disposal_advice",
+      "aliases": [
+        "outbreak_disposal_advice"
+      ],
+      "domain": "foodborne",
+      "name": "食源性暴发事件标准化处置建议与协同工单",
+      "description": "针对聚集性暴发事件，推送标准化流调处置流程，智能匹配历史相似处置案例，生成流行病学调查协同指引卡。",
+      "requirementIds": [
+        39
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "clusterId": {
+            "type": "string",
+            "description": "暴发事件编号"
+          },
+          "pathogenName": {
+            "type": "string",
+            "description": "致病菌种"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_foodborne_report_export",
+      "aliases": [
+        "foodborne_report_export"
+      ],
+      "domain": "foodborne",
+      "name": "食源性疾病暴发调查专题公报与简报生成",
+      "description": "自动提取暴发事件关键信息、病例时空消长、致病菌同源溯源图谱与嫌疑食品归因，一键生成图文流调专题公报并支持导出。",
+      "requirementIds": [
+        41
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_foodborne_case_table",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "食源性病例与抽检台账查询 (Text2SQL)",
+      "description": "支持按地市、区县、监测年份、致病菌种及嫌疑食品多维度检索食源性病例与食品安全抽检原始数据库，并基于 Text2SQL 以交互式表格展示。",
+      "requirementIds": [
+        36,
+        40
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "description": "执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。",
+        "additionalProperties": false,
+        "required": [
+          "sql"
+        ],
+        "properties": {
+          "visualization": {
+            "description": "根据用户要求选择图形，字段键必须与本次SQL结果列名完全一致。bar为分组柱状图，line为按日期排序的时间折线图，map为点位地图（实际经纬度、点位标签与数值）。所有图形同时附明细表，无需重复查询。unit填写实际指标单位。",
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "regionCodeKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "regionCodeKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "xKey",
+                  "yKey",
+                  "unit"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "bar",
+                      "line"
+                    ]
+                  },
+                  "xKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "yKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "latKey",
+                  "lonKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "latKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "lonKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "idKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。"
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "sourceCRS": {
+                    "enum": [
+                      "EPSG:4326",
+                      "EPSG:4490"
+                    ],
+                    "description": "通常省略，由服务端根据数据源登记的坐标系绑定。只有明确取得该数据源的坐标系证据时才填写，不能根据行政边界或地名猜测。"
+                  }
+                }
+              }
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。病媒 fact_monitoring.date_id 是 YYYY-MM-DD 格式的日期文本，可直接 MIN(f.date_id)/MAX(f.date_id)；无需关联日期维表或拼接 year/month/day，以免未补零的文本排序导致错误日期范围。按实际点位汇总时必须按点位主键（如dim_location.location_id）GROUP BY，并SELECT该主键、在地图visualization.idKey指定；不能仅按街道和坐标合并不同点位。单位为只/记录时，COUNT(*)表示事实记录次数，应注明不能等同于独立采样访次。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "query": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "description": "只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "DATA_TABLE_VIEW"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "method": "bounded-domain-query-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_foodborne_custom_builder",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "食源性专属自定义技能构建器 (Meta-Skill Builder)",
+      "description": "根据食源性疾病流行病学分析需求，动态构建专属 SQL 分析逻辑与 AG-UI 可视化卡片，注册至食源技能库中即刻可用。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skillName",
+          "sqlQuery"
+        ],
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "sqlQuery": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "description": {
+            "type": "string"
+          },
+          "chartType": {
+            "enum": [
+              "trend",
+              "bar",
+              "pie",
+              "map",
+              "table"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "skill",
+          "previewData"
+        ],
+        "properties": {
+          "type": {
+            "const": "CUSTOM_SKILL_CREATED"
+          },
+          "skill": {
+            "type": "object",
+            "required": [
+              "id",
+              "domain",
+              "sqlQuery"
+            ]
+          },
+          "previewData": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "validated-custom-skill-create-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_session_manage",
+      "name": "用户对话会话管理（不是领域监测数据查询）",
+      "aliases": [],
+      "domain": "foodborne",
+      "description": "用户对话会话管理（不是领域监测数据查询）",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "create",
+              "list",
+              "read",
+              "update",
+              "delete",
+              "clear"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "isPinned": {
+            "type": "boolean"
+          },
+          "keyword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "read",
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sessionId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_session_journal",
+      "name": "内部会话运行记录",
+      "aliases": [],
+      "domain": "foodborne",
+      "description": "内部会话运行记录",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_journal-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRunId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "write"
+      ],
+      "visibility": "internal",
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_catalog_manage",
+      "name": "技能列表、编辑与删除",
+      "aliases": [],
+      "domain": "foodborne",
+      "description": "技能列表、编辑与删除",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_catalog_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "list",
+              "update",
+              "delete"
+            ]
+          },
+          "skillId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "sqlQuery": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "chartType": {
+            "enum": [
+              "table",
+              "trend",
+              "bar",
+              "pie",
+              "map"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "recommendedPrompts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "skillId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SKILL_CATALOG"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_artifact_export",
+      "name": "导出真实查询 CSV 或已归档报告 Markdown",
+      "aliases": [],
+      "domain": "foodborne",
+      "description": "导出真实查询 CSV 或已归档报告 Markdown",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_artifact_export-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "format"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "csv",
+              "markdown"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "reportId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "fileName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceCallId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "csv"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sql"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "markdown"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reportId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "ARTIFACT_DOWNLOAD"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "export"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_daemon_surveillance",
+      "name": "配置周期主线Agent巡检",
+      "description": "配置周期主线Agent巡检；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "foodborne",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "intervalSec"
+        ],
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "intervalSec": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_job_manage",
+      "name": "提交、读取持久分析任务",
+      "description": "提交、读取持久分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "foodborne",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "submit",
+              "read",
+              "list"
+            ]
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "submit"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "input"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "jobId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_approval_decision",
+      "name": "专业审批分析任务",
+      "description": "专业审批分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "foodborne",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "decision"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_retest_submit",
+      "name": "提交已采集的真实复测记录",
+      "description": "提交已采集的真实复测记录；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "foodborne",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write",
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "sourceRecordId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string"
+          },
+          "sourceRecordId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_inbox_read",
+      "name": "查看已投递站内通知",
+      "description": "查看已投递站内通知；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "foodborne",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_display",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "行政区划地图显示",
+      "description": "独立显示真实行政底图，无需监测数据；地域代码只能从服务器行政目录选择。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "local-administrative-map-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "regionCodes"
+        ],
+        "properties": {
+          "regionCodes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "excludeCodes": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "basemap": {
+            "enum": [
+              "vec",
+              "img"
+            ]
+          },
+          "boundaryLevels": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "province",
+                "city",
+                "county"
+              ]
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "mapId",
+          "resources",
+          "bbox"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_VIEW"
+          },
+          "mapId": {
+            "type": "string"
+          },
+          "resources": {
+            "type": "array",
+            "minItems": 1
+          },
+          "bbox": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_annotation",
+      "aliases": [],
+      "domain": "foodborne",
+      "name": "地图区域标注",
+      "description": "对已授权真实行政区域添加本轮纯文本标注；不修改观测、不保存持久标注。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "verified-map-annotation-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "annotations"
+        ],
+        "properties": {
+          "annotations": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ],
+              "oneOf": [
+                {
+                  "required": [
+                    "regionCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "coordinates",
+                    "evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "featureRef"
+                  ]
+                }
+              ],
+              "properties": {
+                "regionCode": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6}$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "coordinates": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "evidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "start",
+                    "end",
+                    "quote"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "featureRef": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "runId",
+                    "callId",
+                    "outputId",
+                    "featureId"
+                  ],
+                  "properties": {
+                    "runId": {
+                      "type": "string"
+                    },
+                    "callId": {
+                      "type": "string"
+                    },
+                    "outputId": {
+                      "type": "string"
+                    },
+                    "featureId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "spatialOutputs"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_ANNOTATION"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "inMarketplace": false
+    }
+  ],
+  "env": [
+    {
+      "id": "skill_spatial_early_warning",
+      "aliases": [],
+      "domain": "env",
+      "name": "全域时空动态多维预警与地图热力分析",
+      "description": "基于多维度阈值与极端天气触发空间预警，空间插值绘制全省风险热力图，支持病媒、食源、环境、慢病等全领域预警点位空间定位与区县街道下钻。",
+      "requirementIds": [
+        27
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "城市名称"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县名称"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "all",
+              "yellow",
+              "orange",
+              "red"
+            ],
+            "description": "预警等级过滤"
+          },
+          "category": {
+            "type": "string",
+            "description": "病媒种类"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_auto_report_gen",
+      "aliases": [],
+      "domain": "env",
+      "name": "全域监测与风险专题报告生成器",
+      "description": "自动提取全域时空监测数据、异常预警指标、生成多维图表与专家分析综述，支持病媒生物、环境健康等领域的专题公报与月度专报导出。",
+      "requirementIds": [
+        56
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_env_ocr_entry",
+      "aliases": [],
+      "domain": "env",
+      "name": "水质与环境单据 OCR 智能录入引擎",
+      "description": "支持水质化验单、空气监测报表与污染源台账的拍照/PDF 智能 OCR 结构化提取与自动校验。",
+      "requirementIds": [
+        42
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_water_safety_eval",
+      "aliases": [],
+      "domain": "env",
+      "name": "实际水质样本统计",
+      "description": "实际水质样本统计；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        44,
+        45
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "observed-water-summary-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_sewage_pathogen_trace",
+      "aliases": [],
+      "domain": "env",
+      "name": "污水日历滞后探索统计",
+      "description": "污水日历滞后探索统计；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        46,
+        47
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "pathogen": {
+            "enum": [
+              "诺如病毒",
+              "新冠病毒",
+              "肠道病毒"
+            ]
+          },
+          "maxLag": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "calendar-aligned-pearson-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_air_climate_health_risk",
+      "aliases": [],
+      "domain": "env",
+      "name": "空气污染暴露评估与 72h 极端气候健康预警",
+      "description": "采用 DLNM 分布滞后非线性模型与 GBDT，提前 72 小时针对高温热浪与寒潮重污染触发脆弱人群防护预警。",
+      "requirementIds": [
+        50,
+        51
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_river_basin_pollution_chain",
+      "aliases": [],
+      "domain": "env",
+      "name": "河流浓度统计与可选空间自相关",
+      "description": "河流浓度统计与可选空间自相关；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        52,
+        53
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "basinName": {
+            "type": "string"
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sectionNames",
+              "matrix"
+            ],
+            "properties": {
+              "sectionNames": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 50,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "matrix": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 50,
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "descriptive-metals-moran-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_env_scenario_simulation",
+      "aliases": [],
+      "domain": "env",
+      "name": "环境干预政策健康效益量化情景推演",
+      "description": "模拟工业排污削减、应急减排或水源切换方案下的健康效益与疾病负担降幅量化推演。",
+      "requirementIds": [
+        57
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_env_monitoring_table",
+      "aliases": [],
+      "domain": "env",
+      "name": "环境水质与空气监测数据表查询 (Text2SQL)",
+      "description": "支持按地市、区县、水厂监测点及空气监测站点检索环境健康原始数据库，并基于 Text2SQL 以交互式表格展示。",
+      "requirementIds": [
+        44,
+        50
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "description": "执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。",
+        "additionalProperties": false,
+        "required": [
+          "sql"
+        ],
+        "properties": {
+          "visualization": {
+            "description": "根据用户要求选择图形，字段键必须与本次SQL结果列名完全一致。bar为分组柱状图，line为按日期排序的时间折线图，map为点位地图（实际经纬度、点位标签与数值）。所有图形同时附明细表，无需重复查询。unit填写实际指标单位。",
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "regionCodeKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "regionCodeKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "xKey",
+                  "yKey",
+                  "unit"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "bar",
+                      "line"
+                    ]
+                  },
+                  "xKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "yKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "latKey",
+                  "lonKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "latKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "lonKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "idKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。"
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "sourceCRS": {
+                    "enum": [
+                      "EPSG:4326",
+                      "EPSG:4490"
+                    ],
+                    "description": "通常省略，由服务端根据数据源登记的坐标系绑定。只有明确取得该数据源的坐标系证据时才填写，不能根据行政边界或地名猜测。"
+                  }
+                }
+              }
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。病媒 fact_monitoring.date_id 是 YYYY-MM-DD 格式的日期文本，可直接 MIN(f.date_id)/MAX(f.date_id)；无需关联日期维表或拼接 year/month/day，以免未补零的文本排序导致错误日期范围。按实际点位汇总时必须按点位主键（如dim_location.location_id）GROUP BY，并SELECT该主键、在地图visualization.idKey指定；不能仅按街道和坐标合并不同点位。单位为只/记录时，COUNT(*)表示事实记录次数，应注明不能等同于独立采样访次。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "query": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "description": "只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "DATA_TABLE_VIEW"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "method": "bounded-domain-query-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_env_custom_builder",
+      "aliases": [],
+      "domain": "env",
+      "name": "环境健康专属自定义技能构建器 (Meta-Skill Builder)",
+      "description": "根据环境健康风险研判需求，动态构建专属水质/空气分析逻辑与 AG-UI 可视化卡片，注册至环境健康技能库中。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skillName",
+          "sqlQuery"
+        ],
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "sqlQuery": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "description": {
+            "type": "string"
+          },
+          "chartType": {
+            "enum": [
+              "trend",
+              "bar",
+              "pie",
+              "map",
+              "table"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "skill",
+          "previewData"
+        ],
+        "properties": {
+          "type": {
+            "const": "CUSTOM_SKILL_CREATED"
+          },
+          "skill": {
+            "type": "object",
+            "required": [
+              "id",
+              "domain",
+              "sqlQuery"
+            ]
+          },
+          "previewData": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "validated-custom-skill-create-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_env_early_warning_disposal",
+      "aliases": [],
+      "domain": "env",
+      "name": "环境健康超标预警空间溯源与应急处置闭环",
+      "description": "针对管网末梢水超标、空气重污染持续或流域断面污染等突发环境预警事件，进行空间溯源与危害研判，生成供水管网冲洗排查、污染源排查与易感人群防护处置工单。",
+      "requirementIds": [
+        54,
+        55
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "alertId": {
+            "type": "string",
+            "description": "预警事件编号，如 ALERT-ENV-202608-01"
+          },
+          "city": {
+            "type": "string",
+            "description": "地级市名称，如 郑州市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县名称，如 高新区"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "dispatch",
+              "resolve",
+              "reopen"
+            ],
+            "description": "工单操作类型"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_session_manage",
+      "name": "用户对话会话管理（不是领域监测数据查询）",
+      "aliases": [],
+      "domain": "env",
+      "description": "用户对话会话管理（不是领域监测数据查询）",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "create",
+              "list",
+              "read",
+              "update",
+              "delete",
+              "clear"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "isPinned": {
+            "type": "boolean"
+          },
+          "keyword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "read",
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sessionId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_session_journal",
+      "name": "内部会话运行记录",
+      "aliases": [],
+      "domain": "env",
+      "description": "内部会话运行记录",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_journal-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRunId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "write"
+      ],
+      "visibility": "internal",
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_catalog_manage",
+      "name": "技能列表、编辑与删除",
+      "aliases": [],
+      "domain": "env",
+      "description": "技能列表、编辑与删除",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_catalog_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "list",
+              "update",
+              "delete"
+            ]
+          },
+          "skillId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "sqlQuery": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "chartType": {
+            "enum": [
+              "table",
+              "trend",
+              "bar",
+              "pie",
+              "map"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "recommendedPrompts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "skillId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SKILL_CATALOG"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_artifact_export",
+      "name": "导出真实查询 CSV 或已归档报告 Markdown",
+      "aliases": [],
+      "domain": "env",
+      "description": "导出真实查询 CSV 或已归档报告 Markdown",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_artifact_export-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "format"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "csv",
+              "markdown"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "reportId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "fileName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceCallId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "csv"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sql"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "markdown"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reportId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "ARTIFACT_DOWNLOAD"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "export"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_daemon_surveillance",
+      "name": "配置周期主线Agent巡检",
+      "description": "配置周期主线Agent巡检；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "env",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "intervalSec"
+        ],
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "intervalSec": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_job_manage",
+      "name": "提交、读取持久分析任务",
+      "description": "提交、读取持久分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "env",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "submit",
+              "read",
+              "list"
+            ]
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "submit"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "input"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "jobId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_approval_decision",
+      "name": "专业审批分析任务",
+      "description": "专业审批分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "env",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "decision"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_retest_submit",
+      "name": "提交已采集的真实复测记录",
+      "description": "提交已采集的真实复测记录；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "env",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write",
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "sourceRecordId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string"
+          },
+          "sourceRecordId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_inbox_read",
+      "name": "查看已投递站内通知",
+      "description": "查看已投递站内通知；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "env",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_display",
+      "aliases": [],
+      "domain": "env",
+      "name": "行政区划地图显示",
+      "description": "独立显示真实行政底图，无需监测数据；地域代码只能从服务器行政目录选择。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "local-administrative-map-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "regionCodes"
+        ],
+        "properties": {
+          "regionCodes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "excludeCodes": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "basemap": {
+            "enum": [
+              "vec",
+              "img"
+            ]
+          },
+          "boundaryLevels": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "province",
+                "city",
+                "county"
+              ]
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "mapId",
+          "resources",
+          "bbox"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_VIEW"
+          },
+          "mapId": {
+            "type": "string"
+          },
+          "resources": {
+            "type": "array",
+            "minItems": 1
+          },
+          "bbox": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_annotation",
+      "aliases": [],
+      "domain": "env",
+      "name": "地图区域标注",
+      "description": "对已授权真实行政区域添加本轮纯文本标注；不修改观测、不保存持久标注。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "verified-map-annotation-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "annotations"
+        ],
+        "properties": {
+          "annotations": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ],
+              "oneOf": [
+                {
+                  "required": [
+                    "regionCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "coordinates",
+                    "evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "featureRef"
+                  ]
+                }
+              ],
+              "properties": {
+                "regionCode": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6}$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "coordinates": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "evidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "start",
+                    "end",
+                    "quote"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "featureRef": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "runId",
+                    "callId",
+                    "outputId",
+                    "featureId"
+                  ],
+                  "properties": {
+                    "runId": {
+                      "type": "string"
+                    },
+                    "callId": {
+                      "type": "string"
+                    },
+                    "outputId": {
+                      "type": "string"
+                    },
+                    "featureId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "spatialOutputs"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_ANNOTATION"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "inMarketplace": false
+    }
+  ],
+  "chronic": [
+    {
+      "id": "skill_spatial_early_warning",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "全域时空动态多维预警与地图热力分析",
+      "description": "基于多维度阈值与极端天气触发空间预警，空间插值绘制全省风险热力图，支持病媒、食源、环境、慢病等全领域预警点位空间定位与区县街道下钻。",
+      "requirementIds": [
+        27
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "城市名称"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县名称"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "all",
+              "yellow",
+              "orange",
+              "red"
+            ],
+            "description": "预警等级过滤"
+          },
+          "category": {
+            "type": "string",
+            "description": "病媒种类"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_auto_report_gen",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "全域监测与风险专题报告生成器",
+      "description": "自动提取全域时空监测数据、异常预警指标、生成多维图表与专家分析综述，支持病媒生物、环境健康等领域的专题公报与月度专报导出。",
+      "requirementIds": [
+        72
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_death_cert_qc",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "死亡证明书规则复核候选",
+      "description": "死亡证明书规则复核候选；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        59
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "death-certificate-rule-candidates-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_icd10_nlp_inference",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "死因链医学知识图谱根本死因推断与 ICD-10 编码",
+      "description": "根据实际输入检索本地字典候选，保留人工复核，不声称临床因果推理或编码准确率达标。",
+      "requirementIds": [
+        60,
+        61
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "certId"
+            ]
+          },
+          {
+            "required": [
+              "inputChain"
+            ]
+          }
+        ],
+        "properties": {
+          "certId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "inputChain": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "string"
+              },
+              "c": {
+                "type": "string"
+              },
+              "d": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "method": "icd10-dictionary-candidate-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_mortality_cluster_rare",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "死亡记录统计与区县中心聚类",
+      "description": "死亡记录统计与区县中心聚类；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        62,
+        63
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          },
+          "epsKm": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "minSamples": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 100
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "district-centroid-dbscan-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_risk_forecast",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "三大重大慢病发病预测与并发症关联挖掘",
+      "description": "基于 GBDT 与生存分析预测心脑血管与恶性肿瘤发病趋势，通过关联规则挖掘高危并发症链条。",
+      "requirementIds": [
+        64,
+        65
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_injury_attribution_tree",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "伤害记录统计与24小时候选聚集",
+      "description": "伤害记录统计与24小时候选聚集；使用实际数据计算，结果与方法限制一并呈现。",
+      "requirementIds": [
+        67,
+        68,
+        69
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "description": "仅填写具体区县；全市范围省略该参数，不填全市等占位值"
+          },
+          "from": {
+            "type": "string"
+          },
+          "asOf": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "injury-observed-counts-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_screening_roi",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "早癌与心脑血管筛查卫生经济学收益与人群清单",
+      "description": "综合区县老龄化与高发疾病谱，智能生成早癌筛查推荐清单及卫生经济学成本效果(CEA)测算。",
+      "requirementIds": [
+        66
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_death_report",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "死因顺位、YPLL 与早死概率 4q70 综合公报生成",
+      "description": "测算 30~70 岁四类重大慢病过早死亡概率(4q70)、潜在减寿年数(YPLL)，一键生成综合监测年度公报。",
+      "requirementIds": [
+        72,
+        73
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reportTitle": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "reportId",
+          "sections"
+        ],
+        "properties": {
+          "type": {
+            "const": "AUTO_GENERATED_REPORT"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading",
+                "content"
+              ]
+            }
+          }
+        }
+      },
+      "method": "persisted-descriptive-report-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_monitoring_table",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "死因证明书与慢病随访明细查询 (Text2SQL)",
+      "description": "支持按地市、区县、死因大类、ICD-10 编码及慢病随访类型检索全死因监测数据库，并基于 Text2SQL 以交互式表格展示。",
+      "requirementIds": [
+        59,
+        64
+      ],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "description": "执行受控只读查询，始终返回明细表；提供 visualization 后同时显示地图或图表，无需为明细表重复查询。",
+        "additionalProperties": false,
+        "required": [
+          "sql"
+        ],
+        "properties": {
+          "visualization": {
+            "description": "根据用户要求选择图形，字段键必须与本次SQL结果列名完全一致。bar为分组柱状图，line为按日期排序的时间折线图，map为点位地图（实际经纬度、点位标签与数值）。所有图形同时附明细表，无需重复查询。unit填写实际指标单位。",
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "regionCodeKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "regionCodeKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "xKey",
+                  "yKey",
+                  "unit"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "bar",
+                      "line"
+                    ]
+                  },
+                  "xKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "yKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "latKey",
+                  "lonKey",
+                  "labelKey"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "map"
+                  },
+                  "latKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "lonKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "labelKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "idKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。"
+                  },
+                  "valueKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unit": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "sourceCRS": {
+                    "enum": [
+                      "EPSG:4326",
+                      "EPSG:4490"
+                    ],
+                    "description": "通常省略，由服务端根据数据源登记的坐标系绑定。只有明确取得该数据源的坐标系证据时才填写，不能根据行政边界或地名猜测。"
+                  }
+                }
+              }
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "description": "单个 SQLite SELECT，最多4张表（含主表，最多3个JOIN），禁止子查询、CTE、UNION、事实表之间的JOIN。JOIN ON只支持两表字段的单个等值条件，其他条件写在WHERE。优先直接筛选事实表的日期字段，避免仅为筛选年月额外关联日期维表。中文列别名必须用双引号包裹，或使用英文别名；GROUP BY和ORDER BY中的中文别名也要加双引号。日期范围优先使用事实表日期列的 MIN/MAX。病媒 fact_monitoring.date_id 是 YYYY-MM-DD 格式的日期文本，可直接 MIN(f.date_id)/MAX(f.date_id)；无需关联日期维表或拼接 year/month/day，以免未补零的文本排序导致错误日期范围。按实际点位汇总时必须按点位主键（如dim_location.location_id）GROUP BY，并SELECT该主键、在地图visualization.idKey指定；不能仅按街道和坐标合并不同点位。单位为只/记录时，COUNT(*)表示事实记录次数，应注明不能等同于独立采样访次。只支持 COUNT、AVG、SUM、MIN、MAX、ROUND、SUBSTR、SUBSTRING、STRFTIME、DATE、DATETIME、COALESCE、IFNULL、NULLIF、ABS、CAST、TOTAL、LENGTH、LOWER、UPPER，禁止 printf 等其他函数。最多返回200行。",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "query": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "description": "只填具体地级市（如郑州市）。查询河南省或全省时省略 city，禁止把省名当作城市筛选。"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "DATA_TABLE_VIEW"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "method": "bounded-domain-query-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_custom_builder",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "慢病死因专属自定义技能构建器 (Meta-Skill Builder)",
+      "description": "根据慢病防制与死因谱研判需求，动态构建专属 SQL 分析逻辑与 AG-UI 可视化卡片，注册至慢病技能库中。",
+      "requirementIds": [],
+      "availability": "available",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skillName",
+          "sqlQuery"
+        ],
+        "properties": {
+          "skillName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "sqlQuery": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "description": {
+            "type": "string"
+          },
+          "chartType": {
+            "enum": [
+              "trend",
+              "bar",
+              "pie",
+              "map",
+              "table"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "skill",
+          "previewData"
+        ],
+        "properties": {
+          "type": {
+            "const": "CUSTOM_SKILL_CREATED"
+          },
+          "skill": {
+            "type": "object",
+            "required": [
+              "id",
+              "domain",
+              "sqlQuery"
+            ]
+          },
+          "previewData": {
+            "type": "array"
+          }
+        }
+      },
+      "method": "validated-custom-skill-create-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_chronic_early_warning_disposal",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "重大慢病峰值预警深度研判与应急处置工单闭环",
+      "description": "针对慢病急性事件就诊峰值（如45-64岁急性心梗、脑卒中激增）、恶性肿瘤全死因链质控异常聚集等突发预警事件，提取预警依据，分析周边关联致病因素（年龄劳动力谱系、三高并发症转化规律、就诊延迟），生成针对基层卫生院与急救中心的应急处置工单并追踪核销闭环。",
+      "requirementIds": [
+        70,
+        71,
+        74,
+        75,
+        76
+      ],
+      "availability": "planned",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "alertId": {
+            "type": "string",
+            "description": "预警事件编号，如 ALERT-CHR-202608-01"
+          },
+          "city": {
+            "type": "string",
+            "description": "地级市名称，如 郑州市"
+          },
+          "district": {
+            "type": "string",
+            "description": "区县名称，如 金水区"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "dispatch",
+              "resolve",
+              "reopen"
+            ],
+            "description": "工单操作类型"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "method": "not-implemented",
+      "allowedOperations": [],
+      "inMarketplace": true
+    },
+    {
+      "id": "skill_session_manage",
+      "name": "用户对话会话管理（不是领域监测数据查询）",
+      "aliases": [],
+      "domain": "chronic",
+      "description": "用户对话会话管理（不是领域监测数据查询）",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "create",
+              "list",
+              "read",
+              "update",
+              "delete",
+              "clear"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "isPinned": {
+            "type": "boolean"
+          },
+          "keyword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "read",
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sessionId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_session_journal",
+      "name": "内部会话运行记录",
+      "aliases": [],
+      "domain": "chronic",
+      "description": "内部会话运行记录",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_session_journal-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceRunId"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SESSION_RESULT"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "write"
+      ],
+      "visibility": "internal",
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_catalog_manage",
+      "name": "技能列表、编辑与删除",
+      "aliases": [],
+      "domain": "chronic",
+      "description": "技能列表、编辑与删除",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_catalog_manage-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "list",
+              "update",
+              "delete"
+            ]
+          },
+          "skillId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "sqlQuery": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "chartType": {
+            "enum": [
+              "table",
+              "trend",
+              "bar",
+              "pie",
+              "map"
+            ]
+          },
+          "visibility": {
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "recommendedPrompts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "enum": [
+                    "update",
+                    "delete"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "skillId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "SKILL_CATALOG"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_artifact_export",
+      "name": "导出真实查询 CSV 或已归档报告 Markdown",
+      "aliases": [],
+      "domain": "chronic",
+      "description": "导出真实查询 CSV 或已归档报告 Markdown",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "skill_artifact_export-v1",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "format"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "csv",
+              "markdown"
+            ]
+          },
+          "sql": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "reportId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "fileName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceRunId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sourceCallId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "csv"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sql"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "markdown"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reportId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "ARTIFACT_DOWNLOAD"
+            ]
+          }
+        }
+      },
+      "allowedOperations": [
+        "read",
+        "export"
+      ],
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_daemon_surveillance",
+      "name": "配置周期主线Agent巡检",
+      "description": "配置周期主线Agent巡检；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "chronic",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "intervalSec"
+        ],
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "intervalSec": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 86400
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_job_manage",
+      "name": "提交、读取持久分析任务",
+      "description": "提交、读取持久分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "chronic",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read",
+        "write"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "submit",
+              "read",
+              "list"
+            ]
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "submit"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "input"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "jobId"
+              ]
+            }
+          }
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_approval_decision",
+      "name": "专业审批分析任务",
+      "description": "专业审批分析任务；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "chronic",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "decision"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_retest_submit",
+      "name": "提交已采集的真实复测记录",
+      "description": "提交已采集的真实复测记录；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "chronic",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "write",
+        "review"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "sourceRecordId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string"
+          },
+          "sourceRecordId": {
+            "type": "string"
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_inbox_read",
+      "name": "查看已投递站内通知",
+      "description": "查看已投递站内通知；复测核销必须声明 retestMeasurement(category,methodName,可选speciesName)，原查询必须是按该类别/方法/物种限定的 captureRetestQuery AVG模板；无此测量政策不得核销。实际持久状态，不能宣称外部通知送达或自动解除区域风险。",
+      "domain": "chronic",
+      "aliases": [],
+      "requirementIds": [],
+      "availability": "available",
+      "method": "persistent-evidence-workflow-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "const": "ANALYTICS_RESULT"
+          },
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_display",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "行政区划地图显示",
+      "description": "独立显示真实行政底图，无需监测数据；地域代码只能从服务器行政目录选择。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "local-administrative-map-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "regionCodes"
+        ],
+        "properties": {
+          "regionCodes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "excludeCodes": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{6}$"
+            }
+          },
+          "basemap": {
+            "enum": [
+              "vec",
+              "img"
+            ]
+          },
+          "boundaryLevels": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "province",
+                "city",
+                "county"
+              ]
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "mapId",
+          "resources",
+          "bbox"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_VIEW"
+          },
+          "mapId": {
+            "type": "string"
+          },
+          "resources": {
+            "type": "array",
+            "minItems": 1
+          },
+          "bbox": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      },
+      "inMarketplace": false
+    },
+    {
+      "id": "skill_map_annotation",
+      "aliases": [],
+      "domain": "chronic",
+      "name": "地图区域标注",
+      "description": "对已授权真实行政区域添加本轮纯文本标注；不修改观测、不保存持久标注。",
+      "requirementIds": [],
+      "availability": "available",
+      "method": "verified-map-annotation-v1",
+      "allowedOperations": [
+        "read"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "annotations"
+        ],
+        "properties": {
+          "annotations": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ],
+              "oneOf": [
+                {
+                  "required": [
+                    "regionCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "coordinates",
+                    "evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "featureRef"
+                  ]
+                }
+              ],
+              "properties": {
+                "regionCode": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6}$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "coordinates": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "evidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "start",
+                    "end",
+                    "quote"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "featureRef": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "runId",
+                    "callId",
+                    "outputId",
+                    "featureId"
+                  ],
+                  "properties": {
+                    "runId": {
+                      "type": "string"
+                    },
+                    "callId": {
+                      "type": "string"
+                    },
+                    "outputId": {
+                      "type": "string"
+                    },
+                    "featureId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "type",
+          "spatialOutputs"
+        ],
+        "properties": {
+          "type": {
+            "const": "MAP_ANNOTATION"
+          },
+          "spatialOutputs": {
+            "type": "array"
+          }
+        }
+      },
+      "inMarketplace": false
+    }
+  ]
+}

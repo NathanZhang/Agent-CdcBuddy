@@ -1,0 +1,93 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ❯ tests/refactor/final-workflow-review.test.ts (6 tests | 6 failed) 121ms
+   × rejects unrelated category or sampling method and missing original measurement policy 34ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence 19ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × deduplicates recurring configuration and rolls back initial work when schedule insertion fails 19ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × preserves nested query geography and rejects nested/outer/identity disagreement 16ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × requires persisted observed collection provenance and never infers it for legacy records 17ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × production workers without an explicit tier reject queued development identities before main Agent execution 16ms
+     → REGION_DATASET_MAPPING_REQUIRED
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > rejects unrelated category or sampling method and missing original measurement policy
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:18:161
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:19:613
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > deduplicates recurring configuration and rolls back initial work when schedule insertion fails
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ Function.<anonymous> src/application/jobs/scheduler.ts:5:287
+ ❯ Function.sqliteTransaction node_modules/better-sqlite3/lib/methods/transaction.js:65:24
+ ❯ src/application/jobs/scheduler.ts:5:1004
+ ❯ withBusinessDb src/infrastructure/db/business-store.ts:15:13
+ ❯ configureSchedule src/application/jobs/scheduler.ts:5:234
+ ❯ tests/refactor/final-workflow-review.test.ts:20:171
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > preserves nested query geography and rejects nested/outer/identity disagreement
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ tests/refactor/final-workflow-review.test.ts:21:214
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > requires persisted observed collection provenance and never infers it for legacy records
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:24:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > production workers without an explicit tier reject queued development identities before main Agent execution
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ tests/refactor/final-workflow-review.test.ts:36:178
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  12:20:23
+   Duration  995ms (transform 240ms, setup 0ms, collect 503ms, tests 121ms, environment 0ms, prepare 43ms)
+

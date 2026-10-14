@@ -1,0 +1,41 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ❯ tests/refactor/scientific-foundation.test.ts (13 tests | 1 failed) 914ms
+   ✓ retains unresolved legacy visits and distinguishes co-located source IDs 70ms
+   ✓ deduplicates one visit across species but keeps separate visits on the same date 126ms
+   ✓ produces continuous calendar points with real zero and missing periods left null 97ms
+   ✓ rejects mixed units, cross-source selections, invented membership and truncated sources 111ms
+   ✓ prevents duplicate/foreign/reclassified registration and requires professional role 50ms
+   ✓ checks owner, organization, role, domain, approved scope and forged reference 34ms
+   ✓ refuses stale dataset metadata, expired or tampered artifacts 51ms
+   ✓ rejects malformed matrix shape, nonfinite data, calendar changes and time widening 45ms
+   ✓ retains existing SQL scope enforcement while paging only authorized source records 23ms
+   ✓ supports explicit feature columns, units and calendar contracts before a model consumes them 111ms
+   ✓ reads all pages beyond the 200 row interactive limit without changing the source database 63ms
+   × rechecks the current jurisdiction and reports authorization failures at the Skill boundary 33ms
+     → expected [Function] to throw error matching /FORBIDDEN_SCOPE/ but got 'Requested geography exceeds server ju…'
+   ✓ detects edited reviewed source records and does not sum incompatible effort units 99ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/scientific-foundation.test.ts > rechecks the current jurisdiction and reports authorization failures at the Skill boundary
+AssertionError: expected [Function] to throw error matching /FORBIDDEN_SCOPE/ but got 'Requested geography exceeds server ju…'
+
+- Expected: 
+/FORBIDDEN_SCOPE/
+
++ Received: 
+"Requested geography exceeds server jurisdiction"
+
+ ❯ tests/refactor/scientific-foundation.test.ts:100:194
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 passed (13)
+   Start at  13:22:28
+   Duration  1.91s (transform 270ms, setup 0ms, collect 550ms, tests 914ms, environment 0ms, prepare 49ms)
+

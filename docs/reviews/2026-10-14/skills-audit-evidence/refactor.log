@@ -1,0 +1,186 @@
+
+> agent-cdc-buddy@2.0.1 test:refactor
+> vitest run
+
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ❯ tests/refactor/final-workflow-review.test.ts (6 tests | 6 failed) 123ms
+   × rejects unrelated category or sampling method and missing original measurement policy 34ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence 18ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × deduplicates recurring configuration and rolls back initial work when schedule insertion fails 19ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × preserves nested query geography and rejects nested/outer/identity disagreement 17ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × requires persisted observed collection provenance and never infers it for legacy records 19ms
+     → REGION_DATASET_MAPPING_REQUIRED
+   × production workers without an explicit tier reject queued development identities before main Agent execution 15ms
+     → REGION_DATASET_MAPPING_REQUIRED
+ ✓ tests/refactor/recommendations.test.tsx (52 tests) 11140ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: 2024年全省蚊类物种构成  1741ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > vector: GBDT蚊媒三个月回顾性预测  1568ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > foodborne: 2026年报告食品病例TOP10  1503ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > env: 郑州诺如病毒与门诊滞后分析  1529ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年死亡证明书规则复核  1497ms
+   ✓ recommendation data coverage and AG-UI rendering against configured datasets > chronic: 2026年伤害类型与记录病因  1515ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 22951ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  4090ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  18764ms
+ ✓ tests/refactor/spatial-runtime-coverage.test.ts (1 test) 10637ms
+   ✓ requires an executable contract case for every spatial method and validates actual outputs and every advertised rendering  10636ms
+ ✓ tests/refactor/workflow.test.ts (4 tests) 2210ms
+   ✓ requires actual persisted Skill evidence; waiting review never dispatches; rejection closes without ticket  1127ms
+   ✓ approves idempotently, rejects missing retest and cannot claim external delivery  1007ms
+ ✓ tests/refactor/analytics-runner.test.ts (7 tests) 4483ms
+   ✓ timeout and cancellation terminate a running child and release the slot for a real next execution  791ms
+   ✓ the production runner computes an actual water snapshot through strict Python SkillResult  1471ms
+   ✓ timeout terminates a descendant that ignores SIGTERM rather than leaving an orphan writer  1805ms
+ ✓ tests/refactor/answer-evidence.test.tsx (22 tests) 2013ms
+   ✓ uses Python-provided species totals in both the workbench and answer evidence  1548ms
+ ✓ tests/refactor/session-history.test.ts (28 tests) 1064ms
+   ✓ restores grouped chart/table outputs and can reopen an earlier turn after a no-data reply  490ms
+ ✓ tests/refactor/workbench.test.tsx (18 tests) 445ms
+   ✓ legacy snapshots render their stored values read-only without live fallback metrics or actions  423ms
+ ✓ tests/refactor/map-sse-transport.test.ts (3 tests) 740ms
+   ✓ keeps a successful Henan city/county map after the real route is delivered in 64 KiB fragments  336ms
+   ✓ retains ordinary JSON event shapes for clients without compact-encoding negotiation  323ms
+ ✓ tests/refactor/interaction-skills.test.ts (11 tests) 401ms
+ ✓ tests/refactor/dispatch.test.ts (22 tests) 510ms
+ ✓ tests/refactor/scoped-entrypoints.test.ts (5 tests) 484ms
+ ✓ tests/refactor/authorization.test.ts (4 tests) 482ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 407ms
+ ✓ tests/refactor/dispatch-wire.test.ts (9 tests) 322ms
+   ✓ rejects oversized dispatch events at both encoding and decoding boundaries  307ms
+ ✓ tests/refactor/mock-production-policy.test.ts (13 tests) 349ms
+ ✓ tests/refactor/value-sized-map.test.ts (9 tests) 262ms
+ ✓ tests/refactor/dispatch-http.test.ts (6 tests) 241ms
+ ✓ tests/refactor/region-evaluation-format.test.ts (1 test) 172ms
+ ✓ tests/refactor/region-map-dispatch.test.ts (6 tests) 221ms
+ ✓ tests/refactor/intent-resolver.test.ts (15 tests) 123ms
+ ✓ tests/refactor/sql-scope-guard.test.ts (15 tests) 199ms
+ ✓ tests/refactor/intent-reasoning-stream.test.ts (6 tests) 116ms
+ ✓ tests/refactor/review-scope-regressions.test.ts (11 tests) 111ms
+ ✓ tests/refactor/review-map-regressions.test.ts (8 tests) 80ms
+ ✓ tests/refactor/review-intent-regressions.test.ts (7 tests) 74ms
+ ✓ tests/refactor/review-entrypoint-regressions.test.ts (3 tests) 77ms
+ ✓ tests/refactor/results-mobile.test.ts (2 tests) 69ms
+ ✓ tests/refactor/llm-client.test.ts (12 tests) 59ms
+ ✓ tests/refactor/province-query-scope.test.ts (4 tests) 56ms
+ ✓ tests/refactor/sse-budget.test.ts (6 tests) 48ms
+ ✓ tests/refactor/approved-scope.test.ts (3 tests) 49ms
+ ✓ tests/refactor/map-catalog-independence.test.ts (2 tests) 30ms
+ ✓ tests/refactor/output-presentation.test.tsx (7 tests) 30ms
+ ✓ tests/refactor/result-map.test.tsx (9 tests) 29ms
+ ✓ tests/refactor/deployment.test.ts (3 tests) 30ms
+ ✓ tests/refactor/reasoning-stream.test.ts (9 tests) 28ms
+ ✓ tests/refactor/map-display-skill.test.ts (6 tests) 29ms
+ ✓ tests/refactor/domain-repository.test.ts (5 tests) 23ms
+ ✓ tests/refactor/results-ui.test.ts (4 tests) 26ms
+ ✓ tests/refactor/administrative-map.test.tsx (1 test) 22ms
+ ✓ tests/refactor/map-annotation.test.ts (3 tests) 20ms
+ ✓ tests/refactor/query-gateway.test.ts (16 tests) 20ms
+ ✓ tests/refactor/llm-idle-timeout.test.ts (4 tests) 16ms
+ ✓ tests/refactor/session-history-ui.test.tsx (7 tests) 16ms
+ ✓ tests/refactor/results-report.test.ts (1 test) 15ms
+ ✓ tests/refactor/intent-state.test.ts (1 test) 14ms
+ ✓ tests/refactor/llm-output-limit.test.ts (6 tests) 12ms
+ ✓ tests/refactor/map-outcomes.test.tsx (1 test) 14ms
+ ✓ tests/refactor/llm-reasoning-effort.test.ts (11 tests) 13ms
+ ✓ tests/refactor/review-map-lifecycle.test.ts (1 test) 9ms
+ ✓ tests/refactor/review-evaluation-regressions.test.ts (2 tests) 9ms
+ ✓ tests/refactor/llm-intent-budget.test.ts (1 test) 7ms
+ ✓ tests/refactor/map-composer.test.ts (2 tests) 8ms
+ ✓ tests/refactor/spatial-adapters.test.ts (3 tests) 6ms
+ ✓ tests/refactor/map-layers.test.ts (3 tests) 8ms
+ ✓ tests/refactor/spatial-output.test.ts (2 tests) 7ms
+ ✓ tests/refactor/region-catalog.test.ts (2 tests) 6ms
+ ✓ tests/refactor/agui.test.ts (1 test) 5ms
+ ✓ tests/refactor/intent-authorization.test.ts (2 tests) 5ms
+ ✓ tests/refactor/results.test.ts (6 tests) 4ms
+ ✓ tests/refactor/spatial-capability-coverage.test.ts (1 test) 4ms
+ ✓ tests/refactor/datasets.test.ts (3 tests) 2ms
+ ✓ tests/refactor/map-scene-state.test.ts (1 test) 3ms
+ ✓ tests/refactor/runtime-profile.test.ts (3 tests) 3ms
+ ✓ tests/refactor/map-interaction.test.ts (1 test) 2ms
+ ✓ tests/refactor/map-client-transport.test.ts (1 test) 1ms
+ ✓ tests/refactor/region-rollout.test.ts (1 test) 2ms
+ ↓ tests/refactor/query-evidence-live.test.ts (1 test | 1 skipped)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > rejects unrelated category or sampling method and missing original measurement policy
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:18:161
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:19:613
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > deduplicates recurring configuration and rolls back initial work when schedule insertion fails
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ Function.<anonymous> src/application/jobs/scheduler.ts:5:287
+ ❯ Function.sqliteTransaction node_modules/better-sqlite3/lib/methods/transaction.js:65:24
+ ❯ src/application/jobs/scheduler.ts:5:1004
+ ❯ withBusinessDb src/infrastructure/db/business-store.ts:15:13
+ ❯ configureSchedule src/application/jobs/scheduler.ts:5:234
+ ❯ tests/refactor/final-workflow-review.test.ts:20:171
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > preserves nested query geography and rejects nested/outer/identity disagreement
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ tests/refactor/final-workflow-review.test.ts:21:214
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > requires persisted observed collection provenance and never infers it for legacy records
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ waiting tests/refactor/final-workflow-review.test.ts:16:64
+ ❯ tests/refactor/final-workflow-review.test.ts:24:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/refactor/final-workflow-review.test.ts > production workers without an explicit tier reject queued development identities before main Agent execution
+Error: REGION_DATASET_MAPPING_REQUIRED
+ ❯ approveIntent src/application/agent/intent-guard.ts:29:96
+
+ ❯ approveStructuredIntent src/application/agent/structured-intent.ts:18:9
+ ❯ submitJob src/application/jobs/job-service.ts:26:44
+ ❯ tests/refactor/final-workflow-review.test.ts:36:178
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed | 68 passed | 1 skipped (70)
+      Tests  6 failed | 459 passed | 1 skipped (466)
+   Start at  12:18:21
+   Duration  41.27s (transform 1.04s, setup 0ms, collect 12.24s, tests 61.20s, environment 6ms, prepare 2.38s)
+

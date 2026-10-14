@@ -6,6 +6,7 @@ import { Sparkles, Database, Lock, Globe } from 'lucide-react';
 import type {ResultStatistics} from '@/contracts/result-statistics';
 import {ResultStatisticsSummary} from './ResultStatisticsSummary';
 import {fieldLabel,formatValue} from '@/features/workbench/result-presentation';
+import {QueryResultVisualization} from './QueryResultVisualization';
 
 interface CustomSkillBuilderProps {
   data: {
@@ -67,6 +68,7 @@ export const CustomSkillBuilderModal: React.FC<CustomSkillBuilderProps> = ({ dat
       </div>
 
       {/* 预览数据表格 */}
+      <QueryResultVisualization rows={data.previewData} spec={data.skill.visualization}/>
       <div className="space-y-1.5 text-xs">
         <span className="font-semibold text-slate-700 dark:text-slate-300">📊 技能即时试跑与数据预览:</span>
         <ResultStatisticsSummary statistics={data.statistics}/>

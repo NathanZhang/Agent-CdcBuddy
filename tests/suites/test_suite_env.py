@@ -145,8 +145,8 @@ class EnvSurveillanceTestSuite:
     def test_56_disposal_advice(self, res: TestResult):
         """No. 56 精准干预与协同处置建议"""
         water_res = evaluate_water_health_risk(city="郑州市")
-        advice = water_res.get("disposalAdvice", "")
-        res.assert_true(len(advice) > 10, "生成针对性的水厂及末梢管网消杀排污与加氯控制建议")
+        res.assert_true(water_res.get("disposalAdvice") is None, "未验证处置政策不得输出固定用药或消毒建议")
+        res.assert_true("risk-policy-unvalidated" in water_res["qualityFlags"], "保留专业风险政策未验证的说明")
 
     def test_57_scenario_simulation(self, res: TestResult):
         """Compatibility/partial or refusal only; no full capability signoff."""

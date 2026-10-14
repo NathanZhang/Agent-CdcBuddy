@@ -1,0 +1,11 @@
+ ⨯ Failed to start server
+Error: listen EPERM: operation not permitted 0.0.0.0:9681
+    at <unknown> (Error: listen EPERM: operation not permitted 0.0.0.0:9681)
+    at new Promise (<anonymous>) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 9681
+}
+[?25h

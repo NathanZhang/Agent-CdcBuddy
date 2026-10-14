@@ -57,3 +57,6 @@ logs/
 .mock-audit/
 *.sqlite3
 .mock-quarantine-*
+
+# Explicit isolated Mock bundles and their local audit registry
+/.mock-data/

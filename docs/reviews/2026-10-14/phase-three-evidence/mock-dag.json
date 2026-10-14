@@ -1,0 +1,1150 @@
+{
+  "kind": "explicit-generated-mock-engineering-scenario-not-observed-efficacy",
+  "persistentStore": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific/business.db",
+  "submitted": {
+    "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+    "status": "QUEUED",
+    "reused": false
+  },
+  "status": {
+    "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+    "status": "SUCCEEDED",
+    "error": null,
+    "checkpointError": null,
+    "nodes": [
+      {
+        "nodeId": "measurements",
+        "operation": "measurements",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "acc5f68c-ce31-40d3-a9db-2cf98b895640",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "scan",
+        "operation": "scan",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "75efb726-0862-4c8e-b535-c0047633b982",
+          "kind": "ScanResult",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "b961083271564b4f01d12372cdd95a26c70a7b22b51086fda621693a9a6e952f",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "members",
+        "operation": "scan-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "3dda8dc7-633e-4a63-95fd-1288495a3b38",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "4c5f8cb28eb00a914046214bc9bbdfab0def76c3d14f3be11639c70d1faf615a",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "features",
+        "operation": "features",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "869f4e87-ff3d-4dbc-aeb4-d5788e527bb3",
+          "kind": "FeatureMatrix",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "a7b9ad07a0fdf6b16722363dd273cdeb4c713044bf27f2fd792886545d664f72",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "clusters",
+        "operation": "kmeans",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "5581255d-a23d-4e49-b873-57db3f26cfdd",
+          "kind": "ClusterSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "5c7574326555032f1c4fc7f9677516b323a3b0a5679f0c0aad0910955c8efad3",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "fixed",
+        "operation": "cluster-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "40e59746-c9be-4f5e-a8e7-7fc350c501e9",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "df93d02301863d0597b025dda2ded3ee0857030ba454c6b8e10a1c3446905e0a",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "history",
+        "operation": "series",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "c6c35c3d-320b-45fa-a02e-2ae3aecee73a",
+          "kind": "SeriesSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "b928f38f0644b5348183f3a0f4da4a720de6cf6f26b4f5d746e73c925ddbe5bc",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      }
+    ],
+    "events": [
+      {
+        "node_id": null,
+        "type": "SUCCEEDED",
+        "details_json": "{}",
+        "created_at": 1791972130619
+      },
+      {
+        "node_id": "history",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"c6c35c3d-320b-45fa-a02e-2ae3aecee73a\",\"kind\":\"SeriesSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"b928f38f0644b5348183f3a0f4da4a720de6cf6f26b4f5d746e73c925ddbe5bc\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972130005
+      },
+      {
+        "node_id": "history",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972129466
+      },
+      {
+        "node_id": "fixed",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"40e59746-c9be-4f5e-a8e7-7fc350c501e9\",\"kind\":\"SelectionSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"df93d02301863d0597b025dda2ded3ee0857030ba454c6b8e10a1c3446905e0a\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"fixed-members-from-cluster-snapshot\"]}",
+        "created_at": 1791972129015
+      },
+      {
+        "node_id": "fixed",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972128857
+      },
+      {
+        "node_id": "clusters",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"5581255d-a23d-4e49-b873-57db3f26cfdd\",\"kind\":\"ClusterSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"5c7574326555032f1c4fc7f9677516b323a3b0a5679f0c0aad0910955c8efad3\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"exploratory-clusters-not-risk-classes\"]}",
+        "created_at": 1791972128501
+      },
+      {
+        "node_id": "clusters",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972126995
+      },
+      {
+        "node_id": "features",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"869f4e87-ff3d-4dbc-aeb4-d5788e527bb3\",\"kind\":\"FeatureMatrix\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"a7b9ad07a0fdf6b16722363dd273cdeb4c713044bf27f2fd792886545d664f72\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972126686
+      },
+      {
+        "node_id": "features",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972126435
+      },
+      {
+        "node_id": "members",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"3dda8dc7-633e-4a63-95fd-1288495a3b38\",\"kind\":\"SelectionSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"4c5f8cb28eb00a914046214bc9bbdfab0def76c3d14f3be11639c70d1faf615a\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972126252
+      },
+      {
+        "node_id": "members",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972126173
+      },
+      {
+        "node_id": "scan",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"75efb726-0862-4c8e-b535-c0047633b982\",\"kind\":\"ScanResult\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"b961083271564b4f01d12372cdd95a26c70a7b22b51086fda621693a9a6e952f\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"approximate-circular-scan-not-full-satscan\"]}",
+        "created_at": 1791972126066
+      },
+      {
+        "node_id": "scan",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972124619
+      },
+      {
+        "node_id": "measurements",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"acc5f68c-ce31-40d3-a9db-2cf98b895640\",\"kind\":\"Measurements\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972124559
+      },
+      {
+        "node_id": "measurements",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972124359
+      },
+      {
+        "node_id": null,
+        "type": "COMPILED",
+        "details_json": "{\"planHash\":\"5327849e08960d86ca4de9b7e18e29b3537f92151d3eca3ee6ff9b67a267ebe9\",\"nodes\":7}",
+        "created_at": 1791972124351
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "artifactRef": {
+        "artifactId": "acc5f68c-ce31-40d3-a9db-2cf98b895640",
+        "contentHash": "02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "Measurements",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "measurements",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:measurements"
+      },
+      "unit": "capture",
+      "frequency": "record",
+      "measurementDefinition": "observed-capture-records-v1",
+      "timeWindow": {
+        "from": "2019-01-01",
+        "to": "2025-10-31"
+      },
+      "asOf": "2025-10-31",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [],
+      "dependencies": [],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "matchedRecords": 2460,
+        "returnedRecords": 2460,
+        "complete": true,
+        "records": [
+          {
+            "captureCount": 2,
+            "category": "蚊",
+            "city": "郑州市",
+            "date": "2019-01-15",
+            "district": "金水区",
+            "effortUnit": "trap-hour",
+            "effortValue": 8,
+            "latitude": 34.81066346415514,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:410100-00",
+            "longitude": 113.73845125715332,
+            "methodId": "lamp",
+            "methodName": "诱蚊灯法",
+            "recordId": "2019-01-15-410100-00-aedes",
+            "sourceLocationId": "410100-00",
+            "speciesId": "aedes",
+            "speciesName": "白纹伊蚊",
+            "visitId": "mock-visit:vector-monitoring:synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982:visit:2019-01-15:410100-00:lamp"
+          },
+          {
+            "captureCount": 7,
+            "category": "蚊",
+            "city": "郑州市",
+            "date": "2019-01-15",
+            "district": "金水区",
+            "effortUnit": "trap-hour",
+            "effortValue": 8,
+            "latitude": 34.81066346415514,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:410100-00",
+            "longitude": 113.73845125715332,
+            "methodId": "lamp",
+            "methodName": "诱蚊灯法",
+            "recordId": "2019-01-15-410100-00-culex",
+            "sourceLocationId": "410100-00",
+            "speciesId": "culex",
+            "speciesName": "淡色库蚊",
+            "visitId": "mock-visit:vector-monitoring:synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982:visit:2019-01-15:410100-00:lamp"
+          },
+          {
+            "captureCount": 3,
+            "category": "蚊",
+            "city": "郑州市",
+            "date": "2019-01-15",
+            "district": "二七区",
+            "effortUnit": "trap-hour",
+            "effortValue": 9,
+            "latitude": 34.67850912852763,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:410100-01",
+            "longitude": 113.58790869828023,
+            "methodId": "lamp",
+            "methodName": "诱蚊灯法",
+            "recordId": "2019-01-15-410100-01-aedes",
+            "sourceLocationId": "410100-01",
+            "speciesId": "aedes",
+            "speciesName": "白纹伊蚊",
+            "visitId": "mock-visit:vector-monitoring:synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982:visit:2019-01-15:410100-01:lamp"
+          },
+          {
+            "captureCount": 9,
+            "category": "蚊",
+            "city": "郑州市",
+            "date": "2019-01-15",
+            "district": "二七区",
+            "effortUnit": "trap-hour",
+            "effortValue": 9,
+            "latitude": 34.67850912852763,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:410100-01",
+            "longitude": 113.58790869828023,
+            "methodId": "lamp",
+            "methodName": "诱蚊灯法",
+            "recordId": "2019-01-15-410100-01-culex",
+            "sourceLocationId": "410100-01",
+            "speciesId": "culex",
+            "speciesName": "淡色库蚊",
+            "visitId": "mock-visit:vector-monitoring:synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982:visit:2019-01-15:410100-01:lamp"
+          },
+          {
+            "captureCount": 3,
+            "category": "蚊",
+            "city": "郑州市",
+            "date": "2019-01-15",
+            "district": "中原区",
+            "effortUnit": "trap-hour",
+            "effortValue": 10,
+            "latitude": 34.782375629366385,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:410100-02",
+            "longitude": 113.54185848099152,
+            "methodId": "lamp",
+            "methodName": "诱蚊灯法",
+            "recordId": "2019-01-15-410100-02-aedes",
+            "sourceLocationId": "410100-02",
+            "speciesId": "aedes",
+            "speciesName": "白纹伊蚊",
+            "visitId": "mock-visit:vector-monitoring:synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982:visit:2019-01-15:410100-02:lamp"
+          }
+        ]
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "75efb726-0862-4c8e-b535-c0047633b982",
+        "contentHash": "b961083271564b4f01d12372cdd95a26c70a7b22b51086fda621693a9a6e952f",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "ScanResult",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "scan",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:scan"
+      },
+      "unit": "capture",
+      "frequency": "none",
+      "measurementDefinition": "conditional-poisson-circular-scan-v1",
+      "timeWindow": {
+        "from": "2024-06-01",
+        "to": "2024-06-30"
+      },
+      "asOf": "2024-06-30",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [
+        "approximate-circular-scan-not-full-satscan"
+      ],
+      "dependencies": [
+        {
+          "artifactId": "acc5f68c-ce31-40d3-a9db-2cf98b895640",
+          "contentHash": "02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "clusters": [
+          {
+            "center": [
+              113.73948924850559,
+              34.81140372728761
+            ],
+            "expected": 4149.207407407408,
+            "id": "scan-1",
+            "llr": 15014.044688234393,
+            "locationKeys": [
+              "location:vector-monitoring:dag-hot-0",
+              "location:vector-monitoring:dag-hot-1",
+              "location:vector-monitoring:dag-hot-2",
+              "location:vector-monitoring:dag-hot-3"
+            ],
+            "observed": 14160,
+            "pValue": 0.01,
+            "radiusKm": 0
+          }
+        ],
+        "clusterCount": 1,
+        "siteCount": 15,
+        "simulations": 99
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "3dda8dc7-633e-4a63-95fd-1288495a3b38",
+        "contentHash": "4c5f8cb28eb00a914046214bc9bbdfab0def76c3d14f3be11639c70d1faf615a",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "SelectionSet",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "members",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:scan-select"
+      },
+      "unit": "location",
+      "frequency": "none",
+      "measurementDefinition": "conditional-poisson-circular-scan-v1",
+      "timeWindow": {
+        "from": "2024-06-01",
+        "to": "2024-06-30"
+      },
+      "asOf": "2024-06-30",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [],
+      "dependencies": [
+        {
+          "artifactId": "75efb726-0862-4c8e-b535-c0047633b982",
+          "contentHash": "b961083271564b4f01d12372cdd95a26c70a7b22b51086fda621693a9a6e952f",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "ScanResult",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "memberCount": 4,
+        "locationKeys": [
+          "location:vector-monitoring:dag-hot-0",
+          "location:vector-monitoring:dag-hot-1",
+          "location:vector-monitoring:dag-hot-2",
+          "location:vector-monitoring:dag-hot-3"
+        ]
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "869f4e87-ff3d-4dbc-aeb4-d5788e527bb3",
+        "contentHash": "a7b9ad07a0fdf6b16722363dd273cdeb4c713044bf27f2fd792886545d664f72",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "FeatureMatrix",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "features",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:features"
+      },
+      "unit": "mixed",
+      "frequency": "none",
+      "measurementDefinition": "capture-per-effort:trap-hour-v1",
+      "timeWindow": {
+        "from": "2024-06-01",
+        "to": "2024-06-30"
+      },
+      "asOf": "2024-06-30",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [],
+      "dependencies": [
+        {
+          "artifactId": "acc5f68c-ce31-40d3-a9db-2cf98b895640",
+          "contentHash": "02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        },
+        {
+          "artifactId": "3dda8dc7-633e-4a63-95fd-1288495a3b38",
+          "contentHash": "4c5f8cb28eb00a914046214bc9bbdfab0def76c3d14f3be11639c70d1faf615a",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "rowCount": 4,
+        "columns": [
+          {
+            "key": "capture-per-effort",
+            "unit": "capture/trap-hour"
+          },
+          {
+            "key": "visit-count",
+            "unit": "visit"
+          }
+        ],
+        "rowKeys": [
+          "location:vector-monitoring:dag-hot-0",
+          "location:vector-monitoring:dag-hot-1",
+          "location:vector-monitoring:dag-hot-2",
+          "location:vector-monitoring:dag-hot-3"
+        ],
+        "values": [
+          [
+            170,
+            1
+          ],
+          [
+            326.25,
+            1
+          ],
+          [
+            430,
+            1
+          ],
+          [
+            598,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "5581255d-a23d-4e49-b873-57db3f26cfdd",
+        "contentHash": "5c7574326555032f1c4fc7f9677516b323a3b0a5679f0c0aad0910955c8efad3",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "ClusterSet",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "clusters",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:kmeans"
+      },
+      "unit": "cluster",
+      "frequency": "none",
+      "measurementDefinition": "capture-per-effort:trap-hour-v1",
+      "timeWindow": {
+        "from": "2024-06-01",
+        "to": "2024-06-30"
+      },
+      "asOf": "2024-06-30",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [
+        "exploratory-clusters-not-risk-classes"
+      ],
+      "dependencies": [
+        {
+          "artifactId": "869f4e87-ff3d-4dbc-aeb4-d5788e527bb3",
+          "contentHash": "a7b9ad07a0fdf6b16722363dd273cdeb4c713044bf27f2fd792886545d664f72",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "FeatureMatrix",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "k": 3,
+        "rowCount": 4,
+        "assignments": [
+          {
+            "cluster": 2,
+            "locationKey": "location:vector-monitoring:dag-hot-0"
+          },
+          {
+            "cluster": 0,
+            "locationKey": "location:vector-monitoring:dag-hot-1"
+          },
+          {
+            "cluster": 0,
+            "locationKey": "location:vector-monitoring:dag-hot-2"
+          },
+          {
+            "cluster": 1,
+            "locationKey": "location:vector-monitoring:dag-hot-3"
+          }
+        ],
+        "columns": [
+          {
+            "key": "capture-per-effort",
+            "unit": "capture/trap-hour"
+          },
+          {
+            "key": "visit-count",
+            "unit": "visit"
+          }
+        ],
+        "inertia": 0.22191987916013198
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "40e59746-c9be-4f5e-a8e7-7fc350c501e9",
+        "contentHash": "df93d02301863d0597b025dda2ded3ee0857030ba454c6b8e10a1c3446905e0a",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "SelectionSet",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "fixed",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:cluster-select"
+      },
+      "unit": "location",
+      "frequency": "none",
+      "measurementDefinition": "capture-per-effort:trap-hour-v1",
+      "timeWindow": {
+        "from": "2024-06-01",
+        "to": "2024-06-30"
+      },
+      "asOf": "2024-06-30",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [
+        "fixed-members-from-cluster-snapshot"
+      ],
+      "dependencies": [
+        {
+          "artifactId": "5581255d-a23d-4e49-b873-57db3f26cfdd",
+          "contentHash": "5c7574326555032f1c4fc7f9677516b323a3b0a5679f0c0aad0910955c8efad3",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "ClusterSet",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "memberCount": 4,
+        "locationKeys": [
+          "location:vector-monitoring:dag-hot-0",
+          "location:vector-monitoring:dag-hot-1",
+          "location:vector-monitoring:dag-hot-2",
+          "location:vector-monitoring:dag-hot-3"
+        ]
+      }
+    },
+    {
+      "artifactRef": {
+        "artifactId": "c6c35c3d-320b-45fa-a02e-2ae3aecee73a",
+        "contentHash": "b928f38f0644b5348183f3a0f4da4a720de6cf6f26b4f5d746e73c925ddbe5bc",
+        "datasetRefs": [
+          {
+            "asOf": "2025-11-05",
+            "domain": "vector",
+            "id": "vector-monitoring",
+            "origin": "mock",
+            "schemaVersion": "1",
+            "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+          }
+        ],
+        "domain": "vector",
+        "kind": "SeriesSet",
+        "schemaVersion": "1",
+        "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+      },
+      "source": {
+        "callId": "history",
+        "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+        "skillId": "science:series"
+      },
+      "unit": "capture/trap-hour",
+      "frequency": "month",
+      "measurementDefinition": "capture-per-effort:trap-hour-v1",
+      "timeWindow": {
+        "from": "2019-01-01",
+        "to": "2025-10-31"
+      },
+      "asOf": "2025-10-31",
+      "objectKeys": [
+        "locationKey",
+        "methodId",
+        "speciesId"
+      ],
+      "qualityFlags": [],
+      "dependencies": [
+        {
+          "artifactId": "acc5f68c-ce31-40d3-a9db-2cf98b895640",
+          "contentHash": "02c31af5bb09d3ad3620cd20b0a679beda0b1cbe89e2d4daca62d2ae49b029ff",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        },
+        {
+          "artifactId": "40e59746-c9be-4f5e-a8e7-7fc350c501e9",
+          "contentHash": "df93d02301863d0597b025dda2ded3ee0857030ba454c6b8e10a1c3446905e0a",
+          "datasetRefs": [
+            {
+              "asOf": "2025-11-05",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "mock",
+              "schemaVersion": "1",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982"
+            }
+          ],
+          "domain": "vector",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491"
+        }
+      ],
+      "expiresAt": 1792576924351,
+      "preview": {
+        "seriesCount": 8,
+        "series": [
+          {
+            "locationKey": "location:vector-monitoring:dag-hot-0",
+            "methodId": "lamp",
+            "objectKey": "location:vector-monitoring:dag-hot-0:lamp:aedes",
+            "points": [
+              {
+                "captureCount": 2,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-01-01",
+                "recordCount": 1,
+                "value": 0.2,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 4,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-02-01",
+                "recordCount": 1,
+                "value": 0.4,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 11,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-03-01",
+                "recordCount": 1,
+                "value": 1.1,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 17,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-04-01",
+                "recordCount": 1,
+                "value": 1.7,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 24,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-05-01",
+                "recordCount": 1,
+                "value": 2.4,
+                "visitCount": 1
+              }
+            ],
+            "speciesId": "aedes",
+            "totalPeriods": 82
+          },
+          {
+            "locationKey": "location:vector-monitoring:dag-hot-0",
+            "methodId": "lamp",
+            "objectKey": "location:vector-monitoring:dag-hot-0:lamp:culex",
+            "points": [
+              {
+                "captureCount": 7,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-01-01",
+                "recordCount": 1,
+                "value": 0.7,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 8,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-02-01",
+                "recordCount": 1,
+                "value": 0.8,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 16,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-03-01",
+                "recordCount": 1,
+                "value": 1.6,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 28,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-04-01",
+                "recordCount": 1,
+                "value": 2.8,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 41,
+                "effort": 10,
+                "effortUnit": "trap-hour",
+                "period": "2019-05-01",
+                "recordCount": 1,
+                "value": 4.1,
+                "visitCount": 1
+              }
+            ],
+            "speciesId": "culex",
+            "totalPeriods": 82
+          },
+          {
+            "locationKey": "location:vector-monitoring:dag-hot-1",
+            "methodId": "lamp",
+            "objectKey": "location:vector-monitoring:dag-hot-1:lamp:aedes",
+            "points": [
+              {
+                "captureCount": 5,
+                "effort": 8,
+                "effortUnit": "trap-hour",
+                "period": "2019-01-01",
+                "recordCount": 1,
+                "value": 0.625,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 5,
+                "effort": 8,
+                "effortUnit": "trap-hour",
+                "period": "2019-02-01",
+                "recordCount": 1,
+                "value": 0.625,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 9,
+                "effort": 8,
+                "effortUnit": "trap-hour",
+                "period": "2019-03-01",
+                "recordCount": 1,
+                "value": 1.125,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 15,
+                "effort": 8,
+                "effortUnit": "trap-hour",
+                "period": "2019-04-01",
+                "recordCount": 1,
+                "value": 1.875,
+                "visitCount": 1
+              },
+              {
+                "captureCount": 23,
+                "effort": 8,
+                "effortUnit": "trap-hour",
+                "period": "2019-05-01",
+                "recordCount": 1,
+                "value": 2.875,
+                "visitCount": 1
+              }
+            ],
+            "speciesId": "aedes",
+            "totalPeriods": 82
+          }
+        ]
+      }
+    }
+  ],
+  "history": {
+    "seriesCount": 8,
+    "periodsPerSeries": 82,
+    "totalPoints": 656,
+    "qualityFlags": [],
+    "fixedLocations": [
+      "location:vector-monitoring:dag-hot-0",
+      "location:vector-monitoring:dag-hot-1",
+      "location:vector-monitoring:dag-hot-2",
+      "location:vector-monitoring:dag-hot-3"
+    ]
+  }
+}

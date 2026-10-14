@@ -2,7 +2,6 @@ import { operationResponse } from '@/application/agent/operation-http';
 import { NextRequest, NextResponse } from 'next/server';
 import { listSkillDefinitions } from '@/application/skills/skill-service';
 import { getServerDomain } from '@/application/config/runtime-profile';
-import { STANDARD_SKILLS } from '@/lib/skills/registry';
 import {resolveContext,authStatus} from '@/infrastructure/auth/session';
 import { dispatch,collectDispatch } from '@/application/dispatch/dispatch-service';
 import { normalizeInteraction,toLegacyResult } from '@/application/dispatch/legacy-adapter';
@@ -10,8 +9,8 @@ import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 
 export async function GET(req:NextRequest){
  return operationResponse(req,{type:'catalog.list'},'SKILL_CATALOG',payload=>{
-   const standardSkills=payload.standardSkills.map((definition:any)=>({...STANDARD_SKILLS.find(s=>s.id===definition.id),...definition,execute:undefined,parametersSchema:definition.inputSchema,category:STANDARD_SKILLS.find(s=>s.id===definition.id)?.category ?? 'common',categoryName:STANDARD_SKILLS.find(s=>s.id===definition.id)?.categoryName ?? '通用交互',iconName:STANDARD_SKILLS.find(s=>s.id===definition.id)?.iconName ?? 'Sparkles',recommendedPrompts:STANDARD_SKILLS.find(s=>s.id===definition.id)?.recommendedPrompts ?? [definition.name],visibility:'public',isCustom:false}));
-   const customSkills=payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? [],isCustom:true}));
+   const standardSkills=payload.standardSkills.map((definition:any)=>({...definition,visibility:'public',isCustom:false}));
+   const customSkills=payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,visualization:s.visualization_json?JSON.parse(s.visualization_json):undefined,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? [],isCustom:true}));
    return {standardSkills,customSkills,skills:[...standardSkills,...customSkills],total:standardSkills.length+customSkills.length};
  });
 }
@@ -27,5 +26,5 @@ export async function POST(req: NextRequest) {
   } catch (error) {return NextResponse.json({success:false,status:'FAILED',data:null,error:error instanceof Error?error.message:'执行失败'},{status:authStatus(error,400)});}
 }
 
-export async function PUT(req:NextRequest){let body;try{body=await req.json();}catch{return NextResponse.json({success:false,error:'Invalid JSON'},{status:400});}return operationResponse(req,{type:'skill.update',id:body.skillId,args:{name:body.name,description:body.description,sqlQuery:body.sqlQuery,chartType:body.chartType,visibility:body.visibility,recommendedPrompts:body.recommendedPrompts}},'SKILL_CATALOG');}
+export async function PUT(req:NextRequest){let body;try{body=await req.json();}catch{return NextResponse.json({success:false,error:'Invalid JSON'},{status:400});}return operationResponse(req,{type:'skill.update',id:body.skillId,args:{name:body.name,description:body.description,sqlQuery:body.sqlQuery,chartType:body.chartType,visualization:body.visualization,visibility:body.visibility,recommendedPrompts:body.recommendedPrompts}},'SKILL_CATALOG');}
 export async function DELETE(req:NextRequest){return operationResponse(req,{type:'skill.delete',id:new URL(req.url).searchParams.get('skillId') ?? ''},'SKILL_CATALOG');}

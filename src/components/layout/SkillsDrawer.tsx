@@ -2,7 +2,7 @@
 
 import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
-import { STANDARD_SKILLS } from '@/lib/skills/registry';
+import {implementationLabels,validationLabels} from '@/contracts/skill-capability';
 import { VectorSkill } from '@/lib/skills/types';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
@@ -88,7 +88,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
   const formattedCustomSkills: VectorSkill[] = customSkills
     .filter(cs => !cs.domain || cs.domain === profile.domain)
     .map(cs => ({
-      id: cs.id,
+      id: cs.id??cs.skill_id,
       name: cs.name,
       category: 'custom',
       categoryName: '自定义技能',
@@ -98,6 +98,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
       badgeColor: 'pink',
       domain: cs.domain || profile.domain,
       visibility: (cs.visibility as 'private' | 'public') || 'private',
+      availability:'available',implementationStatus:'implemented',validationStatus:'unvalidated',
       recommendedPrompts: Array.isArray(cs.recommendedPrompts) ? cs.recommendedPrompts : [`执行 ${cs.name}`],
       requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
       parametersSchema: { type: 'object', properties: {} },
@@ -106,19 +107,16 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ skillId: cs.id, args })
+          body: JSON.stringify({ skillId: cs.id??cs.skill_id, args })
         });
         const json = await res.json();
         return json.data;
       }
     }));
 
-  // 合并并根据当前智能体的专属技能进行严格隔离筛选
-  const domainStandardSkills = STANDARD_SKILLS.filter(s => 
-    (s.domain === profile.domain || s.domain === 'common') && (!profile.skillIds || profile.skillIds.includes(s.id))
-  );
-  const capabilities=typeof window==='undefined'?[]:(window as any).__CDC_RUNTIME_PROFILE__?.capabilities ?? [];
-  const rawSkills:VectorSkill[]=[...domainStandardSkills.map(s=>{const capability=capabilities.find((c:any)=>c.id===s.id);return {...s,name:capability?.name ?? s.name,description:capability?.availability==='planned'?'该能力尚未实现并验证。':capability?.description ?? s.description,availability:capability?.availability};}),...formattedCustomSkills];
+  const capabilities=typeof window==='undefined'?undefined:(window as any).__CDC_RUNTIME_PROFILE__?.capabilities;
+  // Only the server can advertise executable capabilities; never fall back to the legacy registry.
+  const rawSkills:VectorSkill[]=[...(capabilities??[]).filter((s:any)=>s.domain===profile.domain&&s.visibility!=='internal').map((s:any)=>({...s,visibility:'public',execute:async()=>{throw new Error('请通过主线Agent执行技能');}})),...formattedCustomSkills];
   const seenSkillIds = new Set<string>();
   const allSkills: VectorSkill[] = [];
   for (const s of rawSkills) {
@@ -160,7 +158,8 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
   const handleSaveSkillEdit = async (updated:EditableSkillData)=>{
     const {id,...args}=updated;
     const result=await interactFunctional({type:'skill.update',id,args});
-    if(result?.status==='SUCCESS')onRefreshCustomSkills?.();
+    if(result?.status!=='SUCCESS')throw new Error(result?.error?.message??result?.replyText??'技能保存失败');
+    onRefreshCustomSkills?.();
   };
 
   const handleConfirmDelete = async () => {
@@ -180,13 +179,14 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
   // 打开编辑弹窗
   const handleOpenEdit = (skill: VectorSkill) => {
-    const raw = customSkills.find(cs => cs.id === skill.id) || {};
+    const raw = customSkills.find(cs => (cs.id??cs.skill_id) === skill.id) || {};
     setEditingSkill({
       id: skill.id,
       name: skill.name,
       description: skill.description,
       sqlQuery: raw.sqlQuery || raw.sql_query || '',
       chartType: raw.chartType || raw.chart_type || 'bar',
+      visualization:raw.visualization??(raw.visualization_json?JSON.parse(raw.visualization_json):undefined),
       visibility: skill.visibility || 'private',
       recommendedPrompts: (skill.recommendedPrompts || []).map(p => typeof p === 'string' ? p : p.prompt)
     });
@@ -209,7 +209,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                   className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5"
                   title={`已接入 ${allSkills.length} 项专业模型与自定义技能${formattedCustomSkills.length > 0 ? ` (含 ${formattedCustomSkills.length} 项用户定制)` : ''}`}
                 >
-                  已接入 {allSkills.length} 项专业模型与自定义技能{formattedCustomSkills.length > 0 && ` (含 ${formattedCustomSkills.length} 项定制)`}
+                  已登记 {allSkills.length} 项能力与自定义技能{formattedCustomSkills.length > 0 && ` (含 ${formattedCustomSkills.length} 项定制)`}
                 </p>
               </div>
             </div>
@@ -259,7 +259,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
             {filteredSkills.length === 0 ? (
               <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
                 <Sparkles className="w-8 h-8 text-pink-500 mb-2 opacity-60 animate-pulse" />
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">暂无相关技能</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{capabilities?'暂无相关技能':'能力目录加载中'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
                   在对话中输入“帮我创建一个新技能：...”即可由智能体动态解析生成并永久注册到技能集市中。
                 </p>
@@ -274,7 +274,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
             ) : (
               filteredSkills.map(skill => {
                 const isMetaBuilder = skill.id === 'skill_meta_custom_builder';
-                const isUserCustomSkill = (!isMetaBuilder && skill.category === 'custom') || skill.id.startsWith('custom_skill_') || skill.id.startsWith('skill_custom_');
+                const isUserCustomSkill = skill.id.startsWith('custom_skill_') || skill.id.startsWith('skill_custom_');
                 const isCustomCategory = isUserCustomSkill || isMetaBuilder || skill.category === 'custom';
                 const hasPermission = isUserCustomSkill ? true : canAccessSkill(skill.id);
                 const IconComp = ICON_MAP[skill.iconName] || Layers;
@@ -336,13 +336,14 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                               </span>
                             )}
                           </div>
+                          <p className="text-xs text-slate-500 mt-1">{implementationLabels[skill.implementationStatus??'planned']} · {validationLabels[skill.validationStatus??'unvalidated']}</p>
                           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{skill.description}</p>
                         </div>
                       </div>
 
                       {/* 动作操作按钮组 */}
                       <div className="flex items-center gap-1 shrink-0">
-                        {hasPermission ? (
+                        {hasPermission && skill.availability!=='planned' ? (
                           <button
                             onClick={() => {
                               const firstPrompt = skill.recommendedPrompts[0];
@@ -362,7 +363,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                         ) : (
                           <span className="px-2 py-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 text-xs flex items-center gap-1">
                             <Lock className="w-3 h-3" />
-                            <span>无权使用</span>
+                            <span>{skill.availability==='planned'?'尚未实现':'无权使用'}</span>
                           </span>
                         )}
 
@@ -391,7 +392,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                     </div>
 
                     {/* 推荐 Prompts */}
-                    {skill.recommendedPrompts && skill.recommendedPrompts.length > 0 && hasPermission && (
+                    {skill.availability!=='planned' && skill.recommendedPrompts && skill.recommendedPrompts.length > 0 && hasPermission && (
                       <div className="bg-white dark:bg-slate-950/60 p-2 rounded-lg border border-slate-200 dark:border-slate-800/80 space-y-1">
                         <span className="text-[10px] text-slate-500 dark:text-slate-400 block">推荐场景（点击发送完整指令）:</span>
                         {skill.recommendedPrompts.map((rp, i) => (

@@ -1,0 +1,88 @@
+{
+  "phase": 3,
+  "date": "2026-10-14",
+  "validation": {
+    "refactor": {
+      "passed": 507,
+      "skipped": 1,
+      "skipReason": "real LLM test not enabled"
+    },
+    "scientific": {
+      "passed": 43
+    },
+    "integration": {
+      "passed": 51,
+      "localListenerAuthorized": true
+    },
+    "isolatedLegacy": {
+      "passed": 44
+    },
+    "targetedDAG": {
+      "passed": 14
+    },
+    "typescript": "passed",
+    "lint": "passed",
+    "productionBuild": "passed",
+    "diffWhitespace": "passed"
+  },
+  "catalog": {
+    "publicIds": 68,
+    "internalIds": 1,
+    "displayPositions": 104,
+    "plannedIds": 17,
+    "plannedPositions": 19,
+    "perDomain": {
+      "vector": 41,
+      "foodborne": 20,
+      "env": 21,
+      "chronic": 22
+    }
+  },
+  "mockScenario": {
+    "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d",
+    "status": "SUCCEEDED",
+    "seriesCount": 8,
+    "periodsPerSeries": 82,
+    "totalPoints": 656,
+    "qualityFlags": [],
+    "fixedLocations": [
+      "location:vector-monitoring:dag-hot-0",
+      "location:vector-monitoring:dag-hot-1",
+      "location:vector-monitoring:dag-hot-2",
+      "location:vector-monitoring:dag-hot-3"
+    ],
+    "weightsAndObservedLSTMBacktest": "unavailable",
+    "lstmEnabled": false
+  },
+  "restart": {
+    "separateProcesses": true,
+    "checkpointReused": true,
+    "status": "SUCCEEDED"
+  },
+  "migration": "011_scientific_dag.sql",
+  "sourceDatabasesUnchanged": true,
+  "limitations": [
+    "approximate circular conditional-Poisson scan; no full official SaTScan comparison",
+    "explicit K; no optimal-K or risk-category acceptance",
+    "mock proves engineering scenario, not observed scientific efficacy",
+    "LSTM unavailable: trained weights and accepted observed backtest absent",
+    "fixed 7-day DAG retention; independent artifacts 24 hours",
+    "orphan/expired artifact cleanup and delegated sharing remain",
+    "no browser manual acceptance; real LLM test skipped"
+  ],
+  "intermediateFailure": {
+    "scope": "first targeted run",
+    "error": "tampered plan error handler read nodes.find on missing nodes",
+    "fixed": true
+  },
+  "evidence": {
+    "refactor": "refactor.log",
+    "scientific": "scientific.log",
+    "integration": "integration.log",
+    "legacy": "baseline.log",
+    "sourceProtection": "source-protection.json",
+    "mock": "mock-dag.json",
+    "restart": "process-restart.json",
+    "catalog": "catalog.json"
+  }
+}

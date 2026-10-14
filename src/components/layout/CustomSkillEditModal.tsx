@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import {CustomChartFields} from './CustomChartFields';
+import type {QueryVisualization} from '@/contracts/query-visualization';
 import { X, Lock, Globe, Save, Sparkles, Database, Layout } from 'lucide-react';
 
 export interface EditableSkillData {
@@ -9,6 +11,7 @@ export interface EditableSkillData {
   description: string;
   sqlQuery: string;
   chartType: 'trend' | 'bar' | 'pie' | 'map' | 'table';
+  visualization?: QueryVisualization | null;
   visibility: 'private' | 'public';
   recommendedPrompts: string[];
 }
@@ -33,6 +36,8 @@ export const CustomSkillEditModal: React.FC<CustomSkillEditModalProps> = ({
   const [sqlQuery, setSqlQuery] = useState('');
   const [promptsText, setPromptsText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [visualization,setVisualization]=useState<QueryVisualization>();
+  const [saveError,setSaveError]=useState('');
 
   useEffect(() => {
     if (skill) {
@@ -40,6 +45,7 @@ export const CustomSkillEditModal: React.FC<CustomSkillEditModalProps> = ({
       setDescription(skill.description || '');
       setVisibility(skill.visibility || 'private');
       setChartType(skill.chartType || 'bar');
+      setVisualization(skill.visualization??undefined);setSaveError('');
       setSqlQuery(skill.sqlQuery || '');
       setPromptsText(Array.isArray(skill.recommendedPrompts) ? skill.recommendedPrompts.join('\n') : '');
     }
@@ -64,11 +70,13 @@ export const CustomSkillEditModal: React.FC<CustomSkillEditModalProps> = ({
         description: description.trim(),
         visibility,
         chartType,
+        visualization:chartType==='table'?null:visualization,
         sqlQuery: sqlQuery.trim(),
         recommendedPrompts: prompts.length > 0 ? prompts : [`执行 ${name.trim()}`]
       });
       onClose();
     } catch (err) {
+      setSaveError(err instanceof Error?err.message:'保存失败');
       console.error('保存技能失败:', err);
     } finally {
       setIsSaving(false);
@@ -190,13 +198,14 @@ export const CustomSkillEditModal: React.FC<CustomSkillEditModalProps> = ({
               {[
                 { id: 'map', label: '地图分布' },
                 { id: 'bar', label: '柱状对比' },
+                { id: 'pie', label: '构成比例' },
                 { id: 'trend', label: '趋势折线' },
                 { id: 'table', label: '数据表格' }
               ].map(item => (
                 <button
                   type="button"
                   key={item.id}
-                  onClick={() => setChartType(item.id as any)}
+                  onClick={() => {setChartType(item.id as any);setVisualization(undefined);}}
                   className={`py-1.5 px-2 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                     chartType === item.id
                       ? 'bg-sky-600 text-white border-sky-600 shadow-xs font-semibold'
@@ -209,6 +218,8 @@ export const CustomSkillEditModal: React.FC<CustomSkillEditModalProps> = ({
             </div>
           </div>
 
+          <CustomChartFields chartType={chartType} value={visualization} onChange={setVisualization}/>
+          {saveError&&<p role="alert" className="text-red-600">{saveError}</p>}
           {/* 聚合分析 SQL 语句 */}
           <div className="space-y-1.5">
             <label className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">

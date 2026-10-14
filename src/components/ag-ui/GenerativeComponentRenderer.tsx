@@ -1,4 +1,5 @@
 'use client';
+import {implementationLabels,validationLabels} from '@/contracts/skill-capability';
 
 import React,{useId} from 'react';
 import type {MapFeatureRef} from '@/lib/geo/map-interaction';
@@ -83,7 +84,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
       {view.type==='COLLECTION_FORM'&&<MobileSimulationModal data={view}/>}
       {view.type==='ARTIFACT_DOWNLOAD'&&<div className="p-5"><h3 className="font-semibold">导出文件</h3><a href={view.downloadUrl} className="text-sky-600 underline" download>{view.fileName}</a><p className="text-xs text-slate-500 mt-2">{view.byteLength} 字节</p></div>}
       {view.type==='SESSION_RESULT'&&<div className="p-5"><h3 className="font-semibold">会话管理</h3>{view.sessions?.map((session:any)=><p key={session.sessionId}>{session.title} · {session.messageCount} 条消息</p>)}{view.session&&<p>{view.session.title}</p>}</div>}
-      {view.type==='SKILL_CATALOG'&&<div className="p-5"><h3 className="font-semibold">技能列表</h3>{view.standardSkills?.map((skill:any)=><p key={skill.id} className="text-sm mt-2">{skill.name} · {skill.availability==='available'?'可执行':'尚未实现'}</p>)}{view.customSkills?.map((skill:any)=><p key={skill.skill_id}>{skill.name}</p>)}</div>}
+      {view.type==='SKILL_CATALOG'&&<div className="p-5"><h3 className="font-semibold">技能列表</h3>{view.standardSkills?.map((skill:any)=><p key={skill.id} className="text-sm mt-2">{skill.name} · {implementationLabels[skill.implementationStatus as keyof typeof implementationLabels]??'尚未实现'} · {validationLabels[skill.validationStatus as keyof typeof validationLabels]??'尚未验证'}</p>)}{view.customSkills?.map((skill:any)=><p key={skill.skill_id}>{skill.name}</p>)}</div>}
       {view.type==='COLLECTION_RESULT'&&<div className="p-5"><h3 className="font-semibold">现场采集结果</h3>{view.record&&<p>记录编号：{view.record.submission_id}；审核状态：{statusLabel(view.record.audit_status)}</p>}{view.evaluation&&<p>经验质控规则：{view.evaluation.passedRulesCount}/{view.evaluation.totalRulesCount} 未触发异常；{view.evaluation.warnings.length} 项需复核。</p>}</div>}
       {view.type === 'SPATIAL_EARLY_WARNING_MAP' && (
         <div className={isCompact ? "w-full h-[380px] rounded-xl overflow-hidden relative" : "w-full h-[560px] shrink-0 relative"}>

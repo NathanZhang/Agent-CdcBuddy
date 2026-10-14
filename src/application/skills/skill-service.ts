@@ -1,4 +1,6 @@
+import {customVisualization} from './custom-visualization';
 import {queryVisualizationSchema} from '@/contracts/query-visualization';
+import {withCapabilityMetadata} from './capability-metadata';
 import {withResultStatistics} from '@/contracts/result-statistics';
 import {saveQuerySource} from '@/application/geo/query-source-store';
 import Ajv from 'ajv';
@@ -30,7 +32,7 @@ export function listSkillDefinitions(domain:AgentDomain,options:{includeInternal
   const factories={vector:vectorSkills,foodborne:foodborneSkills,env:envSkills,chronic:chronicSkills};
   if(!Object.hasOwn(factories,domain))throw new Error('Unknown domain');
   const workflows=workflowSkills(domain);
-  return [...factories[domain]().filter(s=>!workflows.some(w=>w.id===s.id)),...interactionSkills(domain),...workflows,...mapSkills(domain),...annotationSkills(domain)].filter(skill=>options.includeInternal || skill.visibility!=='internal');
+  return [...factories[domain]().filter(s=>!workflows.some(w=>w.id===s.id)),...interactionSkills(domain),...workflows,...mapSkills(domain),...annotationSkills(domain)].filter(skill=>options.includeInternal || skill.visibility!=='internal').map(withCapabilityMetadata);
 }
 export function createSkillService(definitions:SkillDefinition[]){
   const catalog=new Map<string,SkillDefinition>();
@@ -46,7 +48,7 @@ export function createSkillService(definitions:SkillDefinition[]){
       if(!definition && id.startsWith('custom_skill_')){
         const custom=await getAppBusinessProvider().getCustomSkillById(id);
         if(custom){if(custom.domain!==ctx.domain)return fail('FORBIDDEN_DOMAIN','Stored custom skill belongs to another domain');if(custom.visibility!=='public' && custom.created_by!==ctx.principal.userId)return fail('FORBIDDEN_OWNER','Private skill access denied');
-          definition={id,aliases:[],domain:ctx.domain,name:custom.name,requirementIds:[],availability:'available',inputSchema:{type:'object',additionalProperties:false,properties:{visualization:queryVisualizationSchema}},outputSchema:{type:'object',required:['type','data'],properties:{type:{const:'DATA_TABLE_VIEW'},data:{type:'array'}}},method:'stored-domain-query-v1',allowedOperations:['read'],execute:async(customArgs,context)=>{const data=getDomainRepository(context.domain).query(custom.sql_query,[],scopeFromArgs({sql:custom.sql_query,...customArgs},context));return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:custom.name,sql:custom.sql_query,data,...(customArgs.visualization?{visualization:customArgs.visualization}:{})}:null};}};
+          definition={id,aliases:[],domain:ctx.domain,name:custom.name,requirementIds:[],availability:'available',inputSchema:{type:'object',additionalProperties:false,properties:{visualization:queryVisualizationSchema}},outputSchema:{type:'object',required:['type','data'],properties:{type:{const:'DATA_TABLE_VIEW'},data:{type:'array'}}},method:'stored-domain-query-v1',allowedOperations:['read'],execute:async(customArgs,context)=>{const data=getDomainRepository(context.domain).query(custom.sql_query,[],scopeFromArgs({sql:custom.sql_query,...customArgs},context));const visualization=customVisualization(customArgs.visualization??(custom.visualization_json?JSON.parse(custom.visualization_json):undefined),customArgs.visualization?(customArgs.visualization.kind==='line'?'trend':customArgs.visualization.kind):custom.chart_type,data,custom.sql_query,context);return {status:data.length?'SUCCESS':'NO_DATA',payload:data.length?{type:'DATA_TABLE_VIEW',title:custom.name,sql:custom.sql_query,data,...(visualization?{visualization}: {})}:null,qualityFlags:!visualization&&custom.chart_type!=='table'?['legacy-visualization-unconfigured']:[]};}};
         }
       }
       if(!definition)return fail('UNKNOWN_SKILL','Unknown skill ID');

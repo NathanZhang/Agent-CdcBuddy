@@ -1,3 +1,5 @@
+import {customVisualization} from '@/application/skills/custom-visualization';
+import {queryVisualizationSchema} from '@/contracts/query-visualization';
 import {workflowDataset} from '@/application/jobs/workflow-provenance';
 import {assertResultSources} from '@/infrastructure/db/dataset-policy';
 import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
@@ -61,11 +63,14 @@ async function collectionExecute(args:any,ctx:ExecutionContext):Promise<SkillExe
 }
 async function catalogExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
  const provider=getAppBusinessProvider();
- if(args.action==='list'){const custom=await provider.getAllCustomSkills(ctx.domain);const {listSkillDefinitions}=await import('@/application/skills/skill-service');const standard=listSkillDefinitions(ctx.domain).map(({execute,...metadata})=>metadata);return {status:'SUCCESS',payload:{type:'SKILL_CATALOG',action:'list',standardSkills:standard,customSkills:custom.filter(s=>s.visibility==='public'||s.created_by===ctx.principal.userId)},datasets:[]};}
+ if(args.action==='list'){const custom=await provider.getAllCustomSkills(ctx.domain);const {listSkillDefinitions}=await import('@/application/skills/skill-service');const {publicSkillMetadata}=await import('@/application/skills/capability-metadata');const standard=listSkillDefinitions(ctx.domain).map(publicSkillMetadata);return {status:'SUCCESS',payload:{type:'SKILL_CATALOG',action:'list',standardSkills:standard,customSkills:custom.filter(s=>s.visibility==='public'||s.created_by===ctx.principal.userId)},datasets:[]};}
  const skill=await provider.getCustomSkillById(args.skillId);if(!skill)return {status:'NO_DATA',payload:null,datasets:[]};if(skill.domain!==ctx.domain||skill.created_by!==ctx.principal.userId)throw new Error('Custom skill owner/domain access denied');
  if(args.action==='delete'){await provider.deleteCustomSkill(args.skillId);return {status:'SUCCESS',payload:{type:'SKILL_CATALOG',action:'delete',skillId:args.skillId,deleted:true},datasets:[]};}
- if(args.sqlQuery)getDomainRepository(ctx.domain).query(args.sqlQuery,[],scopeFromArgs({},ctx));
- await provider.updateCustomSkill(args.skillId,{name:args.name,description:args.description,sql_query:args.sqlQuery,chart_type:args.chartType,visibility:args.visibility,recommended_prompts:Array.isArray(args.recommendedPrompts)?args.recommendedPrompts.join(';'):args.recommendedPrompts});
+ const sql=args.sqlQuery??skill.sql_query;const chartType=args.chartType??skill.chart_type;
+ const changed=args.sqlQuery!==undefined||args.chartType!==undefined||args.visualization!==undefined;
+ let visualization=skill.visualization_json?JSON.parse(skill.visualization_json):undefined;
+ if(changed){const rows=getDomainRepository(ctx.domain).query(sql,[],scopeFromArgs({sql},ctx));visualization=customVisualization(args.visualization===null||chartType==='table'?undefined:args.visualization??visualization,chartType,rows,sql,ctx);}
+ await provider.updateCustomSkill(args.skillId,{name:args.name,description:args.description,sql_query:args.sqlQuery,chart_type:args.chartType,...(changed?{visualization_json:visualization?JSON.stringify(visualization):null}:{}),visibility:args.visibility,recommended_prompts:Array.isArray(args.recommendedPrompts)?args.recommendedPrompts.join(';'):args.recommendedPrompts});
  return {status:'SUCCESS',payload:{type:'SKILL_CATALOG',action:'update',skill:await provider.getCustomSkillById(args.skillId)},datasets:[]};
 }
 async function artifactExecute(args:any,ctx:ExecutionContext):Promise<SkillExecution>{
@@ -91,7 +96,7 @@ export function interactionSkills(domain:AgentDomain):SkillDefinition[]{
   make('skill_session_manage','用户对话会话管理（不是领域监测数据查询）',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['create','list','read','update','delete','clear']},sessionId:str,title:str,isPinned:{type:'boolean'},keyword:{type:'string',maxLength:200},limit:{type:'integer',minimum:1,maximum:100},offset:{type:'integer',minimum:0}},allOf:[{if:{properties:{action:{enum:['read','update','delete']}}},then:{required:['sessionId']}}]},'SESSION_RESULT',sessionExecute,['read','write']),
   {...make('skill_session_journal','内部会话运行记录',{type:'object',additionalProperties:false,required:['sourceRunId'],properties:{sessionId:str,sourceRunId:str}},'SESSION_RESULT',(args,ctx)=>sessionExecute({...args,action:'append'},ctx),['write']),visibility:'internal' as const},
   make('skill_collection_manage','现场采集质控与提交（人工物种录入）',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['form','validate','submit']},record:samplingSchema},allOf:[{if:{properties:{action:{enum:['validate','submit']}}},then:{required:['record']}}]},'COLLECTION_RESULT|COLLECTION_FORM',collectionExecute,['read','write']),
-  make('skill_catalog_manage','技能列表、编辑与删除',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['list','update','delete']},skillId:str,name:str,description:{type:'string',maxLength:2000},sqlQuery:{type:'string',maxLength:20000},chartType:{enum:['table','trend','bar','pie','map']},visibility:{enum:['public','private']},recommendedPrompts:{type:'array',items:str}},allOf:[{if:{properties:{action:{enum:['update','delete']}}},then:{required:['skillId']}}]},'SKILL_CATALOG',catalogExecute,['read','write']),
+  make('skill_catalog_manage','技能列表、编辑与删除',{type:'object',additionalProperties:false,required:['action'],properties:{action:{enum:['list','update','delete']},skillId:str,name:str,description:{type:'string',maxLength:2000},sqlQuery:{type:'string',maxLength:20000},visualization:{anyOf:[queryVisualizationSchema,{type:'null'}]},chartType:{enum:['table','trend','bar','pie','map']},visibility:{enum:['public','private']},recommendedPrompts:{type:'array',items:str}},allOf:[{if:{properties:{action:{enum:['update','delete']}}},then:{required:['skillId']}}]},'SKILL_CATALOG',catalogExecute,['read','write']),
   make('skill_artifact_export','导出真实查询 CSV 或已归档报告 Markdown',{type:'object',additionalProperties:false,required:['format'],properties:{format:{enum:['csv','markdown']},sql:{type:'string',minLength:1,maxLength:20000},reportId:str,fileName:str,sourceRunId:str,sourceCallId:str,city:str,district:str,from:{type:'string'},to:{type:'string'}},allOf:[{if:{properties:{format:{const:'csv'}}},then:{required:['sql']}},{if:{properties:{format:{const:'markdown'}}},then:{required:['reportId']}}]},'ARTIFACT_DOWNLOAD',artifactExecute,['read','export'])
  ].filter(skill=>skill.id!=='skill_collection_manage' || domain==='vector');
 }

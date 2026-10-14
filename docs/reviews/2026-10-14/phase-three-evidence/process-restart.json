@@ -1,0 +1,516 @@
+{
+  "mode": "independent-node-process-for-each-control-and-worker-call",
+  "submitted": {
+    "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+    "status": "QUEUED",
+    "reused": false
+  },
+  "beforeCancel": {
+    "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+    "status": "RUNNING",
+    "error": null,
+    "checkpointError": null,
+    "nodes": [
+      {
+        "nodeId": "measurements",
+        "operation": "measurements",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "c12b0d86-a7e3-4c36-9c3b-6a2fcf4bb00f",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "3d28f079a492e1279993f3f87a8b90f36e1ec6574306b1a376ce98ee32e6d087",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "scan",
+        "operation": "scan",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      },
+      {
+        "nodeId": "members",
+        "operation": "scan-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      },
+      {
+        "nodeId": "features",
+        "operation": "features",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      },
+      {
+        "nodeId": "clusters",
+        "operation": "kmeans",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      },
+      {
+        "nodeId": "fixed",
+        "operation": "cluster-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      },
+      {
+        "nodeId": "history",
+        "operation": "series",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "PENDING",
+        "attempts": 0,
+        "output": null,
+        "error": null
+      }
+    ],
+    "events": [
+      {
+        "node_id": "measurements",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"c12b0d86-a7e3-4c36-9c3b-6a2fcf4bb00f\",\"kind\":\"Measurements\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"3d28f079a492e1279993f3f87a8b90f36e1ec6574306b1a376ce98ee32e6d087\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972246097
+      },
+      {
+        "node_id": "measurements",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972245894
+      },
+      {
+        "node_id": null,
+        "type": "COMPILED",
+        "details_json": "{\"planHash\":\"5327849e08960d86ca4de9b7e18e29b3537f92151d3eca3ee6ff9b67a267ebe9\",\"nodes\":7}",
+        "created_at": 1791972245224
+      }
+    ]
+  },
+  "cancelled": {
+    "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+    "status": "CANCELLED"
+  },
+  "resumed": {
+    "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+    "status": "QUEUED"
+  },
+  "workerSteps": [
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "measurements",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "scan",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "members",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "features",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "clusters",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "fixed",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "nodeId": "history",
+      "status": "SUCCEEDED"
+    },
+    {
+      "worked": true,
+      "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "final": {
+    "runId": "cdbcd243-98e0-46ec-bdbc-402e9fe9dfd6",
+    "status": "SUCCEEDED",
+    "error": null,
+    "checkpointError": null,
+    "nodes": [
+      {
+        "nodeId": "measurements",
+        "operation": "measurements",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "c12b0d86-a7e3-4c36-9c3b-6a2fcf4bb00f",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "3d28f079a492e1279993f3f87a8b90f36e1ec6574306b1a376ce98ee32e6d087",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "scan",
+        "operation": "scan",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "37760494-4419-4be1-b6b0-0c26e9f163c5",
+          "kind": "ScanResult",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "3d8a0e4f343c0be90a803cbbd4208b161aadadceeb16d0bc320dd6b8062a79f1",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "members",
+        "operation": "scan-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "8885ccfd-a40b-402b-a09f-f729c7f6ad12",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "4f21aa22b92f4fc6be6c0c2956ab9bc1b0fa60df74fdb5976b5aee2f128beb84",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "features",
+        "operation": "features",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "4bdcd8f3-106d-4194-a543-377dcd71033b",
+          "kind": "FeatureMatrix",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "1129e1bce94539ee223e052e5422b751db76c2ef8419abab0fccb81172facf85",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "clusters",
+        "operation": "kmeans",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "823f86ce-5ead-4fee-9a7d-9d4fb8c66fcf",
+          "kind": "ClusterSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "c1a4fc256e08543390707bd194e0e5184ce69f1719386aa4cca75b08b5c63e72",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "fixed",
+        "operation": "cluster-select",
+        "window": {
+          "from": "2024-06-01",
+          "to": "2024-06-30"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "aab7b792-7074-4998-bd00-17ea7a263a21",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "6d567e787dab4c68784076d6df9a126e3eeee7b3c202219b07b795610d669a92",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      },
+      {
+        "nodeId": "history",
+        "operation": "series",
+        "window": {
+          "from": "2019-01-01",
+          "to": "2025-10-31"
+        },
+        "status": "SUCCEEDED",
+        "attempts": 1,
+        "output": {
+          "artifactId": "91e4e472-8a6f-484d-9cc5-a681531b2690",
+          "kind": "SeriesSet",
+          "schemaVersion": "1",
+          "domain": "vector",
+          "contentHash": "f8ec9c47d7d7f0c7df45a8f25826405dea7e5d8e80c2dfc68b1377b2e57edd47",
+          "scopeFingerprint": "b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491",
+          "datasetRefs": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        "error": null
+      }
+    ],
+    "events": [
+      {
+        "node_id": null,
+        "type": "SUCCEEDED",
+        "details_json": "{}",
+        "created_at": 1791972262755
+      },
+      {
+        "node_id": "history",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"91e4e472-8a6f-484d-9cc5-a681531b2690\",\"kind\":\"SeriesSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"f8ec9c47d7d7f0c7df45a8f25826405dea7e5d8e80c2dfc68b1377b2e57edd47\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972260820
+      },
+      {
+        "node_id": "history",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972260279
+      },
+      {
+        "node_id": "fixed",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"aab7b792-7074-4998-bd00-17ea7a263a21\",\"kind\":\"SelectionSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"6d567e787dab4c68784076d6df9a126e3eeee7b3c202219b07b795610d669a92\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"fixed-members-from-cluster-snapshot\"]}",
+        "created_at": 1791972258504
+      },
+      {
+        "node_id": "fixed",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972258341
+      },
+      {
+        "node_id": "clusters",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"823f86ce-5ead-4fee-9a7d-9d4fb8c66fcf\",\"kind\":\"ClusterSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"c1a4fc256e08543390707bd194e0e5184ce69f1719386aa4cca75b08b5c63e72\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"exploratory-clusters-not-risk-classes\"]}",
+        "created_at": 1791972256674
+      },
+      {
+        "node_id": "clusters",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972255165
+      },
+      {
+        "node_id": "features",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"4bdcd8f3-106d-4194-a543-377dcd71033b\",\"kind\":\"FeatureMatrix\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"1129e1bce94539ee223e052e5422b751db76c2ef8419abab0fccb81172facf85\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972253551
+      },
+      {
+        "node_id": "features",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972253299
+      },
+      {
+        "node_id": "members",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"8885ccfd-a40b-402b-a09f-f729c7f6ad12\",\"kind\":\"SelectionSet\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"4f21aa22b92f4fc6be6c0c2956ab9bc1b0fa60df74fdb5976b5aee2f128beb84\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972251777
+      },
+      {
+        "node_id": "members",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972251696
+      },
+      {
+        "node_id": "scan",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"37760494-4419-4be1-b6b0-0c26e9f163c5\",\"kind\":\"ScanResult\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"3d8a0e4f343c0be90a803cbbd4208b161aadadceeb16d0bc320dd6b8062a79f1\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[\"approximate-circular-scan-not-full-satscan\"]}",
+        "created_at": 1791972250245
+      },
+      {
+        "node_id": "scan",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972248807
+      },
+      {
+        "node_id": null,
+        "type": "RESUMED",
+        "details_json": "{}",
+        "created_at": 1791972248123
+      },
+      {
+        "node_id": null,
+        "type": "CANCELLED",
+        "details_json": "{}",
+        "created_at": 1791972247446
+      },
+      {
+        "node_id": "measurements",
+        "type": "NODE_SUCCEEDED",
+        "details_json": "{\"artifactRef\":{\"artifactId\":\"c12b0d86-a7e3-4c36-9c3b-6a2fcf4bb00f\",\"kind\":\"Measurements\",\"schemaVersion\":\"1\",\"domain\":\"vector\",\"contentHash\":\"3d28f079a492e1279993f3f87a8b90f36e1ec6574306b1a376ce98ee32e6d087\",\"scopeFingerprint\":\"b0c43e33d9ac2aff52b7a65e6e1abb57542d3d11ecf6d223887e05ef70965491\",\"datasetRefs\":[{\"id\":\"vector-monitoring\",\"domain\":\"vector\",\"origin\":\"mock\",\"version\":\"synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982\",\"asOf\":\"2025-11-05\",\"schemaVersion\":\"1\"}]},\"qualityFlags\":[]}",
+        "created_at": 1791972246097
+      },
+      {
+        "node_id": "measurements",
+        "type": "NODE_STARTED",
+        "details_json": "{}",
+        "created_at": 1791972245894
+      },
+      {
+        "node_id": null,
+        "type": "COMPILED",
+        "details_json": "{\"planHash\":\"5327849e08960d86ca4de9b7e18e29b3537f92151d3eca3ee6ff9b67a267ebe9\",\"nodes\":7}",
+        "created_at": 1791972245224
+      }
+    ]
+  },
+  "checkpointReused": true
+}

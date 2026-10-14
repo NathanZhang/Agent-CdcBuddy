@@ -23,12 +23,18 @@ function calendarPositions(labels: unknown[]): number[] | undefined {
 /** The chart consumes the executed rows; it never queries or supplies fallback values. */
 export function QueryResultVisualization({ rows, spec }: { rows: Row[]; spec?: QueryVisualization }) {
   if (!spec || !rows.length) return null;
-  const title = spec.kind === 'map' ? '监测空间分布' : spec.kind === 'line' ? '时间趋势' : '分组对比';
+  const title = spec.kind === 'map' ? '监测空间分布' : spec.kind === 'line' ? '时间趋势' : spec.kind==='pie'?'构成比例':'分组对比';
   let graphic: React.ReactNode;
   if (spec.kind === 'map') {
     const points = mapPoints(rows, spec);
     if (!points.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的坐标与数值，请查看明细。</p>;
     return <QueryResultMap points={points} unit={spec.unit??'点位'}/>;
+  } else if(spec.kind==='pie') {
+    const valid=rows.filter(r=>finite(r[spec.yKey])&&(r[spec.yKey] as number)>=0);
+    const total=valid.reduce((sum,r)=>sum+(r[spec.yKey] as number),0);
+    if(total<=0||!Number.isFinite(total))return <p className="text-xs text-slate-500">当前结果缺少正数总量，无法计算构成比例，请查看明细。</p>;
+    let offset=0;const colors=['#0284c7','#16a34a','#f59e0b','#a855f7','#f43f5e','#64748b'];
+    graphic=<>{valid.map((r,i)=>{const fraction=(r[spec.yKey] as number)/total;const start=offset;offset+=fraction;return <g key={i}><circle data-series="pie" cx="170" cy="175" r="95" fill="none" stroke={colors[i%colors.length]} strokeWidth="50" pathLength="1" strokeDasharray={`${fraction} ${1-fraction}`} strokeDashoffset={-start} transform="rotate(-90 170 175)" tabIndex={0}><title>{`${r[spec.xKey]}：${number(r[spec.yKey] as number)} ${spec.unit}（${number(fraction*100)}%）`}</title></circle><text x="320" y={28+i*22} fill={colors[i%colors.length]} fontSize="12">{`${r[spec.xKey]}：${number(fraction*100)}%`}</text></g>;})}</>;
   } else {
     const valid = rows.filter(r => finite(r[spec.yKey]));
     if (!valid.length) return <p className="text-xs text-slate-500">当前结果没有可绘制的数值，请查看明细。</p>;

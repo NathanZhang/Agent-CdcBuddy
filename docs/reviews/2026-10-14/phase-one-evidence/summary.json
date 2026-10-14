@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-14",
+  "refactor": {
+    "passed": 480,
+    "skipped": 1,
+    "failed": 0
+  },
+  "scientific": {
+    "passed": 36,
+    "failed": 0
+  },
+  "integration": {
+    "passed": 51,
+    "failed": 0,
+    "requiresLocalHttpListener": true
+  },
+  "legacy": {
+    "passed": 44,
+    "failed": 0
+  },
+  "lint": "passed",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "businessMigration": "009_custom_visualization.sql",
+  "sourceDatabasesUnchanged": true
+}

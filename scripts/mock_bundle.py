@@ -12,7 +12,7 @@ DOMAINS = ('vector', 'foodborne', 'env', 'chronic')
 AS_OF = {'vector': '2025-11-05', 'foodborne': '2026-08-31', 'env': '2026-08-31', 'chronic': '2026-08-19'}
 
 
-def generate_bundle(output_dir, seed=7, kind='ci', audit_dir=None, retention_days=7):
+def generate_bundle(output_dir, seed=7, kind='ci', audit_dir=None, retention_days=7, vector_profile='historical-demo'):
     sys.path.insert(0, str(ROOT))
     from analytics_engine.mock_lifecycle import assert_generation_allowed
     assert_generation_allowed()
@@ -26,6 +26,8 @@ def generate_bundle(output_dir, seed=7, kind='ci', audit_dir=None, retention_day
         output = output_dir / f'{domain}.db'
         command = [sys.executable, str(ROOT / f'scripts/init_{domain}_mock.py'),
                    '--output', str(output), '--seed', str(seed), '--retention-days', str(retention_days)]
+        if domain == 'vector':
+            command += ['--profile', vector_profile]
         if audit_dir:
             command += ['--audit-dir', str(Path(audit_dir).resolve())]
         subprocess.run(command, check=True, stdout=subprocess.DEVNULL)

@@ -1,0 +1,65 @@
+{
+  "profile": "scientific-dag",
+  "seed": 42,
+  "purpose": "engineering-scenario-only",
+  "snapshotDirectory": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific",
+  "auditDirectory": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/audit",
+  "origin": "mock",
+  "datasets": [
+    {
+      "id": "vector-monitoring",
+      "domain": "vector",
+      "origin": "mock",
+      "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+      "schemaVersion": "1",
+      "asOf": "2025-11-05",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific/vector.db",
+      "sha256": "0846e630d2c9a3b6921f0f79c05d5657006f6836c5aa3e6a184cb63f8d91db46"
+    },
+    {
+      "id": "foodborne-monitoring",
+      "domain": "foodborne",
+      "origin": "mock",
+      "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+      "schemaVersion": "1",
+      "asOf": "2026-08-31",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific/foodborne.db",
+      "sha256": "34f1707139ec059fd1703ddad9351389286d5fe87589f31b5a584108e75c1b22"
+    },
+    {
+      "id": "env-monitoring",
+      "domain": "env",
+      "origin": "mock",
+      "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+      "schemaVersion": "1",
+      "asOf": "2026-08-31",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific/env.db",
+      "sha256": "a084b28607dd159f28dd139d4d0da6ad8a2f8bf16cad135833435a3012a6e926"
+    },
+    {
+      "id": "chronic-monitoring",
+      "domain": "chronic",
+      "origin": "mock",
+      "version": "synthetic-scientific-dag-v3-fd2fec56-98ee-4c49-9d7d-6efc0260c982",
+      "schemaVersion": "1",
+      "asOf": "2026-08-19",
+      "path": "/Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy/.mock-data/phase-three-scientific/chronic.db",
+      "sha256": "0cc39a7c1313b5e0947ac9d7f3753980ef0c0fa20eafc5c8ecc4c3a0fbc62f78"
+    }
+  ],
+  "observedConfigUnchanged": true,
+  "sourceProtection": true,
+  "history": {
+    "seriesCount": 8,
+    "periodsPerSeries": 82,
+    "totalPoints": 656,
+    "qualityFlags": [],
+    "fixedLocations": [
+      "location:vector-monitoring:dag-hot-0",
+      "location:vector-monitoring:dag-hot-1",
+      "location:vector-monitoring:dag-hot-2",
+      "location:vector-monitoring:dag-hot-3"
+    ]
+  },
+  "runId": "d9db9e42-4022-4500-a757-4ff610aebd8d"
+}

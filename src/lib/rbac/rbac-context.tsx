@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {setCsrfToken,authHeaders} from '@/infrastructure/auth/client';
 import type {Principal} from '@/contracts/principal';
+import {authorizeSkill} from '@/infrastructure/auth/authorization';
 import { UserRole, UserProfile, PRESET_ROLES } from './types';
 
 interface RbacContextType {
@@ -29,8 +30,12 @@ export const RbacProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const canAccessSkill = (skillId: string): boolean => {
-    if (currentUser.allowedSkillIds.includes('*')) return true;
-    return currentUser.allowedSkillIds.includes(skillId);
+    if(typeof window==='undefined')return false;
+    const profile=(window as any).__CDC_RUNTIME_PROFILE__;
+    const skill=profile?.capabilities?.find((s:any)=>s.id===skillId);
+    if(!skill)return false;
+    const identity:Principal=principal??{userId:currentUser.id,organizationId:currentUser.department,role:currentUser.role,domainGrants:[profile.domain],jurisdiction:{city:currentUser.jurisdictionCity,district:currentUser.jurisdictionDistrict},mode:'dev'};
+    try{authorizeSkill(skill,{action:'list'},{runId:'ui-eligibility',domain:profile.domain,deploymentTier:'local',principal:identity});return true;}catch{return false;}
   };
 
   const filterByJurisdiction = <T extends { city?: string; district?: string }>(items: T[]): T[] => {

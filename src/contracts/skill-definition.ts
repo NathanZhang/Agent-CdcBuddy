@@ -19,6 +19,9 @@ export interface SkillDefinition {
   requirementIds: number[];
   visibility?: 'public' | 'internal';
   availability: 'available' | 'planned';
+  implementationStatus?: import('./skill-capability').ImplementationStatus;
+  validationStatus?: import('./skill-capability').ValidationStatus;
+  validationEvidence?: string[];
   inputSchema: JsonSchema;
   outputSchema: JsonSchema;
   method: string;

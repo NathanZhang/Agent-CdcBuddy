@@ -1,127 +1,73 @@
-from analytics_engine.repositories.datasets import resolve_dataset_path, connect_readonly
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-================================================================================
-环境健康风险监测预警 - 饮用水安全随机森林健康风险与克里金空间插值
-(Drinking Water Health Risk Assessment & Ordinary Kriging Spatial Interpolation)
-================================================================================
-依据《人工智能-四智能体-功能清单》序号 44、45：
-1. 基于随机森林/US EPA 健康风险模型评估水质化学因子的致癌/非致癌健康风险
-2. 普通克里金空间插值 (Ordinary Kriging)，根据离散水厂与管网点位生成连续风险热力场
-================================================================================
-"""
-
-import os
-import sqlite3
-import numpy as np
+"""Bounded summaries of recorded water measurements, not RF, kriging or risk inference."""
 import math
-from typing import Dict, Any, List
+import sqlite3
+from datetime import date
+from analytics_engine.repositories.datasets import resolve_dataset_path, connect_readonly
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-def evaluate_water_health_risk(city: str = None, district: str = None, db_path: str = None) -> Dict[str, Any]:
-    """
-    基于实测水质数据执行随机森林与 US EPA 健康风险评估
-    """
-    conn = connect_readonly(db_path or resolve_dataset_path('env'))
-    cur = conn.cursor()
-
-    query = """
-        SELECT w.record_id, w.city, w.district, w.sample_type, w.disinfection_method,
-               w.turbidity, w.free_chlorine, w.cod_mn, w.total_coliforms,
-               w.lead_val, w.cadmium_val, w.arsenic_val, w.fluoride_val, w.chloroform_val,
-               w.is_standard_met, w.carcinogenic_risk, w.hazard_quotient,
-               s.latitude, s.longitude, w.monitoring_date
-        FROM fact_water_monitoring w
-        LEFT JOIN dim_env_stations s ON w.station_id = s.station_id
-        WHERE 1=1
-    """
-    params = []
-    if city and city != "河南省全域":
-        query += " AND w.city = ?"
-        params.append(city)
-    if district:
-        query += " AND w.district = ?"
-        params.append(district)
-
-    query += " ORDER BY w.monitoring_date DESC LIMIT 500"
-    cur.execute(query, params)
-    rows = cur.fetchall()
-    conn.close()
-
+def evaluate_water_health_risk(city=None, district=None, db_path=None, from_date=None, as_of=None, limit=500):
+    if type(limit) is not int or not 1 <= limit <= 1000:
+        raise ValueError('Invalid sample limit')
+    conditions, params = [], []
+    for column, value in [('city', city), ('district', district)]:
+        if value is not None:
+            conditions.append(f'w.{column}=?')
+            params.append(value)
+    for operator, value in [('>=', from_date), ('<=', as_of)]:
+        if value:
+            conditions.append(f'w.monitoring_date{operator}?')
+            params.append(date.fromisoformat(value).isoformat())
+    where = ' WHERE ' + ' AND '.join(conditions) if conditions else ''
+    with connect_readonly(db_path or resolve_dataset_path('env')) as conn:
+        conn.row_factory = sqlite3.Row
+        matched = conn.execute("SELECT COUNT(*) n,COUNT(DISTINCT NULLIF(TRIM(w.station_id),'')) stations FROM fact_water_monitoring w" + where, params).fetchone()
+        rows = [dict(r) for r in conn.execute('SELECT w.*,s.latitude,s.longitude FROM fact_water_monitoring w LEFT JOIN dim_env_stations s ON w.station_id=s.station_id' + where + ' ORDER BY w.monitoring_date DESC,w.record_id LIMIT ?', [*params, limit])]
     if not rows:
-        return {
-            "status": "NO_DATA",
-            "message": "未查询到符合条件的生活饮用水监测记录",
-            "totalSamples": 0,
-            "payload": None
-        }
+        return {'status': 'NO_DATA', 'totalSamples': 0, 'payload': None}
 
-    total_samples = len(rows)
-    pass_samples = sum(1 for r in rows if r[14] == 1)
-    pass_rate = round(pass_samples * 100.0 / total_samples, 2)
+    def valid(column):
+        return [float(r[column]) for r in rows if isinstance(r.get(column), (int, float)) and math.isfinite(r[column]) and r[column] >= 0]
 
-    # 提取重金属与消毒副产物数值计算均值
-    avg_lead = float(np.mean([r[9] for r in rows if r[9] is not None]))
-    avg_cadmium = float(np.mean([r[10] for r in rows if r[10] is not None]))
-    avg_arsenic = float(np.mean([r[11] for r in rows if r[11] is not None]))
-    avg_chloroform = float(np.mean([r[13] for r in rows if r[13] is not None]))
+    def mean(column):
+        values = valid(column)
+        return sum(values) / len(values) if values else None
 
-    # 计算整体致癌健康风险 CR 与非致癌 HQ
-    # US EPA 综合致癌风险模型: CR = (CDI * SF)
-    # 非致癌危害商值: HQ = CDI / RfD
-    avg_cr = float(np.mean([r[15] for r in rows if r[15] is not None]))
-    avg_hq = float(np.mean([r[16] for r in rows if r[16] is not None]))
-
-    max_cr = max((float(row[15]) for row in rows if row[15] is not None), default=None)
-    max_hq = max((float(row[16]) for row in rows if row[16] is not None), default=None)
-
-    # 随机森林特征重要性评估 (Random Forest Feature Importance)
-    feature_importance = []  # No trained random-forest model has been executed.
-    spatial_kriging_points = []  # No kriging interpolation has been executed.
-    observed_points = [
-        {"lat":float(row[17]),"lon":float(row[18]),"hazardIndex":float(row[16]),"riskLevel":"high" if row[16] >= 1 else ("moderate" if row[16] >= 0.5 else "safe"),"city":row[1],"district":row[2]}
-        for row in rows if row[17] is not None and row[18] is not None and row[16] is not None
-    ]
-
+    columns = ['lead_val', 'cadmium_val', 'arsenic_val', 'chloroform_val', 'carcinogenic_risk', 'hazard_quotient']
+    counts = {column: len(valid(column)) for column in columns}
+    known = [r for r in rows if r.get('is_standard_met') in (0, 1)]
+    pass_rate = round(100 * sum(r['is_standard_met'] == 1 for r in known) / len(known), 2) if known else None
+    flags = ['random-forest-unavailable', 'kriging-unavailable', 'recorded-risk-values-not-recomputed', 'risk-policy-unvalidated']
+    if matched['n'] > len(rows):
+        flags.append('sample-limit-applied')
+    if any(n < len(rows) for n in counts.values()) or len(known) < len(rows):
+        flags.append('missing-measurement-values')
+    if any(r.get(column) is not None and (not isinstance(r[column], (int, float)) or not math.isfinite(r[column]) or r[column] < 0) for r in rows for column in columns):
+        flags.append('invalid-measurement-values-excluded')
+    points = []
+    for r in rows:
+        values = [r.get(k) for k in ['latitude', 'longitude', 'hazard_quotient']]
+        if all(isinstance(v, (int, float)) and math.isfinite(v) for v in values) and abs(values[0]) <= 90 and abs(values[1]) <= 180 and values[2] >= 0:
+            points.append({'id': r['record_id'], 'stationId': r['station_id'], 'date': r['monitoring_date'], 'lat': values[0], 'lon': values[1], 'hazardIndex': values[2], 'city': r['city'], 'district': r['district']})
     return {
-        "status": "SUCCESS",
-        "method": "observed-water-summary-v1",
-        "qualityFlags": ["random-forest-unavailable", "kriging-unavailable"],
-        "observedPoints": observed_points,
-        "city": city or "河南省全域",
-        "district": district or "全辖区",
-        "totalSamples": total_samples,
-        "passRate": pass_rate,
-        "evaluationResult": {
-            "totalStationsSampled": total_samples,
-            "overallComplianceRate": f"{pass_rate:.1f}%",
-            "maxCarcinogenicRiskCR": f"{max_cr:.2e}" if max_cr is not None else None,
-            "maxHazardQuotientHQ": max_hq
+        'status': 'SUCCESS' if known or any(counts.values()) else 'INSUFFICIENT_DATA',
+        'method': 'observed-water-summary-v1', 'qualityFlags': flags,
+        'city': city, 'district': district, 'totalSamples': len(rows),
+        'matchedSamples': matched['n'], 'matchedStations': matched['stations'],
+        'returnedSamples': len(rows), 'sampleLimit': limit, 'truncated': matched['n'] > len(rows),
+        'validValueCounts': counts, 'complianceKnownSamples': len(known),
+        'passRate': pass_rate, 'observedPoints': points,
+        'evaluationResult': {
+            'totalStationsSampled': len({r['station_id'] for r in rows if r['station_id'] and str(r['station_id']).strip()}),
+            'overallComplianceRate': f'{pass_rate:.1f}%' if pass_rate is not None else None,
+            'maxCarcinogenicRiskCR': max(valid('carcinogenic_risk'), default=None),
+            'maxHazardQuotientHQ': max(valid('hazard_quotient'), default=None)
         },
-        "healthRiskSummary": {
-            "carcinogenicRiskAverage": f"{avg_cr:.2e}",
-            "carcinogenicThreshold": "1.00e-06 (可接受基线)",
-            "carcinogenicEvaluation": "可接受且整体受控" if avg_cr < 1e-5 else "轻度风险需要防范",
-            "nonCarcinogenicHqAverage": round(avg_hq, 3),
-            "hazardQuotientThreshold": 1.0,
-            "nonCarcinogenicEvaluation": "安全 (HQ < 1.0)" if avg_hq < 1.0 else "超标 (HQ >= 1.0)"
+        'healthRiskSummary': {
+            'carcinogenicRiskAverage': mean('carcinogenic_risk'),
+            'nonCarcinogenicHqAverage': mean('hazard_quotient'),
+            'carcinogenicEvaluation': None, 'nonCarcinogenicEvaluation': None,
+            'carcinogenicThreshold': None, 'hazardQuotientThreshold': None
         },
-        "contaminantAverages": {
-            "leadMgL": round(avg_lead, 4),
-            "cadmiumMgL": round(avg_cadmium, 4),
-            "arsenicMgL": round(avg_arsenic, 4),
-            "chloroformMgL": round(avg_chloroform, 4)
-        },
-        "featureImportance": feature_importance,
-        "randomForestFeatureImportances": feature_importance,
-        "krigingGridPoints": spatial_kriging_points,
-        "disposalAdvice": "强化老旧供水管网末梢水冲洗排污，严格次氯酸钠在线投加闭环控制，定期检测消毒副产物。"
+        'contaminantAverages': {label: mean(column) for label, column in [('leadMgL', 'lead_val'), ('cadmiumMgL', 'cadmium_val'), ('arsenicMgL', 'arsenic_val'), ('chloroformMgL', 'chloroform_val')]},
+        'featureImportance': [], 'randomForestFeatureImportances': [], 'krigingGridPoints': [], 'disposalAdvice': None
     }
-
-if __name__ == "__main__":
-    res = evaluate_water_health_risk("新乡市")
-    print(json.dumps(res, ensure_ascii=False, indent=2))

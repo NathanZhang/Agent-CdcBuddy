@@ -289,15 +289,13 @@ export class AppBusinessProvider {
     const visibility = skill.visibility || 'private';
     const domain = skill.domain || 'vector';
 
-    // 检查是否已存在同名自定义技能，若存在则更新已有记录，避免同名生成多条重复记录
-    const existingByName = db.prepare('SELECT skill_id FROM biz_custom_skills WHERE name = ?').get(skill.name) as { skill_id: string } | undefined;
-    const finalSkillId = existingByName ? existingByName.skill_id : skill.skill_id;
+    const finalSkillId = skill.skill_id;
 
     db.prepare(`
       INSERT OR REPLACE INTO biz_custom_skills (
         skill_id, name, description, category, sql_query, chart_type,
-        recommended_prompts, visibility, created_by, created_at, domain
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        recommended_prompts, visibility, created_by, created_at, domain, visualization_json
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       finalSkillId,
       skill.name,
@@ -309,7 +307,8 @@ export class AppBusinessProvider {
       visibility,
       skill.created_by,
       skill.created_at,
-      domain
+      domain,
+      skill.visualization_json ?? null
     );
   }
 
@@ -321,14 +320,14 @@ export class AppBusinessProvider {
 
     const merged: BizCustomSkill = {
       ...existing,
-      ...updates,
+      ...Object.fromEntries(Object.entries(updates).filter(([,value])=>value!==undefined)),
       skill_id: skillId
     };
 
     db.prepare(`
       UPDATE biz_custom_skills
       SET name = ?, description = ?, sql_query = ?, chart_type = ?,
-          recommended_prompts = ?, visibility = ?, domain = ?
+          recommended_prompts = ?, visibility = ?, domain = ?, visualization_json = ?
       WHERE skill_id = ?
     `).run(
       merged.name,
@@ -338,6 +337,7 @@ export class AppBusinessProvider {
       merged.recommended_prompts,
       merged.visibility || 'private',
       merged.domain || 'vector',
+      merged.visualization_json ?? null,
       skillId
     );
 

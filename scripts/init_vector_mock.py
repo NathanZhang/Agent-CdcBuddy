@@ -11,7 +11,7 @@ import sqlite3
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _populate(db_path, seed=42):
+def _populate(db_path, seed=42, profile='historical-demo'):
     if __package__:
         from .init_env_mock import HENAN_CITIES
         from .mock_geography import point_in_region
@@ -42,6 +42,16 @@ def _populate(db_path, seed=42):
                 location = (f'{code}-{index:02d}', '河南省', city, district,
                             f'Mock监测点{index + 1}', lat, lon)
                 locations.append(location)
+        if profile == 'scientific-dag':
+            # Stable colocated IDs exercise identity independent of geometry.
+            lat, lon = point_in_region('郑州市', '金水区', rng)
+            for index in range(4):
+                locations.append((f'dag-hot-{index}', '河南省', '郑州市', '金水区',
+                                  f'Mock科学流水线热点{index + 1}', lat, lon))
+            conn.execute('''CREATE TABLE mock_scientific_visits(
+                monitoring_id TEXT PRIMARY KEY,visit_id TEXT NOT NULL,location_id TEXT NOT NULL,
+                method_id TEXT NOT NULL,sampled_on TEXT NOT NULL,effort_value REAL NOT NULL,
+                effort_unit TEXT NOT NULL,evidence TEXT NOT NULL)''')
         conn.executemany('''INSERT INTO dim_location(location_id,province,city,district,street,latitude,longitude)
                             VALUES(?,?,?,?,?,?,?)''', locations)
         for year in range(2019, 2026):
@@ -54,10 +64,18 @@ def _populate(db_path, seed=42):
                 for idx, location in enumerate(locations):
                     for species, multiplier in [('aedes', 1), ('culex', 1.8)]:
                         count = max(0, round((3 + 25 * summer + (year - 2019) * .7 + (idx % 5)) * multiplier + rng.uniform(-2, 2)))
+                        if profile == 'scientific-dag' and location[0].startswith('dag-hot-'):
+                            factor = [20, 30, 45, 65][int(location[0][-1])] if (year, month) == (2024, 6) else 1
+                            count *= factor
                         conn.execute('''INSERT INTO fact_monitoring(monitoring_id,date_id,location_id,species_id,method_id,
                             capture_count,sampling_unit,weather_temp,weather_humidity,source_file) VALUES(?,?,?,?,?,?,?,?,?,?)''',
                             (f'{day}-{location[0]}-{species}', day, location[0], species, 'lamp', count, 1,
                              round(5 + summer * 27 + rng.uniform(-2, 2), 1), round(45 + summer * 25 + rng.uniform(-5, 5), 1), 'synthetic-vector-demo'))
+                        if profile == 'scientific-dag':
+                            conn.execute('INSERT INTO mock_scientific_visits VALUES(?,?,?,?,?,?,?,?)',
+                                         (f'{day}-{location[0]}-{species}', f'visit:{day}:{location[0]}:lamp',
+                                          location[0], 'lamp', day, 8 + idx % 3, 'trap-hour',
+                                          'Explicit synthetic visit: species share one lamp deployment; effort is trap-hours'))
         for idx, location in enumerate(locations):
             positive = 1 if idx % 4 == 0 else 0
             conn.execute('''INSERT INTO fact_pathogen_detection(detection_id,monitoring_id,location_id,date_id,species_id,
@@ -81,13 +99,15 @@ def _populate(db_path, seed=42):
             raise ValueError('Invalid synthetic vector references')
 
 
-def generate_mock_data(db_path, seed=42, *, audit_dir=None, retention_days=7):
+def generate_mock_data(db_path, seed=42, *, audit_dir=None, retention_days=7, profile='historical-demo'):
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from analytics_engine.mock_lifecycle import generation
     with generation(db_path, 'vector', seed, __file__, audit_dir, retention_days):
-        _populate(str(db_path), seed)
+        if profile not in ('historical-demo', 'scientific-dag'):
+            raise ValueError('Unknown vector Mock profile')
+        _populate(str(db_path), seed, profile)
 
 
 def main():
@@ -97,8 +117,9 @@ def main():
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--audit-dir', type=Path, help='Persistent Mock audit/registry directory')
     parser.add_argument('--retention-days', type=int, default=7)
+    parser.add_argument('--profile', choices=['historical-demo', 'scientific-dag'], default='historical-demo')
     args = parser.parse_args()
-    generate_mock_data(str(args.output), args.seed, audit_dir=args.audit_dir, retention_days=args.retention_days)
+    generate_mock_data(str(args.output), args.seed, audit_dir=args.audit_dir, retention_days=args.retention_days, profile=args.profile)
 
     print(f'Mock dataset generated: {args.output} (seed={args.seed})')
 

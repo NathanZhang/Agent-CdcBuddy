@@ -11,6 +11,11 @@ class VectorMethods(unittest.TestCase):
     for method,multiplier in [('a',1),('b',100)]:c.execute('INSERT INTO fact_monitoring VALUES(?,?,?,?,?,?,?,?,?)',(f'{year}-{month}-{method}',f'{year}-{month:02d}-15','l','s',method,value*multiplier,1 if method=='a' else None,20,60))
   c.commit();c.close()
  def tearDown(self):self.temp.cleanup()
+ def test_colocated_sites_keep_distinct_source_identity_in_kmeans_members(self):
+  from species_clustering import calculate_species_clustering
+  c=sqlite3.connect(self.db);c.execute("INSERT INTO dim_location VALUES('l2','测试市','测试区','监测点',34.0,113.0)");c.execute("INSERT INTO fact_monitoring VALUES('new-site','2023-06-15','l2','s','a',30,1,20,60)");c.commit();c.close()
+  result=calculate_species_clustering(self.db,category='蚊',year=2023,method_name='诱蚊灯法');members=[m for cluster in result['clusters'] for m in cluster['members']]
+  self.assertEqual({m['locationId'] for m in members},{'l','l2'});self.assertTrue(all(m['speciesId']=='s' and m['methodId']=='a' for m in members));self.assertEqual(sum(cluster['samplePointCount'] for cluster in result['clusters']),2)
  def test_cutoff_blocks_future_records_and_keeps_real_training_window(self):
   from population_dynamics import calculate_population_dynamics
   args=dict(db_path=self.db,category='蚊',as_of='2023-12-31',data_window=24)

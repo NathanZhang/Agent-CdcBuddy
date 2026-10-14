@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-14",
+  "refactor": {
+    "passed": 493,
+    "skipped": 1,
+    "failed": 0
+  },
+  "scientific": {
+    "passed": 37,
+    "failed": 0
+  },
+  "integration": {
+    "passed": 51,
+    "failed": 0
+  },
+  "legacy": {
+    "passed": 44,
+    "failed": 0
+  },
+  "lint": "passed",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "businessMigration": "010_scientific_artifacts.sql",
+  "sourceDatabasesUnchanged": true,
+  "observedFoundation": {
+    "measurementRecords": 269,
+    "locations": 27,
+    "matrixRows": 27,
+    "seriesCount": 52,
+    "seriesStatus": "INSUFFICIENT_DATA"
+  },
+  "monitoringSnapshotsUnchangedSincePhaseOne": true,
+  "sourceDatabasesUnchangedScope": "isolated compatibility regression before/after"
+}

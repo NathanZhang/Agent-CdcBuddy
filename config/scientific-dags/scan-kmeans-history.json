@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "scope": {"city":"郑州市","from":"2019-01-01","to":"2025-10-31","category":"蚊","methodName":"诱蚊灯法"},
+  "nodes": [
+    {"id":"measurements","operation":"measurements","inputs":{},"params":{"maxRecords":50000}},
+    {"id":"scan","operation":"scan","inputs":{"measurements":"measurements"},"window":{"from":"2024-06-01","to":"2024-06-30"},"params":{"exposure":"effort","effortUnit":"trap-hour","simulations":99,"seed":42,"pThreshold":0.05,"maxRadiusKm":120}},
+    {"id":"members","operation":"scan-select","inputs":{"scan":"scan"},"params":{}},
+    {"id":"features","operation":"features","inputs":{"measurements":"measurements","selection":"members"},"window":{"from":"2024-06-01","to":"2024-06-30"},"params":{"metric":"capture-per-effort","effortUnit":"trap-hour","features":["metric","visit-count"]},"when":{"node":"members","test":"has-members"}},
+    {"id":"clusters","operation":"kmeans","inputs":{"matrix":"features"},"params":{"k":3,"seed":42},"when":{"node":"features","test":"finite"}},
+    {"id":"fixed","operation":"cluster-select","inputs":{"clusters":"clusters"},"params":{}},
+    {"id":"history","operation":"series","inputs":{"measurements":"measurements","selection":"fixed"},"window":{"from":"2019-01-01","to":"2025-10-31"},"params":{"metric":"capture-per-effort","effortUnit":"trap-hour","frequency":"month"}}
+  ]
+}

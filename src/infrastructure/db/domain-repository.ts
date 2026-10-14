@@ -1,3 +1,5 @@
+import {isApprovedIntent} from '@/application/agent/intent-guard';
+import {compileScopedFilters} from '@/application/agent/scope-guard';
 import {Parser} from 'node-sql-parser';
 import type {ApprovedIntent} from '@/contracts/approved-intent';
 import {assertSqlMatchesIntent} from '@/application/agent/scope-guard';
@@ -43,12 +45,26 @@ export class DomainRepository {
     let db:Database.Database|undefined;
     try {db=new Database(location.path,{readonly:true,fileMustExist:true});const schema:QuerySchema={};for(const table of domainTables[this.domain]){const columns=db.prepare(`PRAGMA main.table_info(${quoteIdentifier(table)})`).all() as {name:string}[];if(columns.length)schema[table]=columns.map(c=>c.name);}return schema;} finally {db?.close();release();}
   }
-  query(select: string, params: unknown[], scope: QueryScope): Record<string,unknown>[] {
+  query(select:string,params:unknown[],scope:QueryScope):Record<string,unknown>[]{return this.queryInternal(select,params,scope,true);}
+  /** Fixed scientific projection; caller selects record IDs inside a compiled approved scope. */
+  readMonitoringRecords(selection:{afterId?:string;recordIds?:string[];limit:number},scope:QueryScope):Record<string,unknown>[] {
+    const intent=scope.approvedIntent,p=scope.principal;
+    if(this.domain!=='vector'||!p||p.role==='PUBLIC_VIEWER'||!isApprovedIntent(intent)||intent.domain!==this.domain||intent.owner.userId!==p.userId||intent.owner.organizationId!==p.organizationId)throw Error('FORBIDDEN_SCIENTIFIC_QUERY');
+    if(!Number.isSafeInteger(selection.limit)||selection.limit<1||selection.limit>1000||selection.recordIds&&(!selection.recordIds.length||selection.recordIds.length>1000||selection.recordIds.some(id=>typeof id!=='string'||!id)))throw Error('SCIENTIFIC_QUERY_BUDGET');
+    if(intent.datasetVersion!==resolveDatasetLocation(this.domain,this.datasetId).version)throw Error('SCIENTIFIC_DATASET_VERSION_CHANGED');
+    const compiled=compileScopedFilters(intent,loadDatasetRegionBindings(this.domain,intent.datasetVersion));
+    const projection='SELECT f.monitoring_id AS recordId,f.date_id AS date,l.location_id AS sourceLocationId,l.city,l.district,l.latitude,l.longitude,m.method_id AS methodId,m.method_name AS methodName,s.species_id AS speciesId,s.species_name AS speciesName,s.category,f.capture_count AS captureCount,f.sampling_unit AS legacySamplingUnit FROM fact_monitoring f JOIN dim_location l ON f.location_id=l.location_id JOIN dim_species s ON f.species_id=s.species_id JOIN dim_method m ON f.method_id=m.method_id';
+    const where=selection.recordIds?' WHERE f.monitoring_id IN ('+selection.recordIds.map(()=>'?').join(',')+')':' WHERE f.monitoring_id>?';
+    const params=selection.recordIds??[selection.afterId??''];
+    return this.queryInternal(projection+where+' ORDER BY f.monitoring_id LIMIT '+selection.limit,params,{...scope,...compiled,maxRows:selection.limit},false);
+  }
+  private queryInternal(select: string, params: unknown[], scope: QueryScope, checkPredicates:boolean): Record<string,unknown>[] {
+
     if(scope.principal){authorizeScope(scope,{runId:'repository',domain:this.domain,deploymentTier:process.env.DEPLOYMENT_TIER==='pilot'?'pilot':'local',principal:scope.principal});scope={...scope,city:scope.principal.jurisdiction.city??scope.city,district:scope.principal.jurisdiction.district??scope.district,allowedColumns:restrictColumns(this.getSchema(),scope.principal)};}
     if (scope.domain !== this.domain) throw new Error('Domain scope mismatch');
     for (const key of ['from','to'] as const) if (scope[key] && !/^\d{4}-\d{2}-\d{2}$/.test(scope[key]!)) throw new Error('Invalid time scope');
     if (scope.from && scope.to && scope.from > scope.to) throw new Error('Invalid time scope order');
-    if(scope.approvedIntent)assertSqlMatchesIntent(select,scope.approvedIntent,loadDatasetRegionBindings(this.domain,scope.approvedIntent.datasetVersion));
+    if(checkPredicates&&scope.approvedIntent)assertSqlMatchesIntent(select,scope.approvedIntent,loadDatasetRegionBindings(this.domain,scope.approvedIntent.datasetVersion));
     const parsed=new Parser().astify(select,{database:'SQLite'});const selected=new Set(((Array.isArray(parsed)?parsed[0]:parsed) as any).from?.map((f:any)=>f.table));
     const location = resolveDatasetLocation(this.domain,this.datasetId);
     const release=acquireDatasetLease(location);

@@ -39,6 +39,8 @@ export interface VectorSkill {
   requirementNo?: string;
   requirementIds?: number[];
   availability?: 'available'|'planned';
+  implementationStatus?: import('@/contracts/skill-capability').ImplementationStatus;
+  validationStatus?: import('@/contracts/skill-capability').ValidationStatus;
   description: string;
   iconName: string;
   badgeColor?: string;
@@ -58,6 +60,7 @@ export interface MetaCustomSkillData {
   domain?: string;
   sqlQuery: string;
   chartType: 'trend' | 'bar' | 'pie' | 'map' | 'table';
+  visualization?: import('@/contracts/query-visualization').QueryVisualization;
   recommendedPrompts: string[];
   visibility?: 'private' | 'public';
   createdAt: string;

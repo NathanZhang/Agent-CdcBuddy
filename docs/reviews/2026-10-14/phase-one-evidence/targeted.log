@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/custom-visualization.test.tsx (8 tests) 542ms
+ ✓ tests/refactor/deployment.test.ts (3 tests) 52ms
+ ✓ tests/refactor/phase-one-catalog.test.tsx (6 tests) 70ms
+ ✓ tests/refactor/final-workflow-review.test.ts (6 tests) 4207ms
+   ✓ rejects unrelated category or sampling method and missing original measurement policy  1491ms
+   ✓ lets only an organization/domain/geography authorized professional review a collector job and actual collector evidence  1286ms
+   ✓ requires persisted observed collection provenance and never infers it for legacy records  1148ms
+
+ Test Files  4 passed (4)
+      Tests  23 passed (23)
+   Start at  12:40:47
+   Duration  5.01s (transform 501ms, setup 0ms, collect 2.23s, tests 4.87s, environment 0ms, prepare 163ms)
+

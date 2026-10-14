@@ -1,6 +1,8 @@
 import {analyticsSkill} from '../../shared/analytics-skill';
 import type {SkillDefinition} from '@/contracts/skill-definition';
 import { buildDomainSkills } from '../../shared/skill-factory';
+import {scientificDagSkills} from './scientific-dag';
+import {scienceSkills} from './science';
 const dateSchema={type:'string',pattern:'^[0-9]{4}-[0-9]{2}-[0-9]{2}$'};
 const captureProperties={category:{enum:['蚊','蝇','蟑螂','鼠','蜱','恙螨']},speciesName:{type:'string'},methodName:{type:'string'},asOf:dateSchema,dataWindow:{type:'integer',minimum:1,maximum:120},forecastMonths:{type:'integer',minimum:1,maximum:24}};
 export function vectorSkills():SkillDefinition[]{const definitions=buildDomainSkills('vector',{
@@ -14,5 +16,5 @@ export function vectorSkills():SkillDefinition[]{const definitions=buildDomainSk
 });
  const backtest=analyticsSkill('vector_backtest','rolling-past-origin-capture-backtest-v1','病媒捕获量滚动回测与季节基线对照',{asOf:dateSchema,methodName:{type:'string'},horizon:{type:'integer',minimum:1,maximum:12},model:{enum:['ar','gbdt']},dataWindow:{type:'integer',minimum:24,maximum:120}});
  backtest.inputSchema={...backtest.inputSchema,required:['asOf']};
- return [...definitions,{id:'skill_vector_backtest',aliases:['vector_backtest'],domain:'vector',requirementIds:[23,30],...backtest}];
+ return [...definitions.filter(s=>s.id!=='skill_composable_workflow'),{id:'skill_vector_backtest',aliases:['vector_backtest'],domain:'vector',requirementIds:[23,30],...backtest},...scienceSkills(),...scientificDagSkills()];
 }

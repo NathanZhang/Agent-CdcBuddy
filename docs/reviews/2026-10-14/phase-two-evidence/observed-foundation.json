@@ -1,0 +1,642 @@
+[
+  {
+    "status": "SUCCESS",
+    "method": "scientific-artifact-foundation-v1",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "error": null,
+    "contract": {
+      "artifactRef": {
+        "artifactId": "4e699701-ba0c-48fe-9dd7-2e090530cdb4",
+        "kind": "Measurements",
+        "schemaVersion": "1",
+        "domain": "vector",
+        "contentHash": "f89fc663a972e6016da575f9136741aa8e9bd777fb0484272368f4c131879d8b",
+        "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb",
+        "datasetRefs": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ]
+      },
+      "source": {
+        "runId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5",
+        "callId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5-science",
+        "skillId": "skill_measurement_prepare"
+      },
+      "unit": "capture",
+      "frequency": "record",
+      "measurementDefinition": "observed-capture-records-v1",
+      "timeWindow": {
+        "from": "2024-01-01",
+        "to": "2024-12-31"
+      },
+      "asOf": "2024-12-31",
+      "objectKeys": [
+        "locationKey",
+        "methodId",
+        "speciesId",
+        "recordId"
+      ],
+      "qualityFlags": [
+        "legacy-visit-unresolved",
+        "legacy-effort-semantics-unvalidated"
+      ],
+      "dependencies": [],
+      "expiresAt": 1792041800443,
+      "preview": {
+        "matchedRecords": 269,
+        "returnedRecords": 269,
+        "complete": true,
+        "records": [
+          {
+            "recordId": "00fbb6a47719781b23fb06e4acab8b82",
+            "date": "2024-10-28",
+            "sourceLocationId": "0ee4e186bede432629c198dba893aeea",
+            "city": "郑州市",
+            "district": "荥阳市",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "methodName": "诱蚊灯法",
+            "speciesId": "522d0ca00abc7273d447ae1da24389f8",
+            "speciesName": "未捕获",
+            "category": "蚊",
+            "captureCount": 0,
+            "legacySamplingUnit": 2,
+            "locationKey": "location:vector-monitoring:0ee4e186bede432629c198dba893aeea",
+            "visitId": null,
+            "effortValue": null,
+            "effortUnit": null
+          },
+          {
+            "recordId": "012c3df20476aa420bb546f3181454fe",
+            "date": "2024-08-29",
+            "sourceLocationId": "8d5865ecdfd560abff2ff5b3a9eb55c2",
+            "city": "郑州市",
+            "district": "二七区",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "methodName": "诱蚊灯法",
+            "speciesId": "9603072694d4a648ffb6717deffe0571",
+            "speciesName": "淡色库蚊",
+            "category": "蚊",
+            "captureCount": 30,
+            "legacySamplingUnit": null,
+            "locationKey": "location:vector-monitoring:8d5865ecdfd560abff2ff5b3a9eb55c2",
+            "visitId": null,
+            "effortValue": null,
+            "effortUnit": null
+          },
+          {
+            "recordId": "027853322cd10d8fb8818191aad6c4e8",
+            "date": "2024-09-03",
+            "sourceLocationId": "8b738d55dcac387e682a6df6e3a45e9d",
+            "city": "郑州市",
+            "district": "荥阳市",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "methodName": "诱蚊灯法",
+            "speciesId": "9603072694d4a648ffb6717deffe0571",
+            "speciesName": "淡色库蚊",
+            "category": "蚊",
+            "captureCount": 30,
+            "legacySamplingUnit": null,
+            "locationKey": "location:vector-monitoring:8b738d55dcac387e682a6df6e3a45e9d",
+            "visitId": null,
+            "effortValue": null,
+            "effortUnit": null
+          },
+          {
+            "recordId": "02993acc8eda3a67c82874cd19fb6248",
+            "date": "2024-07-11",
+            "sourceLocationId": "269b65ede7afb3c98c4d8686ccd3b020",
+            "city": "郑州市",
+            "district": "新密市",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "methodName": "诱蚊灯法",
+            "speciesId": "764154f998333e547e477fb253bf7762",
+            "speciesName": "骚扰阿蚊",
+            "category": "蚊",
+            "captureCount": 18,
+            "legacySamplingUnit": 1,
+            "locationKey": "location:vector-monitoring:269b65ede7afb3c98c4d8686ccd3b020",
+            "visitId": null,
+            "effortValue": null,
+            "effortUnit": null
+          },
+          {
+            "recordId": "02e8d0b18bab1c0aec6bb7f27d266142",
+            "date": "2024-10-11",
+            "sourceLocationId": "ae907d4fea391d6b2560f46fd333562c",
+            "city": "郑州市",
+            "district": "新密市",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "methodName": "诱蚊灯法",
+            "speciesId": "031e6986bd9bfbcad22c61659903c78d",
+            "speciesName": "淡色(致倦)库蚊",
+            "category": "蚊",
+            "captureCount": 9,
+            "legacySamplingUnit": 2,
+            "locationKey": "location:vector-monitoring:ae907d4fea391d6b2560f46fd333562c",
+            "visitId": null,
+            "effortValue": null,
+            "effortUnit": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "SUCCESS",
+    "method": "scientific-artifact-foundation-v1",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "error": null,
+    "contract": {
+      "artifactRef": {
+        "artifactId": "3a1756da-7ee9-46ea-8fea-19c1c7190e7c",
+        "kind": "SelectionSet",
+        "schemaVersion": "1",
+        "domain": "vector",
+        "contentHash": "d552bcaf2936a3f8dd5d056105dc53c0cef6ae7996f810b7e8e9157b4a8b69aa",
+        "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb",
+        "datasetRefs": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ]
+      },
+      "source": {
+        "runId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5",
+        "callId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5-science",
+        "skillId": "skill_selection_build"
+      },
+      "unit": "location",
+      "frequency": "none",
+      "measurementDefinition": "observed-capture-records-v1",
+      "timeWindow": {
+        "from": "2024-01-01",
+        "to": "2024-12-31"
+      },
+      "asOf": "2024-12-31",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [],
+      "dependencies": [
+        {
+          "artifactId": "4e699701-ba0c-48fe-9dd7-2e090530cdb4",
+          "contentHash": "f89fc663a972e6016da575f9136741aa8e9bd777fb0484272368f4c131879d8b",
+          "datasetRefs": [
+            {
+              "asOf": "2026-10-12",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "observed",
+              "schemaVersion": "1",
+              "version": "existing-snapshot-2026-10-12"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb"
+        }
+      ],
+      "expiresAt": 1792041800443,
+      "preview": {
+        "memberCount": 27,
+        "locationKeys": [
+          "location:vector-monitoring:03ed90c390d8c4cbc2c82f0c6c6a46a5",
+          "location:vector-monitoring:0ee4e186bede432629c198dba893aeea",
+          "location:vector-monitoring:12ec345bc6d66cf18e7b74d8cd4a287b",
+          "location:vector-monitoring:1d49238fe413b290d64544655ddae532",
+          "location:vector-monitoring:269b65ede7afb3c98c4d8686ccd3b020"
+        ]
+      }
+    }
+  },
+  {
+    "status": "SUCCESS",
+    "method": "scientific-artifact-foundation-v1",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "error": null,
+    "contract": {
+      "artifactRef": {
+        "artifactId": "7c9ce602-1b70-4ce3-85f7-19148a38fb5c",
+        "kind": "FeatureMatrix",
+        "schemaVersion": "1",
+        "domain": "vector",
+        "contentHash": "26d206bb4ba00f1cd0220863a233483ef76fdbb92f4f5d54a93bb035ea43f4fa",
+        "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb",
+        "datasetRefs": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ]
+      },
+      "source": {
+        "runId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5",
+        "callId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5-science",
+        "skillId": "skill_feature_matrix_build"
+      },
+      "unit": "mixed",
+      "frequency": "none",
+      "measurementDefinition": "capture-per-record-v1",
+      "timeWindow": {
+        "from": "2024-01-01",
+        "to": "2024-12-31"
+      },
+      "asOf": "2024-12-31",
+      "objectKeys": [
+        "locationKey"
+      ],
+      "qualityFlags": [
+        "legacy-visit-unresolved",
+        "legacy-effort-semantics-unvalidated"
+      ],
+      "dependencies": [
+        {
+          "artifactId": "4e699701-ba0c-48fe-9dd7-2e090530cdb4",
+          "contentHash": "f89fc663a972e6016da575f9136741aa8e9bd777fb0484272368f4c131879d8b",
+          "datasetRefs": [
+            {
+              "asOf": "2026-10-12",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "observed",
+              "schemaVersion": "1",
+              "version": "existing-snapshot-2026-10-12"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb"
+        },
+        {
+          "artifactId": "3a1756da-7ee9-46ea-8fea-19c1c7190e7c",
+          "contentHash": "d552bcaf2936a3f8dd5d056105dc53c0cef6ae7996f810b7e8e9157b4a8b69aa",
+          "datasetRefs": [
+            {
+              "asOf": "2026-10-12",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "observed",
+              "schemaVersion": "1",
+              "version": "existing-snapshot-2026-10-12"
+            }
+          ],
+          "domain": "vector",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb"
+        }
+      ],
+      "expiresAt": 1792041800443,
+      "preview": {
+        "rowCount": 27,
+        "columns": [
+          {
+            "key": "capture-per-record",
+            "unit": "capture/record"
+          },
+          {
+            "key": "record-count",
+            "unit": "record"
+          }
+        ],
+        "rowKeys": [
+          "location:vector-monitoring:03ed90c390d8c4cbc2c82f0c6c6a46a5",
+          "location:vector-monitoring:0ee4e186bede432629c198dba893aeea",
+          "location:vector-monitoring:12ec345bc6d66cf18e7b74d8cd4a287b",
+          "location:vector-monitoring:1d49238fe413b290d64544655ddae532",
+          "location:vector-monitoring:269b65ede7afb3c98c4d8686ccd3b020"
+        ],
+        "values": [
+          [
+            29.857142857142858,
+            7
+          ],
+          [
+            2.111111111111111,
+            18
+          ],
+          [
+            29.75,
+            4
+          ],
+          [
+            26.666666666666668,
+            3
+          ],
+          [
+            18.130434782608695,
+            23
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "status": "INSUFFICIENT_DATA",
+    "method": "scientific-artifact-foundation-v1",
+    "datasets": [
+      {
+        "id": "vector-monitoring",
+        "domain": "vector",
+        "origin": "observed",
+        "version": "existing-snapshot-2026-10-12",
+        "asOf": "2026-10-12",
+        "schemaVersion": "1"
+      }
+    ],
+    "error": null,
+    "contract": {
+      "artifactRef": {
+        "artifactId": "41a1d992-4932-4c2a-be41-800d42fbf049",
+        "kind": "SeriesSet",
+        "schemaVersion": "1",
+        "domain": "vector",
+        "contentHash": "f488260e22ed15532c26314dbcd42fa2b2f2f4c9716abc9f7b33995e7469c289",
+        "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb",
+        "datasetRefs": [
+          {
+            "id": "vector-monitoring",
+            "domain": "vector",
+            "origin": "observed",
+            "version": "existing-snapshot-2026-10-12",
+            "asOf": "2026-10-12",
+            "schemaVersion": "1"
+          }
+        ]
+      },
+      "source": {
+        "runId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5",
+        "callId": "4712b241-420f-4d1c-92c7-72e8a4e0aed5-science",
+        "skillId": "skill_series_build"
+      },
+      "unit": "capture/record",
+      "frequency": "month",
+      "measurementDefinition": "capture-per-record-v1",
+      "timeWindow": {
+        "from": "2024-01-01",
+        "to": "2024-12-31"
+      },
+      "asOf": "2024-12-31",
+      "objectKeys": [
+        "locationKey",
+        "methodId",
+        "speciesId"
+      ],
+      "qualityFlags": [
+        "legacy-visit-unresolved",
+        "legacy-effort-semantics-unvalidated",
+        "missing-periods-or-effort-not-imputed"
+      ],
+      "dependencies": [
+        {
+          "artifactId": "4e699701-ba0c-48fe-9dd7-2e090530cdb4",
+          "contentHash": "f89fc663a972e6016da575f9136741aa8e9bd777fb0484272368f4c131879d8b",
+          "datasetRefs": [
+            {
+              "asOf": "2026-10-12",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "observed",
+              "schemaVersion": "1",
+              "version": "existing-snapshot-2026-10-12"
+            }
+          ],
+          "domain": "vector",
+          "kind": "Measurements",
+          "schemaVersion": "1",
+          "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb"
+        },
+        {
+          "artifactId": "3a1756da-7ee9-46ea-8fea-19c1c7190e7c",
+          "contentHash": "d552bcaf2936a3f8dd5d056105dc53c0cef6ae7996f810b7e8e9157b4a8b69aa",
+          "datasetRefs": [
+            {
+              "asOf": "2026-10-12",
+              "domain": "vector",
+              "id": "vector-monitoring",
+              "origin": "observed",
+              "schemaVersion": "1",
+              "version": "existing-snapshot-2026-10-12"
+            }
+          ],
+          "domain": "vector",
+          "kind": "SelectionSet",
+          "schemaVersion": "1",
+          "scopeFingerprint": "816ce5ce5545e00710d2ef58fbf74214476ef9df9ebc8690c3e79533f1fe8bfb"
+        }
+      ],
+      "expiresAt": 1792041800443,
+      "preview": {
+        "seriesCount": 52,
+        "series": [
+          {
+            "objectKey": "location:vector-monitoring:03ed90c390d8c4cbc2c82f0c6c6a46a5:0ca25da66016fec87c53fc2a8d3b29e1:9603072694d4a648ffb6717deffe0571",
+            "locationKey": "location:vector-monitoring:03ed90c390d8c4cbc2c82f0c6c6a46a5",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "speciesId": "9603072694d4a648ffb6717deffe0571",
+            "points": [
+              {
+                "period": "2024-01-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-02-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-03-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-04-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-05-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              }
+            ],
+            "totalPeriods": 12
+          },
+          {
+            "objectKey": "location:vector-monitoring:0ee4e186bede432629c198dba893aeea:0ca25da66016fec87c53fc2a8d3b29e1:031e6986bd9bfbcad22c61659903c78d",
+            "locationKey": "location:vector-monitoring:0ee4e186bede432629c198dba893aeea",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "speciesId": "031e6986bd9bfbcad22c61659903c78d",
+            "points": [
+              {
+                "period": "2024-01-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-02-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-03-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-04-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-05-01",
+                "value": 1.5,
+                "captureCount": 3,
+                "recordCount": 2,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              }
+            ],
+            "totalPeriods": 12
+          },
+          {
+            "objectKey": "location:vector-monitoring:0ee4e186bede432629c198dba893aeea:0ca25da66016fec87c53fc2a8d3b29e1:522d0ca00abc7273d447ae1da24389f8",
+            "locationKey": "location:vector-monitoring:0ee4e186bede432629c198dba893aeea",
+            "methodId": "0ca25da66016fec87c53fc2a8d3b29e1",
+            "speciesId": "522d0ca00abc7273d447ae1da24389f8",
+            "points": [
+              {
+                "period": "2024-01-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-02-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-03-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-04-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              },
+              {
+                "period": "2024-05-01",
+                "value": null,
+                "captureCount": null,
+                "recordCount": 0,
+                "visitCount": null,
+                "effort": null,
+                "effortUnit": null
+              }
+            ],
+            "totalPeriods": 12
+          }
+        ]
+      }
+    }
+  }
+]

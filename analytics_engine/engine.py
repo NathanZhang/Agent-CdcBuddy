@@ -94,7 +94,7 @@ def execute_task(task,args,db_path):
     # =========================================================================
     elif task in ["water_safety_eval", "water_health_risk"]:
         from env.water_rf_kriging import evaluate_water_health_risk
-        result = evaluate_water_health_risk(city=args.get("city"), district=args.get("district"), db_path=db_path)
+        result = evaluate_water_health_risk(city=args.get("city"), district=args.get("district"), db_path=db_path,from_date=args.get("from"),as_of=args.get("asOf"))
     elif task in ["sewage_lag_tracing", "sewage_pathogen_trace"]:
         from env.sewage_lag_tracing import analyze_sewage_lag_correlation
         result = analyze_sewage_lag_correlation(city=args.get("city"), pathogen=args.get("pathogen", "诺如病毒"), db_path=db_path,district=args.get("district"),from_date=args.get("from"),as_of=args.get("asOf"),max_lag=int(args.get("maxLag",14)))

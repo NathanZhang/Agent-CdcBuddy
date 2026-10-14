@@ -1,0 +1,16 @@
+import {authorizeSkill} from '@/infrastructure/auth/authorization';
+import type {UserRole} from '@/lib/rbac/types';
+import type {SkillDefinition} from '@/contracts/skill-definition';
+import {STANDARD_SKILLS} from '@/lib/skills/registry';
+const partialMethods=new Set(['persistent-scientific-dag-v1','artifact-scientific-kernels-v1','scientific-artifact-foundation-v1','autoregression-seasonal-capture-v1','gradient-boosting-capture-v1','method-separated-kmeans-capture-v1','observed-bioassay-records-v1','pcr-record-pair-association-v1','observed-capture-idw-v1','observed-transmission-inputs-v1','conditional-poisson-circular-scan-v1','food-exposure-window-candidates-v1','allele-distance-single-link-v1','recorded-food-case-summary-v1','observed-water-summary-v1','calendar-aligned-pearson-v1','descriptive-metals-moran-v1','death-certificate-rule-candidates-v1','district-centroid-dbscan-v1','injury-observed-counts-v1','icd10-dictionary-candidate-v1','persisted-descriptive-report-v1','persistent-evidence-workflow-v1']);
+/** Maturity describes the implemented method, not professional requirement acceptance. */
+export function withCapabilityMetadata(skill:SkillDefinition):SkillDefinition {
+ const planned=skill.availability==='planned';
+ return {...skill,...(planned?{description:'该能力尚未实现并验证。'}:{}),implementationStatus:planned?'planned':partialMethods.has(skill.method)?'partial':'implemented',validationStatus:planned?'unvalidated':skill.id==='skill_vector_backtest'?'observed-backtest':'contract',validationEvidence:planned?[]:['persistent-scientific-dag-v1','artifact-scientific-kernels-v1'].includes(skill.method)?['tests/refactor/scientific-dag.test.ts','tests/scientific/test_artifact_kernels.py']:skill.method==='scientific-artifact-foundation-v1'?['tests/refactor/scientific-foundation.test.ts']:skill.id==='skill_vector_backtest'?['docs/reviews/2026-10-12/t8-vector-acceptance.md']:['tests/refactor/skill-service.test.ts']};
+}
+export function publicSkillMetadata(skill:SkillDefinition){
+ const roles:UserRole[]=['PROVINCIAL_ADMIN','CITY_EXPERT','DISTRICT_SURVEILLANCE','PUBLIC_VIEWER'];
+ const requiredRoles=roles.filter(role=>{try{authorizeSkill(skill,{action:'list'},{runId:'catalog',domain:skill.domain,deploymentTier:'local',principal:{userId:'catalog',organizationId:'catalog',role,mode:'authenticated',domainGrants:[skill.domain],jurisdiction:role==='CITY_EXPERT'?{city:'郑州市'}:role==='DISTRICT_SURVEILLANCE'?{city:'郑州市',district:'金水区'}:{},permissions:{professionalReview:true}}});return true;}catch{return false;}});
+ const {execute:_,...definition}=skill;const decoration=STANDARD_SKILLS.find(s=>s.id===skill.id);const backtest=skill.id==='skill_vector_backtest';
+ return {...definition,category:decoration?.category??(backtest?'forecast':'nlq'),categoryName:decoration?.categoryName??(backtest?'模型回测':'通用操作'),iconName:decoration?.iconName??'Layers',recommendedPrompts:skill.id==='skill_composable_workflow'?['编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学 DAG：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月历史序列，不启用LSTM；并提供任务ID以便检查或取消。']:decoration?.recommendedPrompts??(backtest?['对郑州市诱蚊灯法蚊类捕获量模型做滚动回测，截止2025年11月11日，预测跨度1个月，比较AR与季节基线。']:[`使用${skill.name}`]),requiredRoles,requiresProfessionalReview:skill.allowedOperations.includes('review'),parametersSchema:skill.inputSchema,requirementNo:skill.requirementIds.length?`No. ${skill.requirementIds.join('/')}`:undefined};
+}
