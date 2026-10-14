@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    "four-domain query skills",
+    "stored custom SQL queries",
+    "custom SQL previews",
+    "Python analytics results",
+    "automatic report narrative counts",
+    "HTTP/SSE publishing and session persistence"
+  ],
+  "flyQuery": {
+    "returnedRows": 73,
+    "LC50": {
+      "present": 33,
+      "missing": 40
+    },
+    "correctedMortality": {
+      "present": 0,
+      "missing": 73
+    },
+    "registeredResistanceClassification": {
+      "present": 0,
+      "missing": 73
+    }
+  },
+  "localRegression": {
+    "passed": 451,
+    "failed": 6,
+    "liveTestSkippedByDefault": true,
+    "existingFailures": "Six final-workflow-review tests fail with REGION_DATASET_MAPPING_REQUIRED, reproduced from unmodified HEAD in an isolated checkout.",
+    "typescript": "passed",
+    "eslint": "passed",
+    "recommendationScenarios": 52,
+    "scientificTests": 32,
+    "targetedRecommendationsAndEvidenceTests": 70
+  },
+  "historicalAudit": {
+    "runsRead": 32,
+    "unambiguousDetailQueriesWithCountClaims": 1,
+    "mismatches": [
+      {
+        "runId": "6d07ea64-360e-4b80-8add-453a104a3351",
+        "createdAt": "2026-10-14T01:37:40.350Z",
+        "returnedRows": 73,
+        "claimedRows": 76
+      }
+    ],
+    "limitation": "Only unambiguous detail-query total claims were automatically compared. This is not evidence that all historical prose is correct."
+  },
+  "protection": [
+    "Count returned rows and missing fields on server without deduplicating or dropping nulls",
+    "Separate returned row counts from COUNT(*) aggregate values",
+    "Bind numeric references to executed call/path and expand labelled statistics on server; also allow exact quoted labelled server propositions.",
+    "Reject raw numeric claims, unknown references and contradictory all-/no-missing claims",
+    "Retry text synthesis once without rerunning query; retain actual data and report failure if still invalid",
+    "Gate statistical SSE text until validation succeeds"
+  ],
+  "legacyHistory": "Previously stored replies are retained as historical evidence; no historical audit records were rewritten.",
+  "liveVerification": {
+    "status": "passed",
+    "verifiedAt": "2026-10-14T03:36:49.439Z",
+    "serviceOrigin": "http://8.152.216.155:20080",
+    "model": "qwen3.8-27b",
+    "runId": "7acbd320-6ab7-4d99-9734-c24aa1973cd3",
+    "prompt": "查询河南省2020年7月9日至2025年11月5日家蝇抗药性生测记录，表格展示药剂、地市、日期、LC50、校正死亡率与登记抗性分类，保留缺失值。",
+    "answerValidated": true,
+    "unvalidatedContentPublished": false,
+    "returnedRows": 73,
+    "LC50": {
+      "presentCount": 33,
+      "missingCount": 40
+    },
+    "correctedMortality": {
+      "presentCount": 0,
+      "missingCount": 73
+    },
+    "registeredResistanceClassification": {
+      "presentCount": 0,
+      "missingCount": 73
+    },
+    "evidenceFile": "2026-10-14-query-evidence-live.json",
+    "previousBlockedAttempt": {
+      "status": "blocked",
+      "serviceOrigin": "http://8.152.216.155:20080",
+      "model": "qwen3.8-27b",
+      "authorization": "User explicitly approved sending this fly prompt and its corresponding bioassay result to this service.",
+      "firstAuthorizedAttempt": {
+        "runId": "0792f217-5c53-400e-aedd-74260d84b132",
+        "queryReturnedRows": 73,
+        "summaryStatus": "ANSWER_EVIDENCE_MISMATCH",
+        "incorrectUnboundModelNumbersPublished": false,
+        "serverVerifiedSummaryRetained": true
+      },
+      "latestConnectionCheck": {
+        "error": "ECONNREFUSED",
+        "destination": "8.152.216.155:20080"
+      },
+      "limitation": "An authorized real-model query ran, but synthesis failed the numerical gate. After prompt compatibility changes, two retries were prevented by service connectivity failures; the final real-model end-to-end verification has not passed."
+    }
+  },
+  "programmaticAnalysisPolicy": {
+    "rule": "LLM understands requests, selects and invokes registered programs/skills, and explains executed results; all data statistics and analysis are calculated by programs, never by LLM arithmetic.",
+    "executors": [
+      "controlled SQL queries",
+      "registered Python analytics through runAnalytics",
+      "shared server-side row/missing-value statistics",
+      "registered business skills"
+    ],
+    "derivedMetrics": "If a required statistic is absent, request another actual tool execution; report unavailability instead of calculating it in model prose.",
+    "enforcement": [
+      "validate numerical answers even when there are no numerical facts",
+      "cover all structured result types and standalone MetricEvidence",
+      "do not accept cached assistant prose as calculation evidence",
+      "reject data-independent SQL constants projected as record counts/means/percentages",
+      "return species summary totals from Python rather than recomputing them in the frontend"
+    ],
+    "regressionCase": "An LLM claim of 45.21% is rejected after the fly details query; a subsequent real SQL COUNT(lc50)*100.0/COUNT(*) result may be cited.",
+    "documentation": "README.md execution architecture"
+  }
+}

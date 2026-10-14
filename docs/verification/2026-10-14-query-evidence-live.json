@@ -1,0 +1,111 @@
+{
+  "verifiedAt": "2026-10-14T03:36:49.439Z",
+  "model": "qwen3.8-27b",
+  "prompt": "查询河南省2020年7月9日至2025年11月5日家蝇抗药性生测记录，表格展示药剂、地市、日期、LC50、校正死亡率与登记抗性分类，保留缺失值。",
+  "status": "SUCCESS",
+  "replyText": "## 主要发现\n\n已按河南省、2020-07-09 至 2025-11-05、家蝇范围查询抗药性生测记录。本次返回 73 行。LC50：有效 33 行，缺失 40 行；校正死亡率：有效 0 行，缺失 73 行；抗性分类：有效 0 行，缺失 73 行。\n\n## 数据对比\n\n| 字段 | 有效/缺失情况 |\n|---|---|\n| 药剂 | 完整返回 |\n| 地市 | 完整返回 |\n| 日期 | 完整返回 |\n| LC50 | 部分缺失 |\n| 校正死亡率 | 全部缺失 |\n| 登记抗性分类 | 全部缺失 |\n\n## 建议与限制\n\n- 本次结果保留缺失值；“校正死亡率”和“登记抗性分类”没有可用数值，不能据此判断抗性水平。\n- 完整明细由工作台展示，对话不逐行重写全部记录。",
+  "modelSummaries": [
+    "{\"task\":\"analysis\",\"relation\":\"new\",\"displayRegion\":{\"op\":\"clear\",\"evidence\":{\"source\":\"current\",\"start\":35,\"end\":38,\"quote\":\"表格展示\"}},\"dataRegion\":{\"op\":\"set\",\"value\":{\"includeCandidateIds\":[\"410000\"],\"excludeCandidateIds\":[]},\"evidence\":{\"source\":\"current\",\"start\":2,\"end\":5,\"quote\":\"河南省\"}},\"time\":{\"op\":\"set\",\"value\":{\"from\":\"2020-07-09\",\"to\":\"2025-11-05\"},\"evidence\":{\"source\":\"current\",\"start\":5,\"end\":25,\"quote\":\"2020年7月9日至2025年11月5日\"}},\"filters\":{\"speciesName\":{\"op\":\"set\",\"value\":{\"field\":\"speciesName\",\"operator\":\"eq\",\"values\":[\"家蝇\"]},\"evidence\":{\"source\":\"current\",\"start\":25,\"end\":27,\"quote\":\"家蝇\"}}},\"layerRequests\":[],\"mapOperations\":[],\"mapOptions\":{\"basemap\":\"vec\"}}",
+    "{\"task\":\"analysis\",\"relation\":\"new\",\"displayRegion\":{\"op\":\"clear\",\"evidence\":{\"source\":\"current\",\"start\":35,\"end\":39,\"quote\":\"表格展示\"}},\"dataRegion\":{\"op\":\"set\",\"value\":{\"includeCandidateIds\":[\"410000\"],\"excludeCandidateIds\":[]},\"evidence\":{\"source\":\"current\",\"start\":2,\"end\":5,\"quote\":\"河南省\"}},\"time\":{\"op\":\"set\",\"value\":{\"from\":\"2020-07-09\",\"to\":\"2025-11-05\"},\"evidence\":{\"source\":\"current\",\"start\":5,\"end\":25,\"quote\":\"2020年7月9日至2025年11月5日\"}},\"filters\":{\"speciesName\":{\"op\":\"set\",\"value\":{\"field\":\"speciesName\",\"operator\":\"eq\",\"values\":[\"家蝇\"]},\"evidence\":{\"source\":\"current\",\"start\":25,\"end\":27,\"quote\":\"家蝇\"}}},\"layerRequests\":[],\"mapOperations\":[],\"mapOptions\":{\"basemap\":\"vec\"}}",
+    "{\"mode\":\"answer\",\"replyText\":\"## 主要发现\\n\\n已按河南省、2020-07-09 至 2025-11-05、家蝇范围查询抗药性生测记录。{{evidence:r0t0}}\\n\\n## 数据对比\\n\\n| 字段 | 有效/缺失情况 |\\n|---|---|\\n| 药剂 | 完整返回 |\\n| 地市 | 完整返回 |\\n| 日期 | 完整返回 |\\n| LC50 | 部分缺失 |\\n| 校正死亡率 | 全部缺失 |\\n| 登记抗性分类 | 全部缺失 |\\n\\n## 建议与限制\\n\\n- 本次结果保留缺失值；“校正死亡率”和“登记抗性分类”没有可用数值，不能据此判断抗性水平。\\n- 完整明细由工作台展示，对话不逐行重写全部记录。\"}"
+  ],
+  "runId": "7acbd320-6ab7-4d99-9734-c24aa1973cd3",
+  "intentSummary": {
+    "task": "analysis",
+    "displayRegion": {
+      "includeCodes": [
+        "410000"
+      ],
+      "excludeCodes": [],
+      "catalogVersion": "local-boundaries-2026-10-13-v1"
+    },
+    "dataRegion": {
+      "includeCodes": [
+        "410000"
+      ],
+      "excludeCodes": [],
+      "catalogVersion": "local-boundaries-2026-10-13-v1"
+    },
+    "time": {
+      "from": "2020-07-09",
+      "to": "2025-11-05"
+    },
+    "filters": {
+      "speciesName": {
+        "field": "speciesName",
+        "operator": "eq",
+        "values": [
+          "家蝇"
+        ]
+      }
+    },
+    "scopeFingerprint": "7234b68ce753904df23ac264c8e3513f77cf10b873c503ba2216ad94930b0999",
+    "layerScopes": []
+  },
+  "skills": [
+    {
+      "callId": "call_1c4b8e7e7cd14ed984ef19fc",
+      "skillId": "skill_monitoring_data_table",
+      "args": {
+        "sql": "SELECT p.pesticide_name AS \"药剂\", l.city AS \"地市\", f.date_id AS \"日期\", f.lc50 AS \"LC50\", f.corrected_mortality AS \"校正死亡率\", f.resistance_level AS \"抗性分类\" FROM fact_insecticide_resistance f JOIN dim_species s ON f.species_id = s.species_id JOIN dim_pesticide p ON f.pesticide_id = p.pesticide_id JOIN dim_location l ON f.location_id = l.location_id ORDER BY f.date_id DESC",
+        "query": "河南省2020-07-09至2025-11-05家蝇抗药性生测记录"
+      },
+      "status": "SUCCESS",
+      "datasets": [
+        {
+          "id": "vector-monitoring",
+          "domain": "vector",
+          "origin": "observed",
+          "version": "existing-snapshot-2026-10-12",
+          "asOf": "2026-10-12",
+          "schemaVersion": "1"
+        }
+      ],
+      "statistics": {
+        "version": "1",
+        "basis": "returned_rows",
+        "tables": [
+          {
+            "path": [
+              "data"
+            ],
+            "rowCount": 73,
+            "columns": [
+              {
+                "field": "药剂",
+                "presentCount": 73,
+                "missingCount": 0
+              },
+              {
+                "field": "地市",
+                "presentCount": 73,
+                "missingCount": 0
+              },
+              {
+                "field": "日期",
+                "presentCount": 73,
+                "missingCount": 0
+              },
+              {
+                "field": "LC50",
+                "presentCount": 33,
+                "missingCount": 40
+              },
+              {
+                "field": "校正死亡率",
+                "presentCount": 0,
+                "missingCount": 73
+              },
+              {
+                "field": "抗性分类",
+                "presentCount": 0,
+                "missingCount": 73
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "unvalidatedContentPublished": false
+}

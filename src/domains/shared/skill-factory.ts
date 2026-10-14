@@ -59,7 +59,7 @@ async function executeReport(args:Record<string,any>,ctx:ExecutionContext):Promi
   const sections=[{heading:'监测范围与统计',content:`领域：${ctx.domain}；城市：${scope.city ?? '全域'}；区县：${scope.district ?? '全辖区'}；记录数：${count}。`},{heading:'数据与评估限制',content:'统计汇总不代表预测模型达到准确率要求。'}];
   const reportId=`report_${randomUUID()}`;
   await getAppBusinessProvider().saveReport({report_id:reportId,title,author:ctx.principal.userId,city:scope.city,district:scope.district,metadata_json:JSON.stringify({domain:ctx.domain,scope,datasets:loadDatasetManifest().filter(d=>d.domain===ctx.domain),method:'persisted-descriptive-report-v1'}),report_type:'MONITORING_SUMMARY',summary,content_markdown:sections.map(s=>`### ${s.heading}\n${s.content}`).join('\n\n')});
-  return {status:'SUCCESS',payload:{type:'AUTO_GENERATED_REPORT',reportId,title,date:new Date().toISOString(),author:ctx.principal.userId,summary,sections},qualityFlags:['descriptive-summary-only']};
+  return {status:'SUCCESS',payload:{type:'AUTO_GENERATED_REPORT',reportId,title,date:new Date().toISOString(),author:ctx.principal.userId,recordCount:count,summary,sections},qualityFlags:['descriptive-summary-only']};
 }
 export function buildDomainSkills(domain:AgentDomain,handlers:Record<string,Partial<SkillDefinition>>={}):SkillDefinition[] {
   return STANDARD_SKILLS.filter(s=>s.domain===domain || s.domain==='common').map(original=>{

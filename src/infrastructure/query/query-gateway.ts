@@ -35,6 +35,16 @@ export function validateReadQuery(sql: string, schema: QuerySchema, maxRows = 20
     if (item.join && (!item.on || /CROSS/i.test(item.join))) throw new Error('Unconstrained joins are not supported');
   }
   const aliases = new Set<string>((Array.isArray(ast.columns) ? ast.columns : []).map((c:any) => c.as).filter(Boolean));
+  // Running SELECT 76 AS recordCount is not a data calculation: it merely
+  // launders a model-supplied number through the database. Statistical outputs
+  // must depend on source columns or a database aggregate over actual rows.
+  const statisticsAlias = /^(?:n\d*|count|total|sum|mean|average|avg|median|min|max|percentage|percent|ratio|rate|growth|.*(?:count|records|rate|ratio|percentage)|.*(?:记录数|数量|总数|合计|总和|均值|平均|中位数|比例|占比|增长率|最大值|最小值))$/i;
+  const dependsOnData = (node:any):boolean => {
+    if(!node||typeof node!=='object')return false;
+    if(node.type==='column_ref'||node.type==='aggr_func')return true;
+    return Object.values(node).some(value=>Array.isArray(value)?value.some(dependsOnData):dependsOnData(value));
+  };
+  for(const column of ast.columns)if(statisticsAlias.test(column.as??'')&&!dependsOnData(column.expr))throw new Error('Statistical projection must be computed from source data, not a constant');
   function visit(node: any, allowAlias = false): void {
     if (!node || typeof node !== 'object') return;
     if (node !== ast && node.type === 'select') throw new Error('Subqueries are not supported');

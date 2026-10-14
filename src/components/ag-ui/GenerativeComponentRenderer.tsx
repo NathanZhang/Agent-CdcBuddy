@@ -151,6 +151,7 @@ export const GenerativeComponentRenderer: React.FC<GenerativeComponentRendererPr
 
       {view.type === 'DATA_TABLE_VIEW' && (
         <DataTableComponent
+          statistics={view.statistics}
           featureRefs={featureRefs}
           sourceRunId={view.runId}
           sourceCallId={view.callId??view.spatialOutputs?.[0]?.source.callId}

@@ -4,13 +4,12 @@ import {formatValue} from '@/features/workbench/result-presentation';
 import {MetricGrid,ResultTable,ResultDataView} from './ResultDataView';
 
 type Species={speciesName:string;latinName?:string;category?:string;totalCount:number;percentage:number|null;cityBreakdown?:{city:string;count:number}[]};
-export function SpeciesCompositionSummary({data}:{data:{items:Species[];dominantSpecies?:string|null;shannonWienerIndex?:number|null;clusters?:unknown[]}}) {
+export function SpeciesCompositionSummary({data}:{data:{items:Species[];totalCount?:number;speciesCount?:number;cityCount?:number;clusterCount?:number;dominantSpecies?:string|null;shannonWienerIndex?:number|null;clusters?:unknown[]}}) {
  const items=data.items;const cities=Array.from(new Set(items.flatMap(item=>(item.cityBreakdown??[]).map(row=>row.city)))).sort((a,b)=>a.localeCompare(b,'zh-CN'));
  const cityRows=cities.map(city=>({city,...Object.fromEntries(items.map(item=>[item.speciesName,item.cityBreakdown?.find(row=>row.city===city)?.count??null]))}));
- const total=items.reduce((sum,item)=>sum+item.totalCount,0);
  return <div className="space-y-6">
  <MetricGrid entries={[
-  ['totalCount',total],['物种数量',items.length],['dominantSpecies',total>0?data.dominantSpecies:null],['shannonWienerIndex',data.shannonWienerIndex],
+  ['totalCount',data.totalCount],['speciesCount',data.speciesCount],['dominantSpecies',data.dominantSpecies],['shannonWienerIndex',data.shannonWienerIndex],
  ]}/>
  <section className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
   <header className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex flex-wrap gap-2 items-center justify-between"><h4 className="font-semibold text-sm">物种构成</h4><span className="text-xs text-slate-500">按捕获数量统计 · 占比合计基于当前结果</span></header>
@@ -23,7 +22,7 @@ export function SpeciesCompositionSummary({data}:{data:{items:Species[];dominant
    <div className="min-w-0"><ResultTable caption="物种统计明细" rows={items.map(item=>({speciesName:item.speciesName,latinName:item.latinName,totalCount:item.totalCount,percentage:item.percentage}))}/></div>
   </div>
  </section>
- <section className="min-w-0"><div className="flex flex-wrap justify-between items-center gap-2 mb-3"><h4 className="text-sm font-semibold">地市物种对比</h4><span className="text-xs text-slate-500">{cities.length} 个地市 · 单位：只</span></div><ResultTable rows={cityRows} caption="各地市各物种捕获数量"/><p className="mt-2 text-xs text-slate-500">未提供的地市物种组合保留缺测状态，不计为零。</p></section>
- {!!data.clusters?.length&&<details className="rounded-xl border border-slate-200 dark:border-slate-800 p-4"><summary className="text-sm font-medium cursor-pointer">探索性聚类 · {data.clusters.length} 组</summary><p className="my-3 text-xs text-slate-500">按采样方法分组，簇编号不代表风险等级。</p><ResultDataView value={data.clusters} field="clusters"/></details>}
+ <section className="min-w-0"><div className="flex flex-wrap justify-between items-center gap-2 mb-3"><h4 className="text-sm font-semibold">地市物种对比</h4><span className="text-xs text-slate-500">{formatValue(data.cityCount)} 个地市 · 单位：只</span></div><ResultTable rows={cityRows} caption="各地市各物种捕获数量"/><p className="mt-2 text-xs text-slate-500">未提供的地市物种组合保留缺测状态，不计为零。</p></section>
+ {!!data.clusters?.length&&<details className="rounded-xl border border-slate-200 dark:border-slate-800 p-4"><summary className="text-sm font-medium cursor-pointer">探索性聚类 · {formatValue(data.clusterCount)} 组</summary><p className="my-3 text-xs text-slate-500">按采样方法分组，簇编号不代表风险等级。</p><ResultDataView value={data.clusters} field="clusters"/></details>}
  </div>;
 }

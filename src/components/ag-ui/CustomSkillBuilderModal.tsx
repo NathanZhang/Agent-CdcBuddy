@@ -3,9 +3,13 @@
 import React from 'react';
 import { MetaCustomSkillData } from '@/lib/skills/types';
 import { Sparkles, Database, Lock, Globe } from 'lucide-react';
+import type {ResultStatistics} from '@/contracts/result-statistics';
+import {ResultStatisticsSummary} from './ResultStatisticsSummary';
+import {fieldLabel,formatValue} from '@/features/workbench/result-presentation';
 
 interface CustomSkillBuilderProps {
   data: {
+    statistics?: ResultStatistics;
     skill: MetaCustomSkillData;
     previewData: any[];
   };
@@ -65,20 +69,22 @@ export const CustomSkillBuilderModal: React.FC<CustomSkillBuilderProps> = ({ dat
       {/* 预览数据表格 */}
       <div className="space-y-1.5 text-xs">
         <span className="font-semibold text-slate-700 dark:text-slate-300">📊 技能即时试跑与数据预览:</span>
+        <ResultStatisticsSummary statistics={data.statistics}/>
+        <p className="text-slate-500">表格仅预览前 {Math.min(5,data.previewData.length)} 行，统计基于完整返回数据。</p>
         <div className="bg-white dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
               <tr>
                 {data.previewData.length > 0 && Object.keys(data.previewData[0]).map((k, i) => (
-                  <th key={i} className="p-2 font-mono">{k}</th>
+                  <th key={i} className="p-2 font-mono">{fieldLabel(k)}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
               {data.previewData.slice(0, 5).map((row, rIdx) => (
                 <tr key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
-                  {Object.values(row).map((v: any, cIdx) => (
-                    <td key={cIdx} className="p-2 font-mono">{String(v)}</td>
+                  {Object.entries(row).map(([key,value], cIdx) => (
+                    <td key={cIdx} className="p-2 font-mono">{formatValue(value,key)}</td>
                   ))}
                 </tr>
               ))}

@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import {computeResultStatistics,resultStatisticsSource} from './result-statistics';
 import type { AgentDomain, DatasetRef } from './dataset';
 export const RESULT_STATUSES = ['SUCCESS','NO_DATA','INSUFFICIENT_DATA','FAILED','REVIEW_REQUIRED','CANCELLED'] as const;
 export type ResultStatus = typeof RESULT_STATUSES[number];
@@ -41,6 +42,9 @@ export function validateSkillResult<T = unknown>(value: unknown): SkillResult<T>
   if (!validate(value)) throw new Error(`Invalid SkillResult: ${JSON.stringify(validate.errors)}`);
   const result = value as unknown as SkillResult<T>;
   assertFinite(result);
+  const payload = result.payload as {type?: string; data?: unknown; statistics?: unknown} | null;
+  const statisticsSource = resultStatisticsSource(payload);
+  if (payload?.statistics !== undefined && statisticsSource && JSON.stringify(payload.statistics) !== JSON.stringify(computeResultStatistics(statisticsSource.data, statisticsSource.path))) throw new Error('Result statistics do not match executed data');
   if (['NO_DATA','FAILED','CANCELLED'].includes(result.status) && result.payload !== null) throw new Error(`${result.status} must have null payload`);
   if (result.status === 'SUCCESS' && result.payload === null) throw new Error('SUCCESS requires an executed payload');
   if (result.status === 'FAILED' && !result.error) throw new Error('FAILED requires error evidence');

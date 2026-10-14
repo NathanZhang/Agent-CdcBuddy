@@ -1,4 +1,6 @@
 'use client';
+import type {ResultStatistics} from '@/contracts/result-statistics';
+import {ResultStatisticsSummary} from './ResultStatisticsSummary';
 import {emitMapFeature,mapFeatureForRow,type MapFeatureRef} from '@/lib/geo/map-interaction';
 import type { QueryVisualization } from '@/contracts/query-visualization';
 import { QueryResultVisualization } from './QueryResultVisualization';
@@ -10,6 +12,7 @@ import React, { useState } from 'react';
 import { Table, Download, Search, Code2, Copy, Check, Sparkles, Clock, Database } from 'lucide-react';
 
 interface DataTableProps {
+  statistics?: ResultStatistics;
   featureRefs?:Record<string,MapFeatureRef>;
   featureIdKey?:string;
   sourceRunId?:string;
@@ -25,6 +28,7 @@ interface DataTableProps {
 }
 
 export const DataTableComponent: React.FC<DataTableProps> = ({ 
+  statistics,
   featureRefs,featureIdKey,sourceRunId,sourceCallId,
   title = '监测明细数据表',
   scope,
@@ -68,6 +72,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
   });
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
+  const returnedRowCount = statistics?.tables.find(table => table.path.length===1&&table.path[0]==='data')?.rowCount ?? data.length;
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleExportCsv=()=>{if(sql)void exportFile({type:'report.export',args:queryExportArgs({sql,title,scope,runId:sourceRunId,callId:sourceCallId})});};
@@ -87,7 +92,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
         <div className="flex items-center gap-2 flex-wrap">
           <Table className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">{title}</h4>
-          <span className="text-slate-500 text-xs">({filteredData.length} 条记录)</span>
+          <span className="text-slate-500 text-xs">({returnedRowCount} 行{searchTerm ? `，筛选后 ${filteredData.length} 行` : ''})</span>
           {executionTimeMs !== undefined && (
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 font-mono flex items-center gap-1">
               <Clock className="w-3 h-3" />
@@ -158,6 +163,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
       )}
 
       <QueryResultVisualization rows={filteredData} spec={visualization}/>
+      <ResultStatisticsSummary statistics={statistics}/>
 
       {/* 表格内容 */}
       <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 max-h-[460px] overflow-y-auto">
@@ -186,7 +192,7 @@ export const DataTableComponent: React.FC<DataTableProps> = ({
       {/* 分页控制器 */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] pt-1">
-          <span>页码 {currentPage} / {totalPages} (共 {filteredData.length} 条)</span>
+          <span>页码 {currentPage} / {totalPages} (本次返回 {returnedRowCount} 行{searchTerm ? `，筛选后 ${filteredData.length} 行` : ''})</span>
           <div className="flex gap-1.5">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
