@@ -1,7 +1,7 @@
 CREATE TABLE biz_science_runs (
  run_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, organization_id TEXT NOT NULL,
  domain TEXT NOT NULL, source_role TEXT NOT NULL, principal_json TEXT NOT NULL,
- scope_json TEXT NOT NULL, dataset_refs_json TEXT NOT NULL, plan_json TEXT NOT NULL, plan_hash TEXT NOT NULL,
+ scope_json TEXT NOT NULL, plan_json TEXT NOT NULL, plan_hash TEXT NOT NULL,
  request_key TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('QUEUED','RUNNING','SUCCEEDED','FAILED','CANCEL_REQUESTED','CANCELLED')),
  lease_token TEXT, lease_until INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
  error TEXT, UNIQUE(user_id,organization_id,domain,request_key)

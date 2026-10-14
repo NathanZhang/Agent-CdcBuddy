@@ -1,6 +1,10 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it} from 'vitest';
+import {afterAll, beforeAll, expect, it} from 'vitest';
+import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {answerEvidenceFixture} from './fixtures/answer-evidence-context';
 import Database from 'better-sqlite3';
 import {computeResultStatistics, withResultStatistics} from '@/contracts/result-statistics';
 import {validateSkillResult} from '@/contracts/skill-result';
@@ -18,6 +22,16 @@ import {SpeciesCompositionSummary} from '@/components/ag-ui/SpeciesCompositionSu
 import {RECOMMENDATION_DATA_CASES} from './fixtures/recommendation-data-cases';
 import {getRecordedTurn} from '@/infrastructure/db/business-store';
 import {getAppBusinessProvider} from '@/lib/db/app-business-provider';
+
+let fixtureDirectory: string, restoreSource: () => void;
+beforeAll(() => {
+  fixtureDirectory = mkdtempSync(join(tmpdir(), 'cdc-answer-evidence-'));
+  restoreSource = answerEvidenceFixture(fixtureDirectory);
+});
+afterAll(() => {
+  restoreSource?.();
+  rmSync(fixtureDirectory, {recursive:true, force:true});
+});
 
 export const FLY_PROMPT = '查询河南省2020年7月9日至2025年11月5日家蝇抗药性生测记录，表格展示药剂、地市、日期、LC50、校正死亡率与登记抗性分类，保留缺失值。';
 const flySql = 'SELECT p.pesticide_name AS "药剂", l.city AS "地市", f.date_id AS "日期", f.lc50 AS "LC50", f.corrected_mortality AS "校正死亡率", f.resistance_level AS "登记抗性分类" FROM fact_insecticide_resistance f JOIN dim_pesticide p ON f.pesticide_id=p.pesticide_id JOIN dim_location l ON f.location_id=l.location_id ORDER BY f.date_id DESC';
@@ -121,7 +135,7 @@ it('requires a second actual SQL execution for a derived percentage; the LLM can
   expect(turn.replyText).toContain('45.21%');
 });
 
-it('replays the fly prompt against real rows, independently verifies COUNT/nulls, and repairs a 76-row hallucination without requerying', async () => {
+it('replays the fly prompt against fixed fixture rows, independently verifies COUNT/nulls, and repairs a 76-row hallucination without requerying', async () => {
   const context = ctx(); let queries = 0, corrections = 0;
   const events: any[] = [];
   const agent = createMainAgent({listSkills:listSkillDefinitions,executeSkill:async(id,args,executionContext)=>{if(id==='skill_monitoring_data_table')queries++;return executeSkill(id,args,executionContext);},llm:{complete:async(request)=>{
@@ -150,7 +164,7 @@ it('replays the fly prompt against real rows, independently verifies COUNT/nulls
   expect(html).toContain('本次返回 73 行'); expect(html).toContain('LC50：有效 33 行，缺失 40 行');
 });
 
-it('recovers a repeatedly incorrect answer with real business values and persists no visible validation failure', async () => {
+it('recovers a repeatedly incorrect answer with fixture business values and persists no visible validation failure', async () => {
   const context = ctx();let queries=0,attempts=0;
   const agent = createMainAgent({listSkills:listSkillDefinitions,executeSkill:async(id,args,executionContext)=>{if(id==='skill_monitoring_data_table')queries++;return executeSkill(id,args,executionContext);},llm:{complete:async(request)=>{
     if(request.messages[0].content?.includes('你负责提炼会话标题'))return {role:'assistant',content:'{"title":"家蝇抗药性结果"}'};
@@ -252,7 +266,23 @@ it('covers custom SQL preview/registered execution and report counts using serve
   expect(executed.status).toBe('SUCCESS');
   expect((executed.payload as any).data).toEqual(preview.previewData);
   expect((executed.payload as any).statistics.tables[0].columns).toEqual(preview.statistics.tables[0].columns);
-  const report = await executeSkill('skill_auto_report_gen',{},context);
+  const mockReport = await executeSkill('skill_auto_report_gen',{},context);
+  expect(mockReport.status).toBe('FAILED');
+  expect(mockReport.error?.code).toBe('MOCK_BUSINESS_FORBIDDEN');
+  // Exercise observed-policy contracts with this isolated hand-built source;
+  // no deployment data or CI bundle is relabelled as observed.
+  const previousManifest = process.env.DATASET_MANIFEST_PATH!;
+  const observedManifest = join(fixtureDirectory, 'report-policy.json');
+  const locations = JSON.parse(readFileSync(previousManifest, 'utf8'));
+  for (const location of locations) if (location.domain === 'vector') location.origin = 'observed';
+  writeFileSync(observedManifest, JSON.stringify(locations));
+  process.env.DATASET_MANIFEST_PATH = observedManifest;
+  let report;
+  try {
+    report = await executeSkill('skill_auto_report_gen',{},createDevelopmentContext('vector'));
+  } finally {
+    process.env.DATASET_MANIFEST_PATH = previousManifest;
+  }
   expect(report.status,JSON.stringify(report.error)).toBe('SUCCESS');
   const evidence = buildAnswerEvidence([{callId:'report',skillId:'skill_auto_report_gen',skillName:'报告',args:{},result:report}]);
   const recordCount = (report.payload as any).recordCount;
