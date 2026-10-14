@@ -28,7 +28,9 @@ function stableInput(value:any):string{return JSON.stringify(value,(_key,item)=>
 class TurnError extends Error {constructor(public code:string,message:string){super(message);}}
 export function createMainAgent(dependencies:Dependencies){
   return async function* run(interaction:AgentInteraction,ctx:ExecutionContext):AsyncIterable<RunEvent>{
-    const deadlineAt=ctx.deadlineAt??Date.now()+300000;ctx={...ctx,userInput:interaction.userInput,deadlineAt,signal:AbortSignal.any([...(ctx.signal?[ctx.signal]:[]),AbortSignal.timeout(Math.max(1,deadlineAt-Date.now()))])};
+    const deadlineAt=ctx.deadlineAt??Date.now()+300000;
+    const deadlineSignal=AbortSignal.timeout(Math.max(1,deadlineAt-Date.now()));
+    ctx={...ctx,userInput:interaction.userInput,deadlineAt,signal:AbortSignal.any([...(ctx.signal?[ctx.signal]:[]),deadlineSignal])};
     let regionTurn:RegionTurn|undefined,mapComposition:MapComposition|undefined;const outcomes:OutputOutcome[]=[];
     let seq=0;const event=(type:RunEvent['type'],data:Record<string,any>):RunEvent=>({version:'1',runId:ctx.runId,seq:++seq,type,data});
     const skillRuns:SkillRun[]=[];const agui:AguiResult[]=[];let replyText='';
@@ -246,12 +248,15 @@ export function createMainAgent(dependencies:Dependencies){
       }
       throw new TurnError('TOOL_BUDGET_EXCEEDED','主线 Agent 轮次预算已耗尽');
     }catch(error){
-      const cancelled=ctx.signal?.aborted;const code=cancelled?'CANCELLED':error instanceof LLMError||error instanceof TurnError||error instanceof IntentError||error instanceof RegionTurnError||error instanceof AuthorizationError?error.code:'AGENT_FAILED';
-      const message=cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';
+      // AbortSignal.any keeps the first cause, even if the other signal aborts later.
+      const timedOut=deadlineSignal.aborted&&ctx.signal?.reason===deadlineSignal.reason;
+      const cancelled=ctx.signal?.aborted&&!timedOut;
+      const code=timedOut?'EXECUTION_TIMEOUT':cancelled?'CANCELLED':error instanceof LLMError||error instanceof TurnError||error instanceof IntentError||error instanceof RegionTurnError||error instanceof AuthorizationError?error.code:'AGENT_FAILED';
+      const message=timedOut?'执行超时：本轮执行总时限已到':cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';
       // A failed language summary does not invalidate already authorized skill data.
       const denied=skillRuns.some(run=>run.result.error?.code.startsWith('FORBIDDEN'));
       if(cancelled)mapComposition=undefined;else if(denied&&mapComposition)mapComposition={...mapComposition,layers:[],lineage:[]};
-      const retained=!cancelled && !denied && ['LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','LLM_OUTPUT_TRUNCATED','INVALID_LLM_RESPONSE','TOOL_BUDGET_EXCEEDED','ANSWER_EVIDENCE_MISMATCH'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
+      const retained=!cancelled && !denied && ['EXECUTION_TIMEOUT','LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','LLM_OUTPUT_TRUNCATED','INVALID_LLM_RESPONSE','TOOL_BUDGET_EXCEEDED','ANSWER_EVIDENCE_MISMATCH'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
       const verifiedSummary=code==='ANSWER_EVIDENCE_MISMATCH'&&retained.length?buildAnswerEvidence(skillRuns).facts.filter(fact=>/^r\d+t\d+$/.test(fact.id)).map(fact=>fact.text).join('\n\n'):'';
       const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:(cancelled&&streamedReply?`${streamedReply}\n\n`:'')+message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':'')+(verifiedSummary?`\n\n服务器已核验的统计：\n\n${verifiedSummary}`:''),agui:retained,skillRuns,...reasoning(),error:{code,message},...(error instanceof RegionTurnError&&error.diagnostics?.length?{intentDiagnostics:error.diagnostics}:{})};
       try{await persistTurn(result);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}

@@ -22,7 +22,7 @@ export function normalizeInteraction(body:any):AgentInteraction{
 export function toLegacyResult(turn:AgentTurnResult){
   const last=turn.skillRuns.findLast(run=>run.skillId!=='skill_session_journal');const success=!['FAILED','CANCELLED'].includes(turn.status);
   const view=projectAguiView(turn);
-  return {...turn,success,skillId:last?.skillId ?? '',skillName:last?.skillName ?? '',generativeView:view,source:'llm_tool_calling' as const,args:last?.args ?? {},error:turn.error?.message};
+  return {...turn,success,skillId:last?.skillId ?? '',skillName:last?.skillName ?? '',generativeView:view,source:'llm_tool_calling' as const,args:last?.args ?? {},error:turn.error?.message,errorCode:turn.error?.code};
 }
 export interface LegacyEvent {event:string;data:Record<string,any>;}
 export function toLegacyEvents(event:RunEvent):LegacyEvent[]{

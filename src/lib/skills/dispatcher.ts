@@ -5,7 +5,7 @@ import {MAX_DISPATCH_SSE_FRAME_BYTES} from '@/contracts/transport-budget';
 import type { AgentDomainType } from '@/lib/config/agent-profile';
 export interface DispatchResult {
  mapComposition?:import('@/contracts/map-composition').MapComposition;outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];intentSummary?:Record<string,unknown>;
- success:boolean;skillId:string;skillName:string;replyText:string;reasoningText?:string;reasoningDuration?:number;session?:{id:string;title:string};generativeView?:any;error?:string;
+ success:boolean;skillId:string;skillName:string;replyText:string;reasoningText?:string;reasoningDuration?:number;session?:{id:string;title:string};generativeView?:any;error?:string;errorCode?:string;
  source?:'llm_tool_calling'|'llm_direct_answer';args?:Record<string,any>;runId?:string;interactionId?:string;status?:string;agui?:any[];skillRuns?:any[];
 }
 export interface DispatchContext {
