@@ -4,6 +4,17 @@ export type QuerySchema = Record<string, readonly string[]>;
 const parser = new Parser();
 const functions = new Set(['COUNT','AVG','SUM','MIN','MAX','ROUND','SUBSTR','SUBSTRING','STRFTIME','DATE','DATETIME','COALESCE','IFNULL','NULLIF','ABS','CAST','TOTAL','LENGTH','LOWER','UPPER']);
 
+/** Shared by read validation and scope validation: only a single keyed join is allowed. */
+export function isKeyedJoinPredicate(on:any,from:any[]):boolean {
+  if(on?.type!=='binary_expr'||on.operator!=='='||on.left?.type!=='column_ref'||on.right?.type!=='column_ref'||!on.left.table||!on.right.table||on.left.table===on.right.table)return false;
+  const left=from.find(f=>(f.as??f.table)===on.left.table),right=from.find(f=>(f.as??f.table)===on.right.table);
+  if(!left||!right)return false;
+  const a=on.left.column,b=on.right.column;
+  if(a===b&&(/_id$/.test(String(a))||['city','district'].includes(a)))return true;
+  const keys=[['fact_food_sampling','food_category_id','dim_food_category','category_id'],['fact_food_sampling','detected_pathogen_id','dim_pathogen_type','pathogen_id']];
+  return keys.some(([x,xc,y,yc])=>left.table===x&&a===xc&&right.table===y&&b===yc||left.table===y&&a===yc&&right.table===x&&b===xc);
+}
+
 /** Only the SQL subset used by current query skills is supported. */
 export function validateReadQuery(sql: string, schema: QuerySchema, maxRows = 200): string {
   if (typeof sql !== 'string' || sql.length > 20000 || !Number.isSafeInteger(maxRows) || maxRows < 1 || maxRows > 1000) throw new Error('Invalid read query budget');
@@ -14,13 +25,12 @@ export function validateReadQuery(sql: string, schema: QuerySchema, maxRows = 20
   if (ast.type !== 'select' || ast.with || ast._next || ast.set_op || ast.into || ast.for_update || !Array.isArray(ast.from) || ast.from.length === 0) throw new Error('Unsupported SELECT construction');
   const tables = new Map<string,string>();
   if(ast.from.length>4)throw new Error("Join budget exceeded");
-  const allowedJoinKey=(on:any)=>{const a=on.left.column,b=on.right.column;if(a===b&&(/_id$/.test(String(a))||['city','district'].includes(a)))return true;const ta=ast.from.find((f:any)=>(f.as??f.table)===on.left.table)?.table,tb=ast.from.find((f:any)=>(f.as??f.table)===on.right.table)?.table;const keys=[['fact_food_sampling','food_category_id','dim_food_category','category_id'],['fact_food_sampling','detected_pathogen_id','dim_pathogen_type','pathogen_id']];return keys.some(([x,xc,y,yc])=>ta===x&&a===xc&&tb===y&&b===yc||ta===y&&a===yc&&tb===x&&b===xc);};
   for (const [index,item] of ast.from.entries()) {
     if (item.db || item.expr || !item.table || !Object.hasOwn(schema,item.table)) throw new Error('Table outside allowed domain');
     if(index>0&&!item.join)throw new Error("Implicit cross products are not supported");
     if(tables.has(item.as??item.table))throw new Error("Duplicate table alias");
     if(index>0&&item.table.startsWith("fact_")&&[...tables.values()].some(t=>t.startsWith("fact_")))throw new Error("Fact-to-fact joins are outside the compute budget");
-    if(item.join&&(item.on?.type!=="binary_expr"||item.on.operator!=="="||item.on.left?.type!=="column_ref"||item.on.right?.type!=="column_ref"||!item.on.left.table||!item.on.right.table||item.on.left.table===item.on.right.table||!allowedJoinKey(item.on)))throw new Error("Join requires distinct keyed column equality");
+    if(item.join&&!isKeyedJoinPredicate(item.on,ast.from))throw new Error("Join requires distinct keyed column equality");
     tables.set(item.as ?? item.table, item.table);
     if (item.join && (!item.on || /CROSS/i.test(item.join))) throw new Error('Unconstrained joins are not supported');
   }

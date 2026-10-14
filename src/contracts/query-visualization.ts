@@ -9,6 +9,6 @@ export const queryVisualizationSchema = {
   oneOf: [
     {type:'object',additionalProperties:false,required:['kind','regionCodeKey','labelKey'],properties:{kind:{const:'map'},regionCodeKey:key,labelKey:key,valueKey:key,unit:key}},
     { type: 'object', additionalProperties: false, required: ['kind', 'xKey', 'yKey', 'unit'], properties: { kind: { enum: ['bar', 'line'] }, xKey: key, yKey: key, unit: key } },
-    { type: 'object', additionalProperties: false, required: ['kind', 'latKey', 'lonKey', 'labelKey'], properties: { kind: { const: 'map' }, latKey: key, lonKey: key, labelKey: key, idKey:{...key,description:'本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。'}, valueKey: key, unit: key, sourceCRS:{enum:['EPSG:4326','EPSG:4490']} } },
+    { type: 'object', additionalProperties: false, required: ['kind', 'latKey', 'lonKey', 'labelKey'], properties: { kind: { const: 'map' }, latKey: key, lonKey: key, labelKey: key, idKey:{...key,description:'本次SELECT返回的真实点位主键列，按点位汇总必须返回主键并指定此键，不能只用街道或坐标合并不同点位。'}, valueKey: key, unit: key, sourceCRS:{enum:['EPSG:4326','EPSG:4490'],description:'通常省略，由服务端根据数据源登记的坐标系绑定。只有明确取得该数据源的坐标系证据时才填写，不能根据行政边界或地名猜测。'} } },
   ],
 };

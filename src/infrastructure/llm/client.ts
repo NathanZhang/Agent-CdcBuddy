@@ -34,10 +34,11 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
     const primary=env.SILICONFLOW_MODEL ?? 'Qwen/Qwen3.6-27B';
     const models=[primary,env.SILICONFLOW_FALLBACK_MODEL ?? primary];
     const templateThinking=!new URL(base).hostname.endsWith('.siliconflow.cn');
+    // Intent recognition needs visible reasoning even though its output is JSON without tools.
     // Evidence is already available in synthesis; reserve its output budget for the answer.
-    const streaming=Boolean(request.onDelta),thinking=streaming&&request.toolChoice!=='none'&&env.SILICONFLOW_ENABLE_THINKING!=='false';
+    const streaming=Boolean(request.onDelta),thinking=streaming&&(request.phase==='intent'||request.toolChoice!=='none')&&env.SILICONFLOW_ENABLE_THINKING!=='false';
     const timeoutMs=getRouterTimeoutMs(env);
-    const phase=request.toolChoice==='none'?'结果汇总':'技能选择';
+    const phase=request.phase==='intent'?'意图识别':request.toolChoice==='none'?'结果汇总':'技能选择';
     const started=Date.now();
     let last:unknown,outputRecovery=false,requestAttempts=0;
     for(let attempt=0;attempt<models.length;attempt++){

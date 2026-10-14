@@ -25,5 +25,6 @@ export interface AgentTurnResult {
   mapComposition?:import('./map-composition').MapComposition;
   outcomes?:import('@/application/agent/output-outcomes').OutputOutcome[];
   intentSummary?:Record<string,unknown>;
+  intentDiagnostics?:import('./interaction-intent').IntentDiagnostic[];
   error?:{code:string;message:string};
 }

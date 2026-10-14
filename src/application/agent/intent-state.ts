@@ -1,5 +1,6 @@
 import type {ExecutionContext} from '@/contracts/execution-context';
 import type {IntentState,PendingIntent} from '@/contracts/interaction-intent';
+import {isLegacyRecognitionFailure} from '@/contracts/interaction-intent';
 import type {ApprovedIntent} from '@/contracts/approved-intent';
 import type {MapSceneState} from '@/contracts/map-composition';
 import type {OutputOutcome} from './output-outcomes';
@@ -17,4 +18,4 @@ export function commitIntentState(sessionId:string,expectedRevision:number,appro
  if(scene)db.prepare('INSERT INTO biz_map_scenes VALUES(?,?,?,?,?,?) ON CONFLICT(session_id,user_id,organization_id,domain) DO UPDATE SET revision=excluded.revision,scene_json=excluded.scene_json').run(...key,scene.revision,JSON.stringify(scene));return state;}).immediate());
 }
 export function savePendingIntent(pending:PendingIntent,ctx:ExecutionContext):void{withBusinessDb(db=>{const state=readIntentState(pending.sessionId,ctx);db.prepare('INSERT INTO biz_session_intents VALUES(?,?,?,?,?,?,?) ON CONFLICT(session_id,user_id,organization_id,domain) DO UPDATE SET pending_json=excluded.pending_json').run(...keys(pending.sessionId,ctx),state?.revision??0,JSON.stringify(state??null),JSON.stringify(pending));});}
-export function loadPendingIntent(sessionId:string,ctx:ExecutionContext):PendingIntent|null{return withBusinessDb(db=>{const row=db.prepare('SELECT pending_json FROM biz_session_intents WHERE session_id=? AND user_id=? AND organization_id=? AND domain=?').get(...keys(sessionId,ctx)) as any;const pending=row?.pending_json?JSON.parse(row.pending_json):null;return pending&&pending.expiresAt>Date.now()?pending:null;});}
+export function loadPendingIntent(sessionId:string,ctx:ExecutionContext):PendingIntent|null{return withBusinessDb(db=>{const row=db.prepare('SELECT pending_json FROM biz_session_intents WHERE session_id=? AND user_id=? AND organization_id=? AND domain=?').get(...keys(sessionId,ctx)) as any;const pending=row?.pending_json?JSON.parse(row.pending_json):null;return pending&&!isLegacyRecognitionFailure(pending)&&pending.expiresAt>Date.now()?pending:null;});}

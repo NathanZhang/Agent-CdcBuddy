@@ -18,7 +18,8 @@ import { bindOperationInput,IntentError } from './operation-intent';
 import { getAppBusinessProvider } from '@/lib/db/app-business-provider';
 import { recordAgentTurn } from '@/infrastructure/db/business-store';
 import { getDomainRepository } from '@/infrastructure/db/domain-repository';
-import {streamCompletion,replyPreview} from './stream-completion';
+import {streamCompletion,streamTask,replyPreview} from './stream-completion';
+import type {IntentStreamDelta} from './intent-resolver';
 import { generateSessionTitle } from './session-title';
 import { isCorrectedMapQuery } from './query-recovery';
 interface Dependencies {enableRegionIntent?:boolean;llm:LLMClient;listSkills:typeof listSkillDefinitions;executeSkill:typeof executeSkill;}
@@ -110,8 +111,27 @@ export function createMainAgent(dependencies:Dependencies){
         yield event('result',{result:turn});yield event('completed',{status:turn.status});return;
       }
       if(dependencies.enableRegionIntent){
-        const prepared=await prepareRegionTurn(interaction,ctx,dependencies.llm,skills);
-        if('clarification' in prepared){const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:'REVIEW_REQUIRED',replyText:prepared.clarification.join('\n'),agui:[],skillRuns:[]};await persistTurn(result);yield event('result',{result});yield event('completed',{status:result.status});return;}
+        const stream=streamTask<IntentStreamDelta,Awaited<ReturnType<typeof prepareRegionTurn>>>(onDelta=>prepareRegionTurn(interaction,ctx,dependencies.llm,skills,onDelta));
+        let prepared:Awaited<ReturnType<typeof prepareRegionTurn>>;
+        let attempt=0,reasoningBefore=reasoningText,attemptReasoning='',reasoningStarted=0;
+        const endReasoning=()=>{if(reasoningStarted){reasoningDuration+=Date.now()-reasoningStarted;reasoningStarted=0;}};
+        try{
+          while(true){
+            const next=await stream.next();ctx.signal?.throwIfAborted();
+            if(next.done){prepared=next.value;break;}
+            const delta=next.value;
+            if(delta.attempt!==attempt){endReasoning();attempt=delta.attempt;reasoningBefore=reasoningText;attemptReasoning='';}
+            if(delta.type==='reset'){
+              endReasoning();attemptReasoning='';reasoningText=reasoningBefore;
+              yield event('reasoning',{text:reasoningText});
+            }else if(delta.type==='reasoning'&&delta.text){
+              if(!reasoningStarted)reasoningStarted=Date.now();attemptReasoning+=delta.text;
+              reasoningText=reasoningBefore+(reasoningBefore?'\n\n':'')+`【意图识别 · 第 ${attempt} 轮】\n`+attemptReasoning;
+              yield event('reasoning',{text:reasoningText});
+            }else if(delta.type==='content')endReasoning();
+          }
+        }finally{endReasoning();}
+        if('clarification' in prepared){const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:'REVIEW_REQUIRED',replyText:prepared.clarification.join('\n'),agui:[],skillRuns:[],...reasoning()};await persistTurn(result);yield event('result',{result});yield event('completed',{status:result.status});return;}
         regionTurn=prepared;ctx={...ctx,approvedIntent:prepared.plan.base};
         if(['map_display','map_with_data','map_edit'].includes(prepared.plan.base.draft.task)){
           const mapArgs={regionCodes:prepared.plan.base.displayScope.region.includeCodes,excludeCodes:prepared.plan.base.displayScope.region.excludeCodes,basemap:prepared.plan.base.displayScope.basemap,...(prepared.plan.base.draft.mapOptions.boundaryLevels?{boundaryLevels:prepared.plan.base.draft.mapOptions.boundaryLevels}:{})};
@@ -216,7 +236,7 @@ export function createMainAgent(dependencies:Dependencies){
       const denied=skillRuns.some(run=>run.result.error?.code.startsWith('FORBIDDEN'));
       if(cancelled)mapComposition=undefined;else if(denied&&mapComposition)mapComposition={...mapComposition,layers:[],lineage:[]};
       const retained=!cancelled && !denied && ['LLM_UNAVAILABLE','LLM_TIMEOUT','LLM_REJECTED','LLM_OUTPUT_TRUNCATED','INVALID_LLM_RESPONSE','TOOL_BUDGET_EXCEEDED'].includes(code) ? agui.filter(a=>a.result.status==='SUCCESS') : [];
-      const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:(cancelled&&streamedReply?`${streamedReply}\n\n`:'')+message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':''),agui:retained,skillRuns,...reasoning(),error:{code,message}};
+      const result:AgentTurnResult={runId:ctx.runId,interactionId:interaction.interactionId,status:cancelled?'CANCELLED':'FAILED',replyText:(cancelled&&streamedReply?`${streamedReply}\n\n`:'')+message+(retained.length?'；已完成的数据结果保留在工作台，文字总结未完成。':''),agui:retained,skillRuns,...reasoning(),error:{code,message},...(error instanceof RegionTurnError&&error.diagnostics?.length?{intentDiagnostics:error.diagnostics}:{})};
       try{await persistTurn(result);}catch{/* Transport still reports the original failure if audit storage is unavailable. */}
       yield event('failed',{code,message});yield event('result',{result});yield event('completed',{status:result.status});
     }

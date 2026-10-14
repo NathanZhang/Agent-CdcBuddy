@@ -11,4 +11,8 @@ export interface InteractionIntent {task:IntentTask;relation:'new'|'continue'|'m
 export interface IntentDraft {queryBinding?:{sql:string};task:IntentTask;relation:InteractionIntent['relation'];displayRegion:BoundRegionSet|null;dataRegion:BoundRegionSet|null;time:TimeWindow|null;filters:Record<string,FilterSpec>;layerRequests:IntentLayerRequest[];mapOperations:MapSceneOperation[];mapOptions:{basemap:'vec'|'img';boundaryLevels?:('province'|'city'|'county')[];cameraPolicy?:'preserve'|'fitDisplayRegion'|'fitVisibleLayers'};}
 export interface IntentState {revision:number;contextRef:string;draft:IntentDraft;updatedAt:number;}
 export interface PendingIntent {sessionId:string;questions:string[];input:string;createdAt:number;expiresAt:number;revision:number;}
-export type IntentResolution={status:'RESOLVED';intent:InteractionIntent}|{status:'CLARIFICATION';questions:string[];pending?:PendingIntent}|{status:'FAILED';error:{code:string;message:string}};
+export interface IntentDiagnostic {attempt:number;code:string;message:string;}
+// Older recognition failures were stored as clarification questions. They cannot
+// supply context for a new attempt because there was no actual question to answer.
+export function isLegacyRecognitionFailure(pending:PendingIntent):boolean{return pending.questions.length===1&&pending.questions[0]==='本次请求识别失败，请重试原指令。';}
+export type IntentResolution={status:'RESOLVED';intent:InteractionIntent}|{status:'CLARIFICATION';questions:string[];pending?:PendingIntent}|{status:'FAILED';error:{code:string;message:string};diagnostics?:IntentDiagnostic[]};

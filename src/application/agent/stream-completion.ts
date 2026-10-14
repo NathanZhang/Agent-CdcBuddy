@@ -2,8 +2,13 @@ import type {LLMClient,LLMRequest,LLMMessage,LLMStreamDelta} from '@/infrastruct
 
 /** Bridge callback-based provider deltas into the Agent's ordered async event stream. */
 export async function* streamCompletion(client:LLMClient,request:LLMRequest):AsyncGenerator<LLMStreamDelta,LLMMessage>{
- const queue:LLMStreamDelta[]=[];let wake:(()=>void)|undefined,done=false,result:LLMMessage|undefined,failure:unknown;
- const completion=client.complete({...request,onDelta:delta=>{queue.push(delta);wake?.();}}).then(value=>{result=value;},error=>{failure=error;}).finally(()=>{done=true;wake?.();});
+ return yield* streamTask<LLMStreamDelta,LLMMessage>(onDelta=>client.complete({...request,onDelta}));
+}
+
+/** Stream a callback-based phase while retaining its final result and original error. */
+export async function* streamTask<Delta,Result>(task:(emit:(delta:Delta)=>void)=>Promise<Result>):AsyncGenerator<Delta,Result>{
+ const queue:Delta[]=[];let wake:(()=>void)|undefined,done=false,result:Result|undefined,failure:unknown;
+ const completion=task(delta=>{queue.push(delta);wake?.();}).then(value=>{result=value;},error=>{failure=error;}).finally(()=>{done=true;wake?.();});
  while(!done||queue.length){
   if(queue.length){yield queue.shift()!;continue;}
   await new Promise<void>(resolve=>{wake=resolve;});wake=undefined;

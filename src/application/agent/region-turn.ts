@@ -3,11 +3,11 @@ import type {ExecutionContext} from '@/contracts/execution-context';
 import type {LLMClient} from '@/infrastructure/llm/client';
 import type {SkillDefinition} from '@/contracts/skill-definition';
 import type {ApprovedMapPlan,ApprovedIntent} from '@/contracts/approved-intent';
-import type {IntentState} from '@/contracts/interaction-intent';
+import type {IntentState,IntentDiagnostic} from '@/contracts/interaction-intent';
 import type {MapView} from '@/contracts/map-view';
 import type {MapSceneState,MapComposition,MapLayerRequest} from '@/contracts/map-composition';
 import type {SpatialOutput} from '@/contracts/spatial-output';
-import {resolveInteractionIntent} from './intent-resolver';
+import {resolveInteractionIntent,type IntentStreamDelta} from './intent-resolver';
 import {approveMapPlan} from './intent-guard';
 import {readIntentState,readMapScene,commitIntentState,savePendingIntent,loadPendingIntent} from './intent-state';
 import {spatialCapabilityFor} from '@/application/geo/spatial-capabilities';
@@ -15,13 +15,13 @@ import {readAuthorizedSpatialOutput,listAuthorizedSpatialReferences} from '@/app
 import {composeMap} from '@/application/geo/map-composer';
 import {applyMapSceneOperation} from '@/application/geo/map-scene-state';
 import type {OutputOutcome} from './output-outcomes';
-export class RegionTurnError extends Error{constructor(public code:string,message:string){super(message);}}
+export class RegionTurnError extends Error{constructor(public code:string,message:string,public diagnostics?:IntentDiagnostic[]){super(message);}}
 export interface RegionTurn {sessionId:string;previous:IntentState|null;scene:MapSceneState|null;plan:ApprovedMapPlan;outputs:SpatialOutput[];requests:MapLayerRequest[];deniedData?:{code:string;message:string};composition?:MapComposition;}
-export async function prepareRegionTurn(interaction:AgentInteraction,ctx:ExecutionContext,llm:LLMClient,definitions:SkillDefinition[]):Promise<RegionTurn|{clarification:string[]}>{
+export async function prepareRegionTurn(interaction:AgentInteraction,ctx:ExecutionContext,llm:LLMClient,definitions:SkillDefinition[],onDelta?:(delta:IntentStreamDelta)=>void):Promise<RegionTurn|{clarification:string[]}>{
  const sessionId=interaction.sessionRef?.id??`sess_${ctx.runId}`,previous=readIntentState(sessionId,ctx),scene=readMapScene(sessionId,ctx),pending=loadPendingIntent(sessionId,ctx);
  const pendingInput=pending&&pending.revision===(previous?.revision??0)?`${pending.input}\n澄清回答：${interaction.userInput}`:interaction.userInput;if(pendingInput.length>12000)return {clarification:['原请求和补充信息过长，请用一条完整指令重新说明地域与数据需求。']};
- const resolution=await resolveInteractionIntent({text:interaction.userInput,domain:ctx.domain,now:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),previous,scene:scene?{mapId:scene.mapId,revision:scene.revision,layers:scene.layers,basemap:scene.basemap}:null,availableSources:listAuthorizedSpatialReferences(ctx),capabilities:definitions.map(spatialCapabilityFor),signal:ctx.signal,deadlineAt:ctx.deadlineAt,...(pending?{pending}: {})},llm);
- if(resolution.status==='FAILED')throw new RegionTurnError(resolution.error.code,resolution.error.message);
+ const resolution=await resolveInteractionIntent({text:interaction.userInput,domain:ctx.domain,now:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),previous,scene:scene?{mapId:scene.mapId,revision:scene.revision,layers:scene.layers,basemap:scene.basemap}:null,availableSources:listAuthorizedSpatialReferences(ctx),capabilities:definitions.map(spatialCapabilityFor),signal:ctx.signal,deadlineAt:ctx.deadlineAt,onDelta,...(pending?{pending}: {})},llm);
+ if(resolution.status==='FAILED')throw new RegionTurnError(resolution.error.code,resolution.error.message,resolution.diagnostics);
  if(resolution.status==='CLARIFICATION'){savePendingIntent({sessionId,input:pendingInput,questions:resolution.questions,createdAt:Date.now(),expiresAt:Date.now()+15*60000,revision:previous?.revision??0},ctx);return {clarification:resolution.questions};}
  let plan:ApprovedMapPlan,deniedData:RegionTurn['deniedData'];try{plan=approveMapPlan(resolution.intent,scene,ctx,previous);}catch(error){if(resolution.intent.task!=='map_with_data'||!(error instanceof Error))throw error;deniedData={code:'code' in error?String(error.code):error.message.split(':')[0],message:error.message};const e={source:'current' as const,start:0,end:interaction.userInput.length,quote:interaction.userInput},clear={op:'clear' as const,evidence:e};plan=approveMapPlan({...resolution.intent,task:'map_display',dataRegion:clear,time:clear,filters:{},layerRequests:[],mapOperations:[]},scene,ctx,previous);}
 

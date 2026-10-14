@@ -2,6 +2,7 @@ import {Parser} from 'node-sql-parser';
 import type {ApprovedIntent} from '@/contracts/approved-intent';
 import type {DatasetRegionBindings} from '@/infrastructure/geo/dataset-region-bindings';
 import {isApprovedIntent} from './intent-guard';
+import {isKeyedJoinPredicate} from '@/infrastructure/query/query-gateway';
 export class ScopeError extends Error{constructor(public code:string,message:string){super(message);}}
 export function compileScopedFilters(approved:ApprovedIntent,bindings:DatasetRegionBindings){
  if(!isApprovedIntent(approved))throw new ScopeError('FORBIDDEN_INTENT','未经服务器批准的范围');
@@ -22,9 +23,13 @@ export function assertSqlMatchesIntent(sql:string,approved:ApprovedIntent,bindin
  const sensitive=new Set(['city','city_name','district','district_name','province','date_id','visit_date','isolation_date','sample_date','start_time','monitoring_date','date','inspection_date','created_at','death_date','diagnosed_date','injury_time','year','month','day','category','species_name','method_name','pathogen_name','pesticide_name','disease_name','basin_name']);
  const filterColumns:Record<string,string>={category:'category',species_name:'speciesName',method_name:'methodName',pathogen_name:'pathogenName',pesticide_name:'pesticideName',disease_name:'diseaseName',basin_name:'basinName'};
  const allCols=(n:any):string[]=>!n||typeof n!=='object'?[]:n.type==='column_ref'?[typeof n.column==='string'?n.column:n.column?.expr?.value]:Object.values(n).flatMap(v=>Array.isArray(v)?v.flatMap(allCols):allCols(v));
- const visit=(n:any,where=false)=>{if(!n||typeof n!=='object')return;if(n.type==='binary_expr'){
+ const visit=(n:any,where=false)=>{if(!n||typeof n!=='object')return;
+ // Key equality relates rows already constrained by the server's views; it is not
+ // an additional date/geographic filter. Keep WHERE, CASE and non-key ON checks.
+ if(!where&&ast.from?.some((table:any)=>table.join&&table.on===n)&&isKeyedJoinPredicate(n,ast.from))return;
+ if(n.type==='binary_expr'){
  const operator=String(n.operator).toUpperCase();if(['AND','OR'].includes(operator)){if(operator==='OR'&&allCols(n).some(c=>sensitive.has(c)))throw new ScopeError('SCOPE_MISMATCH','不能以OR扩大或改写批准筛选');visit(n.left,where);visit(n.right,where);return;}
- const columns=allCols(n),usesScope=columns.some(c=>sensitive.has(c));
+ const columns=allCols(n),usesScope=columns.some(c=>sensitive.has(c))&&!['+','-','*','/','%','||','&','|','<<','>>'].includes(operator);
  if(where||usesScope){let equivalent=false;const col=n.left?.type==='column_ref'?n.left.column:null,value=n.right?.value;
  if(where&&operator==='='&&['city','city_name','district','district_name'].includes(col)){const key=col.startsWith('city')?'city':'district';equivalent=scope.regionPaths.length===1&&scope.regionPaths[0][key]===value&&!scope.excludePaths.length;}
  if(where&&operator==='='&&filterColumns[col]){const f=scope.filters[filterColumns[col]];equivalent=f?.operator==='eq'&&f.values[0]===value;}
