@@ -6,7 +6,7 @@
 #   ./server.sh start [vector|foodborne|env|chronic|all] [dev|prod|mock]
 #   ./server.sh stop [vector|foodborne|env|chronic|all]
 #   ./server.sh restart [vector|foodborne|env|chronic|all] [dev|prod|mock]
-#   ./server.sh status [vector|foodborne|env|chronic|all]
+#   ./server.sh status [vector|foodborne|env|chronic|all] [dev|prod|mock]
 #   ./server.sh test [vector|foodborne|env|chronic|all]
 #   ./server.sh logs [vector|foodborne|env|chronic]
 # ==============================================================================
@@ -88,6 +88,20 @@ get_domain_pid_file() {
 get_domain_log_file() {
     local domain="$1"
     if [ "${RUN_MODE:-dev}" = "mock" ]; then echo "${LOG_DIR}/server_${domain}_mock.log"; else echo "${LOG_DIR}/server_${domain}.log"; fi
+}
+
+# 元数据只用于展示，读取时不作为 shell 脚本执行。
+save_runtime_info() {
+    local pid_file="$1" pid="$2" mode="$3" bundle="-"
+    if [ "${mode}" = "mock" ]; then bundle=$(cd "${MOCK_BUNDLE}" && pwd -P); fi
+    printf '%s\n' "${pid}" "${mode}" "${PROJECT_ROOT}" "${bundle}" > "${pid_file%.pid}.meta"
+}
+
+is_process_alive() {
+    local pid="$1" check_out
+    [[ "${pid}" =~ ^[1-9][0-9]*$ ]] || return 1
+    check_out=$(kill -0 "${pid}" 2>&1) && return 0
+    [[ "${check_out}" == *"Operation not permitted"* ]]
 }
 
 # 获取数据集路径
@@ -218,6 +232,7 @@ start_single_agent() {
         nohup node scripts/start-requirement-demo.cjs "${domain}" "${MOCK_BUNDLE}" > "${log_file}" 2>&1 < /dev/null &
         local mock_pid=$!
         echo "${mock_pid}" > "${pid_file}"
+        save_runtime_info "${pid_file}" "${mock_pid}" "${mode}"
         local attempt
         for attempt in {1..30}; do
             if ! kill -0 "${mock_pid}" 2>/dev/null; then log_error "Mock启动失败，请查看 ${log_file}"; return 1; fi
@@ -263,6 +278,7 @@ start_single_agent() {
     local server_pid=$!
     disown "${server_pid}" 2>/dev/null || true
     echo "${server_pid}" > "${pid_file}"
+    save_runtime_info "${pid_file}" "${server_pid}" "${mode}"
 
     # 如果是 vector 智能体，同时也保持主 .server.pid 兼容
     if [ "${domain}" = "vector" ]; then
@@ -313,7 +329,7 @@ stop_single_agent() {
             local mock_pid; mock_pid=$(cat "${pid_file}")
             kill -TERM "${mock_pid}" 2>/dev/null || true
             local attempt; for attempt in {1..7}; do kill -0 "${mock_pid}" 2>/dev/null || break; sleep 1; done
-            rm -f "${pid_file}"
+            rm -f "${pid_file}" "${pid_file%.pid}.meta"
         fi
         log_info "Mock验收实例已停止；实测服务未受影响。"; return
     fi
@@ -328,7 +344,7 @@ stop_single_agent() {
                 kill -9 "${pid}" 2>/dev/null || true
             fi
         fi
-        rm -f "${pid_file}"
+        rm -f "${pid_file}" "${pid_file%.pid}.meta"
     fi
 
     if [ "${domain}" = "vector" ]; then
@@ -339,35 +355,90 @@ stop_single_agent() {
     log_info "【${name}】已停止。"
 }
 
-# 查看运行状态矩阵
+# 状态查询只读取进程、端口及启动记录，不复用会接管PID或退出的启动检查。
 status_agents() {
-    local target_domain="${1:-all}"
-    echo "=========================================================================================="
-    echo -e "${MAGENTA} 📊 CDC 全域四智能体平台运行状态矩阵 (Cluster Status)${NC}"
-    echo "=========================================================================================="
-    printf "%-12s %-6s %-8s %-16s %-32s\n" "智能体标识" "端口" "PID" "运行状态" "访问地址"
-    echo "------------------------------------------------------------------------------------------"
-
-    local domains_to_check=()
+    local target_domain="${1:-all}" selected_mode="${2:-${RUN_MODE}}"
+    local RUN_MODE dom port pid_file pid listener_pid state color mode work_dir bundle meta_file elapsed command_line actual_cwd
+    local modes_to_check=() domains_to_check=()
+    if [ "${selected_mode}" = "all" ]; then
+        modes_to_check=("dev" "mock")
+    else
+        modes_to_check=("${selected_mode}")
+    fi
     if [ "${target_domain}" = "all" ]; then
         domains_to_check=("${ALL_DOMAINS[@]}")
     else
         domains_to_check=("${target_domain}")
     fi
-
-    for dom in "${domains_to_check[@]}"; do
-        local port
-        port=$(get_domain_port "${dom}")
-        local pid_file
-        pid_file=$(get_domain_pid_file "${dom}")
-        if is_domain_running "${dom}"; then
-            local pid
-            pid=$(cat "${pid_file}")
-            printf "%-12s %-6s %-8s ${GREEN}%-16s${NC} ${CYAN}%-32s${NC}\n" "${dom}" "${port}" "${pid}" "RUNNING (正常)" "http://localhost:${port}"
-        else
-            printf "%-12s %-6s %-8s ${RED}%-16s${NC} %-32s\n" "${dom}" "${port}" "-" "STOPPED (未启动)" "-"
-        fi
+    echo "=========================================================================================="
+    echo -e "${MAGENTA} 📊 CDC 全域四智能体平台运行状态 (Cluster Status)${NC}"
+    echo " 项目目录 : ${PROJECT_ROOT}"
+    echo " 查询模式 : ${selected_mode}（普通服务 3001—3004；Mock 3101—3104）"
+    echo "=========================================================================================="
+    for RUN_MODE in "${modes_to_check[@]}"; do
+        for dom in "${domains_to_check[@]}"; do
+            port=$(get_domain_port "${dom}")
+            pid_file=$(get_domain_pid_file "${dom}")
+            pid=""
+            if [ -f "${pid_file}" ]; then pid=$(cat "${pid_file}"); fi
+            listener_pid=$(lsof -ti tcp:"${port}" -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
+            mode="dev/prod"
+            if [ "${RUN_MODE}" = "mock" ]; then mode="mock"; fi
+            work_dir="-"; bundle=""; elapsed="-"
+            meta_file="${pid_file%.pid}.meta"
+            if is_process_alive "${pid}"; then
+                state="STARTING (进程存活，端口未监听)"; color="${YELLOW}"
+                if [ -n "${listener_pid}" ]; then state="RUNNING (正常)"; color="${GREEN}"; fi
+            elif [ -n "${listener_pid}" ]; then
+                if [ "${RUN_MODE}" = "mock" ]; then
+                    state="UNMANAGED (端口占用，无有效Mock PID)"; color="${YELLOW}"
+                else
+                    state="RUNNING (端口监听)"; color="${GREEN}"
+                fi
+                pid="${listener_pid}"
+            else
+                state="STOPPED (未启动)"; color="${RED}"
+                if [ -f "${pid_file}" ]; then state="STALE (PID已失效或无效)"; fi
+                pid=""
+            fi
+            if [ -n "${pid}" ]; then
+                # 排除上次启动的记录；旧实例尽量从实际 cwd 和启动命令恢复信息。
+                if [ -f "${meta_file}" ] && [ "$(sed -n '1p' "${meta_file}")" = "${pid}" ]; then
+                    mode=$(sed -n '2p' "${meta_file}")
+                    work_dir=$(sed -n '3p' "${meta_file}")
+                    bundle=$(sed -n '4p' "${meta_file}")
+                fi
+                actual_cwd=$(lsof -a -p "${pid}" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -n 1 || true)
+                if [ -n "${actual_cwd}" ]; then work_dir="${actual_cwd}"; fi
+                elapsed=$(ps -p "${pid}" -o etime= 2>/dev/null | sed 's/^[[:space:]]*//' || true)
+                if [ "${RUN_MODE}" = "mock" ] && [ -z "${bundle}" ] && [[ "${state}" != UNMANAGED* ]]; then
+                    command_line=$(ps -p "${pid}" -o args= 2>/dev/null || true)
+                    case "${command_line}" in
+                        *"start-requirement-demo.cjs ${dom} "*)
+                            bundle="${command_line#*start-requirement-demo.cjs ${dom} }"
+                            if [[ "${bundle}" != /* ]] && [ "${work_dir}" != "-" ]; then bundle="${work_dir}/${bundle}"; fi
+                            ;;
+                    esac
+                fi
+            fi
+            echo -e " ${CYAN}${dom}${NC} [${mode}]  ${color}${state}${NC}"
+            echo "   端口/PID  : ${port} / ${pid:--}（监听PID: ${listener_pid:--}）"
+            if [ -n "${listener_pid}" ]; then echo "   访问地址  : http://localhost:${port}"; fi
+            echo "   工作目录  : ${work_dir}"
+            echo "   运行时长  : ${elapsed:--}"
+            echo "   PID 文件  : ${pid_file}"
+            echo "   日志文件  : $(get_domain_log_file "${dom}")"
+            if [ "${RUN_MODE}" = "mock" ]; then
+                echo "   Mock数据包: ${bundle:-未记录（旧实例或未启动）}"
+                if [ -n "${bundle}" ] && [ "${bundle}" != "-" ]; then
+                    echo "   业务数据库: ${bundle}/simulation-business.db"
+                fi
+                echo "   构建目录  : ${PROJECT_ROOT}/.next_acceptance_${dom}"
+            fi
+            echo "------------------------------------------------------------------------------------------"
+        done
     done
+    if ! command -v lsof >/dev/null 2>&1; then log_warn "未安装 lsof，无法查询监听端口及实际工作目录。"; fi
     echo "=========================================================================================="
 }
 
@@ -443,17 +514,21 @@ ACTION="${1:-help}"
 PARAM2="${2:-}"
 PARAM3="${3:-}"
 
-# 智能识别参数：若第二个参数是 dev 或 prod，则 domain 默认 vector，mode 是该参数
+# 智能识别参数：省略领域时，status 查询全部领域，其余命令默认 vector。
 TARGET_DOMAIN="vector"
 RUN_MODE="dev"
+STATUS_MODE="all"
 
 if [[ "${PARAM2}" == "dev" || "${PARAM2}" == "prod" || "${PARAM2}" == "mock" ]]; then
     TARGET_DOMAIN="vector"
     RUN_MODE="${PARAM2}"
+    STATUS_MODE="${RUN_MODE}"
+    if [ "${ACTION}" = "status" ]; then TARGET_DOMAIN="all"; fi
 elif [[ -n "${PARAM2}" ]]; then
     TARGET_DOMAIN="${PARAM2}"
     if [[ "${PARAM3}" == "dev" || "${PARAM3}" == "prod" || "${PARAM3}" == "mock" ]]; then
         RUN_MODE="${PARAM3}"
+        STATUS_MODE="${RUN_MODE}"
     fi
 elif [[ "${ACTION}" == "status" ]]; then
     TARGET_DOMAIN="all"
@@ -506,7 +581,7 @@ case "${ACTION}" in
         fi
         ;;
     status)
-        status_agents "${TARGET_DOMAIN}"
+        status_agents "${TARGET_DOMAIN}" "${STATUS_MODE}"
         ;;
     test)
         run_agent_tests "${TARGET_DOMAIN}"
@@ -530,7 +605,8 @@ case "${ACTION}" in
         echo "  $0 start chronic dev     - 启动死因慢病智能体开发服务 (Port: 3004)"
         echo "  $0 start all dev         - 一键启动全部 4 个智能体集群服务"
         echo "  $0 stop [domain|all]     - 停止指定或全部智能体服务"
-        echo "  $0 status [domain|all]   - 查看智能体集群运行矩阵"
+        echo "  $0 status [domain|all]   - 同时查看普通与Mock实例；追加dev/prod/mock可筛选"
+        echo "  $0 status mock           - 查看全部四域Mock状态及工作目录、数据包、日志"
         echo "  $0 test [domain|all]     - 执行指定或全量自动化测试套件"
         echo "  $0 logs [domain]         - 查看指定智能体实时日志"
         echo "=================================================================="

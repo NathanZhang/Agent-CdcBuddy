@@ -58,10 +58,14 @@ npm run build
 
 ```sh
 ./server.sh start all mock                         # 首次生成隔离包，启动3101—3104及各域Worker
-./server.sh status all mock
+./server.sh status all mock                       # 查看四域Mock状态及工作目录、数据包、日志
+./server.sh status                                # 同时查看普通服务与Mock实例
+./server.sh status mock                           # 省略领域，查看全部四域Mock
 ./server.sh stop all mock                          # 不影响3001—3004实测服务
 ./server.sh start vector mock .mock-data/验收包目录  # 指定已有包或新目录
 ```
+
+`status [领域] [dev|prod|mock]` 可按端口组筛选（dev/prod 共用普通服务端口）；不指定模式则同时显示普通和Mock实例。状态查询会展示PID、监听PID、运行时长、工作目录、日志及Mock数据包/业务库/构建目录；PID失效或端口被未托管进程占用时继续展示其他实例。新启动的实例会记录实际模式及包路径，旧实例尽量从进程信息恢复，无法读取时明确显示未记录。
 
 默认包为 `.mock-data/requirement-demo`。Mock模式固定使用包内四域来源、独立业务库和构建目录；不会修改默认manifest或实测库，也不受本地环境中的实测路径覆盖影响。已有包若损坏或过期会拒绝启动，请指定新目录重新生成。普通dev/prod模式不再自动从旁边的DataMock目录复制事实库。OCR仍暂缓，Iris/MUSE正式规则执行仍需另配授权引擎。
 

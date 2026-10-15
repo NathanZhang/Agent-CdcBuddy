@@ -37,6 +37,7 @@ __pycache__/
 *.db-journal
 logs/
 .server*.pid
+.server*.meta
 /scripts/deploy/deploy.config.ps1
 .deploy-artifacts/
 
