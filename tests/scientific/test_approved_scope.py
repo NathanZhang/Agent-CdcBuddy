@@ -1,6 +1,25 @@
 import unittest,tempfile,sqlite3
 from pathlib import Path
 class ScopedReadonly(unittest.TestCase):
+ def test_exposure_pathogen_ids_follow_recorded_case_links_and_keep_scope(self):
+  from analytics_engine.repositories.datasets import connect_scoped_readonly
+  with tempfile.TemporaryDirectory() as directory:
+   path=Path(directory)/'food.db';c=sqlite3.connect(path)
+   c.executescript("""CREATE TABLE fact_foodborne_case(pathogen_id TEXT,cluster_id TEXT,city TEXT,visit_date TEXT);
+    CREATE TABLE fact_food_exposure(cluster_id TEXT,city TEXT,exposure_date TEXT);
+    INSERT INTO fact_foodborne_case VALUES('p','cluster-p','郑州市','2024-06-01'),('q','cluster-q','郑州市','2024-06-01');
+    INSERT INTO fact_food_exposure VALUES('cluster-p','郑州市','2024-06-01'),('cluster-q','郑州市','2024-06-01'),
+     ('cluster-p','洛阳市','2024-06-01'),('cluster-p','郑州市','2023-06-01'),('unlinked','郑州市','2024-06-01');""")
+   c.close()
+   scope={'domain':'foodborne','scopeFingerprint':'s','regionPaths':[{'city':'郑州市'}],
+    'from':'2024-01-01','to':'2024-12-31','filters':{}}
+   for operator,values,expected in [('eq',['p'],[('cluster-p',)]),('in',['p','q'],[('cluster-p',),('cluster-q',)]),('eq',['missing'],[])]:
+    with self.subTest(operator=operator,values=values):
+     scope['filters']={'pathogenId':{'operator':operator,'values':values}}
+     with connect_scoped_readonly(path,scope) as connection:
+      self.assertEqual(connection.execute('SELECT cluster_id FROM fact_food_exposure ORDER BY cluster_id').fetchall(),expected)
+      with self.assertRaises(sqlite3.DatabaseError):connection.execute('SELECT * FROM main.fact_food_exposure').fetchall()
+
  def test_every_connection_enforces_region_and_time(self):
   from analytics_engine.repositories.datasets import connect_scoped_readonly
   with tempfile.TemporaryDirectory() as directory:

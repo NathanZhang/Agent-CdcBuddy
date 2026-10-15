@@ -2,7 +2,11 @@ import React from 'react';
 import {renderToStaticMarkup as render} from 'react-dom/server';
 import {ThemeProvider} from '@/lib/theme/theme-context';
 const renderToStaticMarkup=(element:React.ReactNode)=>render(<ThemeProvider>{element}</ThemeProvider>);
-import {describe,it,expect} from 'vitest';
+import {afterAll,beforeAll,describe,it,expect} from 'vitest';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {execFileSync} from 'node:child_process';
 import {AGENT_PROFILES} from '@/lib/config/agent-profile';
 import {STANDARD_SKILLS} from '@/lib/skills/registry';
 import {executeSkill,listSkillDefinitions} from '@/application/skills/skill-service';
@@ -13,7 +17,23 @@ import type {ExecutionContext} from '@/contracts/execution-context';
 
 const context=(domain:ExecutionContext['domain']):ExecutionContext=>({runId:'recommendation-check',domain,deploymentTier:'local',principal:{userId:'recommendation-audit',role:'PROVINCIAL_ADMIN',organizationId:'test',domainGrants:[domain],jurisdiction:{},mode:'dev'}});
 
-describe('recommendation data coverage and AG-UI rendering against configured datasets',()=>{
+// A complete seeded source makes these success cases independent of local data gaps.
+const sourceBefore={manifest:process.env.DATASET_MANIFEST_PATH,bindings:process.env.DATASET_REGION_BINDINGS_PATH};
+let fixtureDirectory:string;
+beforeAll(()=>{
+ fixtureDirectory=mkdtempSync(join(tmpdir(),'cdc-recommendations-'));
+ const bundle=join(fixtureDirectory,'bundle');
+ execFileSync('./.venv/bin/python',['scripts/ci-fixtures.py','--output-dir',bundle,'--audit-dir',join(fixtureDirectory,'audit')],{timeout:30000});
+ process.env.DATASET_MANIFEST_PATH=join(bundle,'manifest.json');
+ process.env.DATASET_REGION_BINDINGS_PATH=join(bundle,'region-bindings.json');
+},30000);
+afterAll(()=>{
+ if(sourceBefore.manifest===undefined)delete process.env.DATASET_MANIFEST_PATH;else process.env.DATASET_MANIFEST_PATH=sourceBefore.manifest;
+ if(sourceBefore.bindings===undefined)delete process.env.DATASET_REGION_BINDINGS_PATH;else process.env.DATASET_REGION_BINDINGS_PATH=sourceBefore.bindings;
+ if(fixtureDirectory)rmSync(fixtureDirectory,{recursive:true,force:true});
+});
+
+describe('recommendation data coverage and AG-UI rendering against complete Mock fixtures',()=>{
  for(const instruction of RECOMMENDATION_DATA_CASES){
    const profile=AGENT_PROFILES[instruction.domain];
    it(`${profile.domain}: ${instruction.title}`,async()=>{
@@ -21,13 +41,12 @@ describe('recommendation data coverage and AG-UI rendering against configured da
     expect(definition?.availability).toBe('available');
     expect(definition?.allowedOperations).toEqual(['read']);
     const result=await executeSkill(instruction.skillId,instruction.args,context(profile.domain));
-    if(instruction.skillId==='skill_molecular_trace'){expect(result.status,JSON.stringify(result.error)).toBe('INSUFFICIENT_DATA');expect((result.payload as any).data.reason).toContain('fact_food_exposure');return;}
-    if(profile.domain==='vector'&&['skill_population_dynamics','skill_density_forecast','skill_resistance_evaluation'].includes(instruction.skillId)){expect(result.status,JSON.stringify(result.error)).toBe('INSUFFICIENT_DATA');expect(result.payload).not.toBeNull();return;}
     expect(result.status,JSON.stringify(result.error)).toBe('SUCCESS');
     const view={...result.payload as object,method:result.method,status:result.status,datasets:result.datasets};
     const html=renderToStaticMarkup(<GenerativeComponentRenderer view={view}/>);
     expect(html).toContain('<table');
-    if(profile.domain!=='vector')expect(html).toContain('模拟数据');
+    expect(result.datasets.every(dataset=>dataset.origin==='mock')).toBe(true);
+    expect(html).toContain('模拟数据');
     if(instruction.display!=='table')expect(html).toContain(`data-visualization="${instruction.display}"`);
     const payload=result.payload as any;
     if(payload.type==='DATA_TABLE_VIEW'){

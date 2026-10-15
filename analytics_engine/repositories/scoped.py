@@ -52,6 +52,8 @@ def connect_scoped_readonly(path,scope,connection_factory=sqlite3.Connection):
     elif dimension and foreign in columns:constraints.append(f'"{foreign}" IN (SELECT "{dimension[1]}" FROM main."{dimension[0]}" WHERE '+condition('"'+dimension[2]+'"',f)+')')
     elif table=='fact_food_exposure' and scope['domain']=='foodborne' and field in ('pathogen','pathogenName','pathogenType'):
      constraints.append('cluster_id IN (SELECT cluster_id FROM main.fact_foodborne_case WHERE pathogen_id IN (SELECT pathogen_id FROM main.dim_pathogen_type WHERE '+condition(dimension[2],f)+'))')
+    elif table=='fact_food_exposure' and scope['domain']=='foodborne' and field=='pathogenId':
+     constraints.append('cluster_id IN (SELECT cluster_id FROM main.fact_foodborne_case WHERE '+condition('pathogen_id',f)+')')
     elif scope['domain']=='vector' and field=='category' and 'species_name' in columns:
      constraints.append('species_name IN (SELECT species_name FROM main.dim_species WHERE '+condition('category',f)+')')
     elif table.startswith('fact_'):invalid_tables.add(table)

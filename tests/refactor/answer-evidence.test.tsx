@@ -250,7 +250,7 @@ it('covers the resistance analysis skill, which uses a separate Python record-qu
   const result = await executeSkill('skill_resistance_evaluation',{speciesName:'家蝇',asOf:'2025-11-05'},createDevelopmentContext('vector'));
   expect(result.status).toBe('INSUFFICIENT_DATA');
   const payload = result.payload as any;
-  expect(payload.data.reason).toContain('no predictions');
+  expect(payload.data.reason).toContain('未生成抗性预测');
   const table = payload.statistics.tables.find((table:any)=>table.path.join('.')==='data.items');
   expect(table.rowCount).toBe(73);
   expect(table.columns.find((column:any)=>column.field==='lc50')).toEqual({field:'lc50',presentCount:33,missingCount:40});
