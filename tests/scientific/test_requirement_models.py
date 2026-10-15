@@ -56,7 +56,7 @@ class RequirementModels(unittest.TestCase):
         registry=pd.DataFrame([{'city':'郑州市','district':'金水区','disease_name':'肺癌高危随访'},{'city':'郑州市','district':'金水区','disease_name':'糖尿病'}])
         population=pd.DataFrame([{'city':'郑州市','district':'金水区','population':100000}])
         frames={'fact_chronic_followup':followup,'fact_chronic_cases':registry,'dim_districts':population}
-        with patch('analytics_engine.assessments.chronic.frame',side_effect=lambda db,table,args,date=None:frames[table].copy()):
+        with patch('analytics_engine.assessments.chronic.frame',side_effect=lambda db,table,args,date=None,**kwargs:frames[table].copy()):
             out=assess('unused',{'analysis':'screening','riskThreshold':0,'avoidedCostFraction':.25})
         self.assertEqual(out['screened'],80)
         self.assertTrue(all(r['disease_name']=='肿瘤' for r in out['highRiskList']))

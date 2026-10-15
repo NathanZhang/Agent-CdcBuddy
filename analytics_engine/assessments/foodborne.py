@@ -4,9 +4,10 @@ from .common import frame, records, result, forecast
 
 
 def assess(db,args):
-    action=args['analysis']; cases=frame(db,'fact_foodborne_case',args,'visit_date')
+    action=args['analysis']; needed=['city','pathogen_id'] if action=='forecast' else ['city','district','case_id','main_symptoms','suspected_food']+(['symptom_onset_time','pathogen_id','cluster_id'] if action=='trace' else ['symptom_onset_time','pathogen_id','dining_place_type'] if action=='clusters' else [])
+    cases=frame(db,'fact_foodborne_case',args,'visit_date',columns=needed)
     if action=='forecast':
-        weather=frame(db,'fact_food_forecast_inputs',args,'monitoring_date').assign(period=lambda d:d.monitoring_date.str[:7]); models=[]; excluded=[]
+        weather=frame(db,'fact_food_forecast_inputs',args,'monitoring_date',columns=['city','temperature_c','rainfall_mm','population','transport_daily_passengers']).assign(period=lambda d:d.monitoring_date.str[:7]); models=[]; excluded=[]
         for (city,pathogen),g in cases.groupby(['city','pathogen_id']):
             observed=g.assign(period=g.visit_date.str[:7]).groupby('period').size(); w=weather[weather.city==city].groupby('period')[['temperature_c','rainfall_mm','population','transport_daily_passengers']].mean(); matched=observed.index.intersection(w.index)
             if len(matched)<18:
@@ -34,7 +35,7 @@ def assess(db,args):
     if action=='trace':
         from analytics_engine.foodborne.cgmlst_cluster import calculate_cgmlst_clustering
         molecular=calculate_cgmlst_clustering(db,threshold=int(args.get('threshold',5)),city=args.get('city'),district=args.get('district'),from_date=args.get('from'),as_of=args.get('to'),sample_limit=int(args.get('sampleLimit',40)),pathogen_id=args.get('pathogenId'),cluster_id=args.get('clusterId'))
-        exposure=frame(db,'fact_food_exposure',args,'exposure_date');edges=[]; associations=[]
+        exposure=frame(db,'fact_food_exposure',args,'exposure_date',columns=['cluster_id','cohort_id','batch_id','supplier','exposed_ill','exposed_count','unexposed_ill','unexposed_count','food_name']);edges=[]; associations=[]
         for _,r in exposure.iterrows():
             edges.extend([{'from':r.cluster_id,'to':r.cohort_id,'relation':'case-exposure-cohort'},{'from':r.cohort_id,'to':r.batch_id,'relation':'consumed-batch'},{'from':r.batch_id,'to':r.supplier,'relation':'supplier'}])
             exposed=r.exposed_ill/r.exposed_count; unexposed=r.unexposed_ill/r.unexposed_count
@@ -43,6 +44,6 @@ def assess(db,args):
     if action=='dashboard':
         drill_city=args.get('drilldownCity')
         drill=cases[cases.city==drill_city] if drill_city else cases.iloc[:0]
-        events=frame(db,'fact_outbreak_event',args,'start_time')
+        events=frame(db,'fact_outbreak_event',args,'start_time',allow_empty=True)
         return result('food-dashboard-drilldown-v1',filters={k:args[k] for k in ['from','to','asOf'] if args.get(k)},cities=records(cases.groupby('city').size().rename('cases').reset_index()),districts=records(cases.groupby(['city','district']).size().rename('cases').reset_index()),trend=records(cases.assign(period=cases.visit_date.str[:7]).groupby('period').size().rename('cases').reset_index()),foodTop10=records(cases.groupby('suspected_food').size().rename('cases').reset_index().sort_values('cases',ascending=False),10),events=records(events),details=records(cases[['case_id','city','district','visit_date','main_symptoms','suspected_food']],50),refreshedAt=pd.Timestamp.now(tz='UTC').isoformat(),drilldown={'city':drill_city,'status':'SUCCESS' if len(drill) else 'NO_DATA','details':records(drill[['case_id','city','district','visit_date','main_symptoms','suspected_food']])})
     raise ValueError('UNKNOWN_FOOD_ANALYSIS')

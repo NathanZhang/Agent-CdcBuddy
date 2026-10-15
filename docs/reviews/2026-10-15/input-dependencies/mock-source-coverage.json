@@ -1,0 +1,953 @@
+{
+  "purpose": "source-input-coverage-not-functional-acceptance",
+  "scenarios": [
+    {
+      "requirementId": 23,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT substr(date_id,1,7)) AS count FROM fact_monitoring WHERE date_id BETWEEN '2020-01-01' AND '2024-12-31'",
+          "minimum": 60,
+          "label": "完整60个月训练输入",
+          "actual": 60,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "ARIMA/LSTM已计算；误差≤10%须用独立实测数据验收"
+    },
+    {
+      "requirementId": 24,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "探索性聚类不等于风险分类"
+    },
+    {
+      "requirementId": 25,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_insecticide_resistance",
+          "minimum": 1,
+          "label": "fact_insecticide_resistance",
+          "actual": 924,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "RF预测为数据集内留出验证；药剂阈值需专业确认"
+    },
+    {
+      "requirementId": 26,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_detection",
+          "minimum": 1,
+          "label": "fact_pathogen_detection",
+          "actual": 159,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "记录阳性比例不是个体感染率；尚无完整宿主关联模型"
+    },
+    {
+      "requirementId": 27,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "演示规则生成预警；15分钟SLA及街道精度另需部署验收"
+    },
+    {
+      "requirementId": 28,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "分级与站内通知可追踪；短信/APP网关尚未配置"
+    },
+    {
+      "requirementId": 29,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "真实审批与复测工单；解除只代表工单核销"
+    },
+    {
+      "requirementId": 30,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+          "minimum": 1,
+          "label": "fact_vector_exposure",
+          "actual": 82,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "采样分母及气象融合已计算，真实采样单位须确认"
+    },
+    {
+      "requirementId": 31,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_detection",
+          "minimum": 1,
+          "label": "fact_pathogen_detection",
+          "actual": 159,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+          "minimum": 1,
+          "label": "fact_vector_exposure",
+          "actual": 82,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "相对暴露指数，不等于个体感染概率"
+    },
+    {
+      "requirementId": 32,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_insecticide_resistance",
+          "minimum": 1,
+          "label": "fact_insecticide_resistance",
+          "actual": 924,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_vector_exposure",
+          "minimum": 1,
+          "label": "fact_vector_exposure",
+          "actual": 82,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "条件Beta-Binomial网络；一年预测采用条件平稳假设"
+    },
+    {
+      "requirementId": 33,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "本地来源检索与数据库事实分别返回；语音依赖浏览器支持"
+    },
+    {
+      "requirementId": 34,
+      "domain": "vector",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_monitoring",
+          "minimum": 1,
+          "label": "fact_monitoring",
+          "actual": 26394,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际章节统计、趋势图、归档及HTML/Markdown导出"
+    },
+    {
+      "requirementId": 35,
+      "domain": "vector",
+      "checks": [],
+      "inputStatus": "manual-upload",
+      "functionalLimitation": "图片识别闭环可验收；准确率待调试，不自动写入监测事实库"
+    },
+    {
+      "requirementId": 36,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+          "minimum": 1,
+          "label": "fact_foodborne_case",
+          "actual": 5100,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_food_exposure",
+          "minimum": 1,
+          "label": "fact_food_exposure",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "可配置阈值与时窗；聚集候选仍需调查"
+    },
+    {
+      "requirementId": 37,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+          "minimum": 1,
+          "label": "fact_foodborne_case",
+          "actual": 5100,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_food_forecast_inputs",
+          "minimum": 1,
+          "label": "fact_food_forecast_inputs",
+          "actual": 32,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际LSTM留出验证；Mock效果不能替代真实验证"
+    },
+    {
+      "requirementId": 38,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_pathogen_molecular",
+          "minimum": 1,
+          "label": "fact_pathogen_molecular",
+          "actual": 228,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_food_exposure",
+          "minimum": 1,
+          "label": "fact_food_exposure",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "已关联基因、暴露与供应链；候选链不是源头确证"
+    },
+    {
+      "requirementId": 39,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_outbreak_event",
+          "minimum": 1,
+          "label": "fact_outbreak_event",
+          "actual": 5,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "演示处置流程与历史案例；正式规范需机构维护"
+    },
+    {
+      "requirementId": 40,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+          "minimum": 1,
+          "label": "fact_foodborne_case",
+          "actual": 5100,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_outbreak_event",
+          "minimum": 1,
+          "label": "fact_outbreak_event",
+          "actual": 5,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "每次执行刷新聚合与明细；非持续流式数据源"
+    },
+    {
+      "requirementId": 41,
+      "domain": "foodborne",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_foodborne_case",
+          "minimum": 1,
+          "label": "fact_foodborne_case",
+          "actual": 5100,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "月报和事件简报已归档并导出"
+    },
+    {
+      "requirementId": 42,
+      "domain": "env",
+      "checks": [],
+      "inputStatus": "deferred",
+      "functionalLimitation": "OCR按本次要求暂缓"
+    },
+    {
+      "requirementId": 43,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_raw_samples",
+          "minimum": 1,
+          "label": "fact_env_raw_samples",
+          "actual": 4,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(DISTINCT quality_case) AS count FROM fact_env_raw_samples",
+          "minimum": 4,
+          "label": "正常、缺失、负值及单位差异",
+          "actual": 4,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "保留原值与插值审计；填充值需复核"
+    },
+    {
+      "requirementId": 44,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+          "minimum": 1,
+          "label": "fact_water_monitoring",
+          "actual": 19840,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "RF拟合剂量模型；毒理参数为显式演示假设"
+    },
+    {
+      "requirementId": 45,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+          "minimum": 1,
+          "label": "fact_water_monitoring",
+          "actual": 19840,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM dim_env_stations",
+          "minimum": 1,
+          "label": "dim_env_stations",
+          "actual": 465,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际LSTM与站点坐标；乡镇精度由点位登记决定"
+    },
+    {
+      "requirementId": 46,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_sewage_monitoring",
+          "minimum": 1,
+          "label": "fact_sewage_monitoring",
+          "actual": 21390,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "探索性相关不证明因果或预测效果"
+    },
+    {
+      "requirementId": 47,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_sewage_monitoring",
+          "minimum": 1,
+          "label": "fact_sewage_monitoring",
+          "actual": 21390,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_sewage_network",
+          "minimum": 1,
+          "label": "fact_sewage_network",
+          "actual": 465,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "管网逆向遍历定位候选，不能认定真实污染源"
+    },
+    {
+      "requirementId": 48,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_public_venue_inspection",
+          "minimum": 1,
+          "label": "fact_public_venue_inspection",
+          "actual": 175,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores",
+          "minimum": 1,
+          "label": "fact_venue_scores",
+          "actual": 10,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "环境与症状率回归映射；不推断因果"
+    },
+    {
+      "requirementId": 49,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores",
+          "minimum": 1,
+          "label": "fact_venue_scores",
+          "actual": 10,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_venue_scores WHERE management IS NOT NULL AND staff IS NOT NULL AND disclosure IS NOT NULL AND testing IS NOT NULL AND smoking IS NOT NULL AND facilities IS NOT NULL",
+          "minimum": 5,
+          "label": "六维评分输入",
+          "actual": 10,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "六维等权演示规则，支持版本追溯"
+    },
+    {
+      "requirementId": 50,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_air_climate_monitoring",
+          "minimum": 1,
+          "label": "fact_air_climate_monitoring",
+          "actual": 3600,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_activity",
+          "minimum": 1,
+          "label": "fact_env_activity",
+          "actual": 184,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "活动加权暴露与LSTM门诊预测；未来协变量采用持平假设"
+    },
+    {
+      "requirementId": 51,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_air_climate_monitoring",
+          "minimum": 1,
+          "label": "fact_air_climate_monitoring",
+          "actual": 3600,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_activity",
+          "minimum": 1,
+          "label": "fact_env_activity",
+          "actual": 184,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "GBT与24/48/72小时预测；Mock天气不是实时预报"
+    },
+    {
+      "requirementId": 52,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_river_basin_monitoring",
+          "minimum": 1,
+          "label": "fact_river_basin_monitoring",
+          "actual": 96,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "浓度描述已有；不能据此认定跨介质因果传递"
+    },
+    {
+      "requirementId": 53,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_river_basin_monitoring",
+          "minimum": 1,
+          "label": "fact_river_basin_monitoring",
+          "actual": 96,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际Moran统计；Mock拓扑须替换为正式流域邻接"
+    },
+    {
+      "requirementId": 54,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_alerts",
+          "minimum": 1,
+          "label": "fact_env_alerts",
+          "actual": 155,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "阈值、ARIMA趋势和联动指数；规则需专业审批"
+    },
+    {
+      "requirementId": 55,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_alerts",
+          "minimum": 1,
+          "label": "fact_env_alerts",
+          "actual": 155,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "三类干预流程与任务；正式建议需专业审核"
+    },
+    {
+      "requirementId": 56,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_water_monitoring",
+          "minimum": 1,
+          "label": "fact_water_monitoring",
+          "actual": 19840,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "报告章节、图表、模板复用与导出已实现"
+    },
+    {
+      "requirementId": 57,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_intervention_inputs",
+          "minimum": 1,
+          "label": "fact_env_intervention_inputs",
+          "actual": 1,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "减排和健康效应使用可编辑假设，非已验证因果效应"
+    },
+    {
+      "requirementId": 58,
+      "domain": "env",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_env_mobile_tasks",
+          "minimum": 1,
+          "label": "fact_env_mobile_tasks",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "扫码/人工码、照片、IndexedDB离线队列及幂等同步"
+    },
+    {
+      "requirementId": 59,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "规则和IsolationForest候选；98%须独立标注集验证"
+    },
+    {
+      "requirementId": 60,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "已接入用户提供的2047条三位类目；不是完整编码字典，95%准确率须独立验收"
+    },
+    {
+      "requirementId": 61,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "Iris/MUSE适配已实现；完整规则执行需获授权Windows引擎、配套决策表和机构语言字典"
+    },
+    {
+      "requirementId": 62,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+          "minimum": 1,
+          "label": "fact_chronic_followup",
+          "actual": 480,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "ARIMA趋势与DBSCAN；固定人口分母须核验"
+    },
+    {
+      "requirementId": 63,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry WHERE city='郑州市' AND district='金水区' AND icd10_code='A81.0' AND death_date BETWEEN '2026-08-01' AND '2026-08-19'",
+          "minimum": 3,
+          "label": "罕见死因正例",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "七日内同区同码≥3例产生可核对候选"
+    },
+    {
+      "requirementId": 64,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_cases",
+          "minimum": 1,
+          "label": "fact_chronic_cases",
+          "actual": 12000,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+          "minimum": 1,
+          "label": "fact_chronic_followup",
+          "actual": 480,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际GBDT与时间留出验证；80%须独立实测集验证"
+    },
+    {
+      "requirementId": 65,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+          "minimum": 1,
+          "label": "fact_chronic_followup",
+          "actual": 480,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际支持度、置信度与提升度；关联不代表因果"
+    },
+    {
+      "requirementId": 66,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_followup",
+          "minimum": 1,
+          "label": "fact_chronic_followup",
+          "actual": 480,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "高风险清单与每检出病例成本；不声称已节约费用"
+    },
+    {
+      "requirementId": 67,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+          "minimum": 1,
+          "label": "fact_injury_surveillance",
+          "actual": 5000,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "真实K-Means聚类与时空特征汇总"
+    },
+    {
+      "requirementId": 68,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+          "minimum": 1,
+          "label": "fact_injury_surveillance",
+          "actual": 5000,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_risk_inputs",
+          "minimum": 1,
+          "label": "fact_injury_risk_inputs",
+          "actual": 200,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "实际决策树与留出验证；病例分类不证明诱因"
+    },
+    {
+      "requirementId": 69,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+          "minimum": 1,
+          "label": "fact_injury_surveillance",
+          "actual": 5000,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "同场所24小时≥5例，保留病例和原因线索"
+    },
+    {
+      "requirementId": 70,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+          "minimum": 1,
+          "label": "fact_chronic_alerts",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "阈值、LSTM与关联指数已运行；专业阈值需审批"
+    },
+    {
+      "requirementId": 71,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+          "minimum": 1,
+          "label": "fact_chronic_alerts",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "分级层级可核对；正式跨机构接收者需配置"
+    },
+    {
+      "requirementId": 72,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_cases",
+          "minimum": 1,
+          "label": "fact_chronic_cases",
+          "actual": 12000,
+          "passed": true
+        },
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+          "minimum": 1,
+          "label": "fact_injury_surveillance",
+          "actual": 5000,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "死因顺位、重算YPLL、慢病趋势及伤害统计"
+    },
+    {
+      "requirementId": 73,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_death_registry",
+          "minimum": 1,
+          "label": "fact_death_registry",
+          "actual": 9078,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "模板创建、版本更新、复用、删除及报告导出"
+    },
+    {
+      "requirementId": 74,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+          "minimum": 1,
+          "label": "fact_chronic_alerts",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "死因调查流程与任务；需专业审核"
+    },
+    {
+      "requirementId": 75,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_chronic_alerts",
+          "minimum": 1,
+          "label": "fact_chronic_alerts",
+          "actual": 3,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "风险名单、干预流程与任务；需专业审核"
+    },
+    {
+      "requirementId": 76,
+      "domain": "chronic",
+      "checks": [
+        {
+          "sql": "SELECT COUNT(*) AS count FROM fact_injury_surveillance",
+          "minimum": 1,
+          "label": "fact_injury_surveillance",
+          "actual": 5000,
+          "passed": true
+        }
+      ],
+      "inputStatus": "ready",
+      "functionalLimitation": "伤害聚类证据、干预流程与任务；需专业审核"
+    }
+  ]
+}

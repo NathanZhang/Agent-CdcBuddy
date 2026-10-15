@@ -4,7 +4,7 @@ import {MapCanvas} from './MapCanvas';
 import {QueryResultVisualization} from './QueryResultVisualization';
 import {BarChart3,Info} from 'lucide-react';
 import {useFunctionalInteraction} from '@/features/workbench/use-workbench-controller';
-import {methodLabel,qualityLabel,statusLabel} from '@/features/workbench/result-presentation';
+import {methodLabel,qualityLabel,statusLabel,inputFailureText} from '@/features/workbench/result-presentation';
 import {ResultDataView} from './ResultDataView';
 import {SpeciesCompositionSummary} from './SpeciesCompositionSummary';
 import {MortalityCodingReview} from './MortalityCodingReview';
@@ -13,7 +13,7 @@ function WorkflowActions({value}:{value:any}){const interact=useFunctionalIntera
 
 export function AnalyticsResultCard({data}:{data:any}) {
  const [showRaw,setShowRaw]=useState(false);const interact=useFunctionalInteraction();
- const payload=data.data??{};
+ const original=data.data??{};const payload=typeof original.reason==='string'?{...original,reason:inputFailureText(original.reason)}:original;
  const flags=Array.from(new Set<string>([...(data.qualityFlags??[]),...(payload.qualityFlags??[])]));
  const species=data.method==='method-separated-kmeans-capture-v1'&&Array.isArray(payload.items);
  const mortality=payload.method==='icd10-iris-mortality-v2';

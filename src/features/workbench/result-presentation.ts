@@ -108,3 +108,7 @@ Object.assign(fieldLabels,{criterion:'核查触发指标'});
 
 Object.assign(fieldLabels,{parsedCertificate:'原文解析',categoryCandidates:'三位类目候选',candidateCodes:'候选类目',candidates:'候选来源',sourceRow:'原表行号',sourceSheet:'原工作表',sourceFile:'源文件',sourceSha256:'源文件校验值',sourceEdition:'源表版本',sourceChapter:'原表章节',categoryCount:'类目条数',granularity:'编码粒度',assertion:'诊断表述',position:'证明书位置',sourceField:'原文字段',sourceStart:'原文起始位置',originalInput:'原始输入',inputSha256:'输入校验值',explicitCodes:'原文中的编码',terminalCodeValidated:'细分编码是否验证',durations:'病程',rows:'解析行',engineResult:'Iris执行结果',selectionStatus:'引擎状态',inputIssues:'待核对信息',reportedEdges:'原文填报关系',provenance:'版本和来源',expectedCodingVersion:'要求的编码版本',dictionaryVersion:'机构字典版本',rulesVersion:'决策表版本',review:'人工复核',required:'是否必需',autoFinalized:'是否自动定案',ruleTraceAvailable:'是否有规则日志',ruleTraceNote:'规则日志说明',codedLines:'Iris编码行',workLot:'Iris工作批次',classification:'分类体系',categoryKnown:'类目是否存在',requiresReview:'需要复核',demographics:'证明书补充信息',entryMode:'输入模式',ident:'Iris原始结果'});
 Object.assign(qualityLabels,{'category-table-not-terminal-codes':'用户提供的是三位类目表，不能据此补造四位或六位编码。','iris-engine-not-configured':'尚未配置获授权的 Iris 5/MUSE 引擎及完整决策表；未生成根本死因候选。'});
+
+Object.assign(qualityLabels,{'model-inputs-missing-no-fabricated-estimate':'当前数据源缺少本项分析必需的有效输入；未生成或补造估计结果。'});
+
+export function inputFailureText(value:string):string {return /no such (?:table|column)|Execution failed on sql/i.test(value)?'当前数据源缺少本项分析所需的数据表或字段，请补充对应资料，或显式切换到Mock验收模式。':value;}

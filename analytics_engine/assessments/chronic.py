@@ -1,20 +1,16 @@
 import numpy as np
 import pandas as pd
-from .common import frame, records, result, forecast, classifier
+from .common import frame, records, result, forecast, classifier, require_columns, require_rows
 
 
 def assess(db,args):
     action=args['analysis']
     if action in ('risk','complications','screening'):
-        df=frame(db,'fact_chronic_followup',args,'monitoring_date').sort_values(['monitoring_date','record_id'])
+        needed=['disease_name','complication'] if action=='complications' else ['record_id','age','smoking','family_history','systolic_bp','outcome_event']+(['followup_months'] if action=='risk' else ['city','district','disease_name','screened','detected','screening_cost_yuan','treatment_cost_yuan'])
+        df=frame(db,'fact_chronic_followup',args,'monitoring_date',columns=needed).sort_values('monitoring_date')
         if action=='screening':df=df[df.disease_name.str.contains('肿瘤|癌',na=False)].copy()
-        features=['age','smoking','family_history','systolic_bp']; model,X,meta=classifier(df,features,'outcome_event')
-        df['eventProbability']=model.predict_proba(X)[:,list(model.classes_).index(1)]
-        if action=='risk':
-            grouped=df.groupby('monitoring_date').agg(observedEvents=('outcome_event','sum'),people=('record_id','count'),expectedEvents=('eventProbability','sum')).reset_index()
-            grouped['expectedEventRate']=grouped.expectedEvents/grouped.people
-            return result('followup-gradient-boosting-risk-v1',**meta,individuals=records(df[['record_id',*features,'followup_months','eventProbability']]),population=records(grouped),assumptions=['risk horizon equals followup_months (24 months in demo); not a validated 10-year risk score','population projection applies to sampled followup cohort only'])
         if action=='complications':
+            require_columns(df,['disease_name','complication'],'并发症随访记录')
             rules=[];n=len(df)
             for disease,g in df.groupby('disease_name'):
                 for complication,count in g.complication.value_counts().items():
@@ -22,10 +18,16 @@ def assess(db,args):
                     baseline=float((df.complication==complication).mean()); confidence=count/len(g)
                     rules.append({'disease':disease,'complication':complication,'jointCount':int(count),'support':count/n,'confidence':confidence,'lift':confidence/baseline if baseline else None})
             return result('chronic-complication-association-v1',rules=rules,denominator=n,assumptions=['association from observed followups; no causal claim'])
+        features=['age','smoking','family_history','systolic_bp']; model,X,meta=classifier(df,features,'outcome_event')
+        df['eventProbability']=model.predict_proba(X)[:,list(model.classes_).index(1)]
+        if action=='risk':
+            grouped=df.groupby('monitoring_date').agg(observedEvents=('outcome_event','sum'),people=('record_id','count'),expectedEvents=('eventProbability','sum')).reset_index()
+            grouped['expectedEventRate']=grouped.expectedEvents/grouped.people
+            return result('followup-gradient-boosting-risk-v1',**meta,individuals=records(df[['record_id',*features,'followup_months','eventProbability']]),population=records(grouped),assumptions=['risk horizon equals followup_months (24 months in demo); not a validated 10-year risk score','population projection applies to sampled followup cohort only'])
         high=df[df.eventProbability>=float(args.get('riskThreshold',.2))]; screened=df[df.screened==1]; totalcost=float(screened.screening_cost_yuan.sum()); detected=int(screened.detected.sum())
-        registry=frame(db,'fact_chronic_cases',args,'diagnosed_date')
+        registry=frame(db,'fact_chronic_cases',args,'diagnosed_date',columns=['city','district','disease_name'])
         registry=registry[registry.disease_name.str.contains('肿瘤|癌',na=False)]
-        population=frame(db,'dim_districts',args)
+        population=frame(db,'dim_districts',args,columns=['city','district','population']+(['latitude','longitude'] if action=='mortality' else []))
         regions=registry.groupby(['city','district']).size().rename('registeredCandidates').reset_index().merge(population[['city','district','population']],on=['city','district'],how='left')
         treatment=float(screened.loc[screened.detected==1,'treatment_cost_yuan'].sum())
         fraction=float(args.get('avoidedCostFraction',.25))
@@ -33,7 +35,7 @@ def assess(db,args):
         benefit=treatment*fraction
         return result('risk-prioritized-screening-cost-v1',highRiskList=records(high[['record_id','city','district','age','disease_name','eventProbability']].sort_values('eventProbability',ascending=False)),regionalRegistry=records(regions),screened=len(screened),detected=detected,detectionRate=detected/len(screened) if len(screened) else None,screeningCostYuan=totalcost,costPerDetectedCaseYuan=totalcost/detected if detected else None,estimatedTreatmentCostYuan=treatment,avoidedCostFraction=fraction,assumedBenefitYuan=benefit,benefitCostRatio=benefit/totalcost if totalcost else None,assumptions=['tumor cohort selected from registered disease labels containing 肿瘤 or 癌; high-risk registrations are candidates, not confirmed cancer incidence','cost-benefit ratio uses a hypothetical avoidable fraction of detected treatment cost, not realized savings or causal benefit','population is a fixed district denominator; followup risk applies only to sampled cohort'],**meta)
     if action in ('mortality','rare'):
-        df=frame(db,'fact_death_registry',args,'death_date'); pop=frame(db,'dim_districts',args)
+        df=frame(db,'fact_death_registry',args,'death_date',columns=['city','district']+(['icd10_category','icd10_code','death_cert_id'] if action=='rare' else []))
         if action=='rare':
             rows=[]
             for (city,district,code),g in df[df.icd10_category=='罕见死因'].groupby(['city','district','icd10_code']):
@@ -42,13 +44,15 @@ def assess(db,args):
                     hits=g[(times>=start)&(times<start+pd.Timedelta(days=7))]
                     if len(hits)>=3:rows.append({'city':city,'district':district,'icd10':code,'windowStart':str(start)[:10],'cases':len(hits),'certificateIds':hits.death_cert_id.tolist()});break
             return result('rare-cause-seven-day-threshold-v1',clusters=rows,rule={'minimumCases':3,'windowDays':7,'sameCodeAndDistrict':True})
+        pop=frame(db,'dim_districts',args,columns=['city','district','population']+(['latitude','longitude'] if action=='mortality' else []))
         from sklearn.cluster import DBSCAN
         by=df.groupby(['city','district']).size().rename('deaths').reset_index().merge(pop,on=['city','district']);by['mortalityPer100k']=by.deaths/by.population*100000
+        require_rows(by,1,'死亡率地区匹配')
         by['spatialCluster']=DBSCAN(eps=10/6371,min_samples=2,metric='haversine').fit_predict(np.radians(by[['latitude','longitude']]))
         monthly=df.assign(period=df.death_date.str[:7]).groupby('period').size(); rate=monthly/float(pop.population.sum())*100000
         return result('mortality-arima-dbscan-v1',trend=forecast(rate.index,rate.values,3,'arima'),districts=records(by),unit='deaths per 100000 population per month',assumptions=['fixed denominator from dim_districts; geographic DBSCAN groups neighboring areas, rate identifies high-risk members'])
     if action in ('injury_clusters','injury_tree','injury_events'):
-        df=frame(db,'fact_injury_surveillance',args,'injury_time')
+        df=frame(db,'fact_injury_surveillance',args,'injury_time',columns=['city','district','injury_id','injury_type']+(['injury_place','injury_cause_factor'] if action=='injury_events' else ['age']+(['injury_place'] if action=='injury_clusters' else [])))
         if action=='injury_events':
             events=[]
             for keys,g in df.groupby(['city','district','injury_place','injury_type']):
@@ -58,7 +62,7 @@ def assess(db,args):
                     if len(hit)>=5:events.append(dict(zip(['city','district','place','type'],keys),start=str(start),caseCount=len(hit),injuryIds=hit.injury_id.tolist(),causes=hit.injury_cause_factor.value_counts().to_dict()));break
             return result('same-place-injury-24h-v1',events=events,rule={'minimumCases':5,'hours':24,'samePlaceAndType':True})
         if action=='injury_tree':
-            inputs=frame(db,'fact_injury_risk_inputs',args,'monitoring_date');df=df.merge(inputs,on=['injury_id','city','district'])
+            inputs=frame(db,'fact_injury_risk_inputs',args,'monitoring_date',columns=['injury_id','city','district','protective_equipment','rural','surface_wet']);df=df.merge(inputs,on=['injury_id','city','district'])
             df=df.sort_values('injury_time');model,X,meta=classifier(df,['age','protective_equipment','rural','surface_wet'],'injury_type','tree')
             return result('injury-decision-tree-v1',**meta,caseCount=len(df),observedAssociations=records(df.groupby(['protective_equipment','rural','injury_type']).size().rename('count').reset_index()),assumptions=['case-only classification, not causal attribution or population relative risk'])
         from sklearn.cluster import KMeans
@@ -72,7 +76,7 @@ def assess(db,args):
     if action=='quality':
         from sklearn.ensemble import IsolationForest
         from analytics_engine.chronic.death_cert_qc import GENDER_EXCLUSIVE_CAUSES, AGE_RESTRICTED_CAUSES
-        df=frame(db,'fact_death_registry',args,'death_date'); defects=[]
+        df=frame(db,'fact_death_registry',args,'death_date',columns=['patient_name','gender','age','city','district','death_cert_id','underlying_cause','icd10_code','cause_chain_a','cause_chain_b','cause_chain_c','cause_chain_d']); defects=[]
         duplicated=df.duplicated(['patient_name','gender','age','city','district','death_date'],keep=False)
         unusual=IsolationForest(contamination=.02,random_state=42).fit_predict(df[['age']])==-1
         for i,r in df.iterrows():

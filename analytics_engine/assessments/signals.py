@@ -16,12 +16,12 @@ def assess(domain,db,args):
         with connect_readonly(db) as c: df=pd.read_sql_query('SELECT f.date_id AS date,l.city,l.district,f.capture_count AS value,f.weather_temp AS cofactor FROM fact_monitoring f JOIN dim_location l USING(location_id)',c)
         unit='captures/record';threshold=float(args.get('threshold',30))
     elif domain=='env':
-        air=frame(db,'fact_air_climate_monitoring',args,'date');df=air.rename(columns={'pm25':'value','temp_max':'cofactor'});unit='ug/m3';threshold=float(args.get('threshold',75))
+        air=frame(db,'fact_air_climate_monitoring',args,'date',columns=['city','district','pm25','temp_max']);df=air.rename(columns={'pm25':'value','temp_max':'cofactor'});unit='ug/m3';threshold=float(args.get('threshold',75))
     elif domain=='foodborne':
-        df=frame(db,'fact_foodborne_case',args,'visit_date').rename(columns={'visit_date':'date'});df['cofactor']=df.is_pathogen_positive
+        df=frame(db,'fact_foodborne_case',args,'visit_date',columns=['city','district','case_id','is_pathogen_positive']).rename(columns={'visit_date':'date'});df['cofactor']=df.is_pathogen_positive
         df=df.groupby(['date','city','district']).agg(value=('case_id','count'),cofactor=('cofactor','sum')).reset_index();unit='cases/day';threshold=float(args.get('threshold',5))
     else:
-        df=frame(db,'fact_death_registry',args,'death_date').rename(columns={'death_date':'date'});df['cofactor']=(df.icd10_category=='罕见死因').astype(int)
+        df=frame(db,'fact_death_registry',args,'death_date',columns=['city','district','icd10_category','death_cert_id']).rename(columns={'death_date':'date'});df['cofactor']=(df.icd10_category=='罕见死因').astype(int)
         df=df.groupby(['date','city','district']).agg(value=('death_cert_id','count'),cofactor=('cofactor','sum')).reset_index();unit='deaths/day';threshold=float(args.get('threshold',5))
     for key in ('city','district'):
         if args.get(key):df=df[df[key]==args[key]]
@@ -32,7 +32,7 @@ def assess(domain,db,args):
     grouped=df.groupby(['city','district']).agg(value=('value','mean'),peak=('value','max'),cofactor=('cofactor','mean')).reset_index()
     # Multiplicative cofactor is explicitly a demonstration policy, not learned causation.
     if domain=='env':
-        water=frame(db,'fact_water_monitoring',args,'monitoring_date');water['exceeded']=((water.arsenic_val>.01)|(water.lead_val>.01)|(water.turbidity>1)).astype(int)
+        water=frame(db,'fact_water_monitoring',args,'monitoring_date',columns=['city','district','arsenic_val','lead_val','turbidity']);water['exceeded']=((water.arsenic_val>.01)|(water.lead_val>.01)|(water.turbidity>1)).astype(int)
         water=water.groupby(['city','district']).agg(waterExceedFraction=('exceeded','mean'),maxArsenicMgL=('arsenic_val','max')).reset_index()
         grouped=grouped.merge(water,on=['city','district'],how='left').fillna({'waterExceedFraction':0})
     grouped['index']=grouped.peak/threshold*(1+np.minimum(grouped.cofactor.clip(lower=0)/100,.5))
@@ -42,7 +42,7 @@ def assess(domain,db,args):
     daily=df.groupby('date').value.mean().sort_index();trend=forecast(daily.index,daily.values,3,'lstm' if domain=='chronic' else 'arima') if len(daily)>=18 else {'status':'INSUFFICIENT_DATA','requiredPeriods':18}
     history=[]
     if domain=='foodborne':
-        events=frame(db,'fact_outbreak_event',{},'start_time')
+        events=frame(db,'fact_outbreak_event',{},'start_time',columns=['disposal_status','cluster_id','event_title','trace_conclusion'],allow_empty=True)
         current_start=args.get('eventDate') or args.get('from') or str(df.date.min())
         # Only historical events before the current window can be matched as prior cases.
         history=records(events[(events.start_time.str[:10]<current_start)&(events.disposal_status=='closed')][['cluster_id','event_title','start_time','trace_conclusion']],5)

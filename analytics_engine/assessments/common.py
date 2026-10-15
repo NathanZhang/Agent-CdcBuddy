@@ -6,19 +6,33 @@ import calendar
 import numpy as np
 import pandas as pd
 from analytics_engine.repositories.datasets import connect_readonly
+from analytics_engine.input_errors import InputDataError, TABLE_LABELS
 
 
-def frame(db, table, args, date_column=None):
+def frame(db, table, args, date_column=None, *, columns=(), allow_empty=False):
     # Table names are constants supplied by domain code, never request values.
     with connect_readonly(db) as c:
         df = pd.read_sql_query('SELECT * FROM '+table, c)
+    require_columns(df, [*columns, *([date_column] if date_column else [])], TABLE_LABELS.get(table,'分析输入'))
+    if date_column and df[date_column].isna().any():raise InputDataError('INVALID_INPUT_VALUES',TABLE_LABELS.get(table,'分析输入')+'存在缺失日期，请先核对并补齐。')
     for key in ('city', 'district'):
         if args.get(key) and key in df: df = df[df[key] == args[key]]
     end = args.get('to') or args.get('asOf')
     if date_column and date_column in df:
         if args.get('from'): df = df[df[date_column].str[:10] >= args['from']]
         if end: df = df[df[date_column].str[:10] <= end]
+    if df.empty and not allow_empty:
+        raise InputDataError('NO_MATCHING_INPUT', '当前地域和时间范围内没有'+TABLE_LABELS.get(table,'分析输入')+'，请补充记录或调整筛选范围。')
     return df.reset_index(drop=True)
+
+
+def require_columns(df, columns, label='分析输入'):
+    missing=[name for name in columns if name not in df.columns]
+    if missing:raise InputDataError('MISSING_INPUT_COLUMN',label+'缺少必需字段：'+'、'.join(missing)+'。请补齐后重试。')
+
+
+def require_rows(df, minimum=2, label='模型训练'):
+    if len(df)<minimum:raise InputDataError('INSUFFICIENT_SAMPLES',f'{label}需要至少{minimum}条有效记录，当前仅有{len(df)}条。请补充数据或调整范围。')
 
 
 def records(df, limit=200):
@@ -47,7 +61,7 @@ def forecast(periods, values, horizon=3, model='lstm', exogenous=None):
     if len(y) < 18 or not np.isfinite(y).all(): raise ValueError('FORECAST_REQUIRES_18_FINITE_PERIODS')
     if not 1 <= horizon <= 12: raise ValueError('FORECAST_HORIZON_INVALID')
     periods = list(map(str, periods)); holdout = min(6, max(3, len(y)//5))
-    x = np.asarray(exogenous, dtype=float) if exogenous is not None else np.zeros((len(y), 0))
+    x = np.asarray(exogenous, dtype=float) if exogenous is not None and model != 'arima' else np.zeros((len(y), 0))
     if len(x) != len(y) or not np.isfinite(x).all(): raise ValueError('INVALID_EXOGENOUS_HISTORY')
     def fit_predict(target, covariates, steps):
         if model == 'arima':
@@ -95,14 +109,18 @@ def forecast(periods, values, horizon=3, model='lstm', exogenous=None):
             'validation':{'strategy':'chronological-recursive-holdout','trainEnd':periods[-holdout-1],**metrics(y[-holdout:],validation),
                           'rows':[{'period':p,'actual':float(a),'predicted':float(v)} for p,a,v in zip(periods[-holdout:],y[-holdout:],validation)]},
             'training':{'start':periods[0],'end':periods[-1],'rows':len(y),'seed':42,'epochs':100 if model=='lstm' else None},
-            'featureImportance':importance,'futureCovariates':'last-observed-value persistence; no future observations'}
+            'featureImportance':importance,'futureCovariates':'last-observed-value persistence; no future observations' if x.shape[1] else 'none; univariate history only'}
 
 
 def classifier(df, features, target, kind='gbdt'):
     from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
     from sklearn.tree import DecisionTreeClassifier, export_text
     from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix
-    X=pd.get_dummies(df[features],dtype=float).fillna(0); y=df[target]; split=int(len(df)*.75)
+    require_columns(df,[*features,target])
+    if df[[*features,target]].isna().any().any():raise InputDataError('INVALID_INPUT_VALUES','分类训练输入存在缺失值，请补齐特征及结局，不能把缺测直接当作零。')
+    X=pd.get_dummies(df[features],dtype=float); y=df[target];
+    if not np.isfinite(X.to_numpy()).all():raise InputDataError('INVALID_INPUT_VALUES','分类训练特征存在无效数值，请核对后重试。')
+    split=int(len(df)*.75)
     if split<12 or y.iloc[:split].nunique()<2: raise ValueError('CLASSIFIER_REQUIRES_TWO_CLASSES_AND_16_ROWS')
     constructor={'gbdt':lambda:GradientBoostingClassifier(n_estimators=60,max_depth=2,random_state=42),
                  'rf':lambda:RandomForestClassifier(n_estimators=60,max_depth=4,random_state=42),

@@ -1,0 +1,144 @@
+{
+  "purpose": "isolated-mock-business-acceptance",
+  "checks": [
+    {
+      "domain": "vector",
+      "flow": "template create/update/conflict/reuse/report/archive/export/delete",
+      "reportId": "report_a20edf9b-de78-4e5d-9d92-0be6bbc82a9c",
+      "htmlArtifact": {
+        "artifactId": "c8af7df8-b6de-4e5a-8c16-a89d49721a28",
+        "fileName": "授权辖区验收可复用模板 vector v2.html",
+        "mimeType": "text/html; charset=utf-8",
+        "byteLength": 8796,
+        "sha256": "2f9ed8d462d0018d0c7c51635d42d3448850a6c07ed7e17c1c14553b55b3a5be",
+        "downloadUrl": "/api/artifacts/c8af7df8-b6de-4e5a-8c16-a89d49721a28"
+      },
+      "markdownArtifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "29513117-eb8a-457a-99ca-d3e3033634d0",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 3039,
+        "sha256": "ddc10ea7159c12568d909cb44096d4bc480d3c2cf781e75db78eccf323e40451",
+        "downloadUrl": "/api/artifacts/29513117-eb8a-457a-99ca-d3e3033634d0"
+      },
+      "passed": true
+    },
+    {
+      "domain": "foodborne",
+      "flow": "template create/update/conflict/reuse/report/archive/export/delete",
+      "reportId": "report_61d03df7-0979-4e60-88e6-fe6ba3b1f5f8",
+      "htmlArtifact": {
+        "artifactId": "a9ddfae3-2e94-406c-bb17-175fc7edab69",
+        "fileName": "授权辖区验收可复用模板 foodborne v2.html",
+        "mimeType": "text/html; charset=utf-8",
+        "byteLength": 10061,
+        "sha256": "688f7996511a2cd24cfdc512d722ccf78f3a30fd753c54551817fa4f64a8d300",
+        "downloadUrl": "/api/artifacts/a9ddfae3-2e94-406c-bb17-175fc7edab69"
+      },
+      "markdownArtifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "f58e9cd4-dbda-424d-84da-285c261fe855",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 2974,
+        "sha256": "4710253a560b31e6de0831bda828997189538a147a2e1776f1c91a4b9fabe468",
+        "downloadUrl": "/api/artifacts/f58e9cd4-dbda-424d-84da-285c261fe855"
+      },
+      "passed": true
+    },
+    {
+      "domain": "env",
+      "flow": "template create/update/conflict/reuse/report/archive/export/delete",
+      "reportId": "report_4119d9ba-6366-4609-9de0-7a758cfa093b",
+      "htmlArtifact": {
+        "artifactId": "dbdc8504-955a-4256-90d1-0c4697f7628e",
+        "fileName": "授权辖区验收可复用模板 env v2.html",
+        "mimeType": "text/html; charset=utf-8",
+        "byteLength": 7022,
+        "sha256": "9113befddd02ef32544616057a7c5ca1405c2ac5a7cca217efb685e2478e9136",
+        "downloadUrl": "/api/artifacts/dbdc8504-955a-4256-90d1-0c4697f7628e"
+      },
+      "markdownArtifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "11991d68-d911-4eed-b4bf-dbe23b4c60d1",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 2464,
+        "sha256": "e66b4d70f08e58d05ed212bd28e5eddb36d2282b809809ca13c054a3e448b500",
+        "downloadUrl": "/api/artifacts/11991d68-d911-4eed-b4bf-dbe23b4c60d1"
+      },
+      "passed": true
+    },
+    {
+      "domain": "chronic",
+      "flow": "template create/update/conflict/reuse/report/archive/export/delete",
+      "reportId": "report_19648a7c-5a27-4f03-b634-8a45c5461167",
+      "htmlArtifact": {
+        "artifactId": "e3a84771-b126-41bb-ac8d-ea2b11d87fd3",
+        "fileName": "授权辖区验收可复用模板 chronic v2.html",
+        "mimeType": "text/html; charset=utf-8",
+        "byteLength": 11696,
+        "sha256": "750d2c2bca06ee12394c1d2f697b5496453edfbf4da77c2876e662ce332832ba",
+        "downloadUrl": "/api/artifacts/e3a84771-b126-41bb-ac8d-ea2b11d87fd3"
+      },
+      "markdownArtifact": {
+        "type": "ARTIFACT_DOWNLOAD",
+        "artifactId": "f4901a0f-2145-49b5-8dcf-794ac9dce189",
+        "fileName": "模拟数据-监测导出.md",
+        "mimeType": "text/markdown; charset=utf-8",
+        "byteLength": 3687,
+        "sha256": "fbac79db5fd501a9d692df56cb54da51bacb356fce33c3f98153590c868cca07",
+        "downloadUrl": "/api/artifacts/f4901a0f-2145-49b5-8dcf-794ac9dce189"
+      },
+      "passed": true
+    },
+    {
+      "domain": "env",
+      "flow": "task -> cached payload -> sync -> persisted photo -> idempotent replay -> completed",
+      "sampleId": "4dcf5fcb-ad9c-4dc0-aff2-40ee8dfddc09",
+      "taskId": "a2247b7b-d2a1-480f-961f-007b1db41406",
+      "photoSha256": "0a97501e18a664a7d7ee7a1aeea061759a8833e1dbe6b6259d4b7c7746a4506c",
+      "passed": true
+    },
+    {
+      "flow": "real queued analysis -> waiting review -> approval -> in-app delivery",
+      "jobs": 14,
+      "delivered": 13,
+      "messages": [
+        {
+          "domain": "chronic",
+          "messages": 4
+        },
+        {
+          "domain": "env",
+          "messages": 5
+        },
+        {
+          "domain": "foodborne",
+          "messages": 1
+        },
+        {
+          "domain": "vector",
+          "messages": 3
+        }
+      ],
+      "passed": true,
+      "externalChannelsSent": 0
+    },
+    {
+      "flow": "collected retest -> time/unit/provenance validation -> resolved ticket",
+      "clock": "controlled +2h simulation clock; no timestamp rows rewritten",
+      "ticketId": "9571c4dd-663d-4a86-a2f8-8cbda4c8456f",
+      "retestStatus": "PASSED",
+      "ticketStatus": "RESOLVED",
+      "value": 0,
+      "sourceRecordId": "SUB-aa652341-22ae-40d2-a11d-d924bd288204",
+      "qualityFlags": [
+        "manual-collection-evidence",
+        "local-ticket-not-regional-risk-clearance"
+      ],
+      "passed": true
+    }
+  ]
+}

@@ -6,11 +6,11 @@ const ctx:ExecutionContext={runId:'vector-method-real',domain:'vector',deploymen
 describe('verified vector subcapabilities via actual Skills and bounded runner',()=>{
  it('forecast uses explicit cutoff and sampling method with observed provenance',async()=>{
   const r=await executeSkill('skill_population_dynamics',{city:'郑州市',methodName:'诱蚊灯法',asOf:'2023-12-31',dataWindow:36,forecastMonths:2},ctx);
-  expect(r.status).toBe('INSUFFICIENT_DATA');expect(r.datasets[0]).toEqual(loadDatasetManifest().find(d=>d.domain==='vector'));expect((r.payload as any).data.reason).toMatch(/exposure|WEATHER/);
+  expect(r.status).toBe('INSUFFICIENT_DATA');expect(r.datasets[0]).toEqual(loadDatasetManifest().find(d=>d.domain==='vector'));expect((r.payload as any).data.reason).toMatch(/缺测时段|截止期/);
   // Actual ARIMA/LSTM predictions and cutoff isolation are exercised in requirement-full-flow and scientific tests.
 
  },20000);
  it('missing geographic scope cannot invent IDW points',async()=>{const r=await executeSkill('skill_spatial_early_warning',{city:'郑州市',district:'不存在区',methodName:'诱蚊灯法'},ctx);expect(r.status).toBe('FAILED');expect(r.payload).toBeNull();expect(r.error?.message).toContain('REGION_UNRESOLVED');},20000);
  it('rolling holdouts are reachable through the main Skill contract with real provenance',async()=>{const r=await executeSkill('skill_vector_backtest',{city:'郑州市',methodName:'诱蚊灯法',asOf:'2025-11-11',horizon:1,model:'ar'},ctx);expect(r.status).toBe('SUCCESS');expect(r.metrics.mae.evaluationKind).toBe(r.datasets[0].origin==='observed'?'real-backtest':'synthetic');expect((r.payload as any).data.evaluatedPairs).toBeGreaterThan(0);expect((r.payload as any).data.groups[0].baselineMae).toBeTypeOf('number');},20000);
- it('implemented models disclose missing genotype inputs instead of fabricating evolution',async()=>{expect(listSkillDefinitions('vector').find(d=>d.id==='skill_resistance_evolution')?.availability).toBe('available');const r=await executeSkill('skill_resistance_evolution',{},ctx);expect(r.status).toBe('INSUFFICIENT_DATA');expect((r.payload as any).data.reason).toContain('fact_vector_exposure');});
+ it('implemented models disclose missing genotype inputs instead of fabricating evolution',async()=>{expect(listSkillDefinitions('vector').find(d=>d.id==='skill_resistance_evolution')?.availability).toBe('available');const r=await executeSkill('skill_resistance_evolution',{},ctx);expect(r.status).toBe('INSUFFICIENT_DATA');expect((r.payload as any).data.reason).toContain('抗性基因');expect((r.payload as any).data.reason).not.toContain('SELECT');});
 });

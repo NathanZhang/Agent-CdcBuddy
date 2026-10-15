@@ -1,0 +1,8 @@
+./opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/re/_parser.py:189: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x11af82a70>
+  i = min(i, l)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.......
+----------------------------------------------------------------------
+Ran 8 tests in 3.510s
+
+OK

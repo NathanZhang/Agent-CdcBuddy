@@ -167,6 +167,7 @@ def main():
             with dataset_lease(db_path),contextlib.redirect_stdout(sys.stderr):payload=execute_task(parsed.task,args,db_path)
             result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),payload)
         except Exception as error:
+            print(f'{type(error).__name__}: {error}',file=sys.stderr)
             result=task_result(parsed.run_id,domain,parsed.task,ref.model_dump(),error=str(error))
         print(json.dumps(result,ensure_ascii=False,allow_nan=False))
     else:

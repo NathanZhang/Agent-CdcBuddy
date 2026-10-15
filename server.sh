@@ -3,9 +3,9 @@
 # ==============================================================================
 # CdcBuddy 疾控全域四智能体平台 - 统一运维管理脚本 (Multi-Agent Cluster Manager)
 # 用法:
-#   ./server.sh start [vector|foodborne|env|chronic|all] [dev|prod]
+#   ./server.sh start [vector|foodborne|env|chronic|all] [dev|prod|mock]
 #   ./server.sh stop [vector|foodborne|env|chronic|all]
-#   ./server.sh restart [vector|foodborne|env|chronic|all] [dev|prod]
+#   ./server.sh restart [vector|foodborne|env|chronic|all] [dev|prod|mock]
 #   ./server.sh status [vector|foodborne|env|chronic|all]
 #   ./server.sh test [vector|foodborne|env|chronic|all]
 #   ./server.sh logs [vector|foodborne|env|chronic]
@@ -53,6 +53,10 @@ log_step() {
 # 获取智能体对应端口
 get_domain_port() {
     local domain="$1"
+    if [ "${RUN_MODE:-dev}" = "mock" ]; then
+        case "${domain}" in vector) echo 3101;; foodborne) echo 3102;; env) echo 3103;; chronic) echo 3104;; esac
+        return
+    fi
     case "${domain}" in
         vector) echo 3001 ;;
         foodborne) echo 3002 ;;
@@ -77,13 +81,13 @@ get_domain_name() {
 # 获取 PID 文件
 get_domain_pid_file() {
     local domain="$1"
-    echo "${PROJECT_ROOT}/.server_${domain}.pid"
+    if [ "${RUN_MODE:-dev}" = "mock" ]; then echo "${PROJECT_ROOT}/.server_${domain}_mock.pid"; else echo "${PROJECT_ROOT}/.server_${domain}.pid"; fi
 }
 
 # 获取日志文件
 get_domain_log_file() {
     local domain="$1"
-    echo "${LOG_DIR}/server_${domain}.log"
+    if [ "${RUN_MODE:-dev}" = "mock" ]; then echo "${LOG_DIR}/server_${domain}_mock.log"; else echo "${LOG_DIR}/server_${domain}.log"; fi
 }
 
 # 获取数据集路径
@@ -123,16 +127,16 @@ check_environment() {
         PY_BIN="python3"
     fi
 
-    # 3. 检查病媒监测数据集底座 (向后兼容)
-    if [ ! -f "${PROJECT_ROOT}/vector_monitoring.db" ]; then
-        if [ -f "${PROJECT_ROOT}/../Agent-CdcBuddy-DataMock/vector_monitoring.db" ]; then
-            log_info "发现 DataMock 数据集，正在复制只读底座 vector_monitoring.db..."
-            cp "${PROJECT_ROOT}/../Agent-CdcBuddy-DataMock/vector_monitoring.db" "${PROJECT_ROOT}/vector_monitoring.db"
-        elif [ -f "${PROJECT_ROOT}/../Agent-CdcBuddy-DataMock/data/vector/vector_monitoring.db" ]; then
-            log_info "发现 DataMock 数据集，正在复制只读底座 vector_monitoring.db..."
-            cp "${PROJECT_ROOT}/../Agent-CdcBuddy-DataMock/data/vector/vector_monitoring.db" "${PROJECT_ROOT}/vector_monitoring.db"
+    if [ "${RUN_MODE}" = "mock" ]; then
+        if [ ! -d "${MOCK_BUNDLE}" ]; then
+            log_info "显式生成四域完整Mock验收包：${MOCK_BUNDLE}"
+            "${PY_BIN}" scripts/seed-requirement-acceptance.py --output-dir "${MOCK_BUNDLE}"
         fi
+        node scripts/start-requirement-demo.cjs "${TARGET_DOMAIN/all/vector}" "${MOCK_BUNDLE}" --check
+        return
     fi
+
+    # 普通模式不生成、复制或替换事实来源；Mock仅由显式mock模式生成。
 
     # 4. 检查业务数据库
     if [ ! -f "${PROJECT_ROOT}/app_business.db" ]; then
@@ -149,6 +153,13 @@ is_domain_running() {
     local port
     port=$(get_domain_port "${domain}")
 
+    if [ "${RUN_MODE:-dev}" = "mock" ]; then
+        if [ -f "${pid_file}" ] && kill -0 "$(cat "${pid_file}")" 2>/dev/null; then return 0; fi
+        if lsof -ti tcp:"${port}" -sTCP:LISTEN >/dev/null 2>&1; then
+            log_error "Mock端口 ${port} 已被其他进程占用，未接管或停止该进程。"; exit 1
+        fi
+        return 1
+    fi
     local port_pid
     port_pid=$(lsof -ti tcp:"${port}" -sTCP:LISTEN 2>/dev/null | head -n 1 || true)
     if [ -n "${port_pid}" ]; then
@@ -203,6 +214,19 @@ start_single_agent() {
         return 0
     fi
 
+    if [ "${mode}" = "mock" ]; then
+        nohup node scripts/start-requirement-demo.cjs "${domain}" "${MOCK_BUNDLE}" > "${log_file}" 2>&1 < /dev/null &
+        local mock_pid=$!
+        echo "${mock_pid}" > "${pid_file}"
+        local attempt
+        for attempt in {1..30}; do
+            if ! kill -0 "${mock_pid}" 2>/dev/null; then log_error "Mock启动失败，请查看 ${log_file}"; return 1; fi
+            if grep -q "Ready in" "${log_file}"; then log_info "Mock验收已启动：http://localhost:${port}（独立来源、业务库及Worker）"; return; fi
+            sleep 1
+        done
+        kill -TERM "${mock_pid}" 2>/dev/null || true
+        log_error "Mock启动超时，请查看 ${log_file}"; return 1
+    fi
     clean_port "${port}"
 
     # 严格注入智能体所属域环境变量，驱动 next.config.ts 隔离 .next_${domain} 构建目录
@@ -284,6 +308,15 @@ stop_single_agent() {
     port=$(get_domain_port "${domain}")
 
     log_step "正在停止【${name}】(${domain})..."
+    if [ "${RUN_MODE:-dev}" = "mock" ]; then
+        if [ -f "${pid_file}" ]; then
+            local mock_pid; mock_pid=$(cat "${pid_file}")
+            kill -TERM "${mock_pid}" 2>/dev/null || true
+            local attempt; for attempt in {1..7}; do kill -0 "${mock_pid}" 2>/dev/null || break; sleep 1; done
+            rm -f "${pid_file}"
+        fi
+        log_info "Mock验收实例已停止；实测服务未受影响。"; return
+    fi
 
     if [ -f "${pid_file}" ]; then
         local pid
@@ -414,17 +447,20 @@ PARAM3="${3:-}"
 TARGET_DOMAIN="vector"
 RUN_MODE="dev"
 
-if [[ "${PARAM2}" == "dev" || "${PARAM2}" == "prod" ]]; then
+if [[ "${PARAM2}" == "dev" || "${PARAM2}" == "prod" || "${PARAM2}" == "mock" ]]; then
     TARGET_DOMAIN="vector"
     RUN_MODE="${PARAM2}"
 elif [[ -n "${PARAM2}" ]]; then
     TARGET_DOMAIN="${PARAM2}"
-    if [[ "${PARAM3}" == "dev" || "${PARAM3}" == "prod" ]]; then
+    if [[ "${PARAM3}" == "dev" || "${PARAM3}" == "prod" || "${PARAM3}" == "mock" ]]; then
         RUN_MODE="${PARAM3}"
     fi
 elif [[ "${ACTION}" == "status" ]]; then
     TARGET_DOMAIN="all"
 fi
+
+MOCK_BUNDLE="${4:-${PROJECT_ROOT}/.mock-data/requirement-demo}"
+case "${TARGET_DOMAIN}" in vector|foodborne|env|chronic|all) ;; *) log_error "未知智能体领域"; exit 1;; esac
 
 case "${ACTION}" in
     start)
@@ -444,7 +480,7 @@ case "${ACTION}" in
                 stop_single_agent "${dom}"
             done
             # 兼容老版 .server.pid
-            if [ -f "${PROJECT_ROOT}/.server.pid" ]; then
+            if [ "${RUN_MODE}" != "mock" ] && [ -f "${PROJECT_ROOT}/.server.pid" ]; then
                 kill -9 "$(cat "${PROJECT_ROOT}/.server.pid")" 2>/dev/null || true
                 rm -f "${PROJECT_ROOT}/.server.pid"
             fi
@@ -482,9 +518,12 @@ case "${ACTION}" in
         echo "=================================================================="
         echo -e "${GREEN} CDC 全域四智能体平台运维管理工具 (Agent Cluster Manager)${NC}"
         echo "=================================================================="
-        echo "用法: $0 {start|stop|restart|status|test|logs} [vector|foodborne|env|chronic|all] [dev|prod]"
+        echo "用法: $0 {start|stop|restart|status|test|logs} [vector|foodborne|env|chronic|all] [dev|prod|mock]"
         echo ""
         echo "命令示例:"
+        echo "  $0 start all mock [目录] - 显式生成或复用四域Mock验收包，启动3101—3104及Worker"
+        echo "  $0 stop all mock        - 仅停止Mock验收实例"
+        echo "  $0 status all mock      - 查看Mock实例状态；实测3001—3004保持独立"
         echo "  $0 start vector dev      - 启动病媒智能体开发服务 (Port: 3001)"
         echo "  $0 start foodborne dev   - 启动食源性智能体开发服务 (Port: 3002)"
         echo "  $0 start env dev         - 启动环境健康智能体开发服务 (Port: 3003)"

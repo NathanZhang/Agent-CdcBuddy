@@ -1,0 +1,15 @@
+RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/mock-startup.test.ts (3 tests) 7519ms
+   ✓ validates lifecycle and migrates only the isolated business database  421ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 1698ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  553ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > implemented models disclose missing genotype inputs instead of fabricating evolution  889ms
+ ✓ tests/refactor/skill-service.test.ts (10 tests) 35938ms
+   ✓ one execution service > canonical and legacy alias execute identical real species aggregates  3307ms
+   ✓ one execution service > every registered skill has a domain, schema, unique canonical ID and explicit execution state  32530ms
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  10:18:41
+   Duration  36.90s (transform 329ms, setup 0ms, collect 904ms, tests 45.16s, environment 0ms, prepare 118ms)

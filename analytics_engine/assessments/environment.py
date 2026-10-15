@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
-from .common import frame, records, result, forecast, metrics
+from .common import frame, records, result, forecast, metrics, require_rows, require_columns
 
 
 def assess(db,args):
     action=args['analysis']
     if action=='clean':
-        df=frame(db,'fact_env_raw_samples',args,'monitoring_date').sort_values('monitoring_date'); logs=[]
+        df=frame(db,'fact_env_raw_samples',args,'monitoring_date',columns=['record_id','sample_code','indicator_code','canonical_unit','raw_unit','raw_value']).sort_values('monitoring_date'); logs=[]
         for (code,unit),g in df.groupby(['indicator_code','canonical_unit']):
             converted=[]
             for _,r in g.iterrows():
@@ -18,15 +18,16 @@ def assess(db,args):
             for i,(_,r) in enumerate(g.iterrows()):logs.append({'recordId':r.record_id,'sampleCode':r.sample_code,'indicator':code,'before':None if pd.isna(r.raw_value) else r.raw_value,'beforeUnit':r.raw_unit,'after':float(filled.iloc[i]),'unit':unit,'operation':'interpolation' if np.isnan(converted[i]) else 'unit-conversion' if r.raw_unit!=unit else 'unchanged','reviewRequired':bool(np.isnan(converted[i]))})
         return result('audited-unit-linear-imputation-v1',rows=logs,originalRetained=True,completeBefore=sum(x['before'] is not None and x['before']>=0 for x in logs),completeAfter=len(logs),assumptions=['linear interpolation within indicator and unit; imputed values require review'])
     if action in ('water_risk','water_trend'):
-        df=frame(db,'fact_water_monitoring',args,'monitoring_date').sort_values('monitoring_date')
+        df=frame(db,'fact_water_monitoring',args,'monitoring_date',columns=['station_id','turbidity']+(['record_id','water_source','disinfection_method','arsenic_val','cadmium_val','lead_val'] if action=='water_risk' else [])).sort_values('monitoring_date')
         if action=='water_trend':
             models=[]
             for station,g in df.groupby('station_id'):
                 g=g.assign(period=g.monitoring_date.str[:7]).groupby('period').turbidity.mean()
                 if len(g)>=18:models.append({'stationId':station,**forecast(g.index,g.values,3)})
             if not models:raise ValueError('WATER_TREND_REQUIRES_18_MONTHS')
-            stations=frame(db,'dim_env_stations',args)
+            stations=frame(db,'dim_env_stations',args,columns=['station_id','latitude','longitude'])
             return result('water-lstm-v1',models=models,stations=records(stations),unit='NTU',mapPrecision='registered station coordinates; township labels require address verification')
+        require_rows(df,5,'饮用水模型训练与验证')
         from sklearn.ensemble import RandomForestRegressor
         # Dose model assumptions are versioned and shown; never use stored legacy risk scores as computed results.
         dose=df[['arsenic_val','cadmium_val','lead_val']].fillna(0)*2/60
@@ -40,10 +41,11 @@ def assess(db,args):
         return result('water-dose-random-forest-v1',rows=records(latest[['record_id','station_id','monitoring_date','computedCancerRisk','computedHazardQuotient','rfCancerRisk','rfHazardQuotient']]),validation=validation,features=list(X.columns),featureImportance=model.feature_importances_.tolist(),assumptions={'version':'demo-adult-dose-v1','waterLitresPerDay':2,'bodyWeightKg':60,'arsenicSlopeFactor':1.5,'arsenicRfD':.0003,'cadmiumRfD':.001,'scope':'demonstration coefficients; professional toxicology review required; RF approximates dose formula, not clinical outcomes'})
     if action=='sewage_source':
         from sklearn.cluster import KMeans
-        sewage=frame(db,'fact_sewage_monitoring',args,'monitoring_date'); network=frame(db,'fact_sewage_network',args,'monitoring_date'); stations=frame(db,'dim_env_stations',args)
+        sewage=frame(db,'fact_sewage_monitoring',args,'monitoring_date',columns=['plant_id','norovirus_copies_l']); network=frame(db,'fact_sewage_network',args,'monitoring_date',columns=['upstream_node','downstream_node','flow_m3_day','travel_hours']); stations=frame(db,'dim_env_stations',args,columns=['station_id','latitude','longitude'])
         values=sewage.groupby('plant_id').norovirus_copies_l.mean().rename('concentration').reset_index()
         values=values.merge(stations[['station_id','latitude','longitude']],left_on='plant_id',right_on='station_id',how='left')
         if values[['latitude','longitude']].isna().any().any():raise ValueError('SEWAGE_STATION_COORDINATES_REQUIRED')
+        require_rows(values,1,'污水空间分析')
         values['spatialCluster']=KMeans(n_clusters=min(3,len(values)),random_state=42,n_init=10).fit_predict(values[['latitude','longitude']])
         cutoff=float(values.concentration.quantile(.75)); high=set(values[values.concentration>=cutoff].plant_id); traces=[]
         for node in high:
@@ -55,11 +57,14 @@ def assess(db,args):
                     if edge.upstream_node not in seen:seen.add(edge.upstream_node);frontier.append(edge.upstream_node)
         return result('sewage-spatial-cluster-upstream-traversal-v1',stations=records(values),highThreshold=cutoff,traceEdges=traces,assumptions=['upstream topology identifies candidate sources, not confirmed source attribution'])
     if action in ('venue_risk','venue_grade'):
-        scores=frame(db,'fact_venue_scores',args,'inspection_date'); venues=frame(db,'fact_public_venue_inspection',args,'inspection_date')
+        scores=frame(db,'fact_venue_scores',args,'inspection_date',columns=['venue_id','city','district','management','staff','disclosure','testing','smoking','facilities','rule_version']+(['visitor_count','symptom_reports'] if action=='venue_risk' else [])); venues=frame(db,'fact_public_venue_inspection',args,'inspection_date',columns=['venue_id','city','district','venue_name']+(['chlorine_residual','coliform_detected','microclimate_score'] if action=='venue_risk' else []))
         df=scores.merge(venues,on=['venue_id','city','district'],suffixes=('','_inspection')); fields=['management','staff','disclosure','testing','smoking','facilities']
+        require_rows(df,1,'匹配场所评级')
         df['totalScore']=df[fields].mean(axis=1); df['calculatedGrade']=pd.cut(df.totalScore,[-1,60,85,101],labels=['C','B','A'],right=False).astype(str)
-        df['symptomRate']=df.symptom_reports/df.visitor_count
         if action=='venue_grade':return result('six-dimension-equal-weight-grading-v1',rows=records(df[['venue_id','venue_name',*fields,'totalScore','calculatedGrade','rule_version']]),rule={'version':'demo-equal-weight-v1','weights':[1/6]*6,'A':'>=85','B':'>=60','C':'<60'})
+        require_columns(df,['symptom_reports','visitor_count'],'场所健康关联输入')
+        if (df.visitor_count<=0).any():raise ValueError('VALID_VISITOR_DENOMINATOR_REQUIRED')
+        df['symptomRate']=df.symptom_reports/df.visitor_count
         from sklearn.linear_model import Ridge
         fields=['chlorine_residual','coliform_detected','microclimate_score','totalScore']; X=df[fields].fillna(0); split=max(2,int(len(df)*.75))
         if split>=len(df):raise ValueError('VENUE_HEALTH_MAPPING_REQUIRES_FOUR_VENUES')
@@ -67,8 +72,8 @@ def assess(db,args):
         validation=metrics(df.symptomRate.iloc[split:],p);model.fit(X,df.symptomRate);df['estimatedSymptomRate']=np.clip(model.predict(X),0,1)
         return result('venue-environment-health-ridge-v1',rows=records(df[['venue_id','venue_name',*fields,'visitor_count','symptom_reports','symptomRate','estimatedSymptomRate']]),validation=validation,coefficients=dict(zip(fields,model.coef_.tolist())),assumptions=['reported symptoms / visitors; ecological association, not causal diagnosis'])
     if action in ('exposure','heat','scenario'):
-        air=frame(db,'fact_air_climate_monitoring',args,'date').groupby('date')[['pm25','temp_max','pediatric_resp_outpatient','elderly_cardio_outpatient']].mean().reset_index()
-        activity=frame(db,'fact_env_activity',args,'monitoring_date'); df=activity.merge(air,left_on='monitoring_date',right_on='date').sort_values('date')
+        air_fields=['pm25']+(['temp_max'] if action=='heat' else ['pediatric_resp_outpatient'])
+        air=frame(db,'fact_air_climate_monitoring',args,'date',columns=air_fields).groupby('date')[air_fields].mean().reset_index()
         if action=='scenario':
             sources=frame(db,'fact_env_intervention_inputs',args,'monitoring_date'); reduction=float(args.get('reductionPercentage',50))/100
             if not 0<=reduction<=1:raise ValueError('REDUCTION_OUT_OF_RANGE')
@@ -76,6 +81,7 @@ def assess(db,args):
             if not 0<=sourceShare<=1 or not 0<=beta<=.1:raise ValueError('SCENARIO_ASSUMPTIONS_INVALID')
             delta=baseline*sourceShare*reduction; cases=float(air.pediatric_resp_outpatient.sum()); avoided=cases*(1-np.exp(-beta*delta))
             return result('explicit-emission-health-scenario-v1',sources=records(sources),baselinePm25=baseline,scenarioPm25=baseline-delta,pm25Reduction=delta,baselineVisits=cases,estimatedAvoidedVisits=float(avoided),assumptions={'sourceContribution':sourceShare,'reductionFraction':reduction,'logRelativeRiskPerUgM3':beta,'source':'user-editable demo assumptions; not fitted causal policy effect'},sensitivity=[{'sourceShare':s,'deltaPm25':baseline*s*reduction} for s in [.1,.2,.3]])
+        activity=frame(db,'fact_env_activity',args,'monitoring_date',columns=['population_group','outdoor_hours','indoor_hours','indoor_pm25']+(['cardiovascular_deaths','population','forecast_temp_24h','forecast_temp_48h','forecast_temp_72h'] if action=='heat' else [])); df=activity.merge(air,left_on='monitoring_date',right_on='date').sort_values('date')
         if df.empty:raise ValueError('MATCHED_ACTIVITY_AIR_DATA_REQUIRED')
         df['dailyExposure']=(df.pm25*df.outdoor_hours+df.indoor_pm25*df.indoor_hours)/24
         if action=='exposure':
@@ -85,7 +91,7 @@ def assess(db,args):
         from sklearn.ensemble import GradientBoostingRegressor
         # Split whole dates to avoid leakage between age groups on the same day.
         df['deathRatePer100k']=df.cardiovascular_deaths/df.population*100000
-        dates=sorted(df.date.unique()); cut=dates[int(len(dates)*.8)]; train=df.date<cut
+        dates=sorted(df.date.unique()); require_rows(dates,5,'热浪模型训练与验证'); cut=dates[int(len(dates)*.8)]; train=df.date<cut
         fields=['temp_max','pm25','dailyExposure']; model=GradientBoostingRegressor(n_estimators=60,max_depth=2,random_state=42).fit(df.loc[train,fields],df.loc[train,'deathRatePer100k'])
         validation=metrics(df.loc[~train,'deathRatePer100k'],model.predict(df.loc[~train,fields]));model.fit(df[fields],df.deathRatePer100k); forecasts=[]
         for group,g in df.groupby('population_group'):
@@ -95,10 +101,10 @@ def assess(db,args):
                 rate=max(0,float(model.predict(X)[0]));forecasts.append({'group':group,'leadHours':h,'forecastTemperature':last[f'forecast_temp_{h}h'],'deathRatePer100k':rate,'alert':bool(last[f'forecast_temp_{h}h']>=35),'advice':'减少高温时段户外活动；建立重点人群随访与异常转诊任务'})
         return result('heat-gradient-boosting-72h-v1',forecastIssuedAt=str(df.date.max()),forecasts=forecasts,validation=validation,featureImportance=model.feature_importances_.tolist(),features=fields,assumptions=['weather forecast comes from dataset; mock weather is explicitly synthetic'])
     if action in ('cross_media','river_health'):
-        df=frame(db,'fact_river_basin_monitoring',args,'monitoring_date'); cols=['water_pb','water_cd','soil_cd','crop_pb','hepatic_cancer_incidence']; corr=df[cols].corr().fillna(0)
+        df=frame(db,'fact_river_basin_monitoring',args,'monitoring_date',columns=['section_name','basin_name','water_pb','water_cd','soil_cd','crop_pb','hepatic_cancer_incidence']); cols=['water_pb','water_cd','soil_cd','crop_pb','hepatic_cancer_incidence']; corr=df[cols].corr().fillna(0)
         payload={'rows':records(df[['section_name','basin_name',*cols]]),'correlations':[{ 'from':a,'to':b,'pearson':float(corr.loc[a,b])} for a,b in [('water_cd','soil_cd'),('soil_cd','crop_pb'),('crop_pb','hepatic_cancer_incidence')]],'assumptions':['association does not establish cross-media causal transfer']}
         if action=='river_health':
-            edges=frame(db,'fact_river_adjacency',args,'monitoring_date'); g=df.groupby('section_name').hepatic_cancer_incidence.mean(); names=list(g.index); W=np.zeros((len(g),len(g)))
+            edges=frame(db,'fact_river_adjacency',args,'monitoring_date',columns=['section_a','section_b']); g=df.groupby('section_name').hepatic_cancer_incidence.mean(); names=list(g.index); W=np.zeros((len(g),len(g)))
             for _,e in edges.iterrows():
                 if e.section_a in names and e.section_b in names:i,j=names.index(e.section_a),names.index(e.section_b);W[i,j]=W[j,i]=1
             if W.sum()==0:raise ValueError('RIVER_ADJACENCY_REQUIRED')

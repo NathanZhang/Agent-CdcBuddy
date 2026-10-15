@@ -54,6 +54,19 @@ npm run build
 
 完整本地检查需要受控来源快照；CI使用独立合成fixture，保留Mock标签。工程测试、兼容回归与真实专业效果分别验收，不能相互替代。
 
+### 显式启动完整Mock验收模式
+
+```sh
+./server.sh start all mock                         # 首次生成隔离包，启动3101—3104及各域Worker
+./server.sh status all mock
+./server.sh stop all mock                          # 不影响3001—3004实测服务
+./server.sh start vector mock .mock-data/验收包目录  # 指定已有包或新目录
+```
+
+默认包为 `.mock-data/requirement-demo`。Mock模式固定使用包内四域来源、独立业务库和构建目录；不会修改默认manifest或实测库，也不受本地环境中的实测路径覆盖影响。已有包若损坏或过期会拒绝启动，请指定新目录重新生成。普通dev/prod模式不再自动从旁边的DataMock目录复制事实库。OCR仍暂缓，Iris/MUSE正式规则执行仍需另配授权引擎。
+
+模型按自身需要检查输入：种群ARIMA/LSTM不依赖气象表；气象融合GBDT需要温度和降雨。缺表、缺字段、缺测时段及样本不足均以中文说明，不生成伪造估计。54项逐项核查见[输入依赖与隔离验证](docs/reviews/2026-10-15/input-dependencies/README.md)。
+
 ### 生成可复现的 Mock 演示数据
 
 在项目根目录显式生成四域数据及配套来源、地域绑定文件。输出目录须为新目录；已有数据库拒绝覆盖，启动过程不会生成事实数据。

@@ -50,7 +50,7 @@ export function createSkillService(definitions:SkillDefinition[]){
     const ctx={...providedContext};
     let stage='EXECUTION_FAILED';let definition=catalog.get(id);
     let datasets:import('@/contracts/dataset').DatasetRef[]=[];
-    const fail=(code:string,message:string):SkillResult=>validateSkillResult({schemaVersion:'1',runId:ctx.runId,domain:ctx.domain,status:'FAILED',method:definition?.method ?? 'unregistered',datasets,payload:null,metrics:{},qualityFlags:[],error:{code,message,retryable:false}});
+    const fail=(code:string,message:string):SkillResult=>validateSkillResult({schemaVersion:'1',runId:ctx.runId,domain:ctx.domain,status:'FAILED',method:definition?.method ?? 'unregistered',datasets,payload:null,metrics:{},qualityFlags:[],error:{code,message:/no such (?:table|column)|Execution failed on sql/i.test(message)?'当前数据源缺少本项功能必需的数据表或字段，请补充对应资料，或显式切换到Mock验收模式。':message,retryable:false}});
     try{
       if(ctx.signal?.aborted)return validateSkillResult({schemaVersion:'1',runId:ctx.runId,domain:ctx.domain,status:'CANCELLED',method:definition?.method ?? 'cancelled',datasets,payload:null,metrics:{},qualityFlags:[]});
       if(!ctx.principal.domainGrants.includes(ctx.domain))return fail('FORBIDDEN_DOMAIN','Domain access denied');
@@ -63,10 +63,10 @@ export function createSkillService(definitions:SkillDefinition[]){
       if(!definition)return fail('UNKNOWN_SKILL','Unknown skill ID');
       if(definition.domain!==ctx.domain)return fail('FORBIDDEN_DOMAIN','Skill domain mismatch');
       if(definition.availability!=='available')return fail('CAPABILITY_UNAVAILABLE','This capability has not been implemented and verified');
-      datasets=['local-administrative-map-v1','verified-map-annotation-v1','vision-species-recognition-v1'].includes(definition.method)?[]:loadDatasetManifest().filter(d=>d.domain===ctx.domain);
+      datasets=['local-administrative-map-v1','verified-map-annotation-v1','vision-species-recognition-v1','sourced-vector-knowledge-v1','versioned-report-template-v1'].includes(definition.method)?[]:loadDatasetManifest().filter(d=>d.domain===ctx.domain);
       stage='INVALID_INPUT';const input=ajv.compile(definition.inputSchema);if(!input(args))return fail(stage,`Skill input rejected: ${ajv.errorsText(input.errors)}`);
       authorizeSkill(definition,args,ctx);
-      if(!['local-administrative-map-v1','verified-map-annotation-v1','persistent-evidence-workflow-v1','skill_session_manage-v1','skill_session_journal-v1','skill_catalog_manage-v1','skill_collection_manage-v1','vision-species-recognition-v1'].includes(definition.method))assertDatasetReadable(resolveDatasetLocation(ctx.domain),ctx.deploymentTier);
+      if(!['local-administrative-map-v1','verified-map-annotation-v1','persistent-evidence-workflow-v1','skill_session_manage-v1','skill_session_journal-v1','skill_catalog_manage-v1','skill_collection_manage-v1','vision-species-recognition-v1','sourced-vector-knowledge-v1','versioned-report-template-v1'].includes(definition.method))assertDatasetReadable(resolveDatasetLocation(ctx.domain),ctx.deploymentTier);
       stage='EXECUTION_FAILED';const execution=await definition.execute(args,ctx);
       stage='INVALID_OUTPUT';
       if(execution.payload!==null){const output=ajv.compile(definition.outputSchema);if(!output(execution.payload))return fail(stage,`Skill output rejected: ${ajv.errorsText(output.errors)}`);}

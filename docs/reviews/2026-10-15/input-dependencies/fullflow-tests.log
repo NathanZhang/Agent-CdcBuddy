@@ -1,0 +1,15 @@
+RUN  v3.2.4 /Users/nathanzhang/Documents/DEV/AI-CDC/Agent-CdcBuddy
+
+ ✓ tests/refactor/input-failures.test.tsx (3 tests) 24ms
+ ✓ tests/refactor/mock-startup.test.ts (3 tests) 10102ms
+   ✓ validates lifecycle and migrates only the isolated business database  429ms
+ ✓ tests/refactor/vector-analytics.test.ts (4 tests) 1487ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > forecast uses explicit cutoff and sampling method with observed provenance  684ms
+   ✓ verified vector subcapabilities via actual Skills and bounded runner > implemented models disclose missing genotype inputs instead of fabricating evolution  574ms
+ ✓ tests/refactor/requirement-full-flow.test.ts (1 test) 111982ms
+   ✓ runs every displayed recommendation, then exports reports, edits templates, syncs samples and resolves a reviewed ticket  111981ms
+
+ Test Files  4 passed (4)
+      Tests  11 passed (11)
+   Start at  10:21:49
+   Duration  113.60s (transform 750ms, setup 0ms, collect 3.52s, tests 123.60s, environment 0ms, prepare 201ms)
