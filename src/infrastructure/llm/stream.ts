@@ -28,7 +28,6 @@ export async function readLLMStream(response:Response,request:LLMRequest,onActiv
   if(choice.finish_reason){
    validateLLMFinishReason(choice.finish_reason);
    finished=true;
-   active=true;
   }
   if(active)onActivity?.();
  }};
@@ -37,8 +36,9 @@ export async function readLLMStream(response:Response,request:LLMRequest,onActiv
    const part=await reader.read();if(part.done)break;
    bytes+=part.value.byteLength;if(bytes>2*1024*1024)throw new LLMError('INVALID_LLM_RESPONSE','Response exceeds byte budget');
    try{consume(decoder.push(part.value));}catch(error){if(error instanceof LLMError)throw error;throw new LLMError('INVALID_LLM_RESPONSE','Malformed LLM stream');}
+   if(finished)break; // Completion is authoritative; do not wait for HTTP EOF.
   }
-  try{consume(decoder.finish());}catch(error){if(error instanceof LLMError)throw error;throw new LLMError('INVALID_LLM_RESPONSE','Truncated LLM stream');}
+  if(!finished)try{consume(decoder.finish());}catch(error){if(error instanceof LLMError)throw error;throw new LLMError('INVALID_LLM_RESPONSE','Truncated LLM stream');}
   if(!finished)throw new LLMError('INVALID_LLM_RESPONSE','大模型响应中断，未收到完整输出');
   return validateLLMMessage({role:'assistant',content:content||null,tool_calls:[...calls.entries()].sort(([a],[b])=>a-b).map(([,call])=>call)});
  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}

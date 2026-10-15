@@ -24,6 +24,14 @@ Web / Widget / 业务操作
 
 使用 Qwen3.8 兼容网关时，技能选择默认使用 `medium` 推理档位，覆盖模型默认的 `xhigh`。可在环境配置中设置 `SILICONFLOW_REASONING_EFFORT` 为 `low`、`medium` 或 `xhigh`；`low` 更侧重简短推理。已有工具结果的文字汇总关闭推理，`length` 截断会关闭推理并重新生成一次。档位控制推理深度，不是严格的 token 上限；网关需支持并传递该参数。修改环境配置后需重启服务；生产容器通过 `env_file` 读取配置。
 
+### LLM 长任务与超时
+
+所有业务 LLM 调用内部请求流式输出，包括写操作意图校验和图片识别。默认等待首个有效输出最多 **300 秒**，之后连续 **180 秒**没有有效输出才超时；思考、正文和原生工具调用片段均会续期，传输心跳及空片段不续期。没有默认整轮10分钟或图片识别60秒硬截止；调用方明确指定的截止时间、主动取消、Worker租约和独立工具预算继续生效。会话标题保留8秒尽力生成的例外。token、响应字节及工具轮次预算独立保留。
+
+配置 `SILICONFLOW_FIRST_OUTPUT_TIMEOUT_MS=300000`、`SILICONFLOW_IDLE_TIMEOUT_MS=180000`，修改后重启服务。供应商忽略 `stream:true` 返回完整JSON时，无法观察生成进度，使用 `SILICONFLOW_NON_STREAM_TIMEOUT_MS=300000` 限制单次完整等待（含响应头和响应体）。旧 `SILICONFLOW_ROUTER_TIMEOUT_MS` / `SILICONFLOW_TEXT2SQL_TIMEOUT_MS` 仍作为未设置新参数时的兼容值；迁移旧部署请明确设置新参数，避免继续沿用60秒。
+
+聊天工作台及图片识别界面使用SSE，每15秒发送传输心跳。`/api/agent/dispatch` 与 `/api/v1/mobile/detect-species` 支持 `Accept: text/event-stream`，通过 `finish` 事件返回最终JSON；未协商SSE的旧客户端仍返回普通JSON，长任务应使用SSE。反向代理需禁用SSE缓冲，并将读取空闲超时设置为大于15秒（建议至少60秒）；模型网关应关闭生成总时限或将其改为活动超时，首输出等待至少300秒、相邻有效输出等待至少180秒。代理或托管平台若有不可调整的总请求时限，应用侧续期无法覆盖，需使用支持长连接的部署方式。
+
 ## 当前能力与数据来源
 
 | 领域 | 默认数据来源 | 已实现的计算子集 | 主要限制 |

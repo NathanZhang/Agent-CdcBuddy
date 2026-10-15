@@ -31,6 +31,13 @@ it('legacy structured skill POST executes its bounded main dispatch without the 
  const calls=llmFixture();const result=await (await skillPost(request('/api/skills',{skillId:'skill_monitoring_data_table',args:{sql:'SELECT COUNT(*) AS n FROM fact_monitoring'}}))).json();
  expect(calls()).toBe(0);expect(result.success).toBe(true);expect(result.data.data[0].n).toBeGreaterThan(0);expect(result.agui).toHaveLength(1);
 });
+it('negotiates SSE on the formerly JSON-only dispatch endpoint',async()=>{
+ llmFixture();
+ const req=new NextRequest('http://localhost:9567/api/agent/dispatch',{method:'POST',headers:{'Content-Type':'application/json',Accept:'text/event-stream'},body:JSON.stringify({promptText:'查询总数'})});
+ const response=await http(req);expect(response.headers.get('content-type')).toContain('text/event-stream');
+ const frames=createSseDecoder().push(new Uint8Array(await response.arrayBuffer()));
+ expect(frames.find(f=>f.event==='finish')!.data).toMatchObject({success:true,status:'SUCCESS'});
+});
 it('LLM failure returns failure without a successful old view through either API',async()=>{
  vi.stubEnv('SILICONFLOW_API_KEY','');const body={promptText:'查询数据',context:{currentView:{type:'OLD_SUCCESS'}}};
  const response=await http(request('/api/agent/dispatch',body));const result=await response.json();expect(result.success).toBe(false);expect(result.status).toBe('FAILED');expect(result.skillRuns).toEqual([]);expect(result.generativeView).toBeNull();

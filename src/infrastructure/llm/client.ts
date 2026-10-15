@@ -1,11 +1,12 @@
-import { getRouterTimeoutMs } from '@/lib/config/llm-timeout';
+import { getLLMTimeouts } from '@/lib/config/llm-timeout';
 import {readLLMStream} from './stream';
 export interface LLMToolCall {id:string;type:'function';function:{name:string;arguments:string};}
 export interface LLMMessage {role:'system'|'user'|'assistant'|'tool';content:string|null;tool_calls?:LLMToolCall[];tool_call_id?:string;}
 export interface LLMStreamDelta {type:'reasoning'|'content'|'reset';text:string;}
-export interface LLMRequest {imageDataUrl?:string;phase?:'intent'|'tool-selection'|'synthesis';temperature?:number;attemptBudget?:{remaining:number};deadlineAt?:number;messages:LLMMessage[];tools?:unknown[];toolChoice?:'auto'|'none';signal?:AbortSignal;onDelta?:(delta:LLMStreamDelta)=>void;}
+export interface LLMRequest {imageDataUrl?:string;phase?:'intent'|'tool-selection'|'synthesis'|'write-intent'|'vision'|'title'|'text2sql';temperature?:number;attemptBudget?:{remaining:number};deadlineAt?:number;messages:LLMMessage[];tools?:unknown[];toolChoice?:'auto'|'none';signal?:AbortSignal;onDelta?:(delta:LLMStreamDelta)=>void;}
 export interface LLMClient {complete(request:LLMRequest):Promise<LLMMessage>;}
-export class LLMError extends Error {constructor(public code:string,message:string){super(message);}}
+export interface LLMTimeoutDetails {kind:'first-output'|'idle'|'non-stream'|'deadline';phase:string;model:string;attempts:number;timeoutMs:number;elapsedMs:number;lastOutputAt?:number;}
+export class LLMError extends Error {constructor(public code:string,message:string,public timeoutDetails?:LLMTimeoutDetails){super(message);}}
 export function validateLLMFinishReason(reason:unknown):void{
   if(reason===undefined||reason===null||reason==='stop'||reason==='tool_calls')return;
   throw new LLMError(reason==='length'?'LLM_OUTPUT_TRUNCATED':'INVALID_LLM_RESPONSE',`模型输出未完整结束 (${reason})`);
@@ -36,9 +37,11 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
     const templateThinking=!new URL(base).hostname.endsWith('.siliconflow.cn');
     // Intent recognition needs visible reasoning even though its output is JSON without tools.
     // Evidence is already available in synthesis; reserve its output budget for the answer.
-    const streaming=Boolean(request.onDelta),thinking=streaming&&(request.phase==='intent'||request.toolChoice!=='none')&&env.SILICONFLOW_ENABLE_THINKING!=='false';
-    const timeoutMs=getRouterTimeoutMs(env);
-    const phase=request.phase==='intent'?'意图识别':request.toolChoice==='none'?'结果汇总':'技能选择';
+    // Transport is always streamed, including private JSON validation and vision calls.
+    // Enabling streaming must not implicitly enable reasoning for those phases.
+    const thinking=(request.phase==='intent'||request.phase==='tool-selection'||!request.phase&&Boolean(request.onDelta)&&request.toolChoice!=='none')&&env.SILICONFLOW_ENABLE_THINKING!=='false';
+    const timeouts=getLLMTimeouts(env,request.phase==='text2sql'?'text2sql':'router');
+    const phase=request.phase ? ({intent:'意图识别','tool-selection':'技能选择',synthesis:'结果汇总','write-intent':'操作意图校验',vision:'图片识别',title:'会话标题',text2sql:'SQL生成'}[request.phase]) : request.toolChoice==='none'?'结果汇总':'技能选择';
     const started=Date.now();
     let last:unknown,outputRecovery=false,requestAttempts=0;
     for(let attempt=0;attempt<models.length;attempt++){
@@ -47,35 +50,60 @@ export function createLLMClient(options:{env?:Record<string,string|undefined>;fe
       const messages=outputRecovery?[...request.messages,{role:'user' as const,content:'上次输出达到长度上限，未完成。请根据已有上下文和真实工具结果重新生成精简完整的响应；只保留核心结论和必要限制，完整明细留在工作台，不逐行复述。需要工具时只生成完整的原生工具调用；最终答复仍严格遵守要求的 JSON 格式。'}]:request.messages;
       request.signal?.throwIfAborted();
       if(request.attemptBudget&&request.attemptBudget.remaining<=0)throw new LLMError('INTENT_REQUEST_BUDGET_EXCEEDED','地域识别请求预算已耗尽');
-      if(request.deadlineAt&&Date.now()>=request.deadlineAt)throw new LLMError('LLM_TIMEOUT','执行总时限已到');
+      if(request.deadlineAt!==undefined&&Date.now()>=request.deadlineAt)throw new LLMError('LLM_TIMEOUT','调用方指定的执行截止时间已到',{kind:'deadline',phase,model,attempts:requestAttempts,timeoutMs:0,elapsedMs:Date.now()-started});
       // Qwen3.8 defaults to xhigh; pass effort to the API and directly to compatible templates.
       const effort=attemptThinking&&templateThinking&&/qwen3\.8(?:[-/]|$)/i.test(model)?env.SILICONFLOW_REASONING_EFFORT?.trim() || 'medium':undefined;
       if(effort&&!['low','medium','xhigh'].includes(effort))throw new LLMError('LLM_UNAVAILABLE','SILICONFLOW_REASONING_EFFORT 仅支持 low、medium 或 xhigh');
       const reasoningOptions=effort?{reasoning_effort:effort}:{};
       const controller=new AbortController();
       const abort=()=>controller.abort(request.signal?.reason);request.signal?.addEventListener('abort',abort,{once:true});
-      let timedOut=false,isStream=streaming;
+      let timedOut=false,lastOutputAt:number|undefined;
+      const timeoutState:{kind:LLMTimeoutDetails['kind'];timeoutMs:number}={kind:'first-output',timeoutMs:timeouts.firstOutputMs};
+      const attemptStarted=Date.now();
       let timer:ReturnType<typeof setTimeout>;
-      // Bound the initial wait and each silent interval, not a productive stream's total duration.
-      const refreshDeadline=()=>{
+      const armDeadline=(nextKind:LLMTimeoutDetails['kind'],waitMs:number,budgetMs=waitMs)=>{
         if(controller.signal.aborted)return;
         clearTimeout(timer);
-        timer=setTimeout(()=>{timedOut=true;controller.abort(new Error('LLM timeout'));},Math.min(timeoutMs,request.deadlineAt?Math.max(1,request.deadlineAt-Date.now()):timeoutMs));
+        timeoutState.kind=nextKind;timeoutState.timeoutMs=budgetMs;
+        const remaining=request.deadlineAt===undefined?Infinity:Math.max(1,request.deadlineAt-Date.now());
+        if(remaining<=waitMs){timeoutState.kind='deadline';timeoutState.timeoutMs=remaining;}
+        timer=setTimeout(()=>{timedOut=true;controller.abort(new Error('LLM timeout'));},Math.min(waitMs,remaining));
       };
-      refreshDeadline();
+      const onActivity=()=>{lastOutputAt=Date.now();armDeadline('idle',timeouts.idleMs);};
+      armDeadline('first-output',timeouts.firstOutputMs);
       try{
         request.onDelta?.({type:'reset',text:''});
         requestAttempts++;if(request.attemptBudget)request.attemptBudget.remaining--;
-        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.imageDataUrl?messages.map((message,index)=>index===messages.map(m=>m.role).lastIndexOf('user')?{...message,content:[{type:'text',text:message.content},{type:'image_url',image_url:{url:request.imageDataUrl}}]}:message):messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),...(streaming?{stream:true}:{}),enable_thinking:attemptThinking,...reasoningOptions,...(attemptThinking&&!templateThinking?{thinking_budget:1024}:{}),...(templateThinking?{chat_template_kwargs:{enable_thinking:attemptThinking,...reasoningOptions}}:{}),max_tokens:outputRecovery||attemptThinking&&templateThinking?8192:4096,temperature:request.temperature??(request.phase==='intent'?.1:.7),top_p:0.8,top_k:20})});
+        const response=await fetcher(`${base.replace(/\/$/,'')}/chat/completions`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},signal:controller.signal,body:JSON.stringify({model,messages:request.imageDataUrl?messages.map((message,index)=>index===messages.map(m=>m.role).lastIndexOf('user')?{...message,content:[{type:'text',text:message.content},{type:'image_url',image_url:{url:request.imageDataUrl}}]}:message):messages,...(request.tools?.length?{tools:request.tools}:{}),...(request.toolChoice||request.tools?.length?{tool_choice:request.toolChoice ?? 'auto'}:{}),...(request.toolChoice==='none'?{response_format:{type:'json_object'}}:{}),stream:true,enable_thinking:attemptThinking,...reasoningOptions,...(attemptThinking&&!templateThinking?{thinking_budget:1024}:{}),...(templateThinking?{chat_template_kwargs:{enable_thinking:attemptThinking,...reasoningOptions}}:{}),max_tokens:outputRecovery||attemptThinking&&templateThinking?8192:4096,temperature:request.temperature??(request.phase==='intent'?.1:.7),top_p:0.8,top_k:20})});
         if(!response.ok){await response.body?.cancel();if(response.status!==429 && response.status<500)throw new LLMError('LLM_REJECTED',`大模型服务拒绝请求 (${response.status})`);throw new Error(`LLM HTTP ${response.status}`);}
-        isStream=Boolean(response.headers.get('content-type')?.includes('text/event-stream'));
-        if(isStream)return await readLLMStream(response,request,refreshDeadline);
+        if(response.headers.get('content-type')?.includes('text/event-stream')){
+          const message=await readLLMStream(response,request,onActivity);request.signal?.throwIfAborted();return message;
+        }
+        // A provider ignoring stream:true exposes no token progress. Bound its entire
+        // attempt (including headers and body), never renew on arbitrary JSON bytes.
+        const nonStreamRemaining=timeouts.nonStreamMs-(Date.now()-attemptStarted);
+        armDeadline('non-stream',Math.max(1,nonStreamRemaining),timeouts.nonStreamMs);
+        if(nonStreamRemaining<=0){
+          timedOut=true;controller.abort(new Error('LLM timeout'));
+          await response.body?.cancel().catch(()=>{});throw controller.signal.reason;
+        }
         const data=JSON.parse(await boundedText(response));validateLLMFinishReason(data.choices?.[0]?.finish_reason);const message=validateLLMMessage(data.choices?.[0]?.message);
+        request.signal?.throwIfAborted();
         if(typeof data.choices?.[0]?.message?.reasoning_content==='string')request.onDelta?.({type:'reasoning',text:data.choices[0].message.reasoning_content});
         if(message.content)request.onDelta?.({type:'content',text:message.content});return message;
       }catch(error){request.signal?.throwIfAborted();
         if(error instanceof LLMError&&error.code==='LLM_OUTPUT_TRUNCATED'&&!outputRecovery){outputRecovery=true;attempt--;continue;}
-        if(timedOut){last=new LLMError('LLM_TIMEOUT',`大模型请求超时：${phase}阶段，模型 ${model}，${isStream?`连续 ${timeoutMs} ms 未收到有效输出`:`单次上限 ${timeoutMs} ms`}，已尝试 ${requestAttempts} 次，累计等待 ${((Date.now()-started)/1000).toFixed(1)} 秒。请稍后重试。`);}else{if(error instanceof LLMError)throw error;last=error;}}
+        if(timedOut){
+          const {kind,timeoutMs}=timeoutState;
+          const elapsedMs=Date.now()-started;
+          const reason=kind==='idle'?`连续 ${timeouts.idleMs} ms 未收到有效输出`:kind==='first-output'?`等待首个有效输出超过 ${timeouts.firstOutputMs} ms`:kind==='non-stream'?`供应商返回非流式响应，单次上限 ${timeouts.nonStreamMs} ms`:'调用方指定的执行截止时间已到';
+          const failure=new LLMError('LLM_TIMEOUT',`大模型请求超时：${phase}阶段，模型 ${model}，${reason}，已尝试 ${requestAttempts} 次，累计等待 ${(elapsedMs/1000).toFixed(1)} 秒${lastOutputAt===undefined?'':`，距最后有效输出 ${((Date.now()-lastOutputAt)/1000).toFixed(1)} 秒`}。请稍后重试。`,{kind,phase,model,attempts:requestAttempts,timeoutMs,elapsedMs,...(lastOutputAt===undefined?{}:{lastOutputAt})});
+          // Log each failed attempt, including one hidden by a successful retry.
+          // Diagnostics contain no prompts, image pixels, tool arguments or credentials.
+          last=failure;
+          console.warn('LLM_TIMEOUT',JSON.stringify(failure.timeoutDetails));
+          if(kind==='deadline')throw last;
+        }else{if(error instanceof LLMError)throw error;last=error;}}
       finally{clearTimeout(timer!);request.signal?.removeEventListener('abort',abort);}
     }
     if(last instanceof LLMError)throw last;

@@ -55,7 +55,7 @@ function controlledDeadline(){
 
 it.each(['deadline','caller','caller-then-deadline','deadline-then-caller'] as const)('keeps the first abort cause and the correct partial outputs: %s',async cause=>{
  const expire=controlledDeadline(),caller=new AbortController();
- const ctx=createDevelopmentContext('vector');ctx.signal=caller.signal;
+ const ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};ctx.signal=caller.signal;
  const run=agent(request=>{
   if(cause.startsWith('caller'))caller.abort();else expire();
   if(cause==='caller-then-deadline')expire();
@@ -85,7 +85,7 @@ it.each(['deadline','caller','caller-then-deadline','deadline-then-caller'] as c
 
 it('does not reuse an old view when the deadline expires before any skill executes',async()=>{
  const expire=controlledDeadline();expire();
- let calls=0;const ctx=createDevelopmentContext('vector');
+ let calls=0;const ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};
  const run=createMainAgent({llm:{complete:async()=>{calls++;throw Error('Must not reach the model');}},listSkills:listSkillDefinitions,executeSkill});
  const turn=await dispatchService.collectDispatch(run({...input,viewContext:{type:'OLD_SUCCESS'}},ctx));
  expect(turn).toMatchObject({status:'FAILED',error:{code:'EXECUTION_TIMEOUT'},skillRuns:[],agui:[]});
@@ -94,7 +94,7 @@ it('does not reuse an old view when the deadline expires before any skill execut
 });
 
 it('keeps the base map when the deadline expires before the business tools start',async()=>{
- const expire=controlledDeadline(),ctx=createDevelopmentContext('vector');
+ const expire=controlledDeadline(),ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};
  const run=agent(undefined,async(id,args,context)=>{
   const result=await executeSkill(id,args,context);
   if(id==='skill_map_display')expire();return result;
@@ -106,7 +106,7 @@ it('keeps the base map when the deadline expires before the business tools start
 });
 
 it('keeps completed outputs while excluding the tool interrupted by the deadline',async()=>{
- const expire=controlledDeadline(),ctx=createDevelopmentContext('vector');
+ const expire=controlledDeadline(),ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};
  const run=agent(undefined,async(id,args,context)=>{
   if(context.callId==='chart')expire();return executeSkill(id,args,context);
  });
@@ -118,7 +118,7 @@ it('keeps completed outputs while excluding the tool interrupted by the deadline
 });
 
 it('does not restore denied data when a later summary hits the deadline',async()=>{
- const expire=controlledDeadline(),ctx=createDevelopmentContext('vector');
+ const expire=controlledDeadline(),ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};
  ctx.principal={...ctx.principal,role:'CITY_EXPERT',jurisdiction:{city:'郑州市'}};
  const run=createMainAgent({listSkills:listSkillDefinitions,executeSkill,llm:{complete:async request=>{
   if(request.toolChoice==='auto')return {role:'assistant',content:null,tool_calls:[
@@ -158,10 +158,10 @@ it('preserves the real map and chart through the SSE route and workbench when a 
 });
 
 it('restores retained map and chart snapshots from an existing session after a timeout',async()=>{
- const ctx=createDevelopmentContext('vector');
+ const ctx={...createDevelopmentContext('vector'),deadlineAt:Date.now()+600000};
  const first=await dispatchService.collectDispatch(agent()(input,ctx));
  const expire=controlledDeadline();
- const nextCtx={...ctx,runId:crypto.randomUUID()};
+ const nextCtx={...ctx,runId:crypto.randomUUID(),deadlineAt:Date.now()+600000};
  const second=await dispatchService.collectDispatch(agent(request=>{expire();request.signal!.throwIfAborted();throw Error('Expected deadline');})({...input,sessionRef:first.session},nextCtx));
  expect(second).toMatchObject({status:'FAILED',session:{id:first.session!.id},error:{code:'EXECUTION_TIMEOUT'}});
  const result=await executeSkill('skill_session_manage',{action:'read',sessionId:first.session!.id},{...nextCtx,signal:undefined});

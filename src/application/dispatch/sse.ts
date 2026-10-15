@@ -18,3 +18,18 @@ export function createSseDecoder(options:{maxFrameBytes?:number}={}){
   };
   return {push(bytes:Uint8Array){append(decoder.decode(bytes,{stream:true}));return parse();},finish(){append(decoder.decode());const frames=parse();if(buffer.trim())throw new Error('Truncated SSE frame');return frames;}};
 }
+
+/** Read a single terminal JSON result while ignoring transport heartbeat comments. */
+export async function readSseResult<T>(response:Response):Promise<T>{
+  if(!response.body)throw new Error('服务响应缺少数据流');
+  const reader=response.body.getReader(),decoder=createSseDecoder();
+  try{
+    while(true){
+      const part=await reader.read();
+      const frames=part.done?decoder.finish():decoder.push(part.value);
+      const result=frames.find(frame=>frame.event==='finish');
+      if(result)return result.data as T;
+      if(part.done)throw new Error('服务响应中断，未收到完整结果');
+    }
+  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+}

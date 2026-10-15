@@ -39,7 +39,7 @@ it('retries only after a full idle window since the last output, and still times
  await vi.advanceTimersByTimeAsync(59999);expect(source.fetcher).toHaveBeenCalledTimes(1);
  await vi.advanceTimersByTimeAsync(1);expect(source.fetcher).toHaveBeenCalledTimes(2);
  await vi.advanceTimersByTimeAsync(60000);
- expect(await outcome).toMatchObject({code:'LLM_TIMEOUT',message:expect.stringContaining('连续 60000 ms 未收到有效输出')});expect(vi.getTimerCount()).toBe(0);
+ expect(await outcome).toMatchObject({code:'LLM_TIMEOUT',timeoutDetails:{kind:'first-output',timeoutMs:60000}});expect(vi.getTimerCount()).toBe(0);
 });
 
 it('heartbeat comments and empty deltas cannot keep a stuck model alive',async()=>{

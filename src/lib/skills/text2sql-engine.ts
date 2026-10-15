@@ -1,5 +1,5 @@
 import { queryDomainSql } from '../db/sqlite-provider';
-import { getText2SqlTimeoutMs } from '../config/llm-timeout';
+import { createLLMClient } from '@/infrastructure/llm/client';
 import type { AgentDomainType } from '../config/agent-profile';
 
 // ======================== 各智能体多维时空数据库 Schema 定义 ========================
@@ -515,10 +515,6 @@ LIMIT 200;
 
   // 3. 尝试通过 SiliconFlow / LLM 生成高质量 SQL
   try {
-    const apiKey = process.env.SILICONFLOW_API_KEY || 'missing-siliconflow-api-key';
-    const baseURL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1';
-    const modelName = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3.6-27B';
-
     let schemaPrompt = CDC_VECTOR_SCHEMA;
     let domainDesc = '病媒时空监测数据库';
     if (domain === 'chronic') {
@@ -544,39 +540,22 @@ LIMIT 200;
 ${schemaPrompt}
 `;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), getText2SqlTimeoutMs());
-
-    const response = await fetch(`${baseURL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: modelName,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `用户查询需求: "${userQuery}"` }
-        ],
-        temperature: 0.1
-      }),
-      signal: controller.signal
+    const response = await createLLMClient().complete({
+      phase: 'text2sql',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `用户查询需求: "${userQuery}"` }
+      ],
+      temperature: 0.1,
     });
-
-    clearTimeout(timeoutId);
-
-    if (response.ok) {
-      const resJson = await response.json();
-      const rawContent = resJson.choices?.[0]?.message?.content || '';
-      const sqlMatch = rawContent.match(/```sql\s*([\s\S]*?)\s*```/i);
-      if (sqlMatch) {
-        const candidateSql = sqlMatch[1].trim();
-        // 简单语法校验
-        if (candidateSql.toLowerCase().startsWith('select')) {
-          generatedSql = candidateSql;
-          explanation = `由 AI 大模型基于【${domainDesc}】自然语言意图编译生成`;
-        }
+    const rawContent = response.content || '';
+    const sqlMatch = rawContent.match(/```sql\s*([\s\S]*?)\s*```/i);
+    if (sqlMatch) {
+      const candidateSql = sqlMatch[1].trim();
+      // 简单语法校验
+      if (candidateSql.toLowerCase().startsWith('select')) {
+        generatedSql = candidateSql;
+        explanation = `由 AI 大模型基于【${domainDesc}】自然语言意图编译生成`;
       }
     }
   } catch (err) {

@@ -1,6 +1,7 @@
 'use client';
 import React,{useState,useRef,useEffect} from 'react';
 import {authHeaders} from '@/infrastructure/auth/client';
+import {readSseResult} from '@/application/dispatch/sse';
 import {useFunctionalInteraction} from '@/features/workbench/use-workbench-controller';
 interface Recognition {recognitionId:string;speciesName:string|null;category:string|null;confidence:number|null;reason:string;}
 export const MobileSimulationModal:React.FC<{data?:{inputSchema?:any;defaults?:{city?:string;district?:string}}}>=({data})=>{
@@ -19,8 +20,8 @@ export const MobileSimulationModal:React.FC<{data?:{inputSchema?:any;defaults?:{
   try{
    const dataUrl=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('无法读取图片'));reader.readAsDataURL(file);});
    if(controller.signal.aborted)return;setPreview(dataUrl);
-   const response=await fetch('/api/v1/mobile/detect-species',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json'},body:JSON.stringify({imageDataUrl:dataUrl}),signal:controller.signal});
-   const body=await response.json();if(!response.ok||!body.success)throw new Error(typeof body.error==='string'?body.error:body.error?.message??'图片识别失败');
+   const response=await fetch('/api/v1/mobile/detect-species',{method:'POST',headers:{...await authHeaders(),'Content-Type':'application/json',Accept:'text/event-stream'},body:JSON.stringify({imageDataUrl:dataUrl}),signal:controller.signal});
+   const body=response.headers.get('content-type')?.includes('text/event-stream')?await readSseResult<{success:boolean;data:Recognition;error?:string|{message:string}}>(response):await response.json();if(!response.ok||!body.success)throw new Error(typeof body.error==='string'?body.error:body.error?.message??'图片识别失败');
    if(controller.signal.aborted)return;
    setRecognition(body.data);
    if(body.data.speciesName)setRecord(previous=>({...previous,speciesName:body.data.speciesName,category:body.data.category}));

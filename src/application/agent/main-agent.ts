@@ -29,9 +29,9 @@ function stableInput(value:any):string{return JSON.stringify(value,(_key,item)=>
 class TurnError extends Error {constructor(public code:string,message:string){super(message);}}
 export function createMainAgent(dependencies:Dependencies){
   return async function* run(interaction:AgentInteraction,ctx:ExecutionContext):AsyncIterable<RunEvent>{
-    const deadlineAt=ctx.deadlineAt??Date.now()+600000;
-    const deadlineSignal=AbortSignal.timeout(Math.max(1,deadlineAt-Date.now()));
-    ctx={...ctx,userInput:interaction.userInput,deadlineAt,signal:AbortSignal.any([...(ctx.signal?[ctx.signal]:[]),deadlineSignal])};
+    // Only an explicit caller deadline may cap a productive turn's total duration.
+    const deadlineSignal=ctx.deadlineAt===undefined?undefined:AbortSignal.timeout(Math.max(1,ctx.deadlineAt-Date.now()));
+    ctx={...ctx,userInput:interaction.userInput,...(deadlineSignal?{signal:AbortSignal.any([...(ctx.signal?[ctx.signal]:[]),deadlineSignal])}:{})};
     let regionTurn:RegionTurn|undefined,mapComposition:MapComposition|undefined;const outcomes:OutputOutcome[]=[];
     let seq=0;const event=(type:RunEvent['type'],data:Record<string,any>):RunEvent=>({version:'1',runId:ctx.runId,seq:++seq,type,data});
     const skillRuns:SkillRun[]=[];const agui:AguiResult[]=[];let replyText='';
@@ -163,7 +163,7 @@ export function createMainAgent(dependencies:Dependencies){
         const completionMessages=needsTools?[...messages,{role:'user' as const,content:'当前为工具规划执行阶段。请使用原生tool_calls调用本轮尚未完成的分析/查询/报告/任务技能；不要返回mode=continue（那只用于无工具汇总阶段）。已批准范围由服务端绑定，优先使用能直接满足业务目标的领域技能。底图成功不代表业务数据图层、统计、模型或任务完成。'}]:answerEvidence.requiresValidation?[...messages,{role:'user' as const,content:PROGRAMMATIC_ANALYSIS_INSTRUCTION+'\n'+ANSWER_EVIDENCE_INSTRUCTION+`\nanswerEvidence=${JSON.stringify(modelEvidence(answerEvidence))}\n最终答复只写简短的定性研判、建议和限制（约300字），工作台已经显示明细。不写数字编号、日期、公式、英文版本或中文数量；若需要关键量值，最多引用三条{{evidence:证据id}}，每条独立一个列表项，不在引用前后重复字段或数量。未完成用户要求的动作时先mode=continue，不能直接宣称全部完成。${evidenceCorrections?"\n当前是修正轮。必须删除上次未绑定的数字片段："+answerDiagnostics.at(-1)?.message+"；只写不含数值的定性研判，必要数值仅用evidence引用。":""}`}]:messages;
         const reasoningBefore=reasoningText;let rawContent='',preview='',roundReasoning='',reasoningStarted=0;
         try{
-          const stream=streamCompletion(dependencies.llm,{messages:completionMessages,temperature:.2,...(needsTools?{tools}:{}),toolChoice:needsTools?'auto':'none',signal:ctx.signal});
+          const stream=streamCompletion(dependencies.llm,{messages:completionMessages,phase:needsTools?'tool-selection':'synthesis',temperature:.2,...(needsTools?{tools}:{}),toolChoice:needsTools?'auto':'none',signal:ctx.signal,deadlineAt:ctx.deadlineAt});
           while(true){
             const next=await stream.next();ctx.signal?.throwIfAborted();
             if(next.done){choice=validateLLMMessage(next.value);break;}
@@ -261,7 +261,7 @@ export function createMainAgent(dependencies:Dependencies){
       throw new TurnError('TOOL_BUDGET_EXCEEDED','主线 Agent 轮次预算已耗尽');
     }catch(error){
       // AbortSignal.any keeps the first cause, even if the other signal aborts later.
-      const timedOut=deadlineSignal.aborted&&ctx.signal?.reason===deadlineSignal.reason;
+      const timedOut=deadlineSignal?.aborted&&ctx.signal?.reason===deadlineSignal.reason;
       const cancelled=ctx.signal?.aborted&&!timedOut;
       const code=timedOut?'EXECUTION_TIMEOUT':cancelled?'CANCELLED':error instanceof LLMError||error instanceof TurnError||error instanceof IntentError||error instanceof RegionTurnError||error instanceof AuthorizationError?error.code:'AGENT_FAILED';
       const message=timedOut?'执行超时：本轮执行总时限已到':cancelled?'操作已取消':error instanceof Error?error.message:'智能体执行失败';

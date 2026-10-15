@@ -11,6 +11,7 @@ import {withBusinessDb} from '@/infrastructure/db/business-store';
 import {parseSpeciesRecognition,validateImage,readRecognition} from '@/application/mobile/species-recognition';
 import {assertResultSources} from '@/infrastructure/db/dataset-policy';
 import {loadDatasetManifest} from '@/infrastructure/db/dataset-manifest';
+import {readSseResult} from '@/application/dispatch/sse';
 const directory=mkdtempSync(join(tmpdir(),'cdc-vision-')),bundle=join(directory,'bundle');
 // A real PNG pixel is only a transport fixture; the mocked result is not recognition evidence.
 const imageDataUrl='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aX1cAAAAASUVORK5CYII=';
@@ -39,6 +40,44 @@ it('sends actual image pixels to the configured vision model, persists provenanc
  expect(()=>readRecognition(body.data.recognitionId,{...ctx,principal:{...ctx.principal,organizationId:'other'}})).toThrow(/INVALID_RECOGNITION/);
  withBusinessDb(db=>db.prepare('UPDATE biz_species_recognitions SET expires_at=0 WHERE recognition_id=?').run(body.data.recognitionId));
  expect(()=>readRecognition(body.data.recognitionId,ctx)).toThrow(/INVALID_RECOGNITION/);
+});
+
+it('streams a vision request beyond 60s with transport heartbeats and persists only its final result',async()=>{
+ vi.useFakeTimers();
+ try{
+  let wire!:ReadableStreamDefaultController<Uint8Array>;let upstreamSignal!:AbortSignal;
+  vi.stubGlobal('fetch',async(_url:any,init:any)=>{
+   expect(JSON.parse(init.body)).toMatchObject({stream:true,enable_thinking:false});upstreamSignal=init.signal;
+   return new Response(new ReadableStream<Uint8Array>({start(controller){wire=controller;init.signal.addEventListener('abort',()=>controller.error(init.signal.reason),{once:true});}}),{headers:{'Content-Type':'text/event-stream'}});
+  });
+  const before=withBusinessDb(db=>(db.prepare('SELECT COUNT(*) n FROM biz_species_recognitions').get() as any).n);
+  const response=await POST(new NextRequest('http://localhost/api/v1/mobile/detect-species',{method:'POST',headers:{'content-type':'application/json',Accept:'text/event-stream'},body:JSON.stringify({imageDataUrl})}));
+  expect(response.headers.get('content-type')).toContain('text/event-stream');
+  const reader=response.body!.getReader();expect(new TextDecoder().decode((await reader.read()).value)).toContain(': connected');reader.releaseLock();
+  const outcome=readSseResult<any>(response);
+  await vi.advanceTimersByTimeAsync(120000);expect(upstreamSignal.aborted).toBe(false);
+  wire.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({choices:[{delta:{reasoning_content:'正在检查形态'},finish_reason:null}]})}\n\n`));
+  await vi.advanceTimersByTimeAsync(170000);expect(upstreamSignal.aborted).toBe(false);
+  expect(withBusinessDb(db=>(db.prepare('SELECT COUNT(*) n FROM biz_species_recognitions').get() as any).n)).toBe(before);
+  wire.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({choices:[{delta:{content:JSON.stringify(candidate)},finish_reason:'stop'}]})}\n\n`));
+  expect(await outcome).toMatchObject({success:true,data:{speciesName:candidate.speciesName,recognitionId:expect.any(String)}});
+  expect(withBusinessDb(db=>(db.prepare('SELECT COUNT(*) n FROM biz_species_recognitions').get() as any).n)).toBe(before+1);
+  expect(vi.getTimerCount()).toBe(0);
+ }finally{vi.useRealTimers();}
+});
+
+it.each([false,true])('propagates caller cancellation to vision generation for SSE=%s without saving a recognition',async sse=>{
+ let upstreamSignal!:AbortSignal;
+ vi.stubGlobal('fetch',async(_url:any,init:any)=>{
+  upstreamSignal=init.signal;
+  return new Response(new ReadableStream({start(controller){init.signal.addEventListener('abort',()=>controller.error(init.signal.reason),{once:true});}}),{headers:{'Content-Type':'text/event-stream'}});
+ });
+ const before=withBusinessDb(db=>(db.prepare('SELECT COUNT(*) n FROM biz_species_recognitions').get() as any).n),caller=new AbortController();
+ const pending=POST(new NextRequest('http://localhost/api/v1/mobile/detect-species',{method:'POST',headers:{'content-type':'application/json',...(sse?{Accept:'text/event-stream'}:{})},body:JSON.stringify({imageDataUrl}),signal:caller.signal}));
+ await vi.waitFor(()=>expect(upstreamSignal).toBeDefined());caller.abort();
+ const response=await pending;await response.text();
+ expect(upstreamSignal.aborted).toBe(true);
+ expect(withBusinessDb(db=>(db.prepare('SELECT COUNT(*) n FROM biz_species_recognitions').get() as any).n)).toBe(before);
 });
 it('does not call the provider or save recognition for malformed images or bad model output',async()=>{
  const fetcher=vi.fn(async()=>Response.json({choices:[{message:{role:'assistant',content:'{"speciesName":"invented","confidence":2}'}}]}));vi.stubGlobal('fetch',fetcher);
