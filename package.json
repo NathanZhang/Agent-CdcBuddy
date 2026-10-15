@@ -1,6 +1,6 @@
 {
   "name": "agent-cdc-buddy",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",

@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$ImageName = 'agent-cdcbuddy:2.1.0'
+    [string]$ImageName = 'agent-cdcbuddy:2.1.2'
 )
 
 $ErrorActionPreference = 'Stop'

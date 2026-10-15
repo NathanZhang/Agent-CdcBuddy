@@ -13,7 +13,7 @@ function Get-DeploymentConfig {
     $config = [ordered]@{
         RemoteHost   = 'root@39.106.143.253'
         RemotePath   = '/data/Agent-CdcBuddy'
-        ImageName      = 'agent-cdcbuddy:2.1.0'
+        ImageName      = 'agent-cdcbuddy:2.1.2'
         VectorPort     = 32112
         FoodbornePort  = 32113
         EnvPort        = 32114
@@ -22,7 +22,7 @@ function Get-DeploymentConfig {
         FoodborneOrigin = ''
         EnvOrigin      = ''
         ChronicOrigin  = ''
-        TarPath        = '.deploy-artifacts/agent-cdcbuddy-2.1.0-linux-amd64.tar'
+        TarPath        = '.deploy-artifacts/agent-cdcbuddy-2.1.2-linux-amd64.tar'
     }
 
     if (Test-Path -LiteralPath $ConfigPath -PathType Leaf) {
