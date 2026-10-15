@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="w-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-sky-500/20 px-6 py-3 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-sm dark:shadow-xl transition-colors">
+    <header className="w-full shrink-0 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-sky-500/20 px-6 py-3 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-sm dark:shadow-xl transition-colors">
       {/* 品牌与标题 */}
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-500 dark:from-sky-600 dark:to-cyan-400 flex items-center justify-center text-white shadow-md shadow-sky-500/30">

@@ -6,20 +6,27 @@ import {ChevronDown,ChevronRight,BrainCircuit,Copy,Check} from 'lucide-react';
 interface ThinkingProcessCardProps {
  reasoningText:string;
  isStreaming?:boolean;
+ isPending?:boolean;
  durationMs?:number;
  defaultExpanded?:boolean;
  interrupted?:boolean;
  className?:string;
 }
 
-export const ThinkingProcessCard:React.FC<ThinkingProcessCardProps>=({reasoningText,isStreaming=false,durationMs,defaultExpanded=false,interrupted=false,className=''})=>{
+export const ThinkingProcessCard:React.FC<ThinkingProcessCardProps>=({reasoningText,isStreaming=false,isPending=isStreaming,durationMs,defaultExpanded=false,interrupted=false,className=''})=>{
  const [isExpanded,setIsExpanded]=useState(isStreaming||defaultExpanded);
  const [hasCopied,setHasCopied]=useState(false);
  const scrollContainerRef=useRef<HTMLDivElement>(null);
  const userInteractedRef=useRef(false);
+ const wasPendingRef=useRef(isPending);
  const copyTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
  useEffect(()=>()=>clearTimeout(copyTimer.current),[]);
- useEffect(()=>{if(isStreaming&&!userInteractedRef.current)setIsExpanded(true);},[isStreaming]);
+ useEffect(()=>{
+  if(isPending&&!wasPendingRef.current)userInteractedRef.current=false;
+  if(!isPending&&wasPendingRef.current)setIsExpanded(false);
+  else if(isStreaming&&!userInteractedRef.current)setIsExpanded(true);
+  wasPendingRef.current=isPending;
+ },[isPending,isStreaming]);
  // Follow every update, including the final chunk and reopening a collapsed card.
  useEffect(()=>{
   const container=scrollContainerRef.current;

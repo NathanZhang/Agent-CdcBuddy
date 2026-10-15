@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen antialiased selection:bg-sky-500 selection:text-white transition-colors duration-200">
+      <body className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-sky-500 selection:text-white transition-colors duration-200">
         <script dangerouslySetInnerHTML={{ __html: `window.__CDC_RUNTIME_PROFILE__=${JSON.stringify(getRuntimeProfile()).replaceAll('<','\\u003c')};` }} />
         <Providers>
           {children}
