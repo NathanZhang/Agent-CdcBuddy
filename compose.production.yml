@@ -1,6 +1,6 @@
 services:
   vector-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-vector
     restart: unless-stopped
     user: "1000:1000"
@@ -41,7 +41,7 @@ services:
       retries: 6
 
   foodborne-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-foodborne
     restart: unless-stopped
     user: "1000:1000"
@@ -73,7 +73,7 @@ services:
     healthcheck: *agent-healthcheck
 
   env-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-env
     restart: unless-stopped
     user: "1000:1000"
@@ -105,7 +105,7 @@ services:
     healthcheck: *agent-healthcheck
 
   chronic-agent:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-chronic
     restart: unless-stopped
     user: "1000:1000"
@@ -137,7 +137,7 @@ services:
     healthcheck: *agent-healthcheck
 
   vector-worker:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-vector-worker
     restart: unless-stopped
     user: "1000:1000"
@@ -165,7 +165,7 @@ services:
       disable: true
 
   foodborne-worker:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-foodborne-worker
     restart: unless-stopped
     user: "1000:1000"
@@ -193,7 +193,7 @@ services:
       disable: true
 
   env-worker:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-env-worker
     restart: unless-stopped
     user: "1000:1000"
@@ -221,7 +221,7 @@ services:
       disable: true
 
   chronic-worker:
-    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.2}
+    image: ${APP_IMAGE:-agent-cdcbuddy:2.1.3}
     container_name: agent-cdcbuddy-chronic-worker
     restart: unless-stopped
     user: "1000:1000"

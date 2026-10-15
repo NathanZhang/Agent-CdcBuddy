@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-15",
+  "scope": "四智能体 Skills 集市目录评估、分类、同源场景及动态数量；仅隔离模拟数据验收",
+  "catalog": [
+    {
+      "domain": "vector",
+      "registeredEntries": 44,
+      "business": 15,
+      "general": 5,
+      "listed": 20,
+      "unlisted": 24
+    },
+    {
+      "domain": "foodborne",
+      "registeredEntries": 24,
+      "business": 6,
+      "general": 5,
+      "listed": 11,
+      "unlisted": 13
+    },
+    {
+      "domain": "env",
+      "registeredEntries": 28,
+      "business": 11,
+      "general": 5,
+      "listed": 16,
+      "unlisted": 12
+    },
+    {
+      "domain": "chronic",
+      "registeredEntries": 25,
+      "business": 8,
+      "general": 5,
+      "listed": 13,
+      "unlisted": 12
+    }
+  ],
+  "customPolicy": "按所属领域及当前身份过滤；自定义均归业务场景技能；新增、编辑、删除后刷新同一目录。",
+  "cleanupPolicy": "下架占位、重复入口和内部步骤；保留历史兼容调用及用户数据。catalog-audit.json 含逐项理由。",
+  "sharedCapabilities": [
+    "Text2SQL 查询与图表",
+    "行政区划地图",
+    "地图区域标注",
+    "报告模板管理",
+    "ARIMA 基础时序预测"
+  ],
+  "scenarioSource": [
+    "config/requirement-scenarios.json",
+    "config/supplemental-scenarios.json"
+  ],
+  "verification": {
+    "refactor": {
+      "passed": 659,
+      "skipped": 2
+    },
+    "finalFocusedRegression": {
+      "passed": 46,
+      "files": 4
+    },
+    "scientific": {
+      "passed": 74
+    },
+    "requirementContract": {
+      "passed": 54,
+      "total": 54,
+      "modelMode": "contract replacement; real computation and result rendering"
+    },
+    "lint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "diffCheck": "passed",
+    "browser": [
+      "四智能体导航、抽屉总数及分类数一致",
+      "自定义新增后病媒20→21，业务15→16，通用保持5",
+      "自定义示例实际返回83行查询表和趋势图",
+      "清理本次验收技能后21→20"
+    ],
+    "scientificWorkflowNodes": {
+      "status": "SUCCEEDED",
+      "succeeded": 7,
+      "total": 7
+    },
+    "supplementalLiveModel": {
+      "passed": 23,
+      "total": 23,
+      "failed": []
+    }
+  },
+  "dataBoundary": {
+    "source": "isolated synthetic Mock bundle",
+    "directory": ".mock-data/skills-marketplace-20261015",
+    "externalModelAuthorization": "用户明确授权仅发送隔离模拟验收数据到项目已配置模型服务",
+    "productionRecordsUsed": false
+  },
+  "limitations": [
+    "模拟工程验收不代表专业模型效果验收。",
+    "原54条业务场景使用契约模型替身；补充场景真实模型结果见 live-*.json。",
+    "原有运行服务未重启；代码需重新构建/启动后应用。"
+  ],
+  "evidence": [
+    "catalog-audit.json",
+    "requirement-contract.json",
+    "workflow-execution.json",
+    "retry-history.json",
+    "general-skills.jpg",
+    "custom-skill-result.jpg",
+    "live-scenarios.json"
+  ]
+}

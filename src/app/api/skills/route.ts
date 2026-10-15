@@ -1,3 +1,4 @@
+import {buildMarketplaceSkills} from '@/lib/skills/marketplace';
 import { operationResponse } from '@/application/agent/operation-http';
 import { NextRequest, NextResponse } from 'next/server';
 import { listSkillDefinitions } from '@/application/skills/skill-service';
@@ -11,7 +12,8 @@ export async function GET(req:NextRequest){
  return operationResponse(req,{type:'catalog.list'},'SKILL_CATALOG',payload=>{
    const standardSkills=payload.standardSkills.map((definition:any)=>({...definition,visibility:'public',isCustom:false}));
    const customSkills=payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,visualization:s.visualization_json?JSON.parse(s.visualization_json):undefined,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? [],isCustom:true}));
-   return {standardSkills,customSkills,skills:[...standardSkills,...customSkills],total:standardSkills.length+customSkills.length};
+   const skills=buildMarketplaceSkills(getServerDomain(),standardSkills,customSkills);
+   return {standardSkills,customSkills,skills,total:skills.length};
  });
 }
 

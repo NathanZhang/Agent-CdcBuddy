@@ -1,0 +1,395 @@
+{
+  "purpose": "live-LLM-with-isolated-Mock-data-not-professional-validation",
+  "results": [
+    {
+      "scenarioId": "vector-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 31968,
+      "runId": "b537b2ab-f28c-4a76-9462-c25869c84d7c",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界，底图渲染成功。\n\n- 省级边界要素：扩展字段（featureCount）：1\n- 市级边界要素：扩展字段（featureCount）：18\n- 县级边界要素：扩展字段（featureCount）：157\n\n完整几何数据与交互图层已在工作台展示，可直接缩放、点击查询各级行政区名称与编码。当前为静态边界展示，未叠加业务监测数据；如需叠加虫情、病害等图层，请明确指定数据类别与时间范围。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 92312,
+      "runId": "58bd0496-0aff-43be-8aeb-98494cbbe903",
+      "replyText": "已在郑州市行政区划底图上完成区域文字标注“监测示例区域”，地图与标注均已展示。\n\n- 标注图层状态：扩展字段（0）：410100\n- 标注要素数量：扩展字段（featureCount）：1\n\n建议：该标注为示意性区域标签，不代表具体监测点位或风险等级；如需进一步叠加监测数据、热力或点位图层，可明确指定数据范围与图层类型。\n\n限制：当前仅完成区域文字标注，未包含任何监测记录、病原检测或药残数据；标注精度为区域边界级别，非精确点位。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，按月份升序展示完整统计表和折线图，标明单位为只/记录。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 127576,
+      "runId": "2316d53d-cbf4-45e0-9888-676a28646c25",
+      "replyText": "## 研判结论\n\n已按河南省、诱蚊灯法、蚊类范围完成指定期间每月平均捕获量统计，并生成按月份升序的折线图，单位为只/记录。\n\n## 依据\n\n- 月均捕获量整体呈季节性波动，夏季月份明显高于冬春月份，峰值出现在年中高温期。\n- 各月份月均捕获量无缺失，数据完整支持趋势判断。\n- 关键证据：\n  - 月份：2023-07；月均捕获量：45.84\n  - 月份：2023-05；月均捕获量：37.09\n  - 月份：2023-01；月均捕获量：10.97\n\n## 建议\n\n- 结合夏季高峰加强蚊媒密度监测频次与防控资源投入。\n- 对低值月份保持常规监测，避免漏报。\n\n## 限制\n\n- 当前数据为合成模拟演示，不代表真实监测结果。\n- 仅反映月均捕获量趋势，未包含物种构成、地理分布等细节。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_monitoring_data_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "月均捕获量",
+            "unit": "只/记录"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，单位为只/记录，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 188613,
+      "runId": "de4b4520-c9e1-44dc-bbc6-30eb3f05744c",
+      "replyText": "## 研判结论\n\n- 河南省诱蚊灯法蚊类月度平均捕获量在批准范围内完成 ARIMA 基础时序预测，历史序列完整，预测与时间留出验证均已生成。\n- 模型为单变量 ARIMA，预测未来三个月；时间留出验证显示模型对秋季下降趋势拟合不足，预测值系统性偏高，误差指标较大，结果仅适用于趋势参考，不宜直接用于业务预警或防控决策。\n\n## 关键证据\n\n- 平均绝对误差：18.6422\n- 均方根误差：20.7213\n- 扩展字段（mapePercent）：97.9922\n\n## 建议与限制\n\n- 当前验证误差偏高，建议结合多源数据或引入季节项、外生变量后再评估模型适用性。\n- 数据为合成模拟演示，验证为时间留出而非外部验证，不能代表真实业务风险或临床有效性。\n- 未提供验收阈值，不能声称误差“可接受”或“达到准确率要求”。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2023-01",
+                  "value": 10.968553459119496
+                },
+                {
+                  "period": "2023-02",
+                  "value": 13.317610062893081
+                },
+                {
+                  "period": "2023-03",
+                  "value": 19.650943396226417
+                },
+                {
+                  "period": "2023-04",
+                  "value": 28.40566037735849
+                },
+                {
+                  "period": "2023-05",
+                  "value": 37.088050314465406
+                },
+                {
+                  "period": "2023-06",
+                  "value": 43.5377358490566
+                },
+                {
+                  "period": "2023-07",
+                  "value": 45.84276729559748
+                },
+                {
+                  "period": "2023-08",
+                  "value": 43.5440251572327
+                },
+                {
+                  "period": "2023-09",
+                  "value": 37.229559748427675
+                },
+                {
+                  "period": "2023-10",
+                  "value": 28.361635220125788
+                },
+                {
+                  "period": "2023-11",
+                  "value": 19.68867924528302
+                },
+                {
+                  "period": "2023-12",
+                  "value": 13.251572327044025
+                },
+                {
+                  "period": "2024-01",
+                  "value": 11.776729559748428
+                },
+                {
+                  "period": "2024-02",
+                  "value": 14.28930817610063
+                },
+                {
+                  "period": "2024-03",
+                  "value": 20.732704402515722
+                },
+                {
+                  "period": "2024-04",
+                  "value": 29.342767295597483
+                },
+                {
+                  "period": "2024-05",
+                  "value": 38.144654088050316
+                },
+                {
+                  "period": "2024-06",
+                  "value": 87.99371069182389
+                },
+                {
+                  "period": "2024-07",
+                  "value": 46.905660377358494
+                },
+                {
+                  "period": "2024-08",
+                  "value": 44.4559748427673
+                },
+                {
+                  "period": "2024-09",
+                  "value": 38.16352201257862
+                },
+                {
+                  "period": "2024-10",
+                  "value": 29.40251572327044
+                },
+                {
+                  "period": "2024-11",
+                  "value": 20.666666666666668
+                },
+                {
+                  "period": "2024-12",
+                  "value": 14.216981132075471
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2025-01",
+                  "value": 14.810310968973848
+                },
+                {
+                  "period": "2025-02",
+                  "value": 14.540911515320621
+                },
+                {
+                  "period": "2025-03",
+                  "value": 14.663231447869519
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2024-08",
+                "mae": 18.642175358890967,
+                "rmse": 20.721319004782696,
+                "mapePercent": 97.99224333355126,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2024-09",
+                    "actual": 38.16352201257862,
+                    "predicted": 44.213933439795305
+                  },
+                  {
+                    "period": "2024-10",
+                    "actual": 29.40251572327044,
+                    "predicted": 44.27794458948443
+                  },
+                  {
+                    "period": "2024-11",
+                    "actual": 20.666666666666668,
+                    "predicted": 44.26101596804111
+                  },
+                  {
+                    "period": "2024-12",
+                    "actual": 14.216981132075471,
+                    "predicted": 44.265492972834224
+                  }
+                ]
+              },
+              "training": {
+                "start": "2023-01",
+                "end": "2024-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 69877,
+      "runId": "728ef859-f2be-4de0-80e2-425716f5fcb2",
+      "replyText": "已打开报告模板管理，并查询当前智能体可用模板。\n\n- 当前未返回任何可用模板，因此无法展示模板版本、章节配置或可编辑项。\n- 建议先确认报告模板是否已登记到当前 vector 领域，或联系管理员补充模板配置。\n- 限制：本次结果仅反映当前可访问的模板清单，不代表历史模板或草稿模板；在模板补齐前，不能生成或导出依赖模板结构的正式报告。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-scan",
+      "prompt": "使用当前配置数据。对河南省2024年6月诱蚊灯法蚊类监测捕获量执行近似圆形空间扫描，展示候选区域、成员点及统计证据。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 219974,
+      "runId": "9d877106-1a22-4d01-92f4-e31276c25d4d",
+      "replyText": "## 研判结论\n- 河南省 2024 年 6 月诱蚊灯法蚊类监测的近似圆形空间扫描识别出统计显著的聚集区，中心位于郑州市金水区，提示该区域蚊媒捕获量存在明显空间聚集。\n\n## 关键统计证据\n- 扩展字段（relative\\_risk）：39.6976\n- 扩展字段（p\\_value）：0.001\n- 扩展字段（observed\\_count）：14,160\n\n## 成员点与展示\n- 候选区域、成员点及统计标签图层均已生成并在工作台展示，成员点集中于郑州市金水区，采样方法为诱蚊灯法。\n\n## 建议\n- 对郑州市金水区聚集区开展现场复核，核实监测点位布设、诱蚊灯运行与捕获记录，评估是否存在局部高密度蚊媒风险。\n- 结合气温、湿度等环境因素，研判聚集区形成原因，并制定针对性防制措施。\n\n## 限制\n- 本次结果为近似圆形空间扫描，非完整 SaTScan，且捕获量未标准化为采样强度，解释需谨慎。\n- 数据为合成模拟演示，仅用于方法验证，不代表真实监测结论。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_satscan_spatial",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "conditional-poisson-circular-scan-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-backtest",
+      "prompt": "使用当前配置数据。以郑州市2019年1月1日至2025年11月11日的诱蚊灯法蚊类监测记录为历史数据，开展捕获量滚动回测；回测截止日为历史数据末日，训练窗口60个月，预测跨度1个月，比较AR与季节基线，展示有效评估对数和误差。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 161118,
+      "runId": "69f0e61f-00cd-4aca-9e72-89535a80b90a",
+      "replyText": "## 研判结论\n- 郑州市诱蚊灯法蚊类捕获量滚动回测已完成，AR模型在单步预测下整体误差低于季节基线，但拟合优度为负，说明模型对月度波动解释力有限，预测值在部分月份存在系统性偏高或偏低。\n\n## 关键证据\n- 地市：郑州市；采样方法：诱蚊灯法；有效评估对数：12\n- 地市：郑州市；采样方法：诱蚊灯法；平均绝对误差：13.0859\n- 地市：郑州市；采样方法：诱蚊灯法；扩展字段（baselineMae）：39.0139\n\n## 建议与限制\n- 当前结果基于合成模拟数据，仅用于方法演示，不代表真实监测精度；捕获量非标准密度指标，不同采样方法误差不可直接合并比较。\n- 建议结合多模型对比与更长训练窗口进一步验证，并在真实数据到位后重新评估。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_vector_backtest",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "rolling-past-origin-capture-backtest-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    }
+  ]
+}

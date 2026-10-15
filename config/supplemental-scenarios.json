@@ -1,0 +1,278 @@
+[
+  {
+    "scenarioId": "vector-map",
+    "domain": "vector",
+    "group": "通用工具与基础模型",
+    "title": "行政区划地图",
+    "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+    "skillIds": [
+      "skill_map_display"
+    ],
+    "acceptance": "可交互地图与行政边界",
+    "limitation": "底图不包含监测观测值。"
+  },
+  {
+    "scenarioId": "vector-annotation",
+    "domain": "vector",
+    "group": "通用工具与基础模型",
+    "title": "地图区域文字标注",
+    "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+    "skillIds": [
+      "skill_map_annotation"
+    ],
+    "acceptance": "真实行政区域及文字标注",
+    "limitation": "文本标注不是风险判定。"
+  },
+  {
+    "scenarioId": "vector-query-chart",
+    "domain": "vector",
+    "group": "通用工具与基础模型",
+    "title": "监测数据查询与趋势图",
+    "prompt": "使用当前配置数据。查询河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，按月份升序展示完整统计表和折线图，标明单位为只/记录。",
+    "skillIds": [
+      "skill_monitoring_data_table"
+    ],
+    "acceptance": "查询统计表、月份趋势图和数据来源",
+    "limitation": "使用当前授权范围与配置数据；数据不足时明确展示原因。"
+  },
+  {
+    "scenarioId": "vector-arima",
+    "domain": "vector",
+    "group": "通用工具与基础模型",
+    "title": "ARIMA 基础月度预测",
+    "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，单位为只/记录，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+    "skillIds": [
+      "skill_arima_forecast"
+    ],
+    "acceptance": "ARIMA历史、未来3个月预测及MAE/RMSE",
+    "limitation": "至少18个连续月份，非负指标；预测不代表风险预警。"
+  },
+  {
+    "scenarioId": "vector-templates",
+    "domain": "vector",
+    "group": "通用工具与基础模型",
+    "title": "报告模板查看",
+    "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+    "skillIds": [
+      "skill_report_templates"
+    ],
+    "acceptance": "报告模板管理界面及当前模板",
+    "limitation": "新建、修改和删除需明确操作指令。"
+  },
+  {
+    "scenarioId": "foodborne-map",
+    "domain": "foodborne",
+    "group": "通用工具与基础模型",
+    "title": "行政区划地图",
+    "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+    "skillIds": [
+      "skill_map_display"
+    ],
+    "acceptance": "可交互地图与行政边界",
+    "limitation": "底图不包含监测观测值。"
+  },
+  {
+    "scenarioId": "foodborne-annotation",
+    "domain": "foodborne",
+    "group": "通用工具与基础模型",
+    "title": "地图区域文字标注",
+    "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+    "skillIds": [
+      "skill_map_annotation"
+    ],
+    "acceptance": "真实行政区域及文字标注",
+    "limitation": "文本标注不是风险判定。"
+  },
+  {
+    "scenarioId": "foodborne-query-chart",
+    "domain": "foodborne",
+    "group": "通用工具与基础模型",
+    "title": "监测数据查询与趋势图",
+    "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月食源性就诊病例数，按月份升序展示完整统计表和折线图，标明单位为例。",
+    "skillIds": [
+      "skill_foodborne_case_table"
+    ],
+    "acceptance": "查询统计表、月份趋势图和数据来源",
+    "limitation": "使用当前授权范围与配置数据；数据不足时明确展示原因。"
+  },
+  {
+    "scenarioId": "foodborne-arima",
+    "domain": "foodborne",
+    "group": "通用工具与基础模型",
+    "title": "ARIMA 基础月度预测",
+    "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月食源性就诊病例数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+    "skillIds": [
+      "skill_arima_forecast"
+    ],
+    "acceptance": "ARIMA历史、未来3个月预测及MAE/RMSE",
+    "limitation": "至少18个连续月份，非负指标；预测不代表风险预警。"
+  },
+  {
+    "scenarioId": "foodborne-templates",
+    "domain": "foodborne",
+    "group": "通用工具与基础模型",
+    "title": "报告模板查看",
+    "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+    "skillIds": [
+      "skill_report_templates"
+    ],
+    "acceptance": "报告模板管理界面及当前模板",
+    "limitation": "新建、修改和删除需明确操作指令。"
+  },
+  {
+    "scenarioId": "env-map",
+    "domain": "env",
+    "group": "通用工具与基础模型",
+    "title": "行政区划地图",
+    "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+    "skillIds": [
+      "skill_map_display"
+    ],
+    "acceptance": "可交互地图与行政边界",
+    "limitation": "底图不包含监测观测值。"
+  },
+  {
+    "scenarioId": "env-annotation",
+    "domain": "env",
+    "group": "通用工具与基础模型",
+    "title": "地图区域文字标注",
+    "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+    "skillIds": [
+      "skill_map_annotation"
+    ],
+    "acceptance": "真实行政区域及文字标注",
+    "limitation": "文本标注不是风险判定。"
+  },
+  {
+    "scenarioId": "env-query-chart",
+    "domain": "env",
+    "group": "通用工具与基础模型",
+    "title": "监测数据查询与趋势图",
+    "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月饮用水平均浑浊度，按月份升序展示完整统计表和折线图，标明单位为NTU。",
+    "skillIds": [
+      "skill_env_monitoring_table"
+    ],
+    "acceptance": "查询统计表、月份趋势图和数据来源",
+    "limitation": "使用当前授权范围与配置数据；数据不足时明确展示原因。"
+  },
+  {
+    "scenarioId": "env-arima",
+    "domain": "env",
+    "group": "通用工具与基础模型",
+    "title": "ARIMA 基础月度预测",
+    "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月饮用水平均浑浊度，单位为NTU，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+    "skillIds": [
+      "skill_arima_forecast"
+    ],
+    "acceptance": "ARIMA历史、未来3个月预测及MAE/RMSE",
+    "limitation": "至少18个连续月份，非负指标；预测不代表风险预警。"
+  },
+  {
+    "scenarioId": "env-templates",
+    "domain": "env",
+    "group": "通用工具与基础模型",
+    "title": "报告模板查看",
+    "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+    "skillIds": [
+      "skill_report_templates"
+    ],
+    "acceptance": "报告模板管理界面及当前模板",
+    "limitation": "新建、修改和删除需明确操作指令。"
+  },
+  {
+    "scenarioId": "chronic-map",
+    "domain": "chronic",
+    "group": "通用工具与基础模型",
+    "title": "行政区划地图",
+    "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+    "skillIds": [
+      "skill_map_display"
+    ],
+    "acceptance": "可交互地图与行政边界",
+    "limitation": "底图不包含监测观测值。"
+  },
+  {
+    "scenarioId": "chronic-annotation",
+    "domain": "chronic",
+    "group": "通用工具与基础模型",
+    "title": "地图区域文字标注",
+    "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+    "skillIds": [
+      "skill_map_annotation"
+    ],
+    "acceptance": "真实行政区域及文字标注",
+    "limitation": "文本标注不是风险判定。"
+  },
+  {
+    "scenarioId": "chronic-query-chart",
+    "domain": "chronic",
+    "group": "通用工具与基础模型",
+    "title": "监测数据查询与趋势图",
+    "prompt": "使用当前配置数据。查询河南省2023年1月至2025年12月的每月死亡登记数，按月份升序展示完整统计表和折线图，标明单位为例。",
+    "skillIds": [
+      "skill_chronic_monitoring_table"
+    ],
+    "acceptance": "查询统计表、月份趋势图和数据来源",
+    "limitation": "使用当前授权范围与配置数据；数据不足时明确展示原因。"
+  },
+  {
+    "scenarioId": "chronic-arima",
+    "domain": "chronic",
+    "group": "通用工具与基础模型",
+    "title": "ARIMA 基础月度预测",
+    "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2025年12月的每月死亡登记数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+    "skillIds": [
+      "skill_arima_forecast"
+    ],
+    "acceptance": "ARIMA历史、未来3个月预测及MAE/RMSE",
+    "limitation": "至少18个连续月份，非负指标；预测不代表风险预警。"
+  },
+  {
+    "scenarioId": "chronic-templates",
+    "domain": "chronic",
+    "group": "通用工具与基础模型",
+    "title": "报告模板查看",
+    "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+    "skillIds": [
+      "skill_report_templates"
+    ],
+    "acceptance": "报告模板管理界面及当前模板",
+    "limitation": "新建、修改和删除需明确操作指令。"
+  },
+  {
+    "scenarioId": "vector-scan",
+    "domain": "vector",
+    "group": "病媒专项分析",
+    "title": "捕获量空间扫描",
+    "prompt": "使用当前配置数据。对河南省2024年6月诱蚊灯法蚊类监测捕获量执行近似圆形空间扫描，展示候选区域、成员点及统计证据。",
+    "skillIds": [
+      "skill_satscan_spatial"
+    ],
+    "acceptance": "实际计算结果、来源与方法限制；异步任务返回可查询的任务ID。",
+    "limitation": "依赖当前数据覆盖和测量口径；不作为已验证疾病风险。"
+  },
+  {
+    "scenarioId": "vector-backtest",
+    "domain": "vector",
+    "group": "病媒专项分析",
+    "title": "捕获量滚动回测",
+    "prompt": "使用当前配置数据。以郑州市2019年1月1日至2025年11月11日的诱蚊灯法蚊类监测记录为历史数据，开展捕获量滚动回测；回测截止日为历史数据末日，训练窗口60个月，预测跨度1个月，比较AR与季节基线，展示有效评估对数和误差。",
+    "skillIds": [
+      "skill_vector_backtest"
+    ],
+    "acceptance": "实际计算结果、来源与方法限制；异步任务返回可查询的任务ID。",
+    "limitation": "依赖当前数据覆盖和测量口径；不作为已验证疾病风险。"
+  },
+  {
+    "scenarioId": "vector-workflow",
+    "domain": "vector",
+    "group": "病媒专项分析",
+    "title": "科学分析组合流程",
+    "prompt": "编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学分析组合流程：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月月度历史序列，不启用LSTM；返回本次提交的科学任务ID和状态。",
+    "skillIds": [
+      "skill_composable_workflow"
+    ],
+    "acceptance": "实际计算结果、来源与方法限制；异步任务返回可查询的任务ID。",
+    "limitation": "依赖当前数据覆盖和测量口径；不作为已验证疾病风险。"
+  }
+]

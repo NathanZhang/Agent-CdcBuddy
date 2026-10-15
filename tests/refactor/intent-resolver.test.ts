@@ -77,3 +77,19 @@ it('rejects repeated filter fragments even when a model could have pointed to on
  const result=await resolveInteractionIntent({...input,text},{complete:async()=>({role:'assistant',content:JSON.stringify(value)})});
  expect(result).toMatchObject({status:'FAILED',diagnostics:[{code:'INTENT_EVIDENCE_AMBIGUOUS'},{code:'INTENT_EVIDENCE_AMBIGUOUS'}]});
 });
+
+it('explains and repairs a text annotation incorrectly classified as a plain basemap',async()=>{
+ const {resolveInteractionIntent}=await import('@/application/agent/intent-resolver');
+ const text='在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。';
+ const evidence={source:'current',quote:text};
+ const region={op:'set',value:{includeCandidateIds:['410100'],excludeCandidateIds:[]},evidence:{source:'current',quote:'郑州市'}};
+ const value={...intent,displayRegion:region,dataRegion:region,time:{op:'clear',evidence},layerRequests:[{id:'annotation',skillId:'skill_map_annotation',rendering:'labels'}]};
+ const prompts:string[]=[];
+ const result=await resolveInteractionIntent({...input,text},{complete:async request=>{
+  prompts.push(JSON.stringify(request.messages));
+  return {role:'assistant',content:JSON.stringify({...value,task:prompts.length===1?'map_display':'map_with_data'})};
+ }});
+ expect(result.status).toBe('RESOLVED');
+ expect(prompts[1]).toContain('map_display仅能显示纯底图');
+ if(result.status==='RESOLVED')expect(result.intent.layerRequests).toMatchObject([{skillId:'skill_map_annotation',rendering:'labels'}]);
+});

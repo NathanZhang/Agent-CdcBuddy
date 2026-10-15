@@ -8,6 +8,7 @@ export async function verifyWriteIntent(interaction:AgentInteraction,skill:Skill
  if(skill.id==='skill_session_manage'&&['list','read'].includes(args.action))return;
  if(skill.id==='skill_catalog_manage'&&args.action==='list')return;
  if(skill.id==='skill_job_manage'&&['list','read'].includes(args.action))return;
+ if(skill.id==='skill_composable_workflow'&&['compile','read'].includes(args.action))return;
  if(skill.id==='skill_report_templates'&&['form','list','get'].includes(args.action??'form'))return;
  if(skill.id==='skill_env_mobile_sampling'&&args.action!=='assign')return;
  if(skill.method.endsWith('-warning-workflow-v1')&&args.createTask!==true)return;

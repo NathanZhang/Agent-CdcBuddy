@@ -153,6 +153,35 @@ if '--check' not in sys.argv:
                 except ProcessLookupError:
                     pass
 
+    def test_start_and_restart_select_existing_default_history_or_explicit_bundle(self):
+        (self.root / '.venv').mkdir()
+        default = self.root / '.mock-data/input-regression-20261015'
+        custom = self.root / 'custom history bundle'
+        for bundle in [default, custom]:
+            bundle.mkdir(parents=True)
+            (bundle / 'simulation-business.db').write_bytes(b'existing history must be preserved')
+        # Stop after the actual startup preflight receives its selected directory;
+        # no service is stopped or started by this routing check.
+        self.tool('node', '''import sys
+if '--check' in sys.argv:
+    print('SELECTED_BUNDLE=' + sys.argv[3], flush=True)
+    sys.exit(42)
+raise RuntimeError('Must stop at preflight')
+''')
+        for action in ['start', 'restart']:
+            for explicit in [False, True]:
+                with self.subTest(action=action, explicit=explicit):
+                    bundle = custom if explicit else default
+                    args = [action, 'all', 'mock', *([str(custom)] if explicit else [])]
+                    result = subprocess.run(['bash', str(self.root / 'server.sh'), *args],
+                                            cwd='/', env=self.env, capture_output=True, text=True, timeout=15)
+                    self.assertEqual(result.returncode, 42, result.stdout + result.stderr)
+                    self.assertIn('SELECTED_BUNDLE=' + str(bundle), result.stdout)
+                    self.assertEqual((bundle / 'simulation-business.db').read_bytes(),
+                                     b'existing history must be preserved')
+                    self.assertIsNone(self.process.poll())
+                    self.assertFalse(list(self.root.glob('.server*')))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -90,7 +90,7 @@ it('recommendation entry points send concise natural-language requests without e
    if(typeof entry==='string')throw new Error('Built-in recommendation must have a title and prompt');
    expect(entry.prompt,entry.title).not.toMatch(/\b(?:SELECT|FROM|JOIN|WHERE|sql|skillId|latKey|lonKey|xKey|yKey)\b|\b(?:skill_|fact_|dim_)\w*|执行配置|PATH_\d+/i);
    expect(entry.prompt.length,entry.title).toBeLessThanOrEqual(200);
-   expect(entry.requirementId,entry.title).toBeGreaterThanOrEqual(23);
+   if(entry.requirementId!==undefined)expect(entry.requirementId,entry.title).toBeGreaterThanOrEqual(23);else expect(entry.scenarioId,entry.title).toBeTruthy();
   }
  }
 });

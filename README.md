@@ -1,8 +1,8 @@
-# Agent-CdcBuddy 2.1.2
+# Agent-CdcBuddy 2.1.3
 
 Agent-CdcBuddy 面向病媒生物、食源性疾病、环境健康、死因慢病与伤害四个领域提供疾控监测分析工作台。2.0 将业务交互统一到主线 Agent，由实际 LLM 调用真实 Skills，根据执行证据生成中文对话与 AG-UI。
 
-当前版本为 **2.1.2**，Git 标签为 **v2.1.2**。2.1.0 基线的发布范围和限制见 [2.1.0 发布说明](docs/releases/v2.1.0.md)。全部54项推荐场景已统一通过提示词驱动智能体，链路验收及当前能力边界见 [逐项验证记录](docs/reviews/2026-10-14/prompt-pipeline/README.md)；链路可演示不代表专业效果或暂缓功能已验收。
+当前版本为 **2.1.3**，Git 标签为 **v2.1.3**。2.1.0 基线的发布范围和限制见 [2.1.0 发布说明](docs/releases/v2.1.0.md)。全部54项推荐场景已统一通过提示词驱动智能体，链路验收及当前能力边界见 [逐项验证记录](docs/reviews/2026-10-14/prompt-pipeline/README.md)；链路可演示不代表专业效果或暂缓功能已验收。
 
 ## 执行架构
 
@@ -65,7 +65,8 @@ npm run build
 ### 显式启动完整Mock验收模式
 
 ```sh
-./server.sh start all mock                         # 首次生成隔离包，启动3101—3104及各域Worker
+./server.sh start all mock                         # 复用默认Mock包，启动3101—3104及各域Worker
+./server.sh restart all mock                       # 使用默认Mock包重启四域服务及Worker
 ./server.sh status all mock                       # 查看四域Mock状态及工作目录、数据包、日志
 ./server.sh status                                # 同时查看普通服务与Mock实例
 ./server.sh status mock                           # 省略领域，查看全部四域Mock
@@ -75,7 +76,7 @@ npm run build
 
 `status [领域] [dev|prod|mock]` 可按端口组筛选（dev/prod 共用普通服务端口）；不指定模式则同时显示普通和Mock实例。状态查询会展示PID、监听PID、运行时长、工作目录、日志及Mock数据包/业务库/构建目录；PID失效或端口被未托管进程占用时继续展示其他实例。新启动的实例会记录实际模式及包路径，旧实例尽量从进程信息恢复，无法读取时明确显示未记录。
 
-默认包为 `.mock-data/requirement-demo`。Mock模式固定使用包内四域来源、独立业务库和构建目录；不会修改默认manifest或实测库，也不受本地环境中的实测路径覆盖影响。已有包若损坏或过期会拒绝启动，请指定新目录重新生成。普通dev/prod模式不再自动从旁边的DataMock目录复制事实库。OCR仍暂缓，Iris/MUSE正式规则执行仍需另配授权引擎。
+`start all mock` 和 `restart all mock` 未指定目录时，默认使用 `.mock-data/input-regression-20261015`，复用该包内的业务库和历史会话；指定第四个参数仍可选择其他包。底层 `start-requirement-demo.cjs` 也使用同一默认包。Mock模式固定使用包内四域来源、独立业务库和构建目录；不会修改默认manifest或实测库，也不受本地环境中的实测路径覆盖影响。目录缺失时才生成新包；已有包若损坏或过期会拒绝启动，请指定新目录重新生成。普通dev/prod模式不再自动从旁边的DataMock目录复制事实库。OCR仍暂缓，Iris/MUSE正式规则执行仍需另配授权引擎。
 
 模型按自身需要检查输入：种群ARIMA/LSTM不依赖气象表；气象融合GBDT需要温度和降雨。缺表、缺字段、缺测时段及样本不足均以中文说明，不生成伪造估计。54项逐项核查见[输入依赖与隔离验证](docs/reviews/2026-10-15/input-dependencies/README.md)。
 

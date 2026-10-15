@@ -11,7 +11,8 @@ const render=()=>renderToStaticMarkup(<SkillsDrawer isOpen onClose={()=>{}} onRu
 it.each(['vector','foodborne','env','chronic'] as const)('marketplace is exactly the public server catalog for %s',domain=>{
  const profile=getRuntimeProfile(domain);vi.stubGlobal('window',{__CDC_RUNTIME_PROFILE__:profile});
  expect(profile.capabilities.map(s=>s.id)).toEqual(listSkillDefinitions(domain).map(s=>s.id));
- const html=render();for(const s of profile.capabilities)expect(html).toContain(s.name);
+ const html=render();for(const s of profile.capabilities.filter(s=>s.marketplace.listed))expect(html).toContain(s.name);
+ for(const s of profile.capabilities.filter(s=>!s.marketplace.listed))expect(html).not.toContain(`data-skill-id="${s.id}"`);
  expect(html).not.toContain('内部会话运行记录');expect(html).toContain('部分实现');expect(html).toContain('专业效果未验收');
  expect(profile.capabilities.every(s=>s.implementationStatus&&s.validationStatus&&s.parametersSchema)).toBe(true);
  if(domain==='vector'){expect(html).toContain('病媒捕获量滚动回测');expect(html).toContain('已做实测历史回测');}

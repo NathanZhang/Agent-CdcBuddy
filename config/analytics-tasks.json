@@ -53,5 +53,9 @@
   "vector_assessment": "vector",
   "foodborne_assessment": "foodborne",
   "env_assessment": "env",
-  "chronic_assessment": "chronic"
+  "chronic_assessment": "chronic",
+  "vector_arima_forecast": "vector",
+  "foodborne_arima_forecast": "foodborne",
+  "env_arima_forecast": "env",
+  "chronic_arima_forecast": "chronic"
 }

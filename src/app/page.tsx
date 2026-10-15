@@ -1,5 +1,6 @@
 'use client';
 import React,{useState,useEffect} from 'react';
+import {useSkillMarketplace} from '@/features/workbench/use-skill-marketplace';
 import { Navbar } from '@/components/layout/Navbar';
 import { RecommendationPrompts } from '@/components/layout/RecommendationPrompts';
 import { CustomSkillRequestModal } from '@/components/layout/CustomSkillRequestModal';
@@ -19,20 +20,21 @@ import { Bot,User,Send,Square,History,Plus,Sparkles } from 'lucide-react';
 export default function CdcAgentWorkspace(){
  const profile=getCurrentAgentProfile();const {currentUser}=useRbac();const workbench=useWorkbenchController({domain:profile.domain});const {state}=workbench;
  const [skillsOpen,setSkillsOpen]=useState(false),[historyOpen,setHistoryOpen]=useState(false),[widgetOpen,setWidgetOpen]=useState(false);
- const [skillRequestOpen,setSkillRequestOpen]=useState(false),[skillsError,setSkillsError]=useState('');
- const [input,setInput]=useState(''),[customSkills,setCustomSkills]=useState<any[]>([]);
+ const [skillRequestOpen,setSkillRequestOpen]=useState(false);
+ const [input,setInput]=useState('');
+ const marketplace=useSkillMarketplace(profile.domain,currentUser.id,currentUser.role,state.runId,state.busy);
+ const {customSkills,error:skillsError,refresh:refreshSkills}=marketplace;
  const chatScroll=useChatScroll(state.messages);
- const refreshSkills=async()=>{setSkillsError('');try{const result=await workbench.interact(adaptFunctionalInteraction({type:'catalog.list'}));if(result?.status==='FAILED')throw new Error(result.replyText||'读取技能列表失败');const payload=result?.skillRuns.map(r=>r.result.payload).find((p:any)=>p?.type==='SKILL_CATALOG') as any;if(payload)setCustomSkills(payload.customSkills.map((s:any)=>({...s,id:s.skill_id,sqlQuery:s.sql_query,chartType:s.chart_type,createdBy:s.created_by,createdAt:s.created_at,recommendedPrompts:s.recommended_prompts?.split(';') ?? []})));}catch(error){setSkillsError(error instanceof Error?error.message:'读取技能列表失败');}};
- const send=async(text:string)=>{if(!text.trim())return;setInput('');await workbench.send(text);};
+ const send=async(text:string,skillId?:string)=>{if(!text.trim())return;setInput('');if(skillId){await workbench.interact(adaptFunctionalInteraction({type:'skill.execute',id:skillId,prompt:text}));}else await workbench.send(text);};
  const [voiceMessage,setVoiceMessage]=useState('');
  const voice=()=>{const Recognition=(window as any).SpeechRecognition??(window as any).webkitSpeechRecognition;if(!Recognition){setVoiceMessage('此浏览器不支持语音输入，请输入文字。');return;}const recognition=new Recognition();recognition.lang='zh-CN';recognition.onresult=(e:any)=>{setInput(e.results[0][0].transcript);setVoiceMessage('已转为文字，可核对后发送。');};recognition.onerror=()=>setVoiceMessage('语音识别未完成，请检查浏览器麦克风权限。');recognition.start();setVoiceMessage('正在听取语音…');};
  const [datasetLabels,setDatasetLabels]=useState<string[]>([]);
  useEffect(()=>{setDatasetLabels(sourceLabels((window as any).__CDC_RUNTIME_PROFILE__?.datasets ?? []));},[]);
  return <WorkbenchInteractionProvider controller={workbench}><div className="h-dvh min-h-0 overflow-hidden overscroll-none flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
-  <Navbar onOpenSkills={()=>{setSkillsOpen(true);void refreshSkills();}} showEmbeddedWidget={widgetOpen} onToggleEmbeddedWidget={()=>setWidgetOpen(v=>!v)}/>
+  <Navbar skillsCount={marketplace.loaded?marketplace.skills.length:undefined} onOpenSkills={()=>{setSkillsOpen(true);void refreshSkills();}} showEmbeddedWidget={widgetOpen} onToggleEmbeddedWidget={()=>setWidgetOpen(v=>!v)}/>
   <div className="shrink-0 px-6 py-2 flex flex-wrap gap-3 text-xs border-b border-slate-200 dark:border-slate-800">{datasetLabels.map(label=><span key={label}>{label}</span>)}{profile.domain==='vector'&&<button className="text-sky-600" onClick={()=>void workbench.interact(adaptFunctionalInteraction({type:'collection.form'}))}>现场采集</button>}<span className="ml-auto">{state.busy?'执行中':statusLabel(state.status)}</span></div>
   <main className="flex-1 min-h-0 px-4 py-3 flex flex-col gap-3 max-w-[1920px] w-full mx-auto">
-   <RecommendationPrompts onSelectPrompt={prompt=>void send(prompt)}/>
+   <RecommendationPrompts customSkills={marketplace.skills.filter(s=>s.category==='custom')} onSelectPrompt={(prompt,skillId)=>void send(prompt,skillId)}/>
    <div className="flex-1 min-h-0 grid grid-cols-1 grid-rows-2 lg:grid-cols-12 lg:grid-rows-1 gap-4">
     <section className="lg:col-span-8 min-w-0 min-h-0 flex flex-col"><h2 className="text-sm font-bold flex items-center gap-2 mb-2"><Sparkles size={16}/>AG-UI 分析工作台</h2><div className="flex-1 min-h-0 overflow-auto overscroll-contain"><GenerativeComponentRenderer view={state.view}/>{!state.view&&<div className="h-full flex flex-col items-center justify-center gap-3 text-slate-500 rounded-xl border border-dashed border-slate-300 dark:border-slate-700"><Bot size={32}/><p>{state.status==='NO_DATA'?'当前范围没有可用数据。':'输入监测问题或选择技能开始分析。'}</p>{state.replyText&&!state.messages.length&&<p className="max-w-lg text-sm">{state.replyText}</p>}</div>}</div></section>
     <section className="lg:col-span-4 min-w-0 min-h-0 flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
@@ -43,7 +45,7 @@ export default function CdcAgentWorkspace(){
     </section>
    </div>
   </main>
-  <SkillsDrawer isOpen={skillsOpen} onClose={()=>setSkillsOpen(false)} customSkills={customSkills} onRefreshCustomSkills={()=>void refreshSkills()} onDeleteCustomSkill={async id=>{const result=await workbench.interact(adaptFunctionalInteraction({type:'skill.delete',id}));if(result?.status==='SUCCESS')await refreshSkills();}} onRunSkill={(skill,prompt)=>{setSkillsOpen(false);void send(prompt??`使用${skill.name}`);}} onCreateCustomSkill={()=>{setSkillsOpen(false);setSkillRequestOpen(true);}}/>
+  <SkillsDrawer skills={marketplace.skills} loaded={marketplace.loaded} isOpen={skillsOpen} onClose={()=>setSkillsOpen(false)} customSkills={customSkills} onRefreshCustomSkills={()=>void refreshSkills()} onDeleteCustomSkill={async id=>{const result=await workbench.interact(adaptFunctionalInteraction({type:'skill.delete',id}));if(result?.status!=='SUCCESS')throw new Error(result?.replyText??'删除技能失败');await refreshSkills();}} onRunSkill={(skill,prompt)=>{setSkillsOpen(false);void send(prompt??skill.recommendedPrompts.map(p=>typeof p==='string'?p:p.prompt)[0]??'',skill.category==='custom'?skill.id:undefined);}} onCreateCustomSkill={()=>{setSkillsOpen(false);setSkillRequestOpen(true);}}/>
   {skillsOpen&&skillsError&&<div role="alert" className="fixed bottom-4 right-4 z-[100] bg-white dark:bg-slate-900 text-rose-600 p-3 rounded shadow">{skillsError}</div>}
   {skillRequestOpen&&<CustomSkillRequestModal onClose={()=>setSkillRequestOpen(false)} onSubmit={request=>{setSkillRequestOpen(false);void send(request);}}/>}
   <SessionHistoryDrawer isOpen={historyOpen} onClose={()=>setHistoryOpen(false)} userId={currentUser.id} userName={currentUser.name} domain={profile.domain} currentSessionId={state.sessionId} refreshKey={state.runId} onSelectSession={id=>{setHistoryOpen(false);void workbench.loadSession(id);}} onNewSession={()=>{setHistoryOpen(false);void workbench.startSession();}}/>

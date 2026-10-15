@@ -1,3 +1,4 @@
+import {forecastSkill} from '@/domains/common/forecast-skill';
 import {vectorKnowledgeSkill} from '@/domains/vector/skills/knowledge';
 import {riskPolicySkills} from '@/domains/common/risk-policy-skills';
 import {assessmentSkills} from '@/domains/shared/assessment-skills';
@@ -38,7 +39,7 @@ export function listSkillDefinitions(domain:AgentDomain,options:{includeInternal
   const factories={vector:vectorSkills,foodborne:foodborneSkills,env:envSkills,chronic:chronicSkills};
   if(!Object.hasOwn(factories,domain))throw new Error('Unknown domain');
   const workflows=workflowSkills(domain);
-  const additions=[...(domain==='vector'?[vectorKnowledgeSkill()]:[]),...assessmentSkills(domain),...riskPolicySkills(domain),reportTemplateSkill(domain),...(domain==='env'?[environmentSamplingSkill()]:[])];
+  const additions=[forecastSkill(domain),...(domain==='vector'?[vectorKnowledgeSkill()]:[]),...assessmentSkills(domain),...riskPolicySkills(domain),reportTemplateSkill(domain),...(domain==='env'?[environmentSamplingSkill()]:[])];
   const original=factories[domain]();
   for(const a of additions){const old=original.find(s=>s.id===a.id);if(old){if(!a.requirementIds.length)a.requirementIds=old.requirementIds;a.aliases=old.aliases;}}
   return [...original.filter(s=>![...workflows,...additions].some(w=>w.id===s.id)),...additions,...interactionSkills(domain),...workflows,...mapSkills(domain),...annotationSkills(domain)].filter(skill=>options.includeInternal || skill.visibility!=='internal').map(withCapabilityMetadata);

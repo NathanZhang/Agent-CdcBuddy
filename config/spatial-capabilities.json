@@ -290,6 +290,11 @@
         "labels"
       ],
       "reason": "程序计算区域病例分布，同时返回趋势、食品构成、事件与病例明细；支持区域地图。"
+    },
+    "shared-arima-forecast-v1": {
+      "disposition": "non-spatial",
+      "renderings": [],
+      "reason": "Monthly history and forecasts only; no fabricated geographic output."
     }
   }
 }

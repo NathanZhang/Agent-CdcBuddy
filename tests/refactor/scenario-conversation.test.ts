@@ -53,7 +53,7 @@ it('contains no production scenario execution shortcut or prompt-matching dispat
  for(const file of ['src/app/page.tsx','src/application/agent/main-agent.ts','src/application/agent/ui-operation.ts','src/application/skills/skill-service.ts']){
   const source=readFileSync(file,'utf8');expect(source).not.toMatch(/skill_requirement_scenario|requirementScenarios|requirementScenarioSkill/);
  }
- expect(readFileSync('src/components/layout/RecommendationPrompts.tsx','utf8')).toContain('onSelectPrompt(p)');
- expect(readFileSync('src/app/page.tsx','utf8')).toContain('onSelectPrompt={prompt=>void send(prompt)}');
+ expect(readFileSync('src/components/layout/RecommendationPrompts.tsx','utf8')).toContain('onSelectPrompt(p,skillId)');
+ expect(readFileSync('src/app/page.tsx','utf8')).toContain('onSelectPrompt={(prompt,skillId)=>void send(prompt,skillId)}');
  for(const scene of scenarios)expect(scene).not.toHaveProperty('steps');
 });

@@ -20,6 +20,7 @@ import {
   HeartPulse,
   FileCheck2
 } from 'lucide-react';
+import type {VectorSkill} from '@/lib/skills/types';
 import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
 
 const ICON_MAP: Record<string, any> = {
@@ -39,12 +40,14 @@ const ICON_MAP: Record<string, any> = {
 };
 
 interface RecommendationPromptsProps {
-  onSelectPrompt: (prompt: string) => void;
+  customSkills?: VectorSkill[];
+  onSelectPrompt: (prompt: string, skillId?:string) => void;
   defaultExpanded?: boolean;
 }
 
 export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({ 
   onSelectPrompt,
+  customSkills = [],
   defaultExpanded = false 
 }) => {
   const [search,setSearch]=useState('');
@@ -75,11 +78,12 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
     prompts: cat.prompts
   }));
 
+  if(customSkills.length)categories.push({title:'自定义业务场景',color:'bg-pink-50/50 dark:bg-slate-900 border-pink-200',icon:Sparkles,iconColor:'text-pink-600',prompts:customSkills.flatMap(skill=>skill.recommendedPrompts.map((p,i)=>({...typeof p==='string'?{title:skill.name+' · 场景 '+(i+1),prompt:p}:p,skillId:skill.id})))});
   const filteredCategories=categories.map(c=>({...c,prompts:c.prompts.filter(p=>!search.trim()||`${p.title} ${p.prompt}`.includes(search.trim()))})).filter(c=>c.prompts.length);
   const totalPromptsCount = categories.reduce((sum, c) => sum + c.prompts.length, 0);
 
-  const handleSelect = (p: string) => {
-    onSelectPrompt(p);
+  const handleSelect = (p: string,skillId?:string) => {
+    onSelectPrompt(p,skillId);
     setIsExpanded(false); // 点击后自动收起浮动层
   };
 
@@ -98,10 +102,10 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">
-              功能需求验收场景
+              常用业务场景及推荐提示词
             </h2>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              {categories.length} 大类 · 共 {totalPromptsCount} 项需求
+              {categories.length} 大类 · 共 {totalPromptsCount} 个场景
             </span>
           </div>
         </div>
@@ -171,14 +175,14 @@ export const RecommendationPrompts: React.FC<RecommendationPromptsProps> = ({
                   <div className="flex flex-col gap-1.5">
                     {cat.prompts.map((p) => (
                       <button
-                        key={p.requirementId??p.title}
+                        key={p.scenarioId??`${p.skillId??''}-${p.requirementId??p.title}`}
                         title={p.prompt}
                         type="button"
-                        onClick={() => handleSelect(p.prompt)}
+                        onClick={() => handleSelect(p.prompt,p.skillId)}
                         className="text-left text-xs text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-white bg-white/90 dark:bg-slate-950/70 hover:bg-sky-50 dark:hover:bg-sky-950/70 p-2 rounded-lg border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-500/50 transition-all leading-snug group flex items-start gap-1.5 shadow-2xs cursor-pointer"
                       >
                         <span className="text-sky-600 dark:text-sky-400 text-[10px] mt-0.5 group-hover:translate-x-0.5 transition-transform shrink-0">▸</span>
-                        <span><strong className="block">{p.title}{p.deferred?' · 暂缓':''}</strong><span className="block mt-1 text-slate-500">核对：{p.acceptance}</span><span className="block mt-1 text-amber-700 dark:text-amber-400">{p.limitation}</span></span>
+                        <span><strong className="block">{p.title}{p.deferred?' · 暂缓':''}</strong><span className="block mt-1 text-slate-500">{p.prompt}</span>{p.acceptance&&<span className="block mt-1 text-slate-500">核对：{p.acceptance}</span>}<span className="block mt-1 text-amber-700 dark:text-amber-400">{p.limitation}</span></span>
                       </button>
                     ))}
                   </div>

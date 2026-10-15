@@ -1,0 +1,1434 @@
+{
+  "purpose": "live configured model, isolated synthetic data; latest attempt per exact scene",
+  "results": [
+    {
+      "scenarioId": "vector-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 31968,
+      "runId": "b537b2ab-f28c-4a76-9462-c25869c84d7c",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界，底图渲染成功。\n\n- 省级边界要素：扩展字段（featureCount）：1\n- 市级边界要素：扩展字段（featureCount）：18\n- 县级边界要素：扩展字段（featureCount）：157\n\n完整几何数据与交互图层已在工作台展示，可直接缩放、点击查询各级行政区名称与编码。当前为静态边界展示，未叠加业务监测数据；如需叠加虫情、病害等图层，请明确指定数据类别与时间范围。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 92312,
+      "runId": "58bd0496-0aff-43be-8aeb-98494cbbe903",
+      "replyText": "已在郑州市行政区划底图上完成区域文字标注“监测示例区域”，地图与标注均已展示。\n\n- 标注图层状态：扩展字段（0）：410100\n- 标注要素数量：扩展字段（featureCount）：1\n\n建议：该标注为示意性区域标签，不代表具体监测点位或风险等级；如需进一步叠加监测数据、热力或点位图层，可明确指定数据范围与图层类型。\n\n限制：当前仅完成区域文字标注，未包含任何监测记录、病原检测或药残数据；标注精度为区域边界级别，非精确点位。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，按月份升序展示完整统计表和折线图，标明单位为只/记录。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 127576,
+      "runId": "2316d53d-cbf4-45e0-9888-676a28646c25",
+      "replyText": "## 研判结论\n\n已按河南省、诱蚊灯法、蚊类范围完成指定期间每月平均捕获量统计，并生成按月份升序的折线图，单位为只/记录。\n\n## 依据\n\n- 月均捕获量整体呈季节性波动，夏季月份明显高于冬春月份，峰值出现在年中高温期。\n- 各月份月均捕获量无缺失，数据完整支持趋势判断。\n- 关键证据：\n  - 月份：2023-07；月均捕获量：45.84\n  - 月份：2023-05；月均捕获量：37.09\n  - 月份：2023-01；月均捕获量：10.97\n\n## 建议\n\n- 结合夏季高峰加强蚊媒密度监测频次与防控资源投入。\n- 对低值月份保持常规监测，避免漏报。\n\n## 限制\n\n- 当前数据为合成模拟演示，不代表真实监测结果。\n- 仅反映月均捕获量趋势，未包含物种构成、地理分布等细节。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_monitoring_data_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "月均捕获量",
+            "unit": "只/记录"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2024年12月诱蚊灯法蚊类的每月平均捕获量，单位为只/记录，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 188613,
+      "runId": "de4b4520-c9e1-44dc-bbc6-30eb3f05744c",
+      "replyText": "## 研判结论\n\n- 河南省诱蚊灯法蚊类月度平均捕获量在批准范围内完成 ARIMA 基础时序预测，历史序列完整，预测与时间留出验证均已生成。\n- 模型为单变量 ARIMA，预测未来三个月；时间留出验证显示模型对秋季下降趋势拟合不足，预测值系统性偏高，误差指标较大，结果仅适用于趋势参考，不宜直接用于业务预警或防控决策。\n\n## 关键证据\n\n- 平均绝对误差：18.6422\n- 均方根误差：20.7213\n- 扩展字段（mapePercent）：97.9922\n\n## 建议与限制\n\n- 当前验证误差偏高，建议结合多源数据或引入季节项、外生变量后再评估模型适用性。\n- 数据为合成模拟演示，验证为时间留出而非外部验证，不能代表真实业务风险或临床有效性。\n- 未提供验收阈值，不能声称误差“可接受”或“达到准确率要求”。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2023-01",
+                  "value": 10.968553459119496
+                },
+                {
+                  "period": "2023-02",
+                  "value": 13.317610062893081
+                },
+                {
+                  "period": "2023-03",
+                  "value": 19.650943396226417
+                },
+                {
+                  "period": "2023-04",
+                  "value": 28.40566037735849
+                },
+                {
+                  "period": "2023-05",
+                  "value": 37.088050314465406
+                },
+                {
+                  "period": "2023-06",
+                  "value": 43.5377358490566
+                },
+                {
+                  "period": "2023-07",
+                  "value": 45.84276729559748
+                },
+                {
+                  "period": "2023-08",
+                  "value": 43.5440251572327
+                },
+                {
+                  "period": "2023-09",
+                  "value": 37.229559748427675
+                },
+                {
+                  "period": "2023-10",
+                  "value": 28.361635220125788
+                },
+                {
+                  "period": "2023-11",
+                  "value": 19.68867924528302
+                },
+                {
+                  "period": "2023-12",
+                  "value": 13.251572327044025
+                },
+                {
+                  "period": "2024-01",
+                  "value": 11.776729559748428
+                },
+                {
+                  "period": "2024-02",
+                  "value": 14.28930817610063
+                },
+                {
+                  "period": "2024-03",
+                  "value": 20.732704402515722
+                },
+                {
+                  "period": "2024-04",
+                  "value": 29.342767295597483
+                },
+                {
+                  "period": "2024-05",
+                  "value": 38.144654088050316
+                },
+                {
+                  "period": "2024-06",
+                  "value": 87.99371069182389
+                },
+                {
+                  "period": "2024-07",
+                  "value": 46.905660377358494
+                },
+                {
+                  "period": "2024-08",
+                  "value": 44.4559748427673
+                },
+                {
+                  "period": "2024-09",
+                  "value": 38.16352201257862
+                },
+                {
+                  "period": "2024-10",
+                  "value": 29.40251572327044
+                },
+                {
+                  "period": "2024-11",
+                  "value": 20.666666666666668
+                },
+                {
+                  "period": "2024-12",
+                  "value": 14.216981132075471
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2025-01",
+                  "value": 14.810310968973848
+                },
+                {
+                  "period": "2025-02",
+                  "value": 14.540911515320621
+                },
+                {
+                  "period": "2025-03",
+                  "value": 14.663231447869519
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2024-08",
+                "mae": 18.642175358890967,
+                "rmse": 20.721319004782696,
+                "mapePercent": 97.99224333355126,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2024-09",
+                    "actual": 38.16352201257862,
+                    "predicted": 44.213933439795305
+                  },
+                  {
+                    "period": "2024-10",
+                    "actual": 29.40251572327044,
+                    "predicted": 44.27794458948443
+                  },
+                  {
+                    "period": "2024-11",
+                    "actual": 20.666666666666668,
+                    "predicted": 44.26101596804111
+                  },
+                  {
+                    "period": "2024-12",
+                    "actual": 14.216981132075471,
+                    "predicted": 44.265492972834224
+                  }
+                ]
+              },
+              "training": {
+                "start": "2023-01",
+                "end": "2024-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 69877,
+      "runId": "728ef859-f2be-4de0-80e2-425716f5fcb2",
+      "replyText": "已打开报告模板管理，并查询当前智能体可用模板。\n\n- 当前未返回任何可用模板，因此无法展示模板版本、章节配置或可编辑项。\n- 建议先确认报告模板是否已登记到当前 vector 领域，或联系管理员补充模板配置。\n- 限制：本次结果仅反映当前可访问的模板清单，不代表历史模板或草稿模板；在模板补齐前，不能生成或导出依赖模板结构的正式报告。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 48448,
+      "runId": "0787b58e-59cf-4787-8e67-e638e0af2ee1",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界。\n\n- 省级边界：扩展字段（featureCount）：1\n- 地级市边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n完整矢量数据与交互视图已在工作台展示，可直接缩放、悬停查看各级行政区名称与边界。当前为静态边界呈现，未叠加任何业务监测图层；如需叠加食源性疾病监测点位或热力分布，请明确指定图层类型与时间范围。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 115215,
+      "runId": "9eacf338-3fc3-4801-aa7d-ddcedf64cd54",
+      "replyText": "已在郑州市行政区划底图上完成“监测示例区域”文字标注，地图与标注均已展示。\n\n- 标注图层状态：扩展字段（featureCount）：1\n- 标注覆盖范围：扩展字段（0）：410100\n\n该标注为区域级示意，不代表具体点位或精确边界；如需进一步叠加监测点位、热力或事件图层，可继续指定相应数据层。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月食源性就诊病例数，按月份升序展示完整统计表和折线图，标明单位为例。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 149909,
+      "runId": "6d8aa62f-05f8-415a-bf05-2d05f6a96848",
+      "replyText": "## 研判结论\n- 已按河南省范围完成食源性就诊病例的月份升序统计，工作台已展示完整统计表与折线图，单位为“例”。\n- 从返回的月份序列看，病例数整体呈波动状态，未见明显单调上升或下降趋势；具体高低月份需结合工作台折线图判断。\n\n## 依据\n- 本次查询按月份分组统计病例数，字段完整、无缺失，可直接用于趋势展示。\n- 关键月份量值示例：\n  - 月份：2024-01；病例数：173\n  - 月份：2024-05；病例数：151\n  - 月份：2024-10；病例数：145\n\n## 建议\n- 结合折线图识别峰值月份，进一步下钻到地市、病原或食品类别，定位可能的风险来源。\n- 对病例数较高的月份，可联动暴发事件与分子分型数据，判断是否存在聚集性传播。\n\n## 限制\n- 当前数据为合成模拟演示，仅用于功能验证，不代表真实临床或监测结论。\n- 本次仅展示按月汇总，未包含病原、食品类别、地市等维度；如需深入分析，需追加相应查询。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_foodborne_case_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "foodborne-monitoring",
+              "domain": "foodborne",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "病例数",
+            "unit": "例"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月食源性就诊病例数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 160851,
+      "runId": "a0fba4b5-cdf9-4970-b00f-06e34b0b4581",
+      "replyText": "## 研判结论\n- 河南省2024-01至2025-12月度食源性就诊病例数历史完整，已按通用ARIMA基础时序模型完成未来3个月预测，未补零、未改用业务预警模型。\n\n## 依据\n- 历史序列共24个月，无缺失：本次返回 24 行。各字段均无缺失值。\n- 未来3个月预测值：月份：2026-01；数值：129.0952、月份：2026-02；数值：132.0177、月份：2026-03；数值：130.2764\n- 时间留出验证误差：平均绝对误差：20.7415、均方根误差：21.3856、扩展字段（mapePercent）：15.1886\n\n## 建议\n- 预测值整体低于近期实际水平，提示短期就诊压力可能回落，但仍需结合季节性与突发因素动态监测。\n- 验证误差偏大，建议将预测结果作为趋势参考，而非精确预警阈值。\n\n## 限制\n- 数据为合成模拟演示，不代表真实临床或业务风险。\n- 验证为时间留出内部验证，非外部验证；未提供验收阈值，不能判定误差是否可接受。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "foodborne-monitoring",
+              "domain": "foodborne",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2024-01",
+                  "value": 173
+                },
+                {
+                  "period": "2024-02",
+                  "value": 161
+                },
+                {
+                  "period": "2024-03",
+                  "value": 167
+                },
+                {
+                  "period": "2024-04",
+                  "value": 165
+                },
+                {
+                  "period": "2024-05",
+                  "value": 151
+                },
+                {
+                  "period": "2024-06",
+                  "value": 152
+                },
+                {
+                  "period": "2024-07",
+                  "value": 149
+                },
+                {
+                  "period": "2024-08",
+                  "value": 151
+                },
+                {
+                  "period": "2024-09",
+                  "value": 150
+                },
+                {
+                  "period": "2024-10",
+                  "value": 145
+                },
+                {
+                  "period": "2024-11",
+                  "value": 134
+                },
+                {
+                  "period": "2024-12",
+                  "value": 141
+                },
+                {
+                  "period": "2025-01",
+                  "value": 160
+                },
+                {
+                  "period": "2025-02",
+                  "value": 156
+                },
+                {
+                  "period": "2025-03",
+                  "value": 178
+                },
+                {
+                  "period": "2025-04",
+                  "value": 178
+                },
+                {
+                  "period": "2025-05",
+                  "value": 156
+                },
+                {
+                  "period": "2025-06",
+                  "value": 160
+                },
+                {
+                  "period": "2025-07",
+                  "value": 161
+                },
+                {
+                  "period": "2025-08",
+                  "value": 159
+                },
+                {
+                  "period": "2025-09",
+                  "value": 139
+                },
+                {
+                  "period": "2025-10",
+                  "value": 133
+                },
+                {
+                  "period": "2025-11",
+                  "value": 146
+                },
+                {
+                  "period": "2025-12",
+                  "value": 134
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 129.09522793169427
+                },
+                {
+                  "period": "2026-02",
+                  "value": 132.01773501794105
+                },
+                {
+                  "period": "2026-03",
+                  "value": 130.2763599753872
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-08",
+                "mae": 20.74151016493723,
+                "rmse": 21.385618630080586,
+                "mapePercent": 15.188635344325563,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2025-09",
+                    "actual": 139,
+                    "predicted": 158.6104949362248
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 133,
+                    "predicted": 158.85569811471106
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 146,
+                    "predicted": 158.70133658175172
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 134,
+                    "predicted": 158.79851102706135
+                  }
+                ]
+              },
+              "training": {
+                "start": "2024-01",
+                "end": "2025-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 49771,
+      "runId": "879b0304-1a53-4f1a-867a-325625e5a61c",
+      "replyText": "已打开报告模板管理，并查询当前智能体可用模板及版本、章节配置。\n\n- 当前未返回任何可用报告模板，也未返回模板版本或章节配置明细。\n- 因此暂不能基于现有模板生成、导出或比较报告章节；建议先在工作台确认模板是否已发布、是否对当前智能体可见，或联系管理员补充模板配置。\n- 本次结果仅反映当前可查询到的模板管理状态，不代表报告功能不可用，也不代表已有报告内容缺失。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 44551,
+      "runId": "8faad7a1-dfcf-4cb9-839b-a4a93f24345c",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界，范围限定为河南省全域。\n\n- 省级边界：扩展字段（featureCount）：1\n- 地级市边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n该地图仅用于展示行政区划范围，不反映监测点分布或业务数据。边界数据来源于本地行政区划目录，完整明细与图层在工作台展示。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 117986,
+      "runId": "f18b1cf6-f34d-4525-ad17-d74af671d590",
+      "replyText": "已完成郑州市行政区划底图上的区域文字标注，标注内容为“监测示例区域”，地图与标注已在工作台展示。\n\n- 标注图层状态为成功，已按指定区域范围生成文字标注。\n- 该标注为区域级示意，不等同于具体点位或精确监测位置。\n\n建议在工作台中查看地图与标注效果；如需进一步叠加监测点位、热力或趋势图层，可继续指定相应数据范围。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月饮用水平均浑浊度，按月份升序展示完整统计表和折线图，标明单位为NTU。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 111790,
+      "runId": "3eec6bb4-9813-4e75-a133-c8813cfb3dcd",
+      "replyText": "已完成河南省指定期间每月饮用水平均浑浊度查询，并按月份升序生成统计表与折线图，单位为 NTU。\n\n- 整体趋势：各月平均浑浊度总体处于相近区间，未出现明显持续上升或下降趋势。\n- 关键证据：\n  - 月份：2024-01；平均浑浊度：0.5841\n  - 月份：2024-06；平均浑浊度：0.6198\n  - 月份：2024-10；平均浑浊度：0.5846\n- 数据支持：本次返回结果中月份与平均浑浊度字段均无缺失，可支持按月度比较。\n- 限制：当前结果来自合成模拟演示数据，仅用于配置与流程验证，不代表真实水质状况或达标结论；完整明细与图表请在工作台查看。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_env_monitoring_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "env-monitoring",
+              "domain": "env",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "平均浑浊度",
+            "unit": "NTU"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月饮用水平均浑浊度，单位为NTU，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 205391,
+      "runId": "6634c48f-fb12-47f6-acf6-abb6428e8b59",
+      "replyText": "## 研判结论\n- 已按河南省范围完成 2024-01 至 2025-12 的月度饮用水平均浑浊度 ARIMA 基础时序预测，并生成未来 3 个月预测与时间留出验证误差；历史月份未出现缺失，无需补零或改用业务预警模型。\n- 预测曲线整体延续历史低位水平，验证阶段显示模型对近端月份存在一定系统性偏高倾向，需结合后续实际监测复核。\n\n## 关键证据\n- 平均绝对误差：0.0347\n- 均方根误差：0.0364\n- 扩展字段（mapePercent）：6.3249\n\n## 建议\n- 将预测值作为趋势参考，不直接作为水质达标或风险判定依据；建议与站点级浑浊度、消毒与管网运行指标联动复核。\n- 若后续月份出现明显偏离，可重新训练或引入外生变量（如降雨、管网维护）提升解释力。\n\n## 限制\n- 本次结果基于合成模拟演示数据，仅用于方法演示，不代表真实水质状况或外部验证有效性。\n- 时间留出验证误差仅反映样本内表现，不能外推为长期预测精度或业务风险水平。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "env-monitoring",
+              "domain": "env",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2024-01",
+                  "value": 0.5840806451612903
+                },
+                {
+                  "period": "2024-02",
+                  "value": 0.5884838709677419
+                },
+                {
+                  "period": "2024-03",
+                  "value": 0.5878709677419355
+                },
+                {
+                  "period": "2024-04",
+                  "value": 0.5690483870967742
+                },
+                {
+                  "period": "2024-05",
+                  "value": 0.6064193548387097
+                },
+                {
+                  "period": "2024-06",
+                  "value": 0.6197903225806451
+                },
+                {
+                  "period": "2024-07",
+                  "value": 0.5770322580645161
+                },
+                {
+                  "period": "2024-08",
+                  "value": 0.5783870967741935
+                },
+                {
+                  "period": "2024-09",
+                  "value": 0.6038870967741936
+                },
+                {
+                  "period": "2024-10",
+                  "value": 0.5845967741935484
+                },
+                {
+                  "period": "2024-11",
+                  "value": 0.6023548387096774
+                },
+                {
+                  "period": "2024-12",
+                  "value": 0.577483870967742
+                },
+                {
+                  "period": "2025-01",
+                  "value": 0.5692258064516129
+                },
+                {
+                  "period": "2025-02",
+                  "value": 0.5563709677419355
+                },
+                {
+                  "period": "2025-03",
+                  "value": 0.5803548387096774
+                },
+                {
+                  "period": "2025-04",
+                  "value": 0.5704032258064515
+                },
+                {
+                  "period": "2025-05",
+                  "value": 0.610758064516129
+                },
+                {
+                  "period": "2025-06",
+                  "value": 0.566483870967742
+                },
+                {
+                  "period": "2025-07",
+                  "value": 0.6072096774193548
+                },
+                {
+                  "period": "2025-08",
+                  "value": 0.5790645161290322
+                },
+                {
+                  "period": "2025-09",
+                  "value": 0.5429516129032258
+                },
+                {
+                  "period": "2025-10",
+                  "value": 0.558258064516129
+                },
+                {
+                  "period": "2025-11",
+                  "value": 0.5390806451612904
+                },
+                {
+                  "period": "2025-12",
+                  "value": 0.5656774193548387
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 0.5642532532673452
+                },
+                {
+                  "period": "2026-02",
+                  "value": 0.5641965834534707
+                },
+                {
+                  "period": "2026-03",
+                  "value": 0.5641943284722345
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-08",
+                "mae": 0.034650594700726095,
+                "rmse": 0.03636057499195983,
+                "mapePercent": 6.324859960318635,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2025-09",
+                    "actual": 0.5429516129032258,
+                    "predicted": 0.5866181378786497
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 0.558258064516129,
+                    "predicted": 0.5859458830948229
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 0.5390806451612904,
+                    "predicted": 0.5860057122085062
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 0.5656774193548387,
+                    "predicted": 0.5860003875564096
+                  }
+                ]
+              },
+              "training": {
+                "start": "2024-01",
+                "end": "2025-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 66683,
+      "runId": "222bed74-4d2c-4b19-8845-d5337a89bded",
+      "replyText": "- 已打开报告模板管理，并查询当前智能体可用模板及版本、章节配置。\n- 当前查询未返回可用模板，也未返回模板版本或章节配置明细，因此暂不能确认存在可编辑或可引用的模板。\n- 建议先在工作台确认模板管理入口是否已加载完整；若仍为空，需要由模板维护方补充登记模板、版本与章节配置后再复核。\n- 限制：本次结果仅能说明当前查询范围内未展示模板信息，不能据此判断模板功能不可用或配置错误。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 34557,
+      "runId": "4f6d2fb5-0c8d-4244-a2b5-67c41769abb6",
+      "replyText": "河南省行政区划地图已生成，包含省、市、县三级边界。\n\n- 省级边界：扩展字段（featureCount）：1\n- 市级边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n**限制**：当前地图基于本地边界数据版本，未叠加业务监测数据图层。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 163688,
+      "runId": "c426f764-b93f-44c2-b924-ccd574a63796",
+      "replyText": "已完成郑州市行政区划底图上的区域文字标注，标注内容为“监测示例区域”，地图与标注均已在工作台展示。\n\n- 标注图层状态为成功，已按指定区域范围渲染文字标注。\n- 该标注为区域级示意性标注，用于标识监测示例区域，不代表具体点位或精确地理坐标。\n\n建议：如需进一步叠加监测数据图层（如病例分布、风险热力等），可在此基础上追加相应数据图层。当前标注仅为区域文字说明，不包含业务数据指标。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2023年1月至2025年12月的每月死亡登记数，按月份升序展示完整统计表和折线图，标明单位为例。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 145274,
+      "runId": "2f94ff64-48fc-413c-be58-69875454a6c6",
+      "replyText": "已完成河南省指定期间每月死亡登记数的查询，并按月份升序生成完整统计表与折线图，单位为“例”。\n\n- 数据覆盖完整，各月份字段均无缺失：本次返回 36 行。各字段均无缺失值。\n- 早期月份示例：月份：2023-01；死亡登记数：8\n- 后期月份示例：月份：2023-10；死亡登记数：17\n\n研判：整体呈逐月上升趋势，提示死亡登记量在该期间内持续增加，需关注是否存在季节性、登记口径变化或真实疾病负担变化。\n\n建议：结合死因构成、年龄结构与地区分布进一步分析，判断趋势来源；对异常月份开展数据质量核查。\n\n限制：当前数据为合成模拟演示，仅用于功能验证，不代表真实临床或公共卫生结论；完整明细与图表请在工作台查看。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_chronic_monitoring_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "chronic-monitoring",
+              "domain": "chronic",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-19",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "死亡登记数",
+            "unit": "例"
+          },
+          "rowCount": 36
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2025年12月的每月死亡登记数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 142755,
+      "runId": "bf96a067-b057-454f-b158-d1c472bbb73a",
+      "replyText": "已完成河南省月度死亡登记数的 ARIMA 基础时序预测，历史序列完整，未出现月份缺失，因此无需按不足处理，也未补零或改用业务预警模型。\n\n- 历史与预测曲线已生成，后续三个月预测值如下：\n  - 月份：2026-01；数值：301.3255\n  - 月份：2026-02；数值：301.5064\n  - 月份：2026-03；数值：301.5311\n- 时间留出验证误差指标：\n  - 平均绝对误差：18.6511\n  - 均方根误差：21.0611\n  - 扩展字段（mapePercent）：6.2593\n\n建议将预测结果用于趋势研判与资源预排，不直接作为单月精确计数或业务预警阈值；后续可结合季节性因素与外部事件做扩展建模。限制：当前为合成模拟演示数据，验证为时间留出而非外部验证，不能代表真实临床或业务风险水平。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "chronic-monitoring",
+              "domain": "chronic",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-19",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2023-01",
+                  "value": 8
+                },
+                {
+                  "period": "2023-02",
+                  "value": 9
+                },
+                {
+                  "period": "2023-03",
+                  "value": 10
+                },
+                {
+                  "period": "2023-04",
+                  "value": 11
+                },
+                {
+                  "period": "2023-05",
+                  "value": 12
+                },
+                {
+                  "period": "2023-06",
+                  "value": 13
+                },
+                {
+                  "period": "2023-07",
+                  "value": 14
+                },
+                {
+                  "period": "2023-08",
+                  "value": 15
+                },
+                {
+                  "period": "2023-09",
+                  "value": 16
+                },
+                {
+                  "period": "2023-10",
+                  "value": 17
+                },
+                {
+                  "period": "2023-11",
+                  "value": 18
+                },
+                {
+                  "period": "2023-12",
+                  "value": 19
+                },
+                {
+                  "period": "2024-01",
+                  "value": 306
+                },
+                {
+                  "period": "2024-02",
+                  "value": 286
+                },
+                {
+                  "period": "2024-03",
+                  "value": 279
+                },
+                {
+                  "period": "2024-04",
+                  "value": 286
+                },
+                {
+                  "period": "2024-05",
+                  "value": 306
+                },
+                {
+                  "period": "2024-06",
+                  "value": 262
+                },
+                {
+                  "period": "2024-07",
+                  "value": 287
+                },
+                {
+                  "period": "2024-08",
+                  "value": 295
+                },
+                {
+                  "period": "2024-09",
+                  "value": 278
+                },
+                {
+                  "period": "2024-10",
+                  "value": 316
+                },
+                {
+                  "period": "2024-11",
+                  "value": 289
+                },
+                {
+                  "period": "2024-12",
+                  "value": 294
+                },
+                {
+                  "period": "2025-01",
+                  "value": 284
+                },
+                {
+                  "period": "2025-02",
+                  "value": 264
+                },
+                {
+                  "period": "2025-03",
+                  "value": 284
+                },
+                {
+                  "period": "2025-04",
+                  "value": 303
+                },
+                {
+                  "period": "2025-05",
+                  "value": 288
+                },
+                {
+                  "period": "2025-06",
+                  "value": 281
+                },
+                {
+                  "period": "2025-07",
+                  "value": 275
+                },
+                {
+                  "period": "2025-08",
+                  "value": 271
+                },
+                {
+                  "period": "2025-09",
+                  "value": 268
+                },
+                {
+                  "period": "2025-10",
+                  "value": 308
+                },
+                {
+                  "period": "2025-11",
+                  "value": 318
+                },
+                {
+                  "period": "2025-12",
+                  "value": 300
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 301.32550490320745
+                },
+                {
+                  "period": "2026-02",
+                  "value": 301.5063788230312
+                },
+                {
+                  "period": "2026-03",
+                  "value": 301.53106026690455
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-06",
+                "mae": 18.65109198521598,
+                "rmse": 21.061091595637485,
+                "mapePercent": 6.259262335351168,
+                "testRows": 6,
+                "rows": [
+                  {
+                    "period": "2025-07",
+                    "actual": 275,
+                    "predicted": 281.9063526306492
+                  },
+                  {
+                    "period": "2025-08",
+                    "actual": 271,
+                    "predicted": 281.9844839896373
+                  },
+                  {
+                    "period": "2025-09",
+                    "actual": 268,
+                    "predicted": 281.9912192371016
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 308,
+                    "predicted": 281.9917998433907
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 318,
+                    "predicted": 281.9918498940629
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 300,
+                    "predicted": 281.9918542086386
+                  }
+                ]
+              },
+              "training": {
+                "start": "2023-01",
+                "end": "2025-12",
+                "rows": 36,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 61730,
+      "runId": "2bd965fc-ad62-472a-b39b-f6c0dbcf10ff",
+      "replyText": "已打开报告模板管理，当前智能体在 chronic 领域可用模板为“死因慢病伤害验收月报修订版”。\n\n- 模板版本：名称：死因慢病伤害验收月报修订版；扩展字段（version）：2\n- 最近更新时间：名称：死因慢病伤害验收月报修订版；更新时间：1,792,052,857,248\n\n该模板按月度周期组织，章节配置包含概览、趋势、区域、专项、建议与溯源等模块，可在工作台查看完整章节顺序与配置。\n\n建议：如需调整章节顺序或增删章节，可在模板编辑器中修改定义后保存新版本。\n\n限制：本次仅展示模板元信息与章节配置，未生成或导出报告内容；章节实际数据填充需结合具体监测数据与报告生成流程。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-scan",
+      "prompt": "使用当前配置数据。对河南省2024年6月诱蚊灯法蚊类监测捕获量执行近似圆形空间扫描，展示候选区域、成员点及统计证据。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 219974,
+      "runId": "9d877106-1a22-4d01-92f4-e31276c25d4d",
+      "replyText": "## 研判结论\n- 河南省 2024 年 6 月诱蚊灯法蚊类监测的近似圆形空间扫描识别出统计显著的聚集区，中心位于郑州市金水区，提示该区域蚊媒捕获量存在明显空间聚集。\n\n## 关键统计证据\n- 扩展字段（relative\\_risk）：39.6976\n- 扩展字段（p\\_value）：0.001\n- 扩展字段（observed\\_count）：14,160\n\n## 成员点与展示\n- 候选区域、成员点及统计标签图层均已生成并在工作台展示，成员点集中于郑州市金水区，采样方法为诱蚊灯法。\n\n## 建议\n- 对郑州市金水区聚集区开展现场复核，核实监测点位布设、诱蚊灯运行与捕获记录，评估是否存在局部高密度蚊媒风险。\n- 结合气温、湿度等环境因素，研判聚集区形成原因，并制定针对性防制措施。\n\n## 限制\n- 本次结果为近似圆形空间扫描，非完整 SaTScan，且捕获量未标准化为采样强度，解释需谨慎。\n- 数据为合成模拟演示，仅用于方法验证，不代表真实监测结论。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_satscan_spatial",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "conditional-poisson-circular-scan-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-backtest",
+      "prompt": "使用当前配置数据。以郑州市2019年1月1日至2025年11月11日的诱蚊灯法蚊类监测记录为历史数据，开展捕获量滚动回测；回测截止日为历史数据末日，训练窗口60个月，预测跨度1个月，比较AR与季节基线，展示有效评估对数和误差。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "backtest": true
+      },
+      "elapsedMs": 161118,
+      "runId": "69f0e61f-00cd-4aca-9e72-89535a80b90a",
+      "replyText": "## 研判结论\n- 郑州市诱蚊灯法蚊类捕获量滚动回测已完成，AR模型在单步预测下整体误差低于季节基线，但拟合优度为负，说明模型对月度波动解释力有限，预测值在部分月份存在系统性偏高或偏低。\n\n## 关键证据\n- 地市：郑州市；采样方法：诱蚊灯法；有效评估对数：12\n- 地市：郑州市；采样方法：诱蚊灯法；平均绝对误差：13.0859\n- 地市：郑州市；采样方法：诱蚊灯法；扩展字段（baselineMae）：39.0139\n\n## 建议与限制\n- 当前结果基于合成模拟数据，仅用于方法演示，不代表真实监测精度；捕获量非标准密度指标，不同采样方法误差不可直接合并比较。\n- 建议结合多模型对比与更长训练窗口进一步验证，并在真实数据到位后重新评估。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_vector_backtest",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "rolling-past-origin-capture-backtest-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "vector-workflow",
+      "prompt": "编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学分析组合流程：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月月度历史序列，不启用LSTM；返回本次提交的科学任务ID和状态。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "submission": true
+      },
+      "elapsedMs": 182655,
+      "runId": "d4bb1909-9ed3-4c75-8f05-9cd64cd16ca5",
+      "replyText": "- 已按指定范围完成组合流程编译，并提交为持久科学任务；本次提交状态为排队中，尚未产生分析结果。\n- 流程包含近似扫描、成员选择、特征矩阵、K-Means 聚类及固定成员的月度历史序列；未启用 LSTM。\n- 关键参数：\n  - 随机种子：42\n  - 扩展字段（simulations）：99\n  - 扩展字段（k）：3\n- 限制：当前数据源为合成模拟演示，结果仅用于流程验证，不代表真实蚊类监测结论；任务完成后需复核实际输出。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_composable_workflow",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "persistent-scientific-dag-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_composable_workflow",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "persistent-scientific-dag-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

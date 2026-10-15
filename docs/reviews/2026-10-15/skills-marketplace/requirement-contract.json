@@ -1,0 +1,2621 @@
+{
+  "purpose": "mock-business-flow-not-external-scientific-validation",
+  "llmMode": "contract",
+  "executedAt": "2026-10-15T08:27:47.683Z",
+  "results": [
+    {
+      "requirementId": 23,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。分析河南省诱蚊灯法蚊类种群动态，以2024年12月底为截止点、前60个月为训练窗口预测未来3个月，展示历史、预测曲线与回测误差。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_population_dynamics",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_population_dynamics",
+          "passed": true
+        },
+        {
+          "name": "nonempty-models",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 4287
+    },
+    {
+      "requirementId": 24,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。直接分析河南省2024年诱蚊灯法蚊类优势种群：按捕获数量计算白纹伊蚊与淡色库蚊的物种构成和多样性，采用K-Means比较地市构成聚类，展示实际结果与方法限制。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_species_composition",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_species_composition",
+          "passed": true
+        },
+        {
+          "name": "nonempty-items",
+          "passed": true
+        },
+        {
+          "name": "nonempty-clusters",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1705
+    },
+    {
+      "requirementId": 25,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。评估河南省2020年7月9日至2025年11月5日病媒对杀虫剂的抗药性，使用该范围历史生测与地理特征训练随机森林，展示药剂、预测等级与留出验证。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_resistance_evaluation",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_resistance_evaluation",
+          "passed": true
+        },
+        {
+          "name": "nonempty-predictions",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1661
+    },
+    {
+      "requirementId": 26,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。分析河南省2024年蚊媒登革病毒PCR检测与宿主物种分布，展示阳性记录比例及高风险组合的关联规则。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_pathogen_risk",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_pathogen_risk",
+          "passed": true
+        },
+        {
+          "name": "nonempty-items",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 426
+    },
+    {
+      "requirementId": 27,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。展示河南省2024年6月诱蚊灯法蚊类监测空间插值热力图，同时计算动态预警阈值和触发依据，说明街道下钻能力，并创建可追踪的核查任务、返回任务编号。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_spatial_early_warning",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_alert_push_dispatch",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_spatial_early_warning",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_alert_push_dispatch",
+          "passed": true
+        },
+        {
+          "name": "nonempty-grid",
+          "passed": true
+        },
+        {
+          "name": "nonempty-monitoringPoints",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 889
+    },
+    {
+      "requirementId": 28,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。演示河南省2024年病媒预警分级站内推送，查看我的站内通知及依据，逐项核对一般、较重、严重风险的接收层级，明确短信和APP渠道尚未接入。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_alert_push_dispatch",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_inbox_read",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_alert_push_dispatch",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_inbox_read",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 620
+    },
+    {
+      "requirementId": 29,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。演示郑州市金水区2024年病媒处置闭环，查看我的分析任务、审批和工单进度，核对处置建议、复测证据及预警解除条件。创建可追踪的核查任务。审批和复测仅查看已有记录，不代替人工审批，不提交虚构复测；尚无记录时如实显示待处理。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_disposal_workflow",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_job_manage",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_disposal_workflow",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_job_manage",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 614
+    },
+    {
+      "requirementId": 30,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。以河南省诱蚊灯法蚊类记录开展GBDT密度预测：历史训练数据范围为2020年1月1日至2024年12月31日，共60个月；预测目标为2025年1—2月（不是历史筛选范围），展示特征权重、预测曲线和回测。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_density_forecast",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_density_forecast",
+          "passed": true
+        },
+        {
+          "name": "nonempty-models",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "requested-training-cutoff-and-forecast-months",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1638
+    },
+    {
+      "requirementId": 31,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。评估河南省2024年诱蚊灯法蚊类监测密度、登革病毒携带率与人群暴露关联的传播风险，展示输入、计算依据和缺失信息。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_transmission_risk",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_transmission_risk",
+          "passed": true
+        },
+        {
+          "name": "computed-exposure-index",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 579
+    },
+    {
+      "requirementId": 32,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。根据河南省2019年1月1日至2025年11月5日抗性历史、用药频率和耐药基因频率，预测未来一年抗药性演化，展示12个月预测和可信区间。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_resistance_evolution",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_resistance_evolution",
+          "passed": true
+        },
+        {
+          "name": "nonempty-history",
+          "passed": true
+        },
+        {
+          "name": "nonempty-forecasts",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1145
+    },
+    {
+      "requirementId": 33,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。查询河南省2024年蚊类优势种，说明白纹伊蚊与淡色库蚊的鉴别要点及监测方法，区分数据库事实和有来源的规范知识。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_monitoring_data_table",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_vector_nlq",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_monitoring_data_table",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_vector_nlq",
+          "passed": true
+        },
+        {
+          "name": "database-and-sourced-knowledge",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 84
+    },
+    {
+      "requirementId": 34,
+      "domain": "vector",
+      "prompt": "使用当前配置数据。生成河南省2024年病媒监测专题报告，包含监测概况、趋势、重点区域和建议，归档并导出文档，展示数据来源及图表。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_auto_report_gen",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_auto_report_gen",
+          "passed": true
+        },
+        {
+          "name": "archived-report-with-chart-and-download",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 154
+    },
+    {
+      "requirementId": 35,
+      "domain": "vector",
+      "prompt": "打开现场图片识别与采集表单。我要上传照片识别病媒，核对自动回填的物种，再填写监测信息、运行质控并提交审核。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_mobile_assistant_api",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_mobile_assistant_api",
+          "passed": true
+        },
+        {
+          "name": "vision-collection-entry",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 41
+    },
+    {
+      "requirementId": 36,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。识别河南省2026年8月短时窗内相同地区、相似症状或共同饮食暴露的食源性聚集病例，展示候选事件、病例明细和判定规则。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_foodborne_cluster_detect",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_foodborne_cluster_detect",
+          "passed": true
+        },
+        {
+          "name": "nonempty-clusters",
+          "passed": true
+        },
+        {
+          "name": "candidate-case-details",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 723
+    },
+    {
+      "requirementId": 37,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。用河南省2024年1月至2026年8月病例、气象和人口资料预测下月食源性高风险地区及病原类型，评估扩散风险并展示实际预测与留出验证。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_foodborne_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_foodborne_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "nonempty-models",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 2479
+    },
+    {
+      "requirementId": 38,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。溯源郑州市金水区2026年8月18日高校食堂事件，查询8月17日至18日的暴露、病例与分离株，对比副溶血性弧菌cgMLST距离，以阈值5展示候选簇，关联病例、食品与供应链线索。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_molecular_trace",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_molecular_trace",
+          "passed": true
+        },
+        {
+          "name": "nonempty-edges",
+          "passed": true
+        },
+        {
+          "name": "nonempty-associations",
+          "passed": true
+        },
+        {
+          "name": "nonempty-caseLinks",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 546
+    },
+    {
+      "requirementId": 39,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。查询郑州市金水区2020年1月1日至2026年8月18日的处置资料，针对2026年8月18日高校食堂聚集事件生成处置建议，匹配此前已结案的历史案例并展示流程、任务进度和依据。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_outbreak_disposal_advice",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_outbreak_disposal_advice",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "nonempty-historicalCases",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 562
+    },
+    {
+      "requirementId": 40,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。展示河南省2026年7—8月食源性监测大屏：区域病例分布地图、聚集事件趋势、高风险食品TOP10，并同时下钻查看郑州市病例明细表（不另绘制病例点地图）。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_foodborne_dashboard",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_foodborne_dashboard",
+          "passed": true
+        },
+        {
+          "name": "nonempty-cities",
+          "passed": true
+        },
+        {
+          "name": "nonempty-trend",
+          "passed": true
+        },
+        {
+          "name": "nonempty-foodTop10",
+          "passed": true
+        },
+        {
+          "name": "nonempty-events",
+          "passed": true
+        },
+        {
+          "name": "nonempty-details",
+          "passed": true
+        },
+        {
+          "name": "regional-case-map-with-real-geometry",
+          "passed": true
+        },
+        {
+          "name": "city-drilldown-details-with-province-map",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 649
+    },
+    {
+      "requirementId": 41,
+      "domain": "foodborne",
+      "prompt": "使用当前配置数据。生成郑州市2026年8月食源性监测月报及高校食堂聚集事件简报，展示来源、归档编号和可下载文档。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_foodborne_report_export",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_foodborne_report_export",
+          "passed": true
+        },
+        {
+          "name": "archived-report-with-chart-and-download",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 66
+    },
+    {
+      "requirementId": 42,
+      "domain": "env",
+      "prompt": "查询技能集市目录，核对环境OCR能力的当前实现状态与接入要求，说明图片/PDF识别和对外API尚缺哪些能力。本项暂缓，只读取目录状态，不调用OCR技能或上传文件。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "explicitly-deferred",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 44
+    },
+    {
+      "requirementId": 43,
+      "domain": "env",
+      "prompt": "使用当前配置数据。对郑州市2026年8月饮用水采样数据做标化，识别异常和缺失，统一指标单位与编码，展示修复前后对照及处理日志。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_standardize",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_standardize",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1183
+    },
+    {
+      "requirementId": 44,
+      "domain": "env",
+      "prompt": "使用当前配置数据。评估郑州市2026年1—8月饮用水安全，比较水源、消毒方式及污染物，展示致癌和非致癌风险的输入与计算依据。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_water_safety_eval",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_water_safety_eval",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 3431
+    },
+    {
+      "requirementId": 45,
+      "domain": "env",
+      "prompt": "使用当前配置数据。根据郑州市2024年1月至2026年8月出厂水指标预测未来水质变化，先完成时序预测并展示水厂分布数据和趋势，再说明乡镇风险热力图是否具备必要的数据粒度；缺少乡镇边界不阻止预测分析。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_water_safety_eval",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_water_safety_eval",
+          "passed": true
+        },
+        {
+          "name": "nonempty-models",
+          "passed": true
+        },
+        {
+          "name": "nonempty-stations",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "fitted-model-and-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 3652
+    },
+    {
+      "requirementId": 46,
+      "domain": "env",
+      "prompt": "使用当前配置数据。分析郑州市2026年7—8月污水诺如病毒浓度与哨点门诊数的0—14天滞后相关，展示各厂站Pearson系数、配对天数及最佳滞后。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_sewage_pathogen_trace",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_sewage_pathogen_trace",
+          "passed": true
+        },
+        {
+          "name": "nonempty-groups",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1602
+    },
+    {
+      "requirementId": 47,
+      "domain": "env",
+      "prompt": "使用当前配置数据。分析郑州市2026年7—8月污水病原浓度高值区，结合排水分区和管网流向追踪潜在污染源，展示可用GIS证据和缺失项。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_sewage_source",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_sewage_source",
+          "passed": true
+        },
+        {
+          "name": "nonempty-stations",
+          "passed": true
+        },
+        {
+          "name": "nonempty-traceEdges",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1633
+    },
+    {
+      "requirementId": 48,
+      "domain": "env",
+      "prompt": "使用当前配置数据。评估郑州市2026年8月15日游泳场所与宾馆卫生指标相关健康风险，展示环境指标、健康效应映射与依据。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_venue",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_venue",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1450
+    },
+    {
+      "requirementId": 49,
+      "domain": "env",
+      "prompt": "使用当前配置数据。对郑州市2026年8月公共场所按卫生管理、人员卫生、公示、检测、禁烟、设施六项评分，展示分项、总分及卫生等级。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_venue",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_venue",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 564
+    },
+    {
+      "requirementId": 50,
+      "domain": "env",
+      "prompt": "使用当前配置数据。分析郑州市2026年8月PM2.5与人群活动，计算儿童和老年人日均暴露，关联呼吸门诊并预测就诊峰值。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_air_climate_health_risk",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_air_climate_health_risk",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "forecast-with-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 2207
+    },
+    {
+      "requirementId": 51,
+      "domain": "env",
+      "prompt": "使用当前配置数据。分析郑州市2026年夏季热浪与心脑血管死亡率，基于截至8月28日的数据生成未来72小时脆弱人群预警。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_air_climate_health_risk",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_air_climate_health_risk",
+          "passed": true
+        },
+        {
+          "name": "nonempty-forecasts",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1563
+    },
+    {
+      "requirementId": 52,
+      "domain": "env",
+      "prompt": "使用当前配置数据。分析河南省2026年7月20日四河流域水体重金属、土壤镉和作物铅的关联，展示水体—土壤—作物污染链线索。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_river_basin_pollution_chain",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_river_basin_pollution_chain",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 600
+    },
+    {
+      "requirementId": 53,
+      "domain": "env",
+      "prompt": "使用当前配置数据。结合河南省2026年7月20日流域肝癌发病率及空间邻接权重，分析环境—健康空间自相关并定位候选集聚区。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_river_basin_pollution_chain",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_river_basin_pollution_chain",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rows",
+          "passed": true
+        },
+        {
+          "name": "nonempty-adjacencyEdges",
+          "passed": true
+        },
+        {
+          "name": "computed-spatial-statistic",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 602
+    },
+    {
+      "requirementId": 54,
+      "domain": "env",
+      "prompt": "使用当前配置数据。演示郑州市2019年1月至2026年8月饮用水、空气与气候的阈值、趋势和联动预警，展示触发依据、综合指数及任务状态。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1503
+    },
+    {
+      "requirementId": 55,
+      "domain": "env",
+      "prompt": "使用当前配置数据。针对郑州市2026年8月饮用水超标、空气污染和热浪，生成对应干预建议，核对目标人群、推送记录及依据。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1409
+    },
+    {
+      "requirementId": 56,
+      "domain": "env",
+      "prompt": "使用当前配置数据。生成郑州市2026年8月环境监测报告，包含指标趋势、高风险区域与健康影响，核对模板设置和文档导出。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_auto_report_gen",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_auto_report_gen",
+          "passed": true
+        },
+        {
+          "name": "archived-report-with-chart-and-download",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 134
+    },
+    {
+      "requirementId": 57,
+      "domain": "env",
+      "prompt": "使用当前配置数据。模拟郑州市2026年8月关闭模拟污染源甲，比较干预前后PM2.5和呼吸门诊风险，展示来源贡献、健康效应参数及敏感性分析。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_scenario_simulation",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_scenario_simulation",
+          "passed": true
+        },
+        {
+          "name": "nonempty-sources",
+          "passed": true
+        },
+        {
+          "name": "nonempty-sensitivity",
+          "passed": true
+        },
+        {
+          "name": "computed-intervention-difference",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 570
+    },
+    {
+      "requirementId": 58,
+      "domain": "env",
+      "prompt": "打开环境移动采样表单并读取我的现有任务及完成进度，不分配新任务。我要扫码录入样本、上传异常点照片，填写信息后演示离线缓存和恢复联网同步。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_env_mobile_sampling",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_env_mobile_sampling",
+          "passed": true
+        },
+        {
+          "name": "nonempty-tasks",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 59
+    },
+    {
+      "requirementId": 59,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。按当前质控规则直接校验河南省2026年1月1日至8月19日死亡登记，识别死因链逻辑错误、缺失和重复，展示候选异常明细及规则依据。区分程序检出的候选异常与人工确认结论；缺少的校验能力明确列出。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_death_cert_qc",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_death_cert_qc",
+          "passed": true
+        },
+        {
+          "name": "nonempty-defects",
+          "passed": true
+        },
+        {
+          "name": "explicit-missing-and-duplicate-checks",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1776
+    },
+    {
+      "requirementId": 60,
+      "domain": "chronic",
+      "prompt": "解析模拟死因文本“a: 心源性休克（2小时）；b: 急性心肌梗死（2天）；第二部分：2型糖尿病（10年）”，展示原文位置、病程、ICD-10三位类目候选与人工复核入口，不补造细分编码。",
+      "status": "REVIEW_REQUIRED",
+      "expectedStatus": "REVIEW_REQUIRED",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_icd10_nlp_inference",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_icd10_nlp_inference",
+          "passed": true
+        },
+        {
+          "name": "auditable-category-candidates",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1585
+    },
+    {
+      "requirementId": 61,
+      "domain": "chronic",
+      "prompt": "对模拟男性68岁、疾病死亡的证明书调用 Iris/MUSE：第一部分a为呼吸衰竭，b为肺癌。展示根本死因候选、规则版本、退回原因并保留人工复核；未配置引擎时明确报告缺项。",
+      "status": "REVIEW_REQUIRED",
+      "expectedStatus": "REVIEW_REQUIRED",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_icd10_nlp_inference",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_icd10_nlp_inference",
+          "passed": true
+        },
+        {
+          "name": "explicit-iris-result-or-blocker",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1549
+    },
+    {
+      "requirementId": 62,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。分析河南省2023年1月至2026年8月死亡率ARIMA趋势与DBSCAN空间聚类，展示人口分母、预测、验证及高风险地区。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_mortality_cluster_rare",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_mortality_cluster_rare",
+          "passed": true
+        },
+        {
+          "name": "nonempty-districts",
+          "passed": true
+        },
+        {
+          "name": "forecast-with-heldout-error",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1884
+    },
+    {
+      "requirementId": 63,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。排查郑州市金水区2026年8月1—19日罕见死因，列出短期内至少3例同类死因的可疑聚集及病例依据。采用24小时滚动聚集窗口；查询日期范围不作为聚集窗口时长。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_mortality_cluster_rare",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_mortality_cluster_rare",
+          "passed": true
+        },
+        {
+          "name": "nonempty-clusters",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 581
+    },
+    {
+      "requirementId": 64,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。根据河南省2024年1月至2026年8月8日慢病登记、人口特征、行为与家族史，预测个体发病概率及人群风险，说明模型验证状态与人口分母。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "nonempty-individuals",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1732
+    },
+    {
+      "requirementId": 65,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。挖掘河南省2024年1月至2026年8月8日高血压、糖尿病等慢病的并发症关联规则，展示支持度、置信度和提升度。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "nonempty-rules",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 559
+    },
+    {
+      "requirementId": 66,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。根据河南省2024年1月至2026年8月肿瘤登记和人口分布生成高风险筛查清单，计算成本效益比并说明成本、检出率及收益假设。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_screening_roi",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_screening_roi",
+          "passed": true
+        },
+        {
+          "name": "nonempty-highRiskList",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "tumor-cohort-population-and-assumed-cost-benefit",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1680
+    },
+    {
+      "requirementId": 67,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。分析河南省2026年1月1日至8月18日伤害病例的类型、年龄、发生时间和场所，识别老年居家跌倒与儿童交通伤害的候选特征簇。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "nonempty-clusters",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1589
+    },
+    {
+      "requirementId": 68,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。分析河南省2026年1月1日至8月18日农村机械伤害与防护装备等诱因，展示决策树、关联强度及可复核依据。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "measured-heldout-validation",
+          "passed": true
+        },
+        {
+          "name": "fitted-explainable-injury-tree",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 1570
+    },
+    {
+      "requirementId": 69,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。排查河南省2026年8月同一场所24小时内至少5例同类伤害，重点核对平顶山市郏县候选聚集的病例和溯源线索。请运行已有滚动聚集检测能力，返回事件与病例依据，不仅查询明细。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "nonempty-events",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 657
+    },
+    {
+      "requirementId": 70,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。基于河南省2024年1月至2026年8月的历史监测数据，实际计算死因、慢病和伤害的阈值、趋势及关联预警，展示依据、任务状态及模型验证结果。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 2853
+    },
+    {
+      "requirementId": 71,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。核对死因慢病预警一般、较重和严重风险的分级推送，查看基层、市级、省级接收对象与通知依据，并查询我的站内通知记录，明确实际送达状态及短信、APP尚未接入。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_inbox_read",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_inbox_read",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 568
+    },
+    {
+      "requirementId": 72,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。生成河南省2026年1月至8月死因慢病伤害综合监测报告，包含死因顺位、减寿年数、慢病趋势和伤害场所TOP5并导出。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_death_report",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_death_report",
+          "passed": true
+        },
+        {
+          "name": "archived-report-with-chart-and-download",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 151
+    },
+    {
+      "requirementId": 73,
+      "domain": "chronic",
+      "prompt": "创建名为“死因慢病伤害验收月报”的月度报告模板，包含概况、趋势、区域、专题、建议和来源章节；保存后修改名称为“死因慢病伤害验收月报修订版”，再复用模板生成河南省2026年1月至8月综合监测报告并导出固定格式文档。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_report_templates",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_chronic_death_report",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_report_templates",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_death_report",
+          "passed": true
+        },
+        {
+          "name": "template-management-entry",
+          "passed": true
+        },
+        {
+          "name": "template-saved-and-revised",
+          "passed": true
+        },
+        {
+          "name": "template-reused-in-export",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 279
+    },
+    {
+      "requirementId": 74,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。针对郑州市金水区2026年8月罕见死因聚集生成干预建议，展示调查依据、责任方与进度。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-signals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 630
+    },
+    {
+      "requirementId": 75,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。针对河南省2026年肿瘤和心脑血管高风险人群生成慢病干预建议，说明适用对象、推送依据及追踪方式。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_risk_forecast",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-individuals",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 4871
+    },
+    {
+      "requirementId": 76,
+      "domain": "chronic",
+      "prompt": "使用当前配置数据。针对河南省2026年儿童跌倒社区与交通伤害高发场所生成伤害干预建议，展示场所证据、建议及跟踪进度。创建可追踪的核查任务。",
+      "status": "SUCCESS",
+      "expectedStatus": "SUCCESS",
+      "passed": true,
+      "checks": [
+        {
+          "name": "requested-capability-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "requested-capability-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_injury_attribution_tree",
+          "passed": true
+        },
+        {
+          "name": "step-result-present-skill_chronic_early_warning_disposal",
+          "passed": true
+        },
+        {
+          "name": "nonempty-clusters",
+          "passed": true
+        },
+        {
+          "name": "persisted-investigation-job",
+          "passed": true
+        },
+        {
+          "name": "llm-intent-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-planning-invoked",
+          "passed": true
+        },
+        {
+          "name": "llm-synthesis-invoked",
+          "passed": true
+        },
+        {
+          "name": "conversation-persisted",
+          "passed": true
+        },
+        {
+          "name": "nonempty-conclusion",
+          "passed": true
+        }
+      ],
+      "elapsedMs": 4285
+    }
+  ]
+}

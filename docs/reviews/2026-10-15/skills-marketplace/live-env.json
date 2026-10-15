@@ -1,0 +1,315 @@
+{
+  "purpose": "live-LLM-with-isolated-Mock-data-not-professional-validation",
+  "results": [
+    {
+      "scenarioId": "env-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 44551,
+      "runId": "8faad7a1-dfcf-4cb9-839b-a4a93f24345c",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界，范围限定为河南省全域。\n\n- 省级边界：扩展字段（featureCount）：1\n- 地级市边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n该地图仅用于展示行政区划范围，不反映监测点分布或业务数据。边界数据来源于本地行政区划目录，完整明细与图层在工作台展示。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 117986,
+      "runId": "f18b1cf6-f34d-4525-ad17-d74af671d590",
+      "replyText": "已完成郑州市行政区划底图上的区域文字标注，标注内容为“监测示例区域”，地图与标注已在工作台展示。\n\n- 标注图层状态为成功，已按指定区域范围生成文字标注。\n- 该标注为区域级示意，不等同于具体点位或精确监测位置。\n\n建议在工作台中查看地图与标注效果；如需进一步叠加监测点位、热力或趋势图层，可继续指定相应数据范围。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月饮用水平均浑浊度，按月份升序展示完整统计表和折线图，标明单位为NTU。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 111790,
+      "runId": "3eec6bb4-9813-4e75-a133-c8813cfb3dcd",
+      "replyText": "已完成河南省指定期间每月饮用水平均浑浊度查询，并按月份升序生成统计表与折线图，单位为 NTU。\n\n- 整体趋势：各月平均浑浊度总体处于相近区间，未出现明显持续上升或下降趋势。\n- 关键证据：\n  - 月份：2024-01；平均浑浊度：0.5841\n  - 月份：2024-06；平均浑浊度：0.6198\n  - 月份：2024-10；平均浑浊度：0.5846\n- 数据支持：本次返回结果中月份与平均浑浊度字段均无缺失，可支持按月度比较。\n- 限制：当前结果来自合成模拟演示数据，仅用于配置与流程验证，不代表真实水质状况或达标结论；完整明细与图表请在工作台查看。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_env_monitoring_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "env-monitoring",
+              "domain": "env",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "平均浑浊度",
+            "unit": "NTU"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月饮用水平均浑浊度，单位为NTU，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 205391,
+      "runId": "6634c48f-fb12-47f6-acf6-abb6428e8b59",
+      "replyText": "## 研判结论\n- 已按河南省范围完成 2024-01 至 2025-12 的月度饮用水平均浑浊度 ARIMA 基础时序预测，并生成未来 3 个月预测与时间留出验证误差；历史月份未出现缺失，无需补零或改用业务预警模型。\n- 预测曲线整体延续历史低位水平，验证阶段显示模型对近端月份存在一定系统性偏高倾向，需结合后续实际监测复核。\n\n## 关键证据\n- 平均绝对误差：0.0347\n- 均方根误差：0.0364\n- 扩展字段（mapePercent）：6.3249\n\n## 建议\n- 将预测值作为趋势参考，不直接作为水质达标或风险判定依据；建议与站点级浑浊度、消毒与管网运行指标联动复核。\n- 若后续月份出现明显偏离，可重新训练或引入外生变量（如降雨、管网维护）提升解释力。\n\n## 限制\n- 本次结果基于合成模拟演示数据，仅用于方法演示，不代表真实水质状况或外部验证有效性。\n- 时间留出验证误差仅反映样本内表现，不能外推为长期预测精度或业务风险水平。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "env-monitoring",
+              "domain": "env",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2024-01",
+                  "value": 0.5840806451612903
+                },
+                {
+                  "period": "2024-02",
+                  "value": 0.5884838709677419
+                },
+                {
+                  "period": "2024-03",
+                  "value": 0.5878709677419355
+                },
+                {
+                  "period": "2024-04",
+                  "value": 0.5690483870967742
+                },
+                {
+                  "period": "2024-05",
+                  "value": 0.6064193548387097
+                },
+                {
+                  "period": "2024-06",
+                  "value": 0.6197903225806451
+                },
+                {
+                  "period": "2024-07",
+                  "value": 0.5770322580645161
+                },
+                {
+                  "period": "2024-08",
+                  "value": 0.5783870967741935
+                },
+                {
+                  "period": "2024-09",
+                  "value": 0.6038870967741936
+                },
+                {
+                  "period": "2024-10",
+                  "value": 0.5845967741935484
+                },
+                {
+                  "period": "2024-11",
+                  "value": 0.6023548387096774
+                },
+                {
+                  "period": "2024-12",
+                  "value": 0.577483870967742
+                },
+                {
+                  "period": "2025-01",
+                  "value": 0.5692258064516129
+                },
+                {
+                  "period": "2025-02",
+                  "value": 0.5563709677419355
+                },
+                {
+                  "period": "2025-03",
+                  "value": 0.5803548387096774
+                },
+                {
+                  "period": "2025-04",
+                  "value": 0.5704032258064515
+                },
+                {
+                  "period": "2025-05",
+                  "value": 0.610758064516129
+                },
+                {
+                  "period": "2025-06",
+                  "value": 0.566483870967742
+                },
+                {
+                  "period": "2025-07",
+                  "value": 0.6072096774193548
+                },
+                {
+                  "period": "2025-08",
+                  "value": 0.5790645161290322
+                },
+                {
+                  "period": "2025-09",
+                  "value": 0.5429516129032258
+                },
+                {
+                  "period": "2025-10",
+                  "value": 0.558258064516129
+                },
+                {
+                  "period": "2025-11",
+                  "value": 0.5390806451612904
+                },
+                {
+                  "period": "2025-12",
+                  "value": 0.5656774193548387
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 0.5642532532673452
+                },
+                {
+                  "period": "2026-02",
+                  "value": 0.5641965834534707
+                },
+                {
+                  "period": "2026-03",
+                  "value": 0.5641943284722345
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-08",
+                "mae": 0.034650594700726095,
+                "rmse": 0.03636057499195983,
+                "mapePercent": 6.324859960318635,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2025-09",
+                    "actual": 0.5429516129032258,
+                    "predicted": 0.5866181378786497
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 0.558258064516129,
+                    "predicted": 0.5859458830948229
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 0.5390806451612904,
+                    "predicted": 0.5860057122085062
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 0.5656774193548387,
+                    "predicted": 0.5860003875564096
+                  }
+                ]
+              },
+              "training": {
+                "start": "2024-01",
+                "end": "2025-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "env-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 66683,
+      "runId": "222bed74-4d2c-4b19-8845-d5337a89bded",
+      "replyText": "- 已打开报告模板管理，并查询当前智能体可用模板及版本、章节配置。\n- 当前查询未返回可用模板，也未返回模板版本或章节配置明细，因此暂不能确认存在可编辑或可引用的模板。\n- 建议先在工作台确认模板管理入口是否已加载完整；若仍为空，需要由模板维护方补充登记模板、版本与章节配置后再复核。\n- 限制：本次结果仅能说明当前查询范围内未展示模板信息，不能据此判断模板功能不可用或配置错误。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    }
+  ]
+}

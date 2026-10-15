@@ -1,0 +1,1657 @@
+{
+  "customPolicy": "用户自定义技能按所属领域归入业务技能；按服务端当前身份过滤，保留数据，不删除用户成果。",
+  "domains": [
+    {
+      "domain": "vector",
+      "total": 20,
+      "business": 15,
+      "general": 5,
+      "skills": [
+        {
+          "id": "skill_species_composition",
+          "name": "物种构成、多样性与探索性 K-Means",
+          "method": "method-separated-kmeans-capture-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            24
+          ]
+        },
+        {
+          "id": "skill_pathogen_risk",
+          "name": "PCR 检测比例、宿主物种分布与两项关联规则",
+          "method": "pcr-record-pair-association-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            26
+          ]
+        },
+        {
+          "id": "skill_spatial_early_warning",
+          "name": "监测捕获量 IDW 插值（不生成疾病预警）",
+          "method": "observed-capture-idw-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            27
+          ]
+        },
+        {
+          "id": "skill_auto_report_gen",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            34
+          ]
+        },
+        {
+          "id": "skill_mobile_assistant_api",
+          "name": "现场图片识别与采集助手",
+          "method": "vision-species-recognition-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            35
+          ]
+        },
+        {
+          "id": "skill_meta_custom_builder",
+          "name": "病媒对话式自定义技能构建器 (Meta-Skill Builder)",
+          "method": "validated-custom-skill-create-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "由创建技能入口提供，避免重复卡片",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_monitoring_data_table",
+          "name": "Text2SQL 查询与图表",
+          "method": "bounded-domain-query-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "text2sql-visualization",
+          "scenarioIds": [
+            33,
+            "vector-query-chart"
+          ]
+        },
+        {
+          "id": "skill_satscan_spatial",
+          "name": "近似圆形空间扫描（非完整 SaTScan）",
+          "method": "conditional-poisson-circular-scan-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            "vector-scan"
+          ]
+        },
+        {
+          "id": "skill_lstm_predictor",
+          "name": "LSTM 深度时序外推预测模型",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_satscan_kmeans_lstm",
+          "name": "SaTScan ➔ K-Means ➔ LSTM 多步科学计算流水线",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_vector_backtest",
+          "name": "病媒捕获量滚动回测与季节基线对照",
+          "method": "rolling-past-origin-capture-backtest-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "observed-backtest",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            "vector-backtest"
+          ]
+        },
+        {
+          "id": "skill_sampling_event_register",
+          "name": "审核登记采样访次与明确投入",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_measurement_prepare",
+          "name": "生成统一监测测量工件",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_selection_build",
+          "name": "从授权测量工件选择稳定地点",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_feature_matrix_build",
+          "name": "按固定地点生成可核验特征矩阵",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_series_build",
+          "name": "按固定成员生成等间隔历史序列",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_scientific_artifact_read",
+          "name": "校验并查看科学工件契约",
+          "method": "scientific-artifact-foundation-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_composable_workflow",
+          "name": "编译、提交和控制持久科学 DAG",
+          "method": "persistent-scientific-dag-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            "vector-workflow"
+          ]
+        },
+        {
+          "id": "skill_scientific_scan",
+          "name": "按测量工件执行近似圆形条件泊松扫描",
+          "method": "artifact-scientific-kernels-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_scan_member_select",
+          "name": "从扫描工件固定成员选择",
+          "method": "artifact-scientific-kernels-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_scientific_kmeans",
+          "name": "按特征矩阵执行探索性 K-Means",
+          "method": "artifact-scientific-kernels-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_cluster_member_select",
+          "name": "从聚类工件固定成员选择",
+          "method": "artifact-scientific-kernels-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "依赖前序工件的底层步骤，由科学分析流程统一编排",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_arima_forecast",
+          "name": "ARIMA 基础时序预测",
+          "method": "shared-arima-forecast-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "arima-forecast",
+          "scenarioIds": [
+            "vector-arima"
+          ]
+        },
+        {
+          "id": "skill_vector_nlq",
+          "name": "病媒基础知识检索",
+          "method": "sourced-vector-knowledge-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            33
+          ]
+        },
+        {
+          "id": "skill_population_dynamics",
+          "name": "种群 ARIMA/LSTM 预测",
+          "method": "vector-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            23
+          ]
+        },
+        {
+          "id": "skill_density_forecast",
+          "name": "气象融合密度 GBDT",
+          "method": "vector-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            30
+          ]
+        },
+        {
+          "id": "skill_resistance_evaluation",
+          "name": "抗药性随机森林预测",
+          "method": "vector-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            25
+          ]
+        },
+        {
+          "id": "skill_transmission_risk",
+          "name": "密度 PCR 人群暴露关联",
+          "method": "vector-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            31
+          ]
+        },
+        {
+          "id": "skill_resistance_evolution",
+          "name": "条件贝叶斯抗性演化",
+          "method": "vector-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            32
+          ]
+        },
+        {
+          "id": "skill_alert_push_dispatch",
+          "name": "风险分级、干预依据与任务",
+          "method": "vector-warning-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "id": "skill_disposal_workflow",
+          "name": "风险分级、干预依据与任务",
+          "method": "vector-warning-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "与风险分级处置技能使用相同实现，场景统一到同一入口",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_report_templates",
+          "name": "报告模板管理",
+          "method": "versioned-report-template-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "report-templates",
+          "scenarioIds": [
+            "vector-templates"
+          ]
+        },
+        {
+          "id": "skill_session_manage",
+          "name": "用户对话会话管理（不是领域监测数据查询）",
+          "method": "skill_session_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_session_journal",
+          "name": "内部会话运行记录",
+          "method": "skill_session_journal-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "内部执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_collection_manage",
+          "name": "现场采集质控与提交（人工物种录入）",
+          "method": "skill_collection_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_catalog_manage",
+          "name": "技能列表、编辑与删除",
+          "method": "skill_catalog_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_artifact_export",
+          "name": "导出真实查询 CSV 或已归档报告 Markdown",
+          "method": "skill_artifact_export-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_daemon_surveillance",
+          "name": "配置周期主线Agent巡检",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_job_manage",
+          "name": "提交、读取持久分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": [
+            29
+          ]
+        },
+        {
+          "id": "skill_approval_decision",
+          "name": "专业审批分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_retest_submit",
+          "name": "提交已采集的真实复测记录",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_inbox_read",
+          "name": "查看已投递站内通知",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": [
+            28
+          ]
+        },
+        {
+          "id": "skill_map_display",
+          "name": "行政区划地图显示",
+          "method": "local-administrative-map-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-display",
+          "scenarioIds": [
+            "vector-map"
+          ]
+        },
+        {
+          "id": "skill_map_annotation",
+          "name": "地图区域标注",
+          "method": "verified-map-annotation-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-annotation",
+          "scenarioIds": [
+            "vector-annotation"
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "foodborne",
+      "total": 11,
+      "business": 6,
+      "general": 5,
+      "skills": [
+        {
+          "id": "skill_spatial_early_warning",
+          "name": "全域时空动态多维预警与地图热力分析",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_auto_report_gen",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "与本领域专题报告重复，保留兼容调用",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_food_attribution",
+          "name": "已报告食品及阳性病例统计",
+          "method": "recorded-food-case-summary-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "已报告食品统计由病例查询与动态看板覆盖",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_foodborne_report_export",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            41
+          ]
+        },
+        {
+          "id": "skill_foodborne_case_table",
+          "name": "Text2SQL 查询与图表",
+          "method": "bounded-domain-query-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "text2sql-visualization",
+          "scenarioIds": [
+            "foodborne-query-chart"
+          ]
+        },
+        {
+          "id": "skill_foodborne_custom_builder",
+          "name": "食源性专属自定义技能构建器 (Meta-Skill Builder)",
+          "method": "validated-custom-skill-create-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "由创建技能入口提供，避免重复卡片",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_arima_forecast",
+          "name": "ARIMA 基础时序预测",
+          "method": "shared-arima-forecast-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "arima-forecast",
+          "scenarioIds": [
+            "foodborne-arima"
+          ]
+        },
+        {
+          "id": "skill_foodborne_cluster_detect",
+          "name": "动态阈值与共同暴露聚集",
+          "method": "foodborne-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            36
+          ]
+        },
+        {
+          "id": "skill_foodborne_risk_forecast",
+          "name": "食源性气象 LSTM 与扩散评估",
+          "method": "foodborne-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            37
+          ]
+        },
+        {
+          "id": "skill_molecular_trace",
+          "name": "基因与供应链证据图谱",
+          "method": "foodborne-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            38
+          ]
+        },
+        {
+          "id": "skill_foodborne_dashboard",
+          "name": "动态监测与区域明细",
+          "method": "foodborne-dashboard-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            40
+          ]
+        },
+        {
+          "id": "skill_outbreak_disposal_advice",
+          "name": "风险分级、干预依据与任务",
+          "method": "foodborne-warning-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            39
+          ]
+        },
+        {
+          "id": "skill_report_templates",
+          "name": "报告模板管理",
+          "method": "versioned-report-template-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "report-templates",
+          "scenarioIds": [
+            "foodborne-templates"
+          ]
+        },
+        {
+          "id": "skill_session_manage",
+          "name": "用户对话会话管理（不是领域监测数据查询）",
+          "method": "skill_session_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_session_journal",
+          "name": "内部会话运行记录",
+          "method": "skill_session_journal-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "内部执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_catalog_manage",
+          "name": "技能列表、编辑与删除",
+          "method": "skill_catalog_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_artifact_export",
+          "name": "导出真实查询 CSV 或已归档报告 Markdown",
+          "method": "skill_artifact_export-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_daemon_surveillance",
+          "name": "配置周期主线Agent巡检",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_job_manage",
+          "name": "提交、读取持久分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_approval_decision",
+          "name": "专业审批分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_retest_submit",
+          "name": "提交已采集的真实复测记录",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_inbox_read",
+          "name": "查看已投递站内通知",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_map_display",
+          "name": "行政区划地图显示",
+          "method": "local-administrative-map-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-display",
+          "scenarioIds": [
+            "foodborne-map"
+          ]
+        },
+        {
+          "id": "skill_map_annotation",
+          "name": "地图区域标注",
+          "method": "verified-map-annotation-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-annotation",
+          "scenarioIds": [
+            "foodborne-annotation"
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "env",
+      "total": 16,
+      "business": 11,
+      "general": 5,
+      "skills": [
+        {
+          "id": "skill_spatial_early_warning",
+          "name": "全域时空动态多维预警与地图热力分析",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_auto_report_gen",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            56
+          ]
+        },
+        {
+          "id": "skill_env_ocr_entry",
+          "name": "水质与环境单据 OCR 智能录入引擎",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": [
+            42
+          ]
+        },
+        {
+          "id": "skill_sewage_pathogen_trace",
+          "name": "污水日历滞后探索统计",
+          "method": "calendar-aligned-pearson-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            46
+          ]
+        },
+        {
+          "id": "skill_env_monitoring_table",
+          "name": "Text2SQL 查询与图表",
+          "method": "bounded-domain-query-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "text2sql-visualization",
+          "scenarioIds": [
+            "env-query-chart"
+          ]
+        },
+        {
+          "id": "skill_env_custom_builder",
+          "name": "环境健康专属自定义技能构建器 (Meta-Skill Builder)",
+          "method": "validated-custom-skill-create-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "由创建技能入口提供，避免重复卡片",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_arima_forecast",
+          "name": "ARIMA 基础时序预测",
+          "method": "shared-arima-forecast-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "arima-forecast",
+          "scenarioIds": [
+            "env-arima"
+          ]
+        },
+        {
+          "id": "skill_env_standardize",
+          "name": "数据单位标化与插值审计",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            43
+          ]
+        },
+        {
+          "id": "skill_water_safety_eval",
+          "name": "饮用水 RF 评估与 LSTM 趋势",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            44,
+            45
+          ]
+        },
+        {
+          "id": "skill_sewage_source",
+          "name": "污水空间聚类与管网溯源",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            47
+          ]
+        },
+        {
+          "id": "skill_env_venue",
+          "name": "场所健康映射与六维评级",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            48,
+            49
+          ]
+        },
+        {
+          "id": "skill_air_climate_health_risk",
+          "name": "人群暴露与72小时热浪预测",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            50,
+            51
+          ]
+        },
+        {
+          "id": "skill_river_basin_pollution_chain",
+          "name": "跨介质相关与生态空间自相关",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            52,
+            53
+          ]
+        },
+        {
+          "id": "skill_env_scenario_simulation",
+          "name": "显式参数环境干预推演",
+          "method": "env-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            57
+          ]
+        },
+        {
+          "id": "skill_env_early_warning_disposal",
+          "name": "风险分级、干预依据与任务",
+          "method": "env-warning-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            54,
+            55
+          ]
+        },
+        {
+          "id": "skill_report_templates",
+          "name": "报告模板管理",
+          "method": "versioned-report-template-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "report-templates",
+          "scenarioIds": [
+            "env-templates"
+          ]
+        },
+        {
+          "id": "skill_env_mobile_sampling",
+          "name": "环境现场采样与离线同步",
+          "method": "environment-offline-sampling-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            58
+          ]
+        },
+        {
+          "id": "skill_session_manage",
+          "name": "用户对话会话管理（不是领域监测数据查询）",
+          "method": "skill_session_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_session_journal",
+          "name": "内部会话运行记录",
+          "method": "skill_session_journal-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "内部执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_catalog_manage",
+          "name": "技能列表、编辑与删除",
+          "method": "skill_catalog_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_artifact_export",
+          "name": "导出真实查询 CSV 或已归档报告 Markdown",
+          "method": "skill_artifact_export-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_daemon_surveillance",
+          "name": "配置周期主线Agent巡检",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_job_manage",
+          "name": "提交、读取持久分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_approval_decision",
+          "name": "专业审批分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_retest_submit",
+          "name": "提交已采集的真实复测记录",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_inbox_read",
+          "name": "查看已投递站内通知",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_map_display",
+          "name": "行政区划地图显示",
+          "method": "local-administrative-map-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-display",
+          "scenarioIds": [
+            "env-map"
+          ]
+        },
+        {
+          "id": "skill_map_annotation",
+          "name": "地图区域标注",
+          "method": "verified-map-annotation-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-annotation",
+          "scenarioIds": [
+            "env-annotation"
+          ]
+        }
+      ]
+    },
+    {
+      "domain": "chronic",
+      "total": 13,
+      "business": 8,
+      "general": 5,
+      "skills": [
+        {
+          "id": "skill_spatial_early_warning",
+          "name": "全域时空动态多维预警与地图热力分析",
+          "method": "not-implemented",
+          "availability": "planned",
+          "implementationStatus": "planned",
+          "validationStatus": "unvalidated",
+          "listed": false,
+          "kind": "business",
+          "reason": "尚未实现的占位能力，不作为可运行技能上架",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_auto_report_gen",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "与本领域专题报告重复，保留兼容调用",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_icd10_nlp_inference",
+          "name": "死因文本解析与 Iris/MUSE 编码（需复核）",
+          "method": "icd10-iris-mortality-v2",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            60,
+            61
+          ]
+        },
+        {
+          "id": "skill_chronic_death_report",
+          "name": "监测专题与综合报告",
+          "method": "sectioned-monitoring-report-v2",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            72
+          ]
+        },
+        {
+          "id": "skill_chronic_monitoring_table",
+          "name": "Text2SQL 查询与图表",
+          "method": "bounded-domain-query-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "text2sql-visualization",
+          "scenarioIds": [
+            "chronic-query-chart"
+          ]
+        },
+        {
+          "id": "skill_chronic_custom_builder",
+          "name": "慢病死因专属自定义技能构建器 (Meta-Skill Builder)",
+          "method": "validated-custom-skill-create-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "由创建技能入口提供，避免重复卡片",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_arima_forecast",
+          "name": "ARIMA 基础时序预测",
+          "method": "shared-arima-forecast-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "arima-forecast",
+          "scenarioIds": [
+            "chronic-arima"
+          ]
+        },
+        {
+          "id": "skill_death_cert_qc",
+          "name": "规则与异常检测质量校验",
+          "method": "chronic-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            59
+          ]
+        },
+        {
+          "id": "skill_mortality_cluster_rare",
+          "name": "死亡 ARIMA、DBSCAN 与罕见死因监测",
+          "method": "chronic-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            62,
+            63
+          ]
+        },
+        {
+          "id": "skill_chronic_risk_forecast",
+          "name": "随访风险 GBDT 与并发症关联",
+          "method": "chronic-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            64,
+            65,
+            75
+          ]
+        },
+        {
+          "id": "skill_chronic_screening_roi",
+          "name": "肿瘤风险排序与筛查成本效果",
+          "method": "chronic-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            66
+          ]
+        },
+        {
+          "id": "skill_injury_attribution_tree",
+          "name": "伤害聚类、决策树与聚集事件",
+          "method": "chronic-validated-assessment-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            67,
+            68,
+            69,
+            76
+          ]
+        },
+        {
+          "id": "skill_chronic_early_warning_disposal",
+          "name": "风险分级、干预依据与任务",
+          "method": "chronic-warning-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "business",
+          "reason": "面向当前智能体的完整业务场景",
+          "scenarioIds": [
+            70,
+            71,
+            74,
+            75,
+            76
+          ]
+        },
+        {
+          "id": "skill_report_templates",
+          "name": "报告模板管理",
+          "method": "versioned-report-template-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "report-templates",
+          "scenarioIds": [
+            73,
+            "chronic-templates"
+          ]
+        },
+        {
+          "id": "skill_session_manage",
+          "name": "用户对话会话管理（不是领域监测数据查询）",
+          "method": "skill_session_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_session_journal",
+          "name": "内部会话运行记录",
+          "method": "skill_session_journal-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "内部执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_catalog_manage",
+          "name": "技能列表、编辑与删除",
+          "method": "skill_catalog_manage-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_artifact_export",
+          "name": "导出真实查询 CSV 或已归档报告 Markdown",
+          "method": "skill_artifact_export-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_daemon_surveillance",
+          "name": "配置周期主线Agent巡检",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_job_manage",
+          "name": "提交、读取持久分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_approval_decision",
+          "name": "专业审批分析任务",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_retest_submit",
+          "name": "提交已采集的真实复测记录",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": []
+        },
+        {
+          "id": "skill_inbox_read",
+          "name": "查看已投递站内通知",
+          "method": "persistent-evidence-workflow-v1",
+          "availability": "available",
+          "implementationStatus": "partial",
+          "validationStatus": "contract",
+          "listed": false,
+          "kind": "business",
+          "reason": "界面或业务流程内部操作，保留执行能力",
+          "scenarioIds": [
+            71
+          ]
+        },
+        {
+          "id": "skill_map_display",
+          "name": "行政区划地图显示",
+          "method": "local-administrative-map-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-display",
+          "scenarioIds": [
+            "chronic-map"
+          ]
+        },
+        {
+          "id": "skill_map_annotation",
+          "name": "地图区域标注",
+          "method": "verified-map-annotation-v1",
+          "availability": "available",
+          "implementationStatus": "implemented",
+          "validationStatus": "contract",
+          "listed": true,
+          "kind": "general",
+          "reason": "跨智能体复用，数据和权限仍按当前领域隔离",
+          "capabilityId": "map-annotation",
+          "scenarioIds": [
+            "chronic-annotation"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -32,6 +32,7 @@ export interface SkillParameterSchema {
 }
 
 export interface VectorSkill {
+  marketplace?: import('./marketplace').MarketplacePolicy;
   id: string;
   name: string;
   category: SkillCategory;

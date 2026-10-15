@@ -13,7 +13,7 @@ it('has exactly one scene for every original requirement, preserving domain coun
  expect(REQUIREMENT_SCENARIOS.map(s=>s.requirementId)).toEqual(rows.map(m=>Number(m[1])));
  for(const [domain,count] of Object.entries({vector:13,foodborne:6,env:17,chronic:18})){
   const profile=AGENT_PROFILES[domain as keyof typeof AGENT_PROFILES];
-  const scenes=profile.categories.flatMap(c=>c.prompts);
+  const scenes=profile.categories.flatMap(c=>c.prompts).filter(s=>s.requirementId);
   expect(scenes).toHaveLength(count);
   expect(new Set(scenes.map(s=>s.requirementId)).size).toBe(count);
   for(const p of profile.floatingWidget.quickPrompts)expect(scenes).toContain(p);

@@ -1,0 +1,373 @@
+{
+  "purpose": "live-LLM-with-isolated-Mock-data-not-professional-validation",
+  "results": [
+    {
+      "scenarioId": "chronic-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 34557,
+      "runId": "4f6d2fb5-0c8d-4244-a2b5-67c41769abb6",
+      "replyText": "河南省行政区划地图已生成，包含省、市、县三级边界。\n\n- 省级边界：扩展字段（featureCount）：1\n- 市级边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n**限制**：当前地图基于本地边界数据版本，未叠加业务监测数据图层。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 163688,
+      "runId": "c426f764-b93f-44c2-b924-ccd574a63796",
+      "replyText": "已完成郑州市行政区划底图上的区域文字标注，标注内容为“监测示例区域”，地图与标注均已在工作台展示。\n\n- 标注图层状态为成功，已按指定区域范围渲染文字标注。\n- 该标注为区域级示意性标注，用于标识监测示例区域，不代表具体点位或精确地理坐标。\n\n建议：如需进一步叠加监测数据图层（如病例分布、风险热力等），可在此基础上追加相应数据图层。当前标注仅为区域文字说明，不包含业务数据指标。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2023年1月至2025年12月的每月死亡登记数，按月份升序展示完整统计表和折线图，标明单位为例。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 145274,
+      "runId": "2f94ff64-48fc-413c-be58-69875454a6c6",
+      "replyText": "已完成河南省指定期间每月死亡登记数的查询，并按月份升序生成完整统计表与折线图，单位为“例”。\n\n- 数据覆盖完整，各月份字段均无缺失：本次返回 36 行。各字段均无缺失值。\n- 早期月份示例：月份：2023-01；死亡登记数：8\n- 后期月份示例：月份：2023-10；死亡登记数：17\n\n研判：整体呈逐月上升趋势，提示死亡登记量在该期间内持续增加，需关注是否存在季节性、登记口径变化或真实疾病负担变化。\n\n建议：结合死因构成、年龄结构与地区分布进一步分析，判断趋势来源；对异常月份开展数据质量核查。\n\n限制：当前数据为合成模拟演示，仅用于功能验证，不代表真实临床或公共卫生结论；完整明细与图表请在工作台查看。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_chronic_monitoring_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "chronic-monitoring",
+              "domain": "chronic",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-19",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "死亡登记数",
+            "unit": "例"
+          },
+          "rowCount": 36
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2023年1月至2025年12月的每月死亡登记数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 142755,
+      "runId": "bf96a067-b057-454f-b158-d1c472bbb73a",
+      "replyText": "已完成河南省月度死亡登记数的 ARIMA 基础时序预测，历史序列完整，未出现月份缺失，因此无需按不足处理，也未补零或改用业务预警模型。\n\n- 历史与预测曲线已生成，后续三个月预测值如下：\n  - 月份：2026-01；数值：301.3255\n  - 月份：2026-02；数值：301.5064\n  - 月份：2026-03；数值：301.5311\n- 时间留出验证误差指标：\n  - 平均绝对误差：18.6511\n  - 均方根误差：21.0611\n  - 扩展字段（mapePercent）：6.2593\n\n建议将预测结果用于趋势研判与资源预排，不直接作为单月精确计数或业务预警阈值；后续可结合季节性因素与外部事件做扩展建模。限制：当前为合成模拟演示数据，验证为时间留出而非外部验证，不能代表真实临床或业务风险水平。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "chronic-monitoring",
+              "domain": "chronic",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-19",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2023-01",
+                  "value": 8
+                },
+                {
+                  "period": "2023-02",
+                  "value": 9
+                },
+                {
+                  "period": "2023-03",
+                  "value": 10
+                },
+                {
+                  "period": "2023-04",
+                  "value": 11
+                },
+                {
+                  "period": "2023-05",
+                  "value": 12
+                },
+                {
+                  "period": "2023-06",
+                  "value": 13
+                },
+                {
+                  "period": "2023-07",
+                  "value": 14
+                },
+                {
+                  "period": "2023-08",
+                  "value": 15
+                },
+                {
+                  "period": "2023-09",
+                  "value": 16
+                },
+                {
+                  "period": "2023-10",
+                  "value": 17
+                },
+                {
+                  "period": "2023-11",
+                  "value": 18
+                },
+                {
+                  "period": "2023-12",
+                  "value": 19
+                },
+                {
+                  "period": "2024-01",
+                  "value": 306
+                },
+                {
+                  "period": "2024-02",
+                  "value": 286
+                },
+                {
+                  "period": "2024-03",
+                  "value": 279
+                },
+                {
+                  "period": "2024-04",
+                  "value": 286
+                },
+                {
+                  "period": "2024-05",
+                  "value": 306
+                },
+                {
+                  "period": "2024-06",
+                  "value": 262
+                },
+                {
+                  "period": "2024-07",
+                  "value": 287
+                },
+                {
+                  "period": "2024-08",
+                  "value": 295
+                },
+                {
+                  "period": "2024-09",
+                  "value": 278
+                },
+                {
+                  "period": "2024-10",
+                  "value": 316
+                },
+                {
+                  "period": "2024-11",
+                  "value": 289
+                },
+                {
+                  "period": "2024-12",
+                  "value": 294
+                },
+                {
+                  "period": "2025-01",
+                  "value": 284
+                },
+                {
+                  "period": "2025-02",
+                  "value": 264
+                },
+                {
+                  "period": "2025-03",
+                  "value": 284
+                },
+                {
+                  "period": "2025-04",
+                  "value": 303
+                },
+                {
+                  "period": "2025-05",
+                  "value": 288
+                },
+                {
+                  "period": "2025-06",
+                  "value": 281
+                },
+                {
+                  "period": "2025-07",
+                  "value": 275
+                },
+                {
+                  "period": "2025-08",
+                  "value": 271
+                },
+                {
+                  "period": "2025-09",
+                  "value": 268
+                },
+                {
+                  "period": "2025-10",
+                  "value": 308
+                },
+                {
+                  "period": "2025-11",
+                  "value": 318
+                },
+                {
+                  "period": "2025-12",
+                  "value": 300
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 301.32550490320745
+                },
+                {
+                  "period": "2026-02",
+                  "value": 301.5063788230312
+                },
+                {
+                  "period": "2026-03",
+                  "value": 301.53106026690455
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-06",
+                "mae": 18.65109198521598,
+                "rmse": 21.061091595637485,
+                "mapePercent": 6.259262335351168,
+                "testRows": 6,
+                "rows": [
+                  {
+                    "period": "2025-07",
+                    "actual": 275,
+                    "predicted": 281.9063526306492
+                  },
+                  {
+                    "period": "2025-08",
+                    "actual": 271,
+                    "predicted": 281.9844839896373
+                  },
+                  {
+                    "period": "2025-09",
+                    "actual": 268,
+                    "predicted": 281.9912192371016
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 308,
+                    "predicted": 281.9917998433907
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 318,
+                    "predicted": 281.9918498940629
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 300,
+                    "predicted": 281.9918542086386
+                  }
+                ]
+              },
+              "training": {
+                "start": "2023-01",
+                "end": "2025-12",
+                "rows": 36,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "chronic-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 61730,
+      "runId": "2bd965fc-ad62-472a-b39b-f6c0dbcf10ff",
+      "replyText": "已打开报告模板管理，当前智能体在 chronic 领域可用模板为“死因慢病伤害验收月报修订版”。\n\n- 模板版本：名称：死因慢病伤害验收月报修订版；扩展字段（version）：2\n- 最近更新时间：名称：死因慢病伤害验收月报修订版；更新时间：1,792,052,857,248\n\n该模板按月度周期组织，章节配置包含概览、趋势、区域、专项、建议与溯源等模块，可在工作台查看完整章节顺序与配置。\n\n建议：如需调整章节顺序或增删章节，可在模板编辑器中修改定义后保存新版本。\n\n限制：本次仅展示模板元信息与章节配置，未生成或导出报告内容；章节实际数据填充需结合具体监测数据与报告生成流程。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    }
+  ]
+}

@@ -87,3 +87,15 @@ it('binds workflow intents with explicit data scope to the real dataset and enfo
  expect(()=>approveIntent(draft,restricted)).toThrow('Requested geography exceeds server jurisdiction');
  }finally{restore();rmSync(directory,{recursive:true,force:true});}
 });
+
+it('does not misclassify scientific workflow compilation or status reads as writes',async()=>{
+ const {verifyWriteIntent}=await import('@/application/agent/write-intent');
+ const {listSkillDefinitions}=await import('@/application/skills/skill-service');
+ const skill=listSkillDefinitions('vector').find(s=>s.id==='skill_composable_workflow')!;
+ let calls=0;const llm:any={complete:async()=>{calls++;return {role:'assistant',content:'{"authorized":false,"reason":"未请求修改任务"}'};}};
+ const interaction:any={kind:'conversation',userInput:'查看分析任务'};
+ for(const action of ['compile','read'])await verifyWriteIntent(interaction,skill,{action},llm);
+ expect(calls).toBe(0);
+ for(const action of ['submit','cancel','resume'])await expect(verifyWriteIntent(interaction,skill,{action},llm)).rejects.toThrow('未请求修改任务');
+ expect(calls).toBe(3);
+});

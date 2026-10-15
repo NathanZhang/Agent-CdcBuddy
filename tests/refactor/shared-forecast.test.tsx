@@ -1,0 +1,44 @@
+import React from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {beforeAll,afterAll,it,expect} from 'vitest';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {execFileSync} from 'node:child_process';
+import {executeSkill} from '@/application/skills/skill-service';
+import {createDevelopmentContext} from '@/lib/skills/server-executor';
+import {GenerativeComponentRenderer} from '@/components/ag-ui/GenerativeComponentRenderer';
+import {ThemeProvider} from '@/lib/theme/theme-context';
+const before={manifest:process.env.DATASET_MANIFEST_PATH,bindings:process.env.DATASET_REGION_BINDINGS_PATH};
+const directory=mkdtempSync(join(tmpdir(),'cdc-shared-forecast-'));
+const root=join(directory,'bundle');
+beforeAll(()=>{
+ execFileSync('./.venv/bin/python',['scripts/seed-requirement-acceptance.py','--output-dir',root,'--audit-dir',join(root,'audit')],{timeout:30000});
+ process.env.DATASET_MANIFEST_PATH=join(root,'manifest.json');process.env.DATASET_REGION_BINDINGS_PATH=join(root,'region-bindings.json');
+},30000);
+afterAll(()=>{for(const [key,value] of [['DATASET_MANIFEST_PATH',before.manifest],['DATASET_REGION_BINDINGS_PATH',before.bindings]]){if(value===undefined)delete process.env[key!];else process.env[key!]=value;}rmSync(directory,{recursive:true,force:true});});
+const sources={vector:['fact_monitoring','date_id','AVG(capture_count)'],foodborne:['fact_foodborne_case','visit_date','COUNT(*)'],env:['fact_water_monitoring','monitoring_date','AVG(turbidity)'],chronic:['fact_death_registry','death_date','COUNT(*)']};
+it.each(['vector','foodborne','env','chronic'] as const)('fits and renders the shared ARIMA on actual scoped %s query rows',async domain=>{
+ const [table,date,metric]=sources[domain];
+ const start=['foodborne','env'].includes(domain)?2024:2023;
+ const sql=`SELECT SUBSTR(${date},1,7) AS period, ${metric} AS value FROM ${table} GROUP BY period ORDER BY period`;
+ const result=await executeSkill('skill_arima_forecast',{sql,unit:'测试单位',from:`${start}-01-01`,to:`${start+1}-12-31`,horizon:3},createDevelopmentContext(domain));
+ expect(result.status,JSON.stringify(result)).toBe('SUCCESS');
+ const payload=result.payload as any;
+ expect(payload.data.models[0].history).toHaveLength(24);
+ expect(payload.data.models[0].forecasts.map((p:any)=>p.period)).toEqual([`${start+2}-01`,`${start+2}-02`,`${start+2}-03`]);
+ expect(Number.isFinite(payload.data.models[0].validation.rmse)).toBe(true);
+ expect(result.datasets.every(d=>d.domain===domain&&d.origin==='mock')).toBe(true);
+ const html=renderToStaticMarkup(<ThemeProvider><GenerativeComponentRenderer view={{...payload,status:result.status,method:result.method,datasets:result.datasets}}/></ThemeProvider>);
+ expect(html).toContain('data-visualization="line"');expect(html).toContain('模拟数据');expect(html).toContain(`${start+2}-03`);
+});
+it('cannot accept fabricated series or SQL that bypasses authorization',async()=>{
+ const ctx=createDevelopmentContext('vector');
+ const fabricated=await executeSkill('skill_arima_forecast',{rows:[{period:'2024-01',value:100}],unit:'只'},ctx);
+ expect(fabricated.error?.code).toBe('INVALID_INPUT');
+ const unsafe=await executeSkill('skill_arima_forecast',{sql:'DELETE FROM fact_monitoring',unit:'只'},createDevelopmentContext('vector'));
+ expect(unsafe.status).toBe('FAILED');expect(unsafe.payload).toBeNull();
+ const scoped=createDevelopmentContext('env');scoped.principal.role='CITY_EXPERT';scoped.principal.jurisdiction={city:'郑州市'};
+ const denied=await executeSkill('skill_arima_forecast',{sql:'SELECT COUNT(*) AS value FROM fact_water_monitoring',city:'洛阳市',unit:'条'},scoped);
+ expect(denied.error?.code).toBe('FORBIDDEN_SCOPE');
+});

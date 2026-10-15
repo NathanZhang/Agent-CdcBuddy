@@ -3,6 +3,7 @@
 import { useFunctionalInteraction } from '@/features/workbench/use-workbench-controller';
 import React, { useState } from 'react';
 import {implementationLabels,validationLabels} from '@/contracts/skill-capability';
+import { buildMarketplaceSkills } from '@/lib/skills/marketplace';
 import { VectorSkill } from '@/lib/skills/types';
 import { useRbac } from '@/lib/rbac/rbac-context';
 import { getCurrentAgentProfile } from '@/lib/config/agent-profile';
@@ -50,6 +51,8 @@ const ICON_MAP: Record<string, any> = {
 };
 
 interface SkillsDrawerProps {
+  skills?: VectorSkill[];
+  loaded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   onRunSkill: (skill: VectorSkill, prompt?: string) => void;
@@ -60,6 +63,8 @@ interface SkillsDrawerProps {
 }
 
 export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
+  skills,
+  loaded,
   isOpen,
   onClose,
   onRunSkill,
@@ -84,75 +89,16 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
   const profile = getCurrentAgentProfile();
 
-  // 格式化当前智能体所属领域的自定义技能为标准 VectorSkill 结构并合并去重
-  const formattedCustomSkills: VectorSkill[] = customSkills
-    .filter(cs => !cs.domain || cs.domain === profile.domain)
-    .map(cs => ({
-      id: cs.id??cs.skill_id,
-      name: cs.name,
-      category: 'custom',
-      categoryName: '自定义技能',
-      requirementNo: 'Custom',
-      description: cs.description || '由用户在对话中动态生成的分析技能',
-      iconName: 'Sparkles',
-      badgeColor: 'pink',
-      domain: cs.domain || profile.domain,
-      visibility: (cs.visibility as 'private' | 'public') || 'private',
-      availability:'available',implementationStatus:'implemented',validationStatus:'unvalidated',
-      recommendedPrompts: Array.isArray(cs.recommendedPrompts) ? cs.recommendedPrompts : [`执行 ${cs.name}`],
-      requiredRoles: ['PROVINCIAL_ADMIN', 'CITY_EXPERT', 'DISTRICT_SURVEILLANCE'],
-      parametersSchema: { type: 'object', properties: {} },
-      execute: async (args) => {
-        const url = '/api/skills';
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ skillId: cs.id??cs.skill_id, args })
-        });
-        const json = await res.json();
-        return json.data;
-      }
-    }));
-
   const capabilities=typeof window==='undefined'?undefined:(window as any).__CDC_RUNTIME_PROFILE__?.capabilities;
-  // Only the server can advertise executable capabilities; never fall back to the legacy registry.
-  const rawSkills:VectorSkill[]=[...(capabilities??[]).filter((s:any)=>s.domain===profile.domain&&s.visibility!=='internal').map((s:any)=>({...s,visibility:'public',execute:async()=>{throw new Error('请通过主线Agent执行技能');}})),...formattedCustomSkills];
-  const seenSkillIds = new Set<string>();
-  const allSkills: VectorSkill[] = [];
-  for (const s of rawSkills) {
-    if (!seenSkillIds.has(s.id)) {
-      seenSkillIds.add(s.id);
-      allSkills.push(s);
-    }
-  }
-
-  const categoryNameMap: Record<string, string> = {
-    population: '种群/病例动态',
-    resistance: '抗药性评估',
-    pathogen: '病原与溯源',
-    warning: '预警探测',
-    forecast: '风险预测',
-    disposal: '处置闭环',
-    report: '专题报告',
-    table: '监测数据',
-    custom: '自定义技能'
-  };
-
-  // 动态呈现当前智能体真实拥有的分类标签
-  const uniqueCategories = Array.from(new Set(allSkills.map(s => s.category).filter(Boolean)));
+  const allSkills=skills??buildMarketplaceSkills(profile.domain,capabilities,customSkills);
+  const isLoaded=loaded??!!capabilities;
+  const customCount=allSkills.filter(s=>s.category==='custom').length;
   const categories = [
     { id: 'all', name: '全部技能', count: allSkills.length },
-    ...uniqueCategories.map(cat => ({
-      id: cat,
-      name: categoryNameMap[cat] || (allSkills.find(s => s.category === cat)?.categoryName || cat),
-      count: allSkills.filter(s => s.category === cat).length
-    }))
+    { id: 'business', name: '业务场景技能', count: allSkills.filter(s=>s.marketplace?.kind==='business').length },
+    { id: 'general', name: '通用技能', count: allSkills.filter(s=>s.marketplace?.kind==='general').length }
   ];
-
-  const filteredSkills = allSkills.filter(s => {
-    if (selectedCategory === 'all') return true;
-    return s.category === selectedCategory;
-  });
+  const filteredSkills=allSkills.filter(s=>selectedCategory==='all'||s.marketplace?.kind===selectedCategory);
 
   // 处理保存技能编辑
   const handleSaveSkillEdit = async (updated:EditableSkillData)=>{
@@ -204,12 +150,12 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                 <Layers className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">Skills 业务技能中心</h2>
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">Skills 技能集市</h2>
                 <p 
                   className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5"
-                  title={`已接入 ${allSkills.length} 项专业模型与自定义技能${formattedCustomSkills.length > 0 ? ` (含 ${formattedCustomSkills.length} 项用户定制)` : ''}`}
+                  title={`已接入 ${allSkills.length} 项专业模型与自定义技能${customCount > 0 ? ` (含 ${customCount} 项用户定制)` : ''}`}
                 >
-                  已登记 {allSkills.length} 项能力与自定义技能{formattedCustomSkills.length > 0 && ` (含 ${formattedCustomSkills.length} 项定制)`}
+                  已登记 {allSkills.length} 项能力与自定义技能{customCount > 0 && ` (含 ${customCount} 项定制)`}
                 </p>
               </div>
             </div>
@@ -223,6 +169,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
               </button>
               <button
                 onClick={onClose}
+                aria-label="关闭技能集市"
                 className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
@@ -259,7 +206,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
             {filteredSkills.length === 0 ? (
               <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
                 <Sparkles className="w-8 h-8 text-pink-500 mb-2 opacity-60 animate-pulse" />
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{capabilities?'暂无相关技能':'能力目录加载中'}</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{isLoaded?'暂无相关技能':'能力目录加载中'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
                   在对话中输入“帮我创建一个新技能：...”即可由智能体动态解析生成并永久注册到技能集市中。
                 </p>
@@ -283,6 +230,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                 return (
                   <div
                     key={skill.id}
+                    data-skill-id={skill.id}
                     className={`p-4 rounded-xl border flex flex-col gap-3 transition-all ${
                       isCustomCategory
                         ? 'bg-pink-50/30 dark:bg-pink-950/20 border-pink-200 dark:border-pink-500/30 hover:border-pink-400 shadow-xs'
@@ -303,6 +251,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                         <div>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{skill.name}</h3>
+                            <span className="text-[10px] text-slate-500">{skill.marketplace?.kind==='general'?'通用 · 跨智能体复用':'业务场景 · 当前智能体'}</span>
                             
                             {/* 自定义技能专属标签与可见性 */}
                             {isUserCustomSkill && (
@@ -343,7 +292,7 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
 
                       {/* 动作操作按钮组 */}
                       <div className="flex items-center gap-1 shrink-0">
-                        {hasPermission && skill.availability!=='planned' ? (
+                        {hasPermission && skill.availability!=='planned' && skill.recommendedPrompts.length>0 ? (
                           <button
                             onClick={() => {
                               const firstPrompt = skill.recommendedPrompts[0];
@@ -394,21 +343,23 @@ export const SkillsDrawer: React.FC<SkillsDrawerProps> = ({
                     {/* 推荐 Prompts */}
                     {skill.availability!=='planned' && skill.recommendedPrompts && skill.recommendedPrompts.length > 0 && hasPermission && (
                       <div className="bg-white dark:bg-slate-950/60 p-2 rounded-lg border border-slate-200 dark:border-slate-800/80 space-y-1">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">推荐场景（点击发送完整指令）:</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">示例场景（与常用业务场景共用，点击运行）:</span>
                         {skill.recommendedPrompts.map((rp, i) => (
                           <button
                             key={i}
+                            title={typeof rp === 'string' ? rp : rp.prompt}
                             onClick={() => {
                               onRunSkill(skill, typeof rp === 'string' ? rp : rp.prompt);
                               onClose();
                             }}
-                            className={`text-left text-[11px] block truncate hover:underline cursor-pointer ${
+                            className={`text-left text-[11px] block whitespace-normal break-words hover:underline cursor-pointer ${
                               isCustomCategory
                                 ? 'text-pink-600 dark:text-pink-400 hover:text-pink-700'
                                 : 'text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300'
                             }`}
                           >
-                            ▸ {typeof rp === 'string' ? `${skill.name} · 场景 ${i + 1}` : rp.title}
+                            <strong className="block">▸ {typeof rp === 'string' ? `${skill.name} · 场景 ${i + 1}` : rp.title}</strong>
+                            <span className="block mt-1 text-slate-500 leading-relaxed">{typeof rp === 'string' ? rp : rp.prompt}</span>
                           </button>
                         ))}
                       </div>

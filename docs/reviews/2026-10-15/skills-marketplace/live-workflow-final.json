@@ -1,0 +1,54 @@
+{
+  "purpose": "live-LLM-with-isolated-Mock-data-not-professional-validation",
+  "results": [
+    {
+      "scenarioId": "vector-workflow",
+      "prompt": "编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学分析组合流程：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月月度历史序列，不启用LSTM；返回本次提交的科学任务ID和状态。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 182655,
+      "runId": "d4bb1909-9ed3-4c75-8f05-9cd64cd16ca5",
+      "replyText": "- 已按指定范围完成组合流程编译，并提交为持久科学任务；本次提交状态为排队中，尚未产生分析结果。\n- 流程包含近似扫描、成员选择、特征矩阵、K-Means 聚类及固定成员的月度历史序列；未启用 LSTM。\n- 关键参数：\n  - 随机种子：42\n  - 扩展字段（simulations）：99\n  - 扩展字段（k）：3\n- 限制：当前数据源为合成模拟演示，结果仅用于流程验证，不代表真实蚊类监测结论；任务完成后需复核实际输出。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_composable_workflow",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "persistent-scientific-dag-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        },
+        {
+          "skillId": "skill_composable_workflow",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "persistent-scientific-dag-v1",
+          "datasets": [
+            {
+              "id": "vector-monitoring",
+              "domain": "vector",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2025-11-05",
+              "schemaVersion": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

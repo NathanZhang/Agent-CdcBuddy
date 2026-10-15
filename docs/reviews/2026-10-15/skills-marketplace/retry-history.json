@@ -1,0 +1,75 @@
+{
+  "purpose": "Earlier failures retained for audit; latest results are reported separately.",
+  "attempts": [
+    {
+      "scenarioId": "vector-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "status": "FAILED",
+      "error": {
+        "code": "INTENT_REQUEST_BUDGET_EXCEEDED",
+        "message": "地域识别请求预算已耗尽"
+      },
+      "intentDiagnostics": [
+        {
+          "attempt": 2,
+          "code": "INTENT_REQUEST_BUDGET_EXCEEDED",
+          "message": "地域识别请求预算已耗尽"
+        }
+      ],
+      "checks": {
+        "requestedSkills": false,
+        "view": false,
+        "session": false
+      },
+      "runId": "9654879a-1da0-49ca-bb2e-40c0a2117790"
+    },
+    {
+      "scenarioId": "vector-workflow",
+      "prompt": "编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学 DAG：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月历史序列，不启用LSTM；并提供任务ID以便检查或取消。",
+      "status": "FAILED",
+      "error": {
+        "code": "UNREQUESTED_WRITE",
+        "message": "用户请求编译并提交DAG，但拟执行操作仅为读取（read），未包含创建或提交动作，与用户意图不符。"
+      },
+      "intentDiagnostics": null,
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": false
+      },
+      "runId": "cbee28ff-d2ca-4c27-acfb-cd91c57c5d6d"
+    },
+    {
+      "scenarioId": "vector-backtest",
+      "prompt": "使用当前配置数据。以郑州市2019年1月1日至2025年11月11日的诱蚊灯法蚊类监测记录为历史数据，开展捕获量滚动回测；回测截止日为历史数据末日，训练窗口60个月，预测跨度1个月，比较AR与季节基线，展示有效评估对数和误差。",
+      "status": "REVIEW_REQUIRED",
+      "error": {
+        "code": "LLM_SUMMARY_UNAVAILABLE",
+        "message": "业务计算结果已保留，模型研判未通过证据校验"
+      },
+      "intentDiagnostics": null,
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "runId": "0891f58b-2f2f-4d14-bf7c-cb07cb9d0292"
+    },
+    {
+      "scenarioId": "vector-workflow",
+      "prompt": "编译并提交郑州市2024年4月至6月诱蚊灯法蚊类科学 DAG：6月近似扫描→成员选择→特征矩阵→K-Means→固定成员4月至6月历史序列，不启用LSTM；并提供任务ID以便检查或取消。",
+      "status": "FAILED",
+      "error": {
+        "code": "FORBIDDEN_SCIENCE_RUN_OWNER",
+        "message": "FORBIDDEN_SCIENCE_RUN_OWNER"
+      },
+      "intentDiagnostics": null,
+      "checks": {
+        "requestedSkills": true,
+        "view": false,
+        "session": false
+      },
+      "runId": "d679515e-d59e-4856-a44c-14ae648cc912"
+    }
+  ]
+}

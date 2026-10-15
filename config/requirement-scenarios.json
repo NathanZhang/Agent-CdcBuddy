@@ -86,7 +86,7 @@
     "title": "29 · 处置闭环信息",
     "prompt": "使用当前配置数据。演示郑州市金水区2024年病媒处置闭环，查看我的分析任务、审批和工单进度，核对处置建议、复测证据及预警解除条件。创建可追踪的核查任务。审批和复测仅查看已有记录，不代替人工审批，不提交虚构复测；尚无记录时如实显示待处理。",
     "skillIds": [
-      "skill_disposal_workflow",
+      "skill_alert_push_dispatch",
       "skill_job_manage"
     ],
     "acceptance": "任务→审批→工单→复测→核销证据",

@@ -534,7 +534,7 @@ elif [[ "${ACTION}" == "status" ]]; then
     TARGET_DOMAIN="all"
 fi
 
-MOCK_BUNDLE="${4:-${PROJECT_ROOT}/.mock-data/requirement-demo}"
+MOCK_BUNDLE="${4:-${PROJECT_ROOT}/.mock-data/input-regression-20261015}"
 case "${TARGET_DOMAIN}" in vector|foodborne|env|chronic|all) ;; *) log_error "未知智能体领域"; exit 1;; esac
 
 case "${ACTION}" in
@@ -597,6 +597,7 @@ case "${ACTION}" in
         echo ""
         echo "命令示例:"
         echo "  $0 start all mock [目录] - 显式生成或复用四域Mock验收包，启动3101—3104及Worker"
+        echo "  Mock默认数据包：.mock-data/input-regression-20261015（start/restart均可用目录参数覆盖）"
         echo "  $0 stop all mock        - 仅停止Mock验收实例"
         echo "  $0 status all mock      - 查看Mock实例状态；实测3001—3004保持独立"
         echo "  $0 start vector dev      - 启动病媒智能体开发服务 (Port: 3001)"

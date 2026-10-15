@@ -31,6 +31,9 @@ import contextlib
 
 def execute_task(task,args,db_path):
     result = {}
+    if task.endswith('_arima_forecast'):
+        from analytics_engine.shared_forecast import execute
+        return execute(args)
     if task.endswith('_assessment'):
         from analytics_engine.assessments import execute
         return execute(TASK_DOMAINS[task], db_path, args)

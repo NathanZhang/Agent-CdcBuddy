@@ -1,0 +1,315 @@
+{
+  "purpose": "live-LLM-with-isolated-Mock-data-not-professional-validation",
+  "results": [
+    {
+      "scenarioId": "foodborne-map",
+      "prompt": "显示河南省行政区划地图，展示省、市、县三级边界。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 48448,
+      "runId": "0787b58e-59cf-4787-8e67-e638e0af2ee1",
+      "replyText": "河南省行政区划地图已生成，覆盖省、市、县三级边界。\n\n- 省级边界：扩展字段（featureCount）：1\n- 地级市边界：扩展字段（featureCount）：18\n- 县级边界：扩展字段（featureCount）：157\n\n完整矢量数据与交互视图已在工作台展示，可直接缩放、悬停查看各级行政区名称与边界。当前为静态边界呈现，未叠加任何业务监测图层；如需叠加食源性疾病监测点位或热力分布，请明确指定图层类型与时间范围。",
+      "viewType": "MAP_COMPOSITION",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-annotation",
+      "prompt": "在郑州市行政区划底图上添加区域文字标注“监测示例区域”，展示地图与标注。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 115215,
+      "runId": "9eacf338-3fc3-4801-aa7d-ddcedf64cd54",
+      "replyText": "已在郑州市行政区划底图上完成“监测示例区域”文字标注，地图与标注均已展示。\n\n- 标注图层状态：扩展字段（featureCount）：1\n- 标注覆盖范围：扩展字段（0）：410100\n\n该标注为区域级示意，不代表具体点位或精确边界；如需进一步叠加监测点位、热力或事件图层，可继续指定相应数据层。",
+      "viewType": "AGUI_RESULT_GROUP",
+      "skillRuns": [
+        {
+          "skillId": "skill_map_display",
+          "status": "SUCCESS",
+          "payloadType": "MAP_VIEW",
+          "method": "local-administrative-map-v1",
+          "datasets": []
+        },
+        {
+          "skillId": "skill_map_annotation",
+          "status": "SUCCESS",
+          "payloadType": "MAP_ANNOTATION",
+          "method": "verified-map-annotation-v1",
+          "datasets": []
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-query-chart",
+      "prompt": "使用当前配置数据。查询河南省2024年1月至2025年12月的每月食源性就诊病例数，按月份升序展示完整统计表和折线图，标明单位为例。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "chart": true
+      },
+      "elapsedMs": 149909,
+      "runId": "6d8aa62f-05f8-415a-bf05-2d05f6a96848",
+      "replyText": "## 研判结论\n- 已按河南省范围完成食源性就诊病例的月份升序统计，工作台已展示完整统计表与折线图，单位为“例”。\n- 从返回的月份序列看，病例数整体呈波动状态，未见明显单调上升或下降趋势；具体高低月份需结合工作台折线图判断。\n\n## 依据\n- 本次查询按月份分组统计病例数，字段完整、无缺失，可直接用于趋势展示。\n- 关键月份量值示例：\n  - 月份：2024-01；病例数：173\n  - 月份：2024-05；病例数：151\n  - 月份：2024-10；病例数：145\n\n## 建议\n- 结合折线图识别峰值月份，进一步下钻到地市、病原或食品类别，定位可能的风险来源。\n- 对病例数较高的月份，可联动暴发事件与分子分型数据，判断是否存在聚集性传播。\n\n## 限制\n- 当前数据为合成模拟演示，仅用于功能验证，不代表真实临床或监测结论。\n- 本次仅展示按月汇总，未包含病原、食品类别、地市等维度；如需深入分析，需追加相应查询。",
+      "viewType": "DATA_TABLE_VIEW",
+      "skillRuns": [
+        {
+          "skillId": "skill_foodborne_case_table",
+          "status": "SUCCESS",
+          "payloadType": "DATA_TABLE_VIEW",
+          "method": "bounded-domain-query-v1",
+          "datasets": [
+            {
+              "id": "foodborne-monitoring",
+              "domain": "foodborne",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "visualization": {
+            "kind": "line",
+            "xKey": "月份",
+            "yKey": "病例数",
+            "unit": "例"
+          },
+          "rowCount": 24
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-arima",
+      "prompt": "使用当前配置数据。使用通用 ARIMA 基础时序预测技能分析河南省2024年1月至2025年12月的每月食源性就诊病例数，单位为例，预测之后3个月；展示月度历史、预测曲线和时间留出验证误差。历史月份缺失时明确返回不足，不补零、不改用业务预警模型。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true,
+        "forecast": true
+      },
+      "elapsedMs": 160851,
+      "runId": "a0fba4b5-cdf9-4970-b00f-06e34b0b4581",
+      "replyText": "## 研判结论\n- 河南省2024-01至2025-12月度食源性就诊病例数历史完整，已按通用ARIMA基础时序模型完成未来3个月预测，未补零、未改用业务预警模型。\n\n## 依据\n- 历史序列共24个月，无缺失：本次返回 24 行。各字段均无缺失值。\n- 未来3个月预测值：月份：2026-01；数值：129.0952、月份：2026-02；数值：132.0177、月份：2026-03；数值：130.2764\n- 时间留出验证误差：平均绝对误差：20.7415、均方根误差：21.3856、扩展字段（mapePercent）：15.1886\n\n## 建议\n- 预测值整体低于近期实际水平，提示短期就诊压力可能回落，但仍需结合季节性与突发因素动态监测。\n- 验证误差偏大，建议将预测结果作为趋势参考，而非精确预警阈值。\n\n## 限制\n- 数据为合成模拟演示，不代表真实临床或业务风险。\n- 验证为时间留出内部验证，非外部验证；未提供验收阈值，不能判定误差是否可接受。",
+      "viewType": "ANALYTICS_RESULT",
+      "skillRuns": [
+        {
+          "skillId": "skill_arima_forecast",
+          "status": "SUCCESS",
+          "payloadType": "ANALYTICS_RESULT",
+          "method": "shared-arima-forecast-v1",
+          "datasets": [
+            {
+              "id": "foodborne-monitoring",
+              "domain": "foodborne",
+              "origin": "mock",
+              "version": "synthetic-requirement-acceptance-v3-041f584e-9768-486c-b22c-7e8540da4495",
+              "asOf": "2026-08-31",
+              "schemaVersion": "1"
+            }
+          ],
+          "models": [
+            {
+              "model": "ARIMA",
+              "history": [
+                {
+                  "period": "2024-01",
+                  "value": 173
+                },
+                {
+                  "period": "2024-02",
+                  "value": 161
+                },
+                {
+                  "period": "2024-03",
+                  "value": 167
+                },
+                {
+                  "period": "2024-04",
+                  "value": 165
+                },
+                {
+                  "period": "2024-05",
+                  "value": 151
+                },
+                {
+                  "period": "2024-06",
+                  "value": 152
+                },
+                {
+                  "period": "2024-07",
+                  "value": 149
+                },
+                {
+                  "period": "2024-08",
+                  "value": 151
+                },
+                {
+                  "period": "2024-09",
+                  "value": 150
+                },
+                {
+                  "period": "2024-10",
+                  "value": 145
+                },
+                {
+                  "period": "2024-11",
+                  "value": 134
+                },
+                {
+                  "period": "2024-12",
+                  "value": 141
+                },
+                {
+                  "period": "2025-01",
+                  "value": 160
+                },
+                {
+                  "period": "2025-02",
+                  "value": 156
+                },
+                {
+                  "period": "2025-03",
+                  "value": 178
+                },
+                {
+                  "period": "2025-04",
+                  "value": 178
+                },
+                {
+                  "period": "2025-05",
+                  "value": 156
+                },
+                {
+                  "period": "2025-06",
+                  "value": 160
+                },
+                {
+                  "period": "2025-07",
+                  "value": 161
+                },
+                {
+                  "period": "2025-08",
+                  "value": 159
+                },
+                {
+                  "period": "2025-09",
+                  "value": 139
+                },
+                {
+                  "period": "2025-10",
+                  "value": 133
+                },
+                {
+                  "period": "2025-11",
+                  "value": 146
+                },
+                {
+                  "period": "2025-12",
+                  "value": 134
+                }
+              ],
+              "forecasts": [
+                {
+                  "period": "2026-01",
+                  "value": 129.09522793169427
+                },
+                {
+                  "period": "2026-02",
+                  "value": 132.01773501794105
+                },
+                {
+                  "period": "2026-03",
+                  "value": 130.2763599753872
+                }
+              ],
+              "validation": {
+                "strategy": "chronological-recursive-holdout",
+                "trainEnd": "2025-08",
+                "mae": 20.74151016493723,
+                "rmse": 21.385618630080586,
+                "mapePercent": 15.188635344325563,
+                "testRows": 4,
+                "rows": [
+                  {
+                    "period": "2025-09",
+                    "actual": 139,
+                    "predicted": 158.6104949362248
+                  },
+                  {
+                    "period": "2025-10",
+                    "actual": 133,
+                    "predicted": 158.85569811471106
+                  },
+                  {
+                    "period": "2025-11",
+                    "actual": 146,
+                    "predicted": 158.70133658175172
+                  },
+                  {
+                    "period": "2025-12",
+                    "actual": 134,
+                    "predicted": 158.79851102706135
+                  }
+                ]
+              },
+              "training": {
+                "start": "2024-01",
+                "end": "2025-12",
+                "rows": 24,
+                "seed": 42,
+                "epochs": null
+              },
+              "featureImportance": null,
+              "futureCovariates": "none; univariate history only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "foodborne-templates",
+      "prompt": "打开报告模板管理，展示当前智能体可用模板及其版本、章节配置。",
+      "passed": true,
+      "status": "SUCCESS",
+      "checks": {
+        "requestedSkills": true,
+        "view": true,
+        "session": true
+      },
+      "elapsedMs": 49771,
+      "runId": "879b0304-1a53-4f1a-867a-325625e5a61c",
+      "replyText": "已打开报告模板管理，并查询当前智能体可用模板及版本、章节配置。\n\n- 当前未返回任何可用报告模板，也未返回模板版本或章节配置明细。\n- 因此暂不能基于现有模板生成、导出或比较报告章节；建议先在工作台确认模板是否已发布、是否对当前智能体可见，或联系管理员补充模板配置。\n- 本次结果仅反映当前可查询到的模板管理状态，不代表报告功能不可用，也不代表已有报告内容缺失。",
+      "viewType": "REPORT_TEMPLATE_EDITOR",
+      "skillRuns": [
+        {
+          "skillId": "skill_report_templates",
+          "status": "SUCCESS",
+          "payloadType": "REPORT_TEMPLATE_EDITOR",
+          "method": "versioned-report-template-v1",
+          "datasets": []
+        }
+      ]
+    }
+  ]
+}

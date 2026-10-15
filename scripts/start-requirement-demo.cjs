@@ -21,7 +21,7 @@ function demoEnvironment(domain,directory,parent=process.env){
 async function main(){
  require('@next/env').loadEnvConfig(process.cwd());
  const domain=process.argv[2]||'vector';
- const env=demoEnvironment(domain,process.argv[3]||'.mock-data/requirement-demo');
+ const env=demoEnvironment(domain,process.argv[3]||'.mock-data/input-regression-20261015');
  Object.assign(process.env,env);
  require('./register-runtime.cjs');
  const {resolveDatasetLocation}=require('../src/infrastructure/db/dataset-manifest.ts');

@@ -95,7 +95,7 @@ export function createMainAgent(dependencies:Dependencies){
       const catalog=new Map<string,SkillDefinition>();for(const skill of skills)for(const id of [skill.id,...skill.aliases])catalog.set(id,skill);
       const operation=uiOperation(interaction)??((dependencies.enableRegionIntent||ctx.frozenScopeExecution&&isApprovedIntent(ctx.approvedIntent))&&interaction.kind==='skill'&&interaction.resourceRef?.type==='skill'&&interaction.resourceRef.action==='execute'&&(interaction.attachments??[]).some((a:any)=>a?.type==='operation-input')?{skillId:interaction.resourceRef.id,mode:'view' as const}:undefined);
       if(operation){
-        const definition=definitions.find(s=>s.id===operation.skillId);
+        const definition=catalog.get(operation.skillId);
         if(!definition)throw new TurnError('CAPABILITY_UNAVAILABLE','该界面操作尚未实现');
         const args=bindOperationInput(interaction,operation.skillId,{},ctx.domain,id=>catalog.get(id)?.id ?? id);
         authorizeSkill(definition,args,ctx);

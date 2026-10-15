@@ -35,7 +35,7 @@ export function validateIntentEvidence(intent:InteractionIntent,input:IntentReso
  check(intent.displayRegion,true,input.previous?.draft.displayRegion);check(intent.dataRegion,true);check(intent.time);Object.values(intent.filters).forEach(s=>check(s));for(const layer of intent.layerRequests){if(layer.dataRegion)check(layer.dataRegion,true);if(layer.time)check(layer.time);Object.values(layer.filters??{}).forEach(s=>check(s));}
  if(intent.task==='map_edit'&&[intent.displayRegion,intent.dataRegion,intent.time,...Object.values(intent.filters)].some(s=>s.op==='set'))throw Error('INTENT_INVALID');
  if(['data_query','analysis'].includes(intent.task)&&intent.displayRegion.op!=='clear')throw Error('INTENT_DISPLAY_SCOPE_UNREQUESTED: data_query/analysis不单独设置底图范围');
- if(intent.task==='map_display'&&(intent.dataRegion.op!=='clear'||intent.time.op!=='clear'||Object.values(intent.filters).some(s=>s.op!=='clear')||intent.layerRequests.length))throw Error('INTENT_INVALID');
+ if(intent.task==='map_display'&&(intent.dataRegion.op!=='clear'||intent.time.op!=='clear'||Object.values(intent.filters).some(s=>s.op!=='clear')||intent.layerRequests.length))throw Error('INTENT_INVALID: map_display仅能显示纯底图，dataRegion和time必须clear、filters为空、layerRequests为空；若明确需要新增区域文字标注，应使用map_with_data和skill_map_annotation的labels图层。');
  if(intent.relation==='new'&&[intent.dataRegion,intent.time,...Object.values(intent.filters)].some(s=>s.op==='inherit'))throw Error('INTENT_IMPLICIT_INHERITANCE');
 }
 export async function resolveInteractionIntent(input:IntentResolveInput,llm:LLMClient):Promise<IntentResolution>{
